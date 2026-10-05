@@ -1,0 +1,457 @@
+<!-- @dsCard group="Specs · Navigation" viewport="1120x760" name="Global Navigation" subtitle="L1 Navigation System — wayfinding architecture, routing contracts, hierarchy rules, and orientation models" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Global Navigation — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:68ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:74ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:76ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-direction:column;gap:16px}
+.demo-row{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:120px;padding-top:6px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.skip-preview{display:inline-flex;padding:6px 10px;background:var(--action-solid);color:#fff;font-family:var(--font-mono);font-size:var(--text-xs);border-radius:var(--radius-sm);text-decoration:none}
+.badge-tier{display:inline-block;padding:2px 8px;font-family:var(--font-mono);font-size:var(--text-2xs);letter-spacing:var(--tracking-caps);text-transform:uppercase;border-radius:var(--radius-full);background:var(--status-info-soft);color:var(--status-info-solid)}
+
+/* Mock UI Nav preview styles */
+.mock-nav-shell{width:260px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;box-shadow:var(--shadow-xs);overflow:hidden}
+.mock-nav-header{padding:14px 16px;border-bottom:var(--border-hairline);display:flex;align-items:center;gap:10px}
+.mock-nav-logo{width:24px;height:24px;background:var(--action-solid);border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:11px}
+.mock-nav-title{font-size:var(--text-xs);font-weight:var(--weight-semibold);line-height:1.2}
+.mock-nav-sub{font-size:var(--text-2xs);color:var(--text-tertiary);font-family:var(--font-mono)}
+.mock-nav-list{list-style:none;margin:0;padding:10px 8px;display:flex;flex-direction:column;gap:2px}
+.mock-nav-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--radius-sm);font-size:var(--text-xs);color:var(--text-secondary);text-decoration:none;cursor:pointer;transition:background 0.15s ease}
+.mock-nav-item:hover{background:var(--surface-sunken);color:var(--text-primary)}
+.mock-nav-item.current{background:var(--status-info-soft);color:var(--text-link);font-weight:var(--weight-medium)}
+.mock-nav-item.focus-vis{outline:2px solid var(--action-solid);outline-offset:1px}
+.mock-nav-item.disabled{opacity:0.4;cursor:not-allowed}
+.mock-nav-left{display:flex;align-items:center;gap:8px}
+.mock-nav-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.mock-nav-badge{font-size:10px;padding:1px 6px;border-radius:10px;background:var(--surface-sunken);font-family:var(--font-mono)}
+.mock-nav-item.current .mock-nav-badge{background:var(--action-solid);color:#fff}
+.mock-nav-footer{padding:12px 14px;border-top:var(--border-hairline);background:var(--background-page);display:flex;align-items:center;justify-content:space-between;font-size:var(--text-2xs)}
+.mock-nav-rail{width:60px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:8px}
+.mock-nav-rail-item{width:40px;height:40px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);cursor:pointer}
+.mock-nav-rail-item.current{background:var(--status-info-soft);color:var(--text-link)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Button, IconButton, Badge, Text, Tabs, Link, Menu, Card } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const TOP_LEVEL_NAV = [
+  {id:'planning',label:'Shift Planning',badge:'3',href:'#planning'},
+  {id:'work-orders',label:'Work Orders',badge:'14',href:'#work-orders'},
+  {id:'quality',label:'Quality & NCs',badge:'2',href:'#quality'},
+  {id:'maintenance',label:'Maintenance',href:'#maintenance'},
+  {id:'stores',label:'Stores & BOM',href:'#stores'},
+  {id:'plant-assets',label:'Plant Assets',href:'#assets',disabled:true,reason:'Requires Shop Floor Manager role'}
+];
+
+function NavDemo(){
+  const [active,setActive] = React.useState('work-orders');
+  const [collapsed,setCollapsed] = React.useState(false);
+
+  return (
+    <div className="demo">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <Text size="xs" weight="medium">Interactive Demonstration — Global Navigation (L1 App Shell)</Text>
+        <Button size="xs" variant="secondary" onClick={()=>setCollapsed(!collapsed)}>
+          {collapsed ? 'Expand to Full Sidebar' : 'Collapse to Icon Rail'}
+        </Button>
+      </div>
+      <div className="demo-row">
+        {collapsed ? (
+          <nav aria-label="Primary Global Navigation" className="mock-nav-rail">
+            <div className="mock-nav-logo">S</div>
+            <div style={{height:1,width:32,background:'var(--border-subtle)',margin:'4px 0'}} />
+            {TOP_LEVEL_NAV.map(item=>(
+              <a key={item.id}
+                 href={item.href}
+                 title={item.label + (item.badge ? ` (${item.badge})` : '')}
+                 aria-current={active===item.id ? 'page' : undefined}
+                 className={`mock-nav-rail-item ${active===item.id?'current':''}`}
+                 onClick={(e)=>{e.preventDefault();setActive(item.id);}}>
+                <div className="mock-nav-dot" />
+              </a>
+            ))}
+          </nav>
+        ) : (
+          <nav aria-label="Primary Global Navigation" className="mock-nav-shell">
+            <div className="mock-nav-header">
+              <div className="mock-nav-logo">S</div>
+              <div>
+                <div className="mock-nav-title">Suryodaya Autocomp</div>
+                <div className="mock-nav-sub">Chakan PL-04 · Pune (IST)</div>
+              </div>
+            </div>
+            <ul className="mock-nav-list">
+              {TOP_LEVEL_NAV.map(item=>(
+                <li key={item.id}>
+                  <a href={item.href}
+                     aria-current={active===item.id ? 'page' : undefined}
+                     className={`mock-nav-item ${active===item.id?'current':''} ${item.disabled?'disabled':''}`}
+                     onClick={(e)=>{
+                       e.preventDefault();
+                       if(!item.disabled) setActive(item.id);
+                     }}>
+                    <span className="mock-nav-left">
+                      <span className="mock-nav-dot" />
+                      <span>{item.label}</span>
+                    </span>
+                    {item.badge ? <span className="mock-nav-badge">{item.badge}</span> : null}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <div className="mock-nav-footer">
+              <span>Sandeep Kulkarni (Line Supv)</span>
+              <span style={{fontFamily:'var(--font-mono)',color:'var(--text-tertiary)'}}>v1.2</span>
+            </div>
+          </nav>
+        )}
+
+        <div style={{flex:1,minWidth:280,background:'var(--surface-sunken)',padding:18,borderRadius:'var(--radius-md)',border:'var(--border-hairline)'}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>
+            Active Route Context
+          </Text>
+          <div style={{marginTop:8,fontFamily:'var(--font-mono)',fontSize:'var(--text-sm)',color:'var(--text-primary)'}}>
+            Route: <strong>/plant-04/{active}</strong>
+          </div>
+          <p style={{marginTop:8,fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+            Location: <strong>{TOP_LEVEL_NAV.find(n=>n.id===active)?.label}</strong>. Global navigation provides persistent access to this primary domain while subordinating all local record inspection and workflows to the main view canvas.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Spec(){
+  return (
+    <div className="page">
+      <div className="masthead">
+        <span className="eyebrow">Navigation System · System specification</span>
+        <h1>Global Navigation</h1>
+        <p className="lede">Provides persistent access to the highest-level destinations in an application or product environment. It establishes the application's primary information architecture (L1) and communicates the user's current top-level location across all screens and workspaces.</p>
+        <div className="meta">
+          <span>specs/navigation/GlobalNavigation.spec.html</span>
+          <span className="badge-tier">Tier: L1 Navigation System</span>
+          <span style={{color:'var(--text-primary)'}}>status: frozen 8 Sep 2026 · 0 open items</span>
+          <span>setting: Suryodaya Autocomp Ltd (PL-04, Chakan)</span>
+        </div>
+      </div>
+
+      <Sec n="01" title="Purpose" note="Highest-level wayfinding and primary orientation.">
+        <p>Global Navigation provides persistent access to the top-level architectural destinations of an application (e.g. Planning, Work Orders, Quality, Maintenance, Stores). It establishes the primary mental model of the product suite, communicates current top-level placement at a glance, and enables instantaneous jumping between operational domains without losing application context.</p>
+        <T cols={['You need to…','Use this system','Instead of…','Why']} rows={[
+          ['Switch between top-level operational domains (L1)','Global Navigation','Local Tabs / In-page links','Global navigation holds the entire application scope and sets the primary route.'],
+          ['Switch sibling views inside one record or page (L3)','Tabs','Global Navigation','Tabs replace content in-place within a single subject without altering top-level domain orientation.'],
+          ['Traverse an ancestor hierarchy back to the plant root','Breadcrumb','Global Navigation','Breadcrumbs show the specific parent trail of an active entity; global navigation displays peer top-level domains.'],
+          ['Search and jump directly to any asset, NC, or WO','Command Palette','Global Navigation','Command palette offers accelerated contextual search; global navigation provides visible persistent wayfinding.']
+        ]} />
+        <div className="two" style={{marginTop:8}}>
+          <div className="pane do">
+            <h3>Do</h3>
+            <ul>
+              <li>Use Global Navigation for the 4–8 highest-level operational domains of the plant.</li>
+              <li>Always indicate the single active top-level location with <code>aria-current="page"</code>.</li>
+              <li>Keep destination labels stable and persistent across every screen in the application.</li>
+            </ul>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <ul>
+              <li>Don't place record-level contextual commands (e.g. "Release Work Order", "Save BOM") in Global Navigation.</li>
+              <li>Don't use Global Navigation for temporary filters or facet toggles.</li>
+              <li>Don't change the list of global destinations dynamically from page to page.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="02" title="Anatomy" note="Structural regions, slots, and item hierarchy.">
+        <p>The Global Navigation system consists of a defined container frame, plant/brand identity region, ordered primary destination list, optional grouped/overflow slots, and an orientation/utility footer.</p>
+        <NavDemo />
+        <div style={{marginTop:12}}>
+          <T cols={['Structural Slot','Element','Role','Requirement']} rows={[
+            ['Shell Container','<nav> landmark','Encloses the navigation system with an accessible name.','Mandatory'],
+            ['Brand / Plant Header','<div> / <a>','Identifies the plant context (Suryodaya Autocomp PL-04) and home link.','Mandatory'],
+            ['Primary Destination List','<ul>','Ordered list of L1 domain destinations.','Mandatory'],
+            ['Destination Item','<li> > <a>','Individual top-level destination link with icon, label, and badge.','Mandatory'],
+            ['Current Indicator','Visual pill / border','Highlights the active destination (paired with aria-current="page").','Mandatory'],
+            ['Badge / Counter','<Badge>','Displays unread alerts or pending items requiring attention (e.g. 14 open WOs).','Optional'],
+            ['Subordinate Group / Sub-tree','<ul> nested in <li>','Sub-destinations subordinate to an L1 category (max 2 levels).','Optional'],
+            ['Utility / Profile Footer','<div>','Displays active operator profile, plant status, and collapse trigger.','Optional'],
+            ['Off-Canvas Scaffolding','<div> (Drawer)','Modal overlay backdrop for narrow/mobile viewport presentations.','Conditional']
+          ]} />
+        </div>
+      </Sec>
+
+      <Sec n="03" title="Properties" note="Public API, data contracts, and refused inputs.">
+        <p>The system is configured via a structured items array, an active destination identifier, controlled expansion state, and router delegation.</p>
+        <pre>{`interface GlobalNavItem {
+  id: string;                     // Unique route / destination identifier
+  label: string;                  // Destination label (noun, max 24 chars)
+  href: string;                   // Target route URL
+  icon?: string;                  // Semantic icon identifier
+  badge?: string | number;        // Alert / counter badge
+  disabled?: boolean;             // Inactive / insufficient role permissions
+  disabledReason?: string;        // Tooltip explanation for permission restrictions
+  children?: GlobalNavItem[];     // Subordinate sub-destinations (max 1 nested level)
+}
+
+interface GlobalNavProps {
+  items: GlobalNavItem[];         // Ordered set of L1 destinations
+  activeId: string;               // Current active top-level route ID
+  collapsed?: boolean;            // Controlled sidebar/rail collapse state
+  onCollapseChange?: (collapsed: boolean) => void;
+  LinkComponent?: React.ComponentType<{href: string; children: React.ReactNode; [key: string]: any}>;
+  onNavigate?: (item: GlobalNavItem, event: React.MouseEvent) => void;
+  userProfile?: { name: string; role: string };
+  plantContext?: { company: string; plant: string; location: string };
+}`}</pre>
+        <div className="warn" style={{marginTop:8}}>
+          <p><strong>Refused Properties:</strong> No <code>variant="color"</code> props (global nav must strictly adhere to system surface tokens); no arbitrary button injection inside navigation lists (actions belong in page headers); no unconstrained deep nesting props beyond level 2.</p>
+        </div>
+      </Sec>
+
+      <Sec n="04" title="Variants" note="Presentation forms across viewports and layouts.">
+        <p>Global Navigation supports three standardized presentations. Placement or orientation (side vs top vs drawer) does not create a different navigation system; it adapts the presentation of the same destination architecture.</p>
+        <T cols={['Variant','Structure','Optimal Destination Count','Characteristics']} rows={[
+          ['Expanded Sidebar','Vertical 240px/260px column','4–8 destinations','Full text labels, nested sub-trees, trailing alert badges, and plant masthead.'],
+          ['Compact Icon Rail','Vertical 56px/64px column','4–8 destinations','Icon-focused with tooltip disclosures on hover/focus; maximizes main canvas width.'],
+          ['Horizontal Topbar','Horizontal 48px/56px header','3–6 destinations','Sits in application header bar; suitable for single-column and dashboard layouts.'],
+          ['Off-Canvas Drawer','Modal flyout (280px)','4–8 destinations','Triggered by hamburger button on mobile/tablet viewports; preserves identical IA.']
+        ]} />
+      </Sec>
+
+      <Sec n="05" title="Sizes" note="Dimensions, density rhythms, and touch minimums.">
+        <p>Dimensions are strictly governed by spacing and control-height tokens.</p>
+        <T cols={['Metric','Token / Value','Application']} rows={[
+          ['Sidebar Width (Expanded)','240px / 260px','Desktop persistent navigation column.'],
+          ['Icon Rail Width (Collapsed)','56px / 60px','Compact vertical rail presentation.'],
+          ['Topbar Nav Height','48px / 56px','Horizontal header global navigation bar.'],
+          ['Row Height (Compact)','32px (--control-h-sm)','High-density shop-floor monitoring consoles.'],
+          ['Row Height (Comfortable)','40px (--control-h-md)','Standard plant desktop workstation default.'],
+          ['Row Height (Expanded)','48px (--control-h-lg)','Touch terminals and tablet inspection devices.'],
+          ['Touch Target Minimum','44px × 44px (WCAG 2.5.8)','All clickable item targets on mobile/touch interfaces.']
+        ]} />
+      </Sec>
+
+      <Sec n="06" title="States" note="Item-level and system-level visual states.">
+        <p>Every destination item implements clear visual state feedback. Current destination and keyboard focus are always visually distinct.</p>
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          <Row label="Rest / Default">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>Standard resting item with text-secondary color.</span>
+          </Row>
+          <Row label="Hover">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-primary)',background:'var(--surface-sunken)',padding:'4px 10px',borderRadius:'var(--radius-sm)'}}>Background shifts to surface-sunken; text shifts to text-primary.</span>
+          </Row>
+          <Row label="Focus-Visible">
+            <span style={{fontSize:'var(--text-xs)',outline:'2px solid var(--action-solid)',outlineOffset:1,padding:'4px 10px',borderRadius:'var(--radius-sm)'}}>2px solid blue focus ring around item bounding box.</span>
+          </Row>
+          <Row label="Current (Active)">
+            <span style={{fontSize:'var(--text-xs)',background:'var(--status-info-soft)',color:'var(--text-link)',fontWeight:'var(--weight-medium)',padding:'4px 10px',borderRadius:'var(--radius-sm)'}}>Soft blue background pill, link-colored text, and aria-current="page".</span>
+          </Row>
+          <Row label="Unavailable / Disabled">
+            <span style={{fontSize:'var(--text-xs)',opacity:0.4,padding:'4px 10px'}}>Muted opacity (0.4) with tooltip explaining role restriction (e.g. requires Plant Manager role).</span>
+          </Row>
+        </div>
+      </Sec>
+
+      <Sec n="07" title="Keyboard" note="Landmark traversal, arrow navigation, and shortcuts.">
+        <p>Global Navigation supports full standard keyboard wayfinding:</p>
+        <T cols={['Key / Shortcut','Action','Behavior']} rows={[
+          ['F6 / Alt+F6','Landmark Cycle','Jumps focus directly between Global Navigation and the Main Content canvas.'],
+          ['Tab / Shift+Tab','Linear Focus','Moves sequentially into and through navigation items and utility footer.'],
+          ['Arrow Up / Down','Roving Traversal','Moves focus rapidly across vertical destination links.'],
+          ['Enter / Space','Activate Route','Navigates to the selected destination and updates active location.'],
+          ['Escape','Dismiss Drawer / Menu','Closes expanded off-canvas mobile drawer or open dropdown sub-menus.'],
+          ['Ctrl+K / Cmd+K','Quick Switcher','Triggers global command palette for direct keyboard jump to any destination.']
+        ]} />
+      </Sec>
+
+      <Sec n="08" title="Accessibility" note="ARIA landmarks, active location semantics, and skip links.">
+        <p>Global Navigation must be accessible to all assistive technologies and keyboard operators:</p>
+        <ul>
+          <li><strong>Landmark Labeling:</strong> Must use <code>&lt;nav aria-label="Primary Navigation"&gt;</code> to distinguish from breadcrumbs or local section navigation.</li>
+          <li><strong>Current Location:</strong> The active destination link must carry <code>aria-current="page"</code> so screen readers announce "current page".</li>
+          <li><strong>Skip Link:</strong> An off-screen skip navigation link (<code>&lt;a href="#main-content" class="skip-link"&gt;Skip to main content&lt;/a&gt;</code>) must precede the navigation landmark in DOM order.</li>
+          <li><strong>Collapsible Sub-trees:</strong> Any expandable child group must use <code>aria-expanded="true|false"</code> and <code>aria-controls="sub-menu-id"</code>.</li>
+        </ul>
+        <div style={{marginTop:8}}>
+          <span className="skip-preview">Skip to main content (Visible on Focus)</span>
+        </div>
+      </Sec>
+
+      <Sec n="09" title="Motion" note="Sidebar collapse and off-canvas transitions.">
+        <p>All navigation transitions are smooth, purposeful, and respect user motion preferences:</p>
+        <T cols={['Transition','Property','Duration Token','Easing']} rows={[
+          ['Sidebar Width Expand/Collapse','width, min-width','180ms (--duration-quick)','cubic-bezier(0.2, 0, 0, 1)'],
+          ['Off-Canvas Drawer Slide','transform (translateX)','200ms (--duration-moderate)','cubic-bezier(0, 0, 0.2, 1)'],
+          ['Active Pill Background Shift','background-color, color','120ms (--duration-instant)','ease-out'],
+          ['Reduced Motion Override','all transitions','0ms (Instant)','prefers-reduced-motion: reduce']
+        ]} />
+      </Sec>
+
+      <Sec n="10" title="Content Rules" note="Label phrasing, noun taxonomy, and plant terminology.">
+        <p>Navigation labels represent places and architectural domains, not transactional operations.</p>
+        <T cols={['Correct Destination Label (Noun/Domain)','Incorrect Phrasing (Action/Command)','Rationale']} rows={[
+          ['Work Orders','Create / Manage Orders','Destinations are places; verbs imply single transactional operations.'],
+          ['Quality & NCs','Log Nonconformance','Global nav is the domain container for inspection, NCRs, and dispositions.'],
+          ['Shift Planning','Assign Operators','The destination hosts shift schedules, line rosters, and plant capacity.'],
+          ['Stores & BOM','Request Raw Material','Stores encompasses inventory, part master, and bills of material.']
+        ]} />
+        <ul style={{marginTop:8}}>
+          <li><strong>Length Limit:</strong> 1–3 words, maximum 24 characters. Labels must not wrap onto multiple lines in standard sidebar width.</li>
+          <li><strong>Badge Numerals:</strong> Exact count up to <code>99</code>; formatted as <code>99+</code> for higher numbers to prevent layout breaking.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="11" title="Responsive" note="Breakpoints and presentation transforms.">
+        <p>The destination hierarchy remains 100% identical across all screen sizes. Responsive adaptation only changes the container's visual presentation:</p>
+        <T cols={['Viewport Width','Breakpoint','Presentation Form']} rows={[
+          ['Desktop (≥1024px)','Wide Screen','Persistent expanded sidebar (240px) or horizontal topbar.'],
+          ['Tablet (768px–1023px)','Medium Screen','Compact icon rail (56px) or collapsed sidebar with flyout tooltips.'],
+          ['Mobile (<768px)','Narrow Screen','Off-canvas modal drawer triggered by top header hamburger button, or bottom navigation bar.']
+        ]} />
+      </Sec>
+
+      <Sec n="12" title="Anti-patterns" note="Common architectural misuses to prevent.">
+        <div className="two">
+          <div className="pane dont">
+            <h3>Anti-Patterns (Never Do)</h3>
+            <ul>
+              <li><strong>Contextual Action Buttons:</strong> Putting "Submit", "New Order", or "Export" buttons in global nav.</li>
+              <li><strong>Deep Hierarchy Dump:</strong> Exposing 4+ levels of nesting in global nav instead of using local page drill-downs.</li>
+              <li><strong>Dynamic Disappearing Destinations:</strong> Removing global links when entering a sub-record.</li>
+              <li><strong>Multiple Unlabelled &lt;nav&gt; Landmarks:</strong> Having duplicate navigation regions without distinct aria-labels.</li>
+            </ul>
+          </div>
+          <div className="pane do">
+            <h3>Standard Corrections</h3>
+            <ul>
+              <li>Place transactional action buttons in the page header or local toolbar.</li>
+              <li>Limit global nav to L1 (and optional L2); handle L3+ via in-page tabs, tables, and breadcrumbs.</li>
+              <li>Keep the global navigation bar persistently visible across all views.</li>
+              <li>Label landmarks distinctly: "Primary Navigation", "Breadcrumb Trail", "Plant Switcher".</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="13" title="Implementation Notes" note="DOM architecture, route state sync, and tokens.">
+        <p>Implementation rules for maintaining technical integrity:</p>
+        <ul>
+          <li><strong>URL / Route Derivation:</strong> Navigation state must be computed from the active route URL pathname, never from transient local click state.</li>
+          <li><strong>Scroll Persistence:</strong> If the navigation sidebar has many items and scrolls, its scroll position must persist across route transitions.</li>
+          <li><strong>Z-Index Layering:</strong> Follow system elevation layers: <code>--z-index-nav: 100</code>, <code>--z-index-drawer: 200</code>, <code>--z-index-overlay: 190</code>.</li>
+        </ul>
+        <div style={{marginTop:8}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>Tokens Consumed</Text>
+          <div className="tokenlist" style={{marginTop:6}}>
+            <code>--surface-card</code>
+            <code>--surface-sunken</code>
+            <code>--border-hairline</code>
+            <code>--border-subtle</code>
+            <code>--action-solid</code>
+            <code>--status-info-soft</code>
+            <code>--text-primary</code>
+            <code>--text-secondary</code>
+            <code>--text-tertiary</code>
+            <code>--text-link</code>
+            <code>--radius-sm</code>
+            <code>--radius-md</code>
+            <code>--space-2</code>
+            <code>--space-3</code>
+            <code>--control-h-md</code>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="14" title="Developer Notes" note="Framework integration and testing contracts.">
+        <p>Router integration and test assertions for consuming engineering teams:</p>
+        <pre>{`// Example: React Router / Next.js Integration
+import { NavLink, useLocation } from 'react-router-dom';
+import { GlobalNav } from '@meridian/design-system';
+
+export function AppShellNavigation() {
+  const location = useLocation();
+
+  // Deterministic top-level parent resolution from path
+  const activeId = location.pathname.split('/')[1] || 'planning';
+
+  return (
+    <GlobalNav
+      items={TOP_LEVEL_NAV}
+      activeId={activeId}
+      LinkComponent={NavLink}
+      plantContext={{ company: 'Suryodaya Autocomp Ltd', plant: 'PL-04', location: 'Chakan, Pune' }}
+    />
+  );
+}`}</pre>
+        <div style={{marginTop:12}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>Test Assertions</Text>
+          <ul>
+            <li>Assert that exactly one destination link has <code>aria-current="page"</code> corresponding to the active route.</li>
+            <li>Assert that the skip-link is present in the DOM before the navigation landmark and targets <code>#main-content</code>.</li>
+            <li>Assert that pressing <kbd>F6</kbd> moves focus between the navigation region and the main content landmark.</li>
+          </ul>
+        </div>
+      </Sec>
+
+      <div style={{marginTop:36,paddingTop:12,borderTop:'var(--border-hairline)',fontFamily:'var(--font-mono)',fontSize:'var(--text-2xs)',color:'var(--text-tertiary)'}}>
+        Applies to: L1 Global Navigation System · Governance: <a href="../../guidelines/navigation-spec-standard.card.html">Navigation System specification standard</a> · Sections §01–§14 frozen · Core Components: <a href="Breadcrumb.spec.html">Breadcrumb</a>, <a href="Menu.spec.html">Menu</a>, <a href="Tabs.spec.html">Tabs</a>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

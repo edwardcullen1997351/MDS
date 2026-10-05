@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Layout · Holy grail" description="A dominant central workspace between two lateral regions with independent purposes — release criteria on one side, capacity and material constraints on the other, around the press-shop work order release queue for week 2026-W37" -->
+<helmet><script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary)}</style>
+</helmet>
+<div style="min-height:100vh">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Container" size="full" py="{{ 7 }}" hint-size="100%,100%">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 6 }}" hint-size="100%,100%">
+
+<sc-if value="{{ harnessNotes }}" hint-placeholder-val="{{ true }}">
+<div data-harness="remove-on-copy" style="border:var(--border-width) dashed var(--border-strong);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Harness · remove on copy</span>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty">Dashed blocks and <code style="font-family:var(--font-mono)">harness*</code> tweaks are scaffolding for reading the frame — delete them when you copy this template. <em>Simulate available width</em> forces each §11 form without resizing the window: at intermediate width the trailing region leaves first, at constrained width both lateral regions leave, and <em>displaced form</em> chooses whether they stack in the single column or are reached through a <code style="font-family:var(--font-mono)">Drawer</code>. The two lateral regions do different work — region 3 narrows the queue, region 5 states what would gate a release — which is the only thing that justifies this frame over <a href="../../specs/layouts/Sidebar.spec.html" style="color:var(--text-link)">sidebar</a> (§01).</p>
+</div>
+</sc-if>
+
+<sc-if value="{{ topPresent }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:10px;border-bottom:var(--border-hairline);padding-bottom:16px">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 2 · top — spanning all three body regions</span>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Breadcrumb" items="{{ crumbs }}" size="sm" hint-size="100%,18px"></x-import>
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px 24px">
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:var(--weight-light);letter-spacing:-0.018em">Work order release — press shop, week 2026-W37</h1>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">PL-04 Chakan · shift A · refreshed from MES 2026-09-08 09:40 (IST)</span>
+</div>
+<p style="margin:0;font-size:var(--text-sm);color:var(--text-secondary);max-width:88ch;text-wrap:pretty">Anjali Deshmukh releases the week's press work to the shop floor. What she releases is decided by two different things at once: the criteria that narrow the queue in front of her, and the capacity and material position that say whether the queue can actually be run.</p>
+<sc-if value="{{ togglesInTop }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+<sc-if value="{{ leadingToggle }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="secondary" onClick="{{ onToggleLeading }}" aria-expanded="{{ leadingExpanded }}" aria-controls="{{ leadingControls }}" hint-size="150px,28px">{{ leadingToggleLabel }}</x-import>
+</sc-if>
+<sc-if value="{{ trailingToggle }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="secondary" onClick="{{ onToggleTrailing }}" aria-expanded="{{ trailingExpanded }}" aria-controls="{{ trailingControls }}" hint-size="180px,28px">{{ trailingToggleLabel }}</x-import>
+</sc-if>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ standaloneToggles }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+<sc-if value="{{ leadingToggle }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="secondary" onClick="{{ onToggleLeading }}" aria-expanded="{{ leadingExpanded }}" aria-controls="{{ leadingControls }}" hint-size="150px,28px">{{ leadingToggleLabel }}</x-import>
+</sc-if>
+<sc-if value="{{ trailingToggle }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="secondary" onClick="{{ onToggleTrailing }}" aria-expanded="{{ trailingExpanded }}" aria-controls="{{ trailingControls }}" hint-size="180px,28px">{{ trailingToggleLabel }}</x-import>
+</sc-if>
+<span style="font-size:var(--text-xs);color:var(--text-secondary)">{{ toggleNote }}</span>
+</div>
+</sc-if>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Grid" columns="{{ gridColumns }}" gap="{{ 6 }}" align="start" hint-size="100%,760px">
+
+<sc-if value="{{ leadingInline }}" hint-placeholder-val="{{ true }}">
+<div id="leading-region" style="display:flex;flex-direction:column;gap:10px;min-width:0">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">{{ leadingLabel }}</span>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Box" pr="{{ leadingPadEnd }}" border-right="{{ leadingDivider }}" hint-size="100%,620px">
+<dc-import name="ReleaseCriteria" criteria="{{ criteria }}" on="{{ criteriaHandlers }}" matched="{{ matchedCount }}" total="{{ totalCount }}" hint-size="100%,620px"></dc-import>
+</x-import>
+</div>
+</sc-if>
+
+<div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">{{ mainLabel }}</span>
+</sc-if>
+<dc-import name="ReleaseQueue" rows="{{ rows }}" selected="{{ selected }}" on-select="{{ onSelect }}" sort="{{ sort }}" on-sort="{{ onSort }}" cleared="{{ cleared }}" on-clear="{{ criteriaHandlers.clear }}" hint-size="100%,720px"></dc-import>
+</div>
+
+<sc-if value="{{ trailingInline }}" hint-placeholder-val="{{ true }}">
+<div id="trailing-region" style="display:flex;flex-direction:column;gap:10px;min-width:0">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">{{ trailingLabel }}</span>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Box" pl="{{ trailingPadStart }}" border-left="{{ trailingDivider }}" hint-size="100%,620px">
+<dc-import name="ReleaseConstraints" load="{{ load }}" shortages="{{ shortages }}" selection="{{ selectionSummary }}" hint-size="100%,620px"></dc-import>
+</x-import>
+</div>
+</sc-if>
+
+</x-import>
+
+<sc-if value="{{ bottomPresent }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 6 · bottom — spanning, height reserved whether or not anything is selected</span>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Surface" tone="card" elevation="{{ 1 }}" padding="md" radius="md" border="{{ true }}" hint-size="100%,80px">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;min-height:38px">
+<span style="font-size:var(--text-sm);color:var(--text-primary)">{{ selectionSummary.line }}</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ selectionSummary.meta }}</span>
+<span style="flex:1 1 20px"></span>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="secondary" size="sm" disabled="{{ nothingSelected }}" onClick="{{ onHold }}" hint-size="120px,30px">Hold for material</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="primary" size="sm" disabled="{{ nothingSelected }}" onClick="{{ onRelease }}" hint-size="180px,30px">{{ releaseLabel }}</x-import>
+</div>
+</x-import>
+<sc-if value="{{ released }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="success" title="Released to the shop floor" hint-size="100%,60px">{{ releasedNote }}</x-import>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ leadingDrawer }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Drawer" open="{{ leadingDrawerOpen }}" title="Release criteria" description="Press shop · week 2026-W37" side="left" size="sm" modal="{{ true }}" onClose="{{ onCloseLeading }}" hint-size="360px,100%">
+<div id="leading-region" style="display:flex;flex-direction:column;min-width:0">
+<dc-import name="ReleaseCriteria" criteria="{{ criteria }}" on="{{ criteriaHandlers }}" matched="{{ matchedCount }}" total="{{ totalCount }}" hint-size="100%,620px"></dc-import>
+</div>
+</x-import>
+</sc-if>
+
+<sc-if value="{{ trailingDrawer }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Drawer" open="{{ trailingDrawerOpen }}" title="Capacity and material" description="Shift A · 2026-09-08 (IST)" side="right" size="sm" modal="{{ true }}" onClose="{{ onCloseTrailing }}" hint-size="380px,100%">
+<div id="trailing-region" style="display:flex;flex-direction:column;min-width:0">
+<dc-import name="ReleaseConstraints" load="{{ load }}" shortages="{{ shortages }}" selection="{{ selectionSummary }}" hint-size="100%,620px"></dc-import>
+</div>
+</x-import>
+</sc-if>
+
+<sc-if value="{{ harnessInspector }}" hint-placeholder-val="{{ true }}">
+<div data-harness="remove-on-copy" style="border:var(--border-width) dashed var(--border-strong);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Layout state · §03 properties and §06 states as applied</span>
+<div style="display:flex;flex-direction:column;gap:5px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)">
+<span>leading width&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ leadingReadout }}</b></span>
+<span>trailing width&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ trailingReadout }}</b></span>
+<span>main floor&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ floorReadout }}</b></span>
+<span>persistence&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ persistenceReadout }}</b></span>
+<span>state&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ stateReadout }}</b></span>
+<span>grid tracks&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ trackReadout }}</b></span>
+<span>document order&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ orderReadout }}</b></span>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty">The lateral tracks are fixed or bounded and the centre is <code style="font-family:var(--font-mono)">minmax(floor, 1fr)</code>: every surplus pixel goes to the queue, and when the centre reaches its floor a lateral region leaves rather than all three narrowing (§11, §13). The trailing region always leaves first — the criteria are used more often than the capacity read (§11). Toggles carry <code style="font-family:var(--font-mono)">aria-expanded</code>, and <code style="font-family:var(--font-mono)">aria-controls</code> only while the region they name is in the document (§08).</p>
+</div>
+</sc-if>
+
+</x-import>
+</x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:980},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Light theme&quot;,&quot;Dark theme&quot;],&quot;default&quot;:&quot;Light theme&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;,&quot;label&quot;:&quot;Color theme&quot;},&quot;leadingWidth&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Bounded — 280px&quot;,&quot;Bounded — 320px&quot;,&quot;Proportional — 0.24fr, min 240px&quot;],&quot;default&quot;:&quot;Bounded — 280px&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;trailingWidth&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Bounded — 320px&quot;,&quot;Bounded — 360px&quot;,&quot;Proportional — 0.28fr, min 260px&quot;],&quot;default&quot;:&quot;Bounded — 320px&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;mainMinWidth&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Comfortable — 640px&quot;,&quot;Standard — 560px&quot;,&quot;Tight — 480px&quot;],&quot;default&quot;:&quot;Standard — 560px&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;lateralPersistence&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Both persistent&quot;,&quot;Trailing collapsible&quot;,&quot;Both collapsible&quot;],&quot;default&quot;:&quot;Both persistent&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;topRegion&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Present — spanning all three&quot;,&quot;None&quot;],&quot;default&quot;:&quot;Present — spanning all three&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;bottomRegion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;dividers&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;availableWidth&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Expanded — all three regions&quot;,&quot;Intermediate — trailing region displaced&quot;,&quot;Constrained — both lateral regions displaced&quot;],&quot;default&quot;:&quot;Expanded — all three regions&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Responsive (§11)&quot;},&quot;displacedForm&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Stacked — in the single column&quot;,&quot;Drawer — on request&quot;],&quot;default&quot;:&quot;Stacked — in the single column&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Responsive (§11)&quot;},&quot;harnessRegionLabels&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;},&quot;harnessNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;},&quot;harnessInspector&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;}}">
+class Component extends DCLogic {
+  state = {
+    criteria: { q: '', lines: ['P-1', 'P-2', 'P-3'], shift: 'A', material: ['full', 'short', 'none'], due: 'This week (to 2026-09-13)' },
+    selected: ['WO-4471', 'WO-4475'],
+    sort: { key: 'due', direction: 'asc' },
+    leadingCollapsed: false,
+    trailingCollapsed: false,
+    leadingDrawerOpen: false,
+    trailingDrawerOpen: false,
+    released: false,
+  };
+
+  syncTheme() {
+    const isDark = String(this.prop('theme', 'Light theme')).indexOf('Dark') === 0;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }
+
+  componentDidMount() {
+    this.syncTheme();
+  }
+
+  componentDidUpdate(prev) {
+    if (this.props.theme !== prev.theme) this.syncTheme();
+  }
+
+  all() {
+    return [
+      { id: 'WO-4471', wo: 'WO-4471', part: 'BRK-4820-A', name: 'Brake bracket, front LH', qty: 1200, line: 'P-2', mins: 260, due: '2026-09-09', material: 'full', value: 486000 },
+      { id: 'WO-4472', wo: 'WO-4472', part: 'HUB-7710-C', name: 'Wheel hub, rear', qty: 600, line: 'P-1', mins: 340, due: '2026-09-09', material: 'short', value: 720000 },
+      { id: 'WO-4473', wo: 'WO-4473', part: 'LNK-3305-B', name: 'Suspension link', qty: 2000, line: 'P-3', mins: 410, due: '2026-09-10', material: 'full', value: 310000 },
+      { id: 'WO-4474', wo: 'WO-4474', part: 'BRK-4820-B', name: 'Brake bracket, front RH', qty: 800, line: 'P-2', mins: 175, due: '2026-09-10', material: 'none', value: 324000 },
+      { id: 'WO-4475', wo: 'WO-4475', part: 'CVR-1180-A', name: 'Gearbox cover', qty: 1500, line: 'P-1', mins: 300, due: '2026-09-11', material: 'full', value: 555000 },
+      { id: 'WO-4476', wo: 'WO-4476', part: 'PLT-9002-D', name: 'Mounting plate', qty: 3200, line: 'P-3', mins: 480, due: '2026-09-11', material: 'full', value: 288000 },
+      { id: 'WO-4477', wo: 'WO-4477', part: 'ARM-6140-A', name: 'Idler arm', qty: 450, line: 'P-2', mins: 130, due: '2026-09-07', material: 'short', value: 198000 },
+      { id: 'WO-4478', wo: 'WO-4478', part: 'BRC-2255-A', name: 'Cross member brace', qty: 900, line: 'P-1', mins: 210, due: '2026-09-12', material: 'full', value: 402000 },
+      { id: 'WO-4479', wo: 'WO-4479', part: 'STP-4410-C', name: 'Stopper plate', qty: 5000, line: 'P-3', mins: 390, due: '2026-09-12', material: 'full', value: 265000 },
+      { id: 'WO-4480', wo: 'WO-4480', part: 'HUB-7710-D', name: 'Wheel hub, front', qty: 600, line: 'P-1', mins: 355, due: '2026-09-08', material: 'short', value: 738000 },
+      { id: 'WO-4481', wo: 'WO-4481', part: 'CLP-8830-B', name: 'Exhaust clamp', qty: 4000, line: 'P-3', mins: 220, due: '2026-09-13', material: 'full', value: 176000 },
+      { id: 'WO-4482', wo: 'WO-4482', part: 'BRK-4820-C', name: 'Brake bracket, rear', qty: 1000, line: 'P-2', mins: 240, due: '2026-09-13', material: 'none', value: 415000 },
+      { id: 'WO-4483', wo: 'WO-4483', part: 'FLG-5120-A', name: 'Turbo flange', qty: 350, line: 'P-1', mins: 165, due: '2026-09-11', material: 'full', value: 292000 },
+      { id: 'WO-4484', wo: 'WO-4484', part: 'PLT-9002-E', name: 'Mounting plate, heavy', qty: 1800, line: 'P-3', mins: 300, due: '2026-09-10', material: 'short', value: 344000 },
+    ];
+  }
+
+  filtered() {
+    const c = this.state.criteria;
+    const q = (c.q || '').trim().toLowerCase();
+    let rows = this.all().filter((r) =>
+      c.lines.indexOf(r.line) > -1 &&
+      c.material.indexOf(r.material) > -1 &&
+      (!q || (r.wo + ' ' + r.part + ' ' + r.name).toLowerCase().includes(q)) &&
+      (c.due !== 'Overdue only' || r.due < '2026-09-08') &&
+      (c.due !== 'Next three days (to 2026-09-10)' || r.due <= '2026-09-10'));
+    const s = this.state.sort;
+    const dir = s.direction === 'asc' ? 1 : -1;
+    rows = rows.slice().sort((a, b) => (a[s.key] > b[s.key] ? dir : a[s.key] < b[s.key] ? -dir : 0));
+    return rows;
+  }
+
+  money(n) { return '\u20b9' + n.toLocaleString('en-IN'); }
+
+  renderVals() {
+    const leadingWidth = this.props.leadingWidth ?? 'Bounded \u2014 280px';
+    const trailingWidth = this.props.trailingWidth ?? 'Bounded \u2014 320px';
+    const floorChoice = this.props.mainMinWidth ?? 'Standard \u2014 560px';
+    const persistence = this.props.lateralPersistence ?? 'Both persistent';
+    const topChoice = this.props.topRegion ?? 'Present \u2014 spanning all three';
+    const bottomPresent = this.props.bottomRegion ?? true;
+    const dividers = this.props.dividers ?? true;
+    const width = this.props.availableWidth ?? 'Expanded \u2014 all three regions';
+    const displaced = this.props.displacedForm ?? 'Stacked \u2014 in the single column';
+
+    const floor = floorChoice.startsWith('Comfortable') ? 640 : floorChoice.startsWith('Tight') ? 480 : 560;
+    const leadTrack = leadingWidth.startsWith('Proportional') ? 'minmax(240px, 0.24fr)' : leadingWidth.indexOf('320') > -1 ? '320px' : '280px';
+    const trailTrack = trailingWidth.startsWith('Proportional') ? 'minmax(260px, 0.28fr)' : trailingWidth.indexOf('360') > -1 ? '360px' : '320px';
+
+    const intermediate = width.startsWith('Intermediate');
+    const constrained = width.startsWith('Constrained');
+    const drawerForm = displaced.startsWith('Drawer');
+
+    const leadingCollapsible = persistence.startsWith('Both collapsible');
+    const trailingCollapsible = persistence !== 'Both persistent';
+    const leadingCollapsed = leadingCollapsible && this.state.leadingCollapsed && !constrained;
+    const trailingCollapsed = trailingCollapsible && this.state.trailingCollapsed && !intermediate && !constrained;
+
+    const leadingDisplaced = constrained;
+    const trailingDisplaced = intermediate || constrained;
+    const leadingInline = !leadingDisplaced && !leadingCollapsed;
+    const trailingInline = !trailingDisplaced && !trailingCollapsed;
+    const leadingStacked = leadingDisplaced && !drawerForm;
+    const trailingStacked = trailingDisplaced && !drawerForm;
+
+    const cols = [];
+    if (leadingInline && !leadingStacked) cols.push(leadTrack);
+    cols.push('minmax(' + floor + 'px, 1fr)');
+    if (trailingInline && !trailingStacked) cols.push(trailTrack);
+    const gridColumns = (leadingStacked || trailingStacked || cols.length === 1) ? 1 : cols.join(' ');
+
+    const rows = this.filtered();
+    const c = this.state.criteria;
+    const selected = this.state.selected.filter((k) => rows.some((r) => r.id === k));
+    const sel = rows.filter((r) => selected.indexOf(r.id) > -1);
+    const selMins = sel.reduce((t, r) => t + r.mins, 0);
+    const selValue = sel.reduce((t, r) => t + r.value, 0);
+    const selShort = sel.filter((r) => r.material !== 'full').length;
+
+    const setC = (patch) => this.setState({ criteria: Object.assign({}, this.state.criteria, patch), released: false });
+
+    const load = [
+      { line: 'P-1 \u00b7 400T press', used: 1104, capacity: 1200, note: 'Sandeep Kulkarni, A shift' },
+      { line: 'P-2 \u00b7 630T press', used: 936, capacity: 1200, note: 'Sandeep Kulkarni, A shift' },
+      { line: 'P-3 \u00b7 250T press', used: 1248, capacity: 1200, note: 'Die change 14:00\u201315:10 (IST)' },
+      { line: 'W-1 \u00b7 weld cell', used: 640, capacity: 1080, note: 'Two operators short' },
+    ];
+
+    const shortages = [
+      { part: 'BRG-2210 taper bearing', short: '400 pc short', supplier: 'Sahyadri Bearings Pvt Ltd', eta: 'ETA 2026-09-10 (IST)', blocks: 'WO-4472, WO-4480' },
+      { part: 'SHT-3.2 CR sheet, 3.2 mm', short: '2.1 t short', supplier: 'Nashik Forge & Machine Works', eta: 'ETA 2026-09-09 (IST)', blocks: 'WO-4477, WO-4484' },
+      { part: 'Die D-4820-B', short: 'in tool room, repair', supplier: 'Priya Iyer, tool room', eta: 'Back 2026-09-11 (IST)', blocks: 'WO-4474, WO-4482' },
+    ];
+
+    return {
+      gridColumns,
+      leadingInline: leadingInline || leadingStacked,
+      trailingInline: trailingInline || trailingStacked,
+      leadingDrawer: leadingDisplaced && drawerForm,
+      trailingDrawer: trailingDisplaced && drawerForm,
+      leadingDrawerOpen: this.state.leadingDrawerOpen,
+      trailingDrawerOpen: this.state.trailingDrawerOpen,
+      leadingPadEnd: dividers && !leadingStacked && gridColumns !== 1 ? 6 : 0,
+      trailingPadStart: dividers && !trailingStacked && gridColumns !== 1 ? 6 : 0,
+      leadingDivider: dividers && !leadingStacked && gridColumns !== 1 ? 'default' : false,
+      trailingDivider: dividers && !trailingStacked && gridColumns !== 1 ? 'default' : false,
+
+      leadingLabel: leadingStacked ? 'Region 3 · leading — displaced above the centre, same region, same contents' : 'Region 3 · leading — criteria that narrow the queue',
+      mainLabel: 'Region 4 · main — dominant, never below ' + floor + 'px',
+      trailingLabel: trailingStacked ? 'Region 5 · trailing — displaced below the centre' : 'Region 5 · trailing — constraints that gate a release',
+
+      topPresent: topChoice.startsWith('Present'),
+      bottomPresent,
+      togglesInTop: topChoice.startsWith('Present') && (leadingCollapsible || trailingCollapsible || (drawerForm && (leadingDisplaced || trailingDisplaced))),
+      standaloneToggles: !topChoice.startsWith('Present') && (leadingCollapsible || trailingCollapsible || (drawerForm && (leadingDisplaced || trailingDisplaced))),
+      toggleNote: 'Each control names the region it shows, not the furniture that holds it.',
+      leadingToggle: (leadingCollapsible && !leadingDisplaced) || (leadingDisplaced && drawerForm),
+      trailingToggle: (trailingCollapsible && !trailingDisplaced) || (trailingDisplaced && drawerForm),
+      leadingExpanded: leadingDisplaced && drawerForm ? (this.state.leadingDrawerOpen ? 'true' : 'false') : (leadingCollapsed ? 'false' : 'true'),
+      trailingExpanded: trailingDisplaced && drawerForm ? (this.state.trailingDrawerOpen ? 'true' : 'false') : (trailingCollapsed ? 'false' : 'true'),
+      leadingControls: (leadingDisplaced && drawerForm ? this.state.leadingDrawerOpen : leadingInline) ? 'leading-region' : undefined,
+      trailingControls: (trailingDisplaced && drawerForm ? this.state.trailingDrawerOpen : trailingInline) ? 'trailing-region' : undefined,
+      leadingToggleLabel: (leadingDisplaced && drawerForm ? this.state.leadingDrawerOpen : leadingInline) ? 'Hide criteria' : 'Show criteria',
+      trailingToggleLabel: (trailingDisplaced && drawerForm ? this.state.trailingDrawerOpen : trailingInline) ? 'Hide capacity and material' : 'Show capacity and material',
+      onToggleLeading: () => (leadingDisplaced && drawerForm
+        ? this.setState({ leadingDrawerOpen: !this.state.leadingDrawerOpen })
+        : this.setState({ leadingCollapsed: !this.state.leadingCollapsed })),
+      onToggleTrailing: () => (trailingDisplaced && drawerForm
+        ? this.setState({ trailingDrawerOpen: !this.state.trailingDrawerOpen })
+        : this.setState({ trailingCollapsed: !this.state.trailingCollapsed })),
+      onCloseLeading: () => this.setState({ leadingDrawerOpen: false }),
+      onCloseTrailing: () => this.setState({ trailingDrawerOpen: false }),
+
+      crumbs: [{ label: 'Planning', href: '#' }, { label: 'Work order release', href: '#' }, { label: 'Week 2026-W37' }],
+      criteria: c,
+      criteriaHandlers: {
+        q: (next) => setC({ q: next }),
+        lines: (next) => setC({ lines: next }),
+        shift: (e) => setC({ shift: e.target.value }),
+        material: (next) => setC({ material: next }),
+        due: (e) => setC({ due: e.target.value }),
+        clear: () => setC({ q: '', lines: ['P-1', 'P-2', 'P-3'], material: ['full', 'short', 'none'], due: 'This week (to 2026-09-13)' }),
+      },
+      matchedCount: rows.length,
+      totalCount: this.all().length,
+      cleared: rows.length === 0,
+
+      rows,
+      selected,
+      onSelect: (keys) => this.setState({ selected: keys, released: false }),
+      sort: this.state.sort,
+      onSort: (next) => this.setState({ sort: next }),
+
+      load,
+      shortages,
+      selectionSummary: {
+        count: sel.length,
+        line: sel.length ? sel.length + ' work orders selected for release' : 'No work orders selected',
+        meta: sel.length
+          ? selMins.toLocaleString('en-IN') + ' press-minutes \u00b7 ' + this.money(selValue) + ' \u00b7 ' + (selShort ? selShort + ' short of material' : 'all kitted')
+          : 'Select rows in the queue to see the load and value they would add.',
+        mins: selMins,
+        short: selShort,
+        value: this.money(selValue),
+        valueNum: selValue,
+        overLines: Array.from(new Set(sel.map((r) => r.line))).filter((ln) => load.some((l) => l.line.indexOf(ln) === 0 && l.used > l.capacity)),
+      },
+      nothingSelected: sel.length === 0,
+      releaseLabel: sel.length ? 'Release ' + sel.length + ' to the floor' : 'Release to the floor',
+      onRelease: () => this.setState({ released: true }),
+      onHold: () => this.setState({ released: false, selected: [] }),
+      released: this.state.released,
+      releasedNote: sel.length
+        ? sel.map((r) => r.wo).join(', ') + ' released 2026-09-08 09:52 (IST) by Anjali Deshmukh. MES has the sequence; Sandeep Kulkarni is notified on the shop-floor terminal.'
+        : '',
+
+      harnessLabels: this.props.harnessRegionLabels ?? true,
+      harnessNotes: this.props.harnessNotes ?? true,
+      harnessInspector: this.props.harnessInspector ?? true,
+      leadingReadout: leadingWidth + ' \u2192 ' + leadTrack,
+      trailingReadout: trailingWidth + ' \u2192 ' + trailTrack,
+      floorReadout: 'minmax(' + floor + 'px, 1fr)',
+      persistenceReadout: persistence,
+      stateReadout: (constrained ? 'constrained \u2014 both lateral regions displaced' : intermediate ? 'intermediate \u2014 trailing displaced' : 'three-region')
+        + (drawerForm && (intermediate || constrained) ? ' \u00b7 Drawer' : '')
+        + (leadingCollapsed ? ' \u00b7 leading collapsed' : '')
+        + (trailingCollapsed ? ' \u00b7 trailing collapsed' : ''),
+      trackReadout: String(gridColumns),
+      orderReadout: [leadingInline || leadingStacked ? 'criteria' : null, 'queue', trailingInline || trailingStacked ? 'constraints' : null]
+        .filter(Boolean).join(' \u2192 ') + ((drawerForm && (intermediate || constrained)) ? ' (displaced regions on request)' : ''),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="Radio" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Radio — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:20px 40px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+td.num,th.num{text-align:right;font-family:var(--font-mono)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:5px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.grp{display:flex;flex-direction:column;gap:4px}
+.hdr{font-size:var(--text-xs);font-weight:var(--weight-medium);color:var(--field-label-text)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Radio, Checkbox, CheckboxGroup, Select, Field, Button, Icon } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows,numCols=[]}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i} className={numCols.includes(i)?'num':''}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={(j===0?'k ':'')+(numCols.includes(j)?'num':'')}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Attribution({name, id}){
+  const [v,setV] = React.useState('first');
+  return (
+    <div role="radiogroup" aria-labelledby={id} className="grp">
+      <span className="hdr" id={id}>Attribute downtime to</span>
+      <Radio name={name} value="first" label="First stop" description="The station that stopped first."
+        checked={v==='first'} onChange={() => setV('first')} />
+      <Radio name={name} value="constraint" label="Constraint" description="The bottleneck machine, whatever stopped."
+        checked={v==='constraint'} onChange={() => setV('constraint')} />
+      <Radio name={name} value="line" label="Line total" description="Not attributed to a station."
+        checked={v==='line'} onChange={() => setV('line')} />
+    </div>
+  );
+}
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>Radio</h1>
+    <p className="lede">One choice out of a few, and the only control in the system whose behaviour lives outside itself: exclusivity, arrow-key navigation and the group name all come from a shared <code>name</code> attribute, not from this component. A radio with no name is a group of one that can never be un-chosen.</p>
+    <div className="meta">
+      <span>components/forms/Radio.jsx</span><span>window.MeridianDesignSystem_962c43.Radio</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 0 open items</span><span>since: 1.0.0 · revised 1.2.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="A visible set of mutually exclusive options.">
+    <p>Radio answers “which one”. Every option is on screen, so the choice and its alternatives are read together — that is the reason to spend the vertical space rather than collapse it into a <code>Select</code>. It also means the set must be small enough to read at a glance.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['One of 2–4 visible options','Radio','This component.'],
+      ['One of 5+ options','Select','Past five, the set stops being scannable and starts being a list.'],
+      ['Several independent booleans','CheckboxGroup','Independent, not exclusive.'],
+      ['One of 2–3 options in a filter bar','Tag selected, or Tabs','When the choice belongs to a toolbar rather than a form.'],
+      ['A live either/or setting','Switch','A switch is one option with two states; a radio set is two options.'],
+      ['Switch between views of one screen','Tabs','Navigation, not a value to save.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> when the alternatives matter as much as the answer — attribution rules, retention policies, rounding modes.</li>
+      <li><strong>Do not use</strong> for a yes/no. One Checkbox states the fact; two radios make the reader compare “Yes” with “No”.</li>
+      <li><strong>Do not use</strong> without a group name. It is not exclusive without one, and the component warns.</li>
+      <li><strong>Include an explicit empty option</strong> (“Any”, “No preference”) if no-choice is legal: a radio set cannot be cleared once chosen.</li>
+    </ul>
+    <div className="demo">
+      <Attribution name="purpose-a" id="purpose-a-h" />
+      <div className="grp" style={{width:220}}>
+        <span className="hdr">Rounding</span>
+        <Radio name="rounding" value="near" label="Nearest minute" defaultChecked />
+        <Radio name="rounding" value="up" label="Round up" />
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A 16 px circle, an 8 px dot, and a target bigger than both.">
+    <div className="demo"><Radio name="anatomy" value="a" label="Constraint" description="The bottleneck machine, whatever stopped." defaultChecked /></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Circle</strong> — 16 px, <code>--radius-pill</code>. The same footprint as the checkbox square, so a form mixing both keeps one left edge; the shape is the only difference, and it is the shape that means “exclusive”.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Border</strong> — <code>--radio-border</code>. An unselected radio is nothing but its border, so it is a load-bearing control edge: <code>--border-control</code> at 4.74:1, retargeted from <code>--border-strong</code> (1.60:1) in 1.2.0 (§08).</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Dot</strong> — 8 px, <code>--radio-dot</code>, centred. A dot inside a ring rather than a filled circle: the ring stays visible when selected, which is what distinguishes a chosen radio from a checked checkbox at a glance.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Label</strong> — 13 px primary at <code>--leading-snug</code>, inside the <code>&lt;label&gt;</code>, so it is both the name and part of the target.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Description</strong> — 12 px tertiary, indented 24 px, <em>outside</em> the label and linked with <code>aria-describedby</code>. On a radio set this line does most of the work, because the options are usually policies rather than nouns.</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>Target</strong> — the label row is at least <code>--control-h-sm</code> (28 px comfortable, 34 px expanded), and as wide when unlabelled. The 16 px circle is never the target.</span></div>
+      <div className="callout"><span className="cnum">7</span><span><strong>Hidden input</strong> — a real <code>&lt;input type="radio"&gt;</code> carrying the role, the state, the <code>name</code> and the browser's own arrow-key handling.</span></div>
+    </div>
+    <T cols={['Region','Value','Token']} rows={[
+      ['Circle','16 × 16 px','--radius-pill'],
+      ['Dot','8 × 8 px','--radio-dot'],
+      ['Gap circle → label','8 px','--space-2'],
+      ['Description indent','24 px','—'],
+      ['Target row','28 comfortable / 24 compact / 34 expanded','--control-h-sm'],
+      ['Focus','3 px ring','--input-focus-ring'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Seven props, and one of them is not optional.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['name',<span className="t">string</span>,<span style={{color:'var(--text-critical)'}}>required</span>,'The group. Exclusivity and arrow keys are both native behaviours of a shared name. Warns if missing.'],
+      ['label',<span className="t">ReactNode</span>,'—','The accessible name. Warns if there is no label and no aria-label.'],
+      ['description',<span className="t">ReactNode</span>,'—','One line stating what the option means. Announced as the description.'],
+      ['value',<span className="t">string</span>,'—','The submitted value.'],
+      ['checked',<span className="t">boolean</span>,<span className="t">false</span>,'With onChange the control is controlled; without it, this seeds the initial state.'],
+      ['disabled',<span className="t">boolean</span>,<span className="t">false</span>,'Skipped by arrow-key navigation — see §06 and §07.'],
+      ['onChange',<span className="t">(e) => void</span>,'—','Fires only when the option becomes selected. Radios never report deselection.'],
+      ['style',<span className="t">CSSProperties</span>,'—','Layout only, on the outer wrapper.'],
+      ['…rest',<span className="t">InputHTMLAttributes</span>,'—','required, aria-label, aria-describedby, data-*.'],
+    ]}/>
+    <p><strong>There is no <code>size</code> and no tone</strong> — same reasoning as Checkbox: one box size everywhere, and the target scales with density instead.</p>
+    <p><strong>There is no group prop yet.</strong> The set's name, hint and error live in a wrapper you write today (<code>role="radiogroup"</code> + <code>aria-labelledby</code>); <code>RadioGroup</code> is specced next and will own them (§14).</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="No variant prop. Three shapes, one of them mandatory context.">
+    <T cols={['Shape','When','Note']} rows={[
+      ['Label only','Short, self-evident options','Nearest minute · Round up.'],
+      ['Label + description','Options that are policies','The usual case in a console: the label names the rule, the description says what it does.'],
+      ['Inside a radiogroup','Always','A radio set with no group name is a set of options answering an unstated question.'],
+    ]}/>
+    <div className="demo">
+      <div className="grp" style={{width:200}}>
+        <span className="hdr">Label only</span>
+        <Radio name="v1" value="a" label="Nearest minute" defaultChecked />
+        <Radio name="v1" value="b" label="Round up" />
+      </div>
+      <Attribution name="purpose-b" id="purpose-b-h" />
+    </div>
+    <p><strong>Descriptions are the norm here, not the exception.</strong> A checkbox describes a fact; a radio describes a choice between rules, and the difference between “First stop” and “Constraint” is unguessable from two words.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="One circle. The target scales; the set size is the real constraint.">
+    <T cols={['Density','Target row','Circle','Dot']} numCols={[1,2,3]} rows={[
+      ['compact','24 px','16 px','8 px'],
+      ['comfortable','28 px','16 px','8 px'],
+      ['expanded','34 px','16 px','8 px'],
+    ]}/>
+    <T cols={['Options','Verdict']} numCols={[]} rows={[
+      ['2–4','Radio. The whole set is read in one movement.'],
+      ['5','Radio only if the options need descriptions; otherwise Select.'],
+      ['6+','Select. Six radios is six tab stops of vertical space for one value.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="radio (3)"><div className="grp"><Radio name="s1" value="a" label="First stop" defaultChecked /><Radio name="s1" value="b" label="Constraint" /><Radio name="s1" value="c" label="Line total" /></div></Row>
+      <Row label="select (6+)"><Field label="Attribution" style={{width:240}}><Select options={['First stop','Constraint','Line total','Shift total','Plant total','Unattributed']} value="First stop" /></Field></Row>
+    </div>
+    <p><strong>Do not resize the circle with <code>style</code>.</strong> The 8 px dot is centred for a 16 px ring; scaling the ring leaves a small dot adrift, and the two sizes read as two different states.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Seven. The ring stays visible in all of them.">
+    <T cols={['State','Circle','Notes']} rows={[
+      ['Unselected','card fill, --radio-border (4.74:1)','The border is the whole control.'],
+      ['Unselected hover','--radio-background-hover tint, --radio-border-hover (7.78:1)','New in 1.2.0 — a 16 px target had no pointer feedback at all.'],
+      ['Selected','action border + 8 px --radio-dot','The fill stays card-coloured: the ring plus dot is what separates a radio from a checkbox.'],
+      ['Selected hover','--radio-border-checked-hover, --radio-dot-hover','Both deepen to action 700 together, so the dot never floats in a differently-toned ring.'],
+      ['Focus visible','3 px --input-focus-ring','Gated on :focus-visible. This matters more here than on a checkbox: arrow keys MOVE the selection, so the ring is how you see where you are.'],
+      ['Disabled unselected','--radio-background-disabled, --radio-border-disabled','Now its own token — it borrowed --checkbox-border-disabled before 1.2.0.'],
+      ['Disabled selected','disabled fill, --radio-dot-disabled dot (2.27:1)','Visible but plainly inert; exempt from 1.4.3.'],
+    ]}/>
+    <div className="demo">
+      <div className="grp" style={{width:200}}>
+        <Radio name="st1" value="a" label="Unselected" />
+        <Radio name="st1" value="b" label="Selected" defaultChecked />
+      </div>
+      <div className="grp" style={{width:240}}>
+        <Radio name="st2" value="a" label="Disabled, unselected" disabled />
+        <Radio name="st2" value="b" label="Disabled, selected" disabled checked />
+        <Radio name="st2" value="c" label="Disabled with description" description="Locked by the plant policy." disabled />
+      </div>
+    </div>
+    <p className="warn"><strong>A radio set has one state it cannot leave: chosen.</strong> There is no native way to clear a selection by clicking, so if “none” is a legal answer it must be an option in the set. Adding a Clear button beside a radio group is a sign the set is missing its empty case — and disabling the chosen option to fake “none” leaves a value the form still submits.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="One tab stop for the whole set. That is the native contract.">
+    <T cols={['Key','Behaviour','Note']} rows={[
+      ['Tab / Shift-Tab','Enters and leaves the SET, not each option. Focus lands on the selected radio, or the first one if none is selected.','The opposite of a checkbox group, where every box is a stop.'],
+      ['↑ ↓ ← →','Moves within the set AND selects as it moves.','Native to same-name radios; disabled options are skipped, and the set wraps at both ends.'],
+      ['Space','Selects the focused radio.','Rarely needed, because arrowing has already selected it.'],
+      ['Enter','Submits the form.','Unchanged.'],
+      ['Click on the label','Selects.','The description sits outside the label and does not select — deliberate, so a long policy line stays selectable text.'],
+    ]}/>
+    <ul>
+      <li><strong>Arrow keys change the value.</strong> A keyboard user cannot browse a radio set without altering it, which is why a set must never trigger anything on change beyond storing the value — no navigation, no fetch, no dialog.</li>
+      <li><strong>All of this comes from <code>name</code>.</strong> Omit it and every radio becomes its own single-option group: Tab stops on each, arrows do nothing, and two options can be selected at once.</li>
+      <li><strong>Never add a <code>keydown</code> handler</strong> to “improve” the arrow behaviour. The native roving is correct and matches every other radio the operator has ever used.</li>
+    </ul>
+    <div className="demo"><Row label="try arrows"><Attribution name="kbd" id="kbd-h" /></Row></div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="The name attribute is an accessibility feature, not plumbing.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Role & name','A real <input type="radio"> in a <label>, so the label text is the name and clicking it selects. Warns when unnamed.'],
+      ['Exclusivity & roving focus (2.1.1 · 4.1.2)','The shared name gives the browser both: one tab stop, arrow-key selection, wrapping, and disabled options skipped. Nothing is re-implemented, so nothing can drift from the platform.'],
+      ['Group name (1.3.1)','NOT provided by this component. A set needs role="radiogroup" with aria-labelledby, or a fieldset/legend — without it each option is announced with no question. RadioGroup will own this (§14).'],
+      ['Description (1.3.1)','description sits outside the label with an id and is referenced by aria-describedby. Inside the label — as before 1.2.0 — it became part of the NAME, so a three-option set announced three long run-on names.'],
+      ['Control boundary (1.4.11)','Resolved in 1.2.0, and this was the last of the sweep. --radio-border was --border-strong at 1.60:1; an unselected radio has no other boundary. Now --border-control: 4.74:1 on a card, 4.46:1 on the page band, 6.96:1 in dark. Hover 7.78:1.'],
+      ['Dot contrast','--radio-dot is --action-solid, 6.98:1 against the card fill inside the ring — well past the 3:1 a graphical object needs.'],
+      ['Disabled tokens','--radio-border-disabled is its own token now; it borrowed --checkbox-border-disabled before, which meant a change to the checkbox silently moved the radio.'],
+      ['Focus (2.4.7)','3 px ring, :focus-visible-gated. Critical here because arrow keys move focus AND selection together.'],
+      ['Target size (2.5.8)','Label row at --control-h-sm (28 / 24 / 34 px), and as wide when unlabelled.'],
+      ['No empty state','A radio set cannot be cleared, so a legal "none" MUST be an explicit option (§06). Omitting it forces a value the user never chose.'],
+      ['Reduced motion','140 ms colour transitions only; the dot appears instantly.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="wrong"><div className="grp"><Radio name="wrongset" value="a" label="First stop" defaultChecked /><Radio name="wrongset" value="b" label="Constraint" /></div></Row>
+      <Row label="right"><Attribution name="a11y" id="a11y-h" /></Row>
+    </div>
+    <p className="warn"><strong>The set on the left has no question.</strong> Both options are named correctly and the exclusivity works, but a screen-reader user hears “First stop, radio button, selected, 1 of 2” with no idea what is being decided. Printing a heading above it does not help — the heading has to be <em>referenced</em>, which is what the wrapper on the right does with <code>role="radiogroup"</code> and <code>aria-labelledby</code>.</p>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="Colour, 140 ms. The dot does not travel.">
+    <T cols={['Change','Duration','Easing','Property']} rows={[
+      ['Border on hover / select','140 ms','--ease-out','border-color'],
+      ['Fill on hover','140 ms','--ease-out','background-color'],
+      ['Dot colour on hover','140 ms','--ease-out','background-color'],
+      ['Dot appearing','0 ms','—','present or absent'],
+      ['Dot moving between options','—','—','never'],
+    ]}/>
+    <ul>
+      <li><strong>No sliding dot.</strong> A marker that animates from the old option to the new one is a segmented-control flourish; on a vertical set it draws the eye down the list instead of to the answer, and with arrow keys it lags every keystroke.</li>
+      <li><strong>No scale-in on the dot.</strong> At 8 px a scale animation is a flicker.</li>
+      <li>The dot is instant precisely because arrow keys move the selection: five keystrokes must not queue five animations.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="Parallel options, and the description carries the rule.">
+    <T cols={['Slot','Job','Write','Not']} rows={[
+      ['Group name','The question','Attribute downtime to','Attribution · Options'],
+      ['Label','One answer, parallel with its siblings','First stop','Attribute to the first stop'],
+      ['Description','What choosing it does','The station that stopped first.','Choose this option'],
+      ['Empty option','Name the absence','Any area · No preference','None · Null · —'],
+      ['Default','The safest option, pre-selected','—','Nothing selected, when a value is required'],
+    ]}/>
+    <ul>
+      <li><strong>Labels must be parallel and mutually exclusive in words, not just in code.</strong> “First stop / Constraint / Line total” reads as one axis; “First stop / Bottleneck machine / Do not attribute” reads as three unrelated sentences.</li>
+      <li><strong>Never repeat the question in the labels.</strong> The group name says “attribute to”, so the options do not.</li>
+      <li><strong>Pre-select a sensible default</strong> when the field is required. An empty required radio set makes the user guess which option is normal.</li>
+      <li><strong>Two options that are “Yes” and “No” mean the wrong control</strong> — that is one Checkbox, or a Switch.</li>
+      <li><strong>Keep labels to one line</strong> and put the length in the description; the circle centres on the text block.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Vertical, always.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','One option per line, full width, expanded density. Never a horizontal row: with descriptions it is unreadable, and without them the targets end up 8 px apart.'],
+      ['tablet ≥ 600','Same. A radio set is the one control that does not benefit from a second column — the options are compared, so they must share a left edge.'],
+      ['desktop ≥ 1024','Vertical, 4 px row gap on top of each 28 px target row. Descriptions indent 24 px.'],
+      ['ultrawide ≥ 1600','Unchanged. The set does not stretch; long descriptions wrap inside the form column.'],
+    ]}/>
+    <div className="demo col" style={{maxWidth:320}}>
+      <Attribution name="resp" id="resp-h" />
+    </div>
+    <ul>
+      <li><strong>A horizontal radio row is almost always a Tag or ButtonGroup in disguise.</strong> If the set has to sit in one line — a filter bar, a toolbar — use selected Tags and keep radios for forms.</li>
+      <li><strong>The 24 px description indent is fixed</strong>, so it aligns under the label text at every width and survives wrapping.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Give every radio in a set the same <code>name</code>.</li>
+        <li>Wrap the set in <code>role="radiogroup"</code> with a referenced heading.</li>
+        <li>Pre-select a sensible default.</li>
+        <li>Include an explicit “Any”/“None” if empty is legal.</li>
+        <li>Put the rule in <code>description</code>.</li>
+        <li>Move to <code>Select</code> past five options.</li>
+        <li>Let the native arrow keys do their job.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>Omit <code>name</code>.</li>
+        <li>Two radios for a yes/no.</li>
+        <li>A Clear button beside a radio set.</li>
+        <li>Custom arrow-key handling.</li>
+        <li>Trigger navigation or a fetch on change.</li>
+        <li>A horizontal row of radios.</li>
+        <li>A sliding dot animation.</li>
+        <li>Six or more options.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this component invites.</strong> Two radios with different <code>name</code>s — or none at all. They look exactly like a working set, and the first click seems fine; then the second option is selected while the first stays selected, Tab stops on each of them, and the arrow keys do nothing. It is the one defect in this system that a screenshot cannot show, which is why the component now warns.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="What ships, and the five defects closed in 1.2.0.">
+    <ul>
+      <li><strong>A hidden native input inside a <code>&lt;label&gt;</code></strong>, with the visible ring as a sibling span — the same construction as Checkbox, so the two controls cannot drift apart. All exclusivity, roving focus and form submission are the platform's.</li>
+      <li><strong>The description moved out of the label</strong> and is linked with <code>aria-describedby</code> from a <code>useId</code>-derived id. This mattered more on Radio than on Checkbox: a three-option policy set announced three long run-on names.</li>
+      <li><strong>Hover exists</strong> — the ring tints and strengthens when unselected; when selected, border and dot deepen to action 700 <em>together</em>, so the dot never sits in a differently-toned ring.</li>
+      <li><strong>The focus ring is gated on <code>:focus-visible</code></strong>, checked in <code>onFocus</code>. On a radio this is not cosmetic: arrow keys move focus and selection at once, so the ring is the only indication of where the keyboard is.</li>
+      <li><strong>The target is <code>--control-h-sm</code></strong>, with a matching min-width when unlabelled.</li>
+      <li><strong><code>--radio-border-disabled</code> is its own token.</strong> The component previously reached for <code>--checkbox-border-disabled</code>, so any change to the checkbox silently moved the radio — a cross-component dependency with no reason to exist.</li>
+      <li><strong>Two console warnings, and the first is the important one:</strong> a missing <code>name</code> (the defect in §12), and no accessible name. Neither changes rendering.</li>
+      <li><strong>Semi-controlled:</strong> with <code>onChange</code> it is controlled; without, <code>checked</code> seeds <code>defaultChecked</code> and the input is <code>readOnly</code> so React does not warn.</li>
+      <li><strong>Five new tokens</strong> in 1.2.0: <code>--radio-background-hover</code>, <code>--radio-border-hover</code>, <code>--radio-border-checked-hover</code>, <code>--radio-border-disabled</code>, <code>--radio-dot-hover</code>.</li>
+      <li><strong>Tokens consumed:</strong></li>
+    </ul>
+    <div className="tokenlist">
+      <span>--radio-background</span><span>--radio-background-hover</span><span>--radio-background-disabled</span><span>--radio-border</span><span>--radio-border-hover</span><span>--radio-border-checked</span><span>--radio-border-checked-hover</span><span>--radio-border-disabled</span><span>--radio-dot</span><span>--radio-dot-hover</span><span>--radio-dot-disabled</span><span>--radius-pill</span><span>--input-focus-ring (borrowed)</span><span>--control-h-sm (target)</span><span>--space-2</span><span>--text-sm · --text-xs</span><span>--leading-snug</span><span>--text-disabled</span><span>--transition-control</span>
+    </div>
+    <p><code>--input-focus-ring</code> is borrowed on purpose — one ring across every form control. It is the only token this component takes from another family, now that the disabled border is its own.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { Radio } from '@meridian/ds';
+
+// a set — one name, one radiogroup, one referenced heading
+const [attr, setAttr] = React.useState('first');
+
+<div role="radiogroup" aria-labelledby="attr-h">
+  <span id="attr-h">Attribute downtime to</span>
+  <Radio name="attr" value="first" label="First stop"
+    description="The station that stopped first."
+    checked={attr === 'first'} onChange={() => setAttr('first')} />
+  <Radio name="attr" value="constraint" label="Constraint"
+    description="The bottleneck machine, whatever stopped."
+    checked={attr === 'constraint'} onChange={() => setAttr('constraint')} />
+</div>
+
+// uncontrolled: one defaultChecked, and the form reads the value by name
+<Radio name="rounding" value="near" label="Nearest minute" defaultChecked />
+<Radio name="rounding" value="up" label="Round up" />`}</pre>
+    <ul>
+      <li><strong>One <code>name</code> per question, unique on the page.</strong> Two sets sharing a name become one set — the classic bug when a form is rendered twice (two rows of a table, a repeated section). Derive the name from the row id if the set repeats.</li>
+      <li><strong><code>onChange</code> fires only on selection</strong>, never on deselection, so a controlled set is <code>onChange={'{() => set(value)}'}</code> per option rather than a shared handler reading a checked flag.</li>
+      <li><strong>Testing.</strong> <code>getByRole('radio', {'{ name: /constraint/i }'})</code>, then assert the group: <code>getByRole('radiogroup', {'{ name: /attribute downtime/i }'})</code>. Assert arrow-key behaviour on the real DOM if you can — it is native, but it only works while the names match, and a name typo is exactly the regression worth catching. Assert the description is in <code>aria-describedby</code> and NOT in the accessible name.</li>
+      <li><strong>Lint.</strong> Flag a <code>Radio</code> with no <code>name</code>, two <code>Radio</code>s with different names inside one wrapper, a set not inside <code>role="radiogroup"</code> or a fieldset, and a bare <code>&lt;input type="radio"&gt;</code>.</li>
+      <li><strong>Frozen 4 Sep 2026.</strong> API closed: <code>name</code>, <code>label</code>, <code>description</code>, <code>value</code>, <code>checked</code>, <code>disabled</code>, <code>onChange</code>, <code>style</code>, plus native input attributes.</li>
+      <li><strong>Breaking, visual:</strong> every unselected radio gains a darker edge (1.60:1 → 4.74:1) and hover feedback; a Radio with a <code>description</code> now renders a wrapper <code>&lt;span&gt;</code> with the description outside the label. Pull <code>styles.css</code> and <code>_ds_bundle.js</code> together.</li>
+      <li><strong>The 1.4.11 sweep is now closed.</strong> Input, Textarea, Select, Checkbox and Radio all border at <code>--border-control</code>; IconButton's outline already did. No control in the system is left with a structural hairline as its boundary.</li>
+      <li><strong>Closed — <code>RadioGroup</code> shipped.</strong> It should own what <code>CheckboxGroup</code> owns — a <code>fieldset</code>/<code>legend</code>, the value, hint and error — plus <code>name</code> generation via <code>useId</code> (so a repeated set cannot collide) and an explicit <code>allowEmpty</code>/“none” option, since a radio set cannot be cleared. It is not a copy of CheckboxGroup: the value is a single string and the keyboard contract is the platform's, not the component's. Frozen 4 Sep 2026, with <code>useId</code> name generation and an explicit empty option.</li>
+      <li><strong>Closed in 1.19.0 — <code>SegmentedControl</code> shipped.</strong> A horizontal one-of-N in a toolbar is currently selected Tags or Tabs. ButtonGroup deliberately holds no selected state (see its spec), so if a real segmented control is wanted it is a new component, not a variant of this one. A new component with its own spec, not a variant of this one, exactly as this entry required.</li>
+      <li><strong>Closed — <code>tokens.json</code> is generated again.</strong> Rebuilt at 1.2.0; the five <code>--radio-*</code> tokens came back byte-identical. <code>npm run tokens:check</code> passes.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

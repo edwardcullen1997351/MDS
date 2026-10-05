@@ -1,0 +1,87 @@
+{
+  "assembly": "ra-plant-operations-dashboard",
+  "version": "0.2.0",
+  "executedAt": "2026-10-02T09:14:10.262Z",
+  "storyUrl": "http://127.0.0.1:6006/iframe.html?id=reference-assemblies-candidate-overview--dashboard-example&viewMode=story",
+  "viewports": [
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "renderMs": 12973,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 1
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1425,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      },
+      "exportAcknowledgementMs": 46
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "renderMs": 847,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 1
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      },
+      "exportAcknowledgementMs": null
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "renderMs": 3403,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      },
+      "exportAcknowledgementMs": null
+    }
+  ],
+  "securityPrivacySourceScan": "pass"
+}

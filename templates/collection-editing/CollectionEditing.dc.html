@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Collection editing" description="Interaction pattern reference implementation, set in a manufacturing ERP — editing the press-shop weekly capacity plan in place: committed values kept apart from drafts, cross-value validation inside the edited slot, cancel that restores, save failure that preserves the draft, and a documented rule for a draft whose slot changed underneath it." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:1320px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/CollectionEditing.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+</div>
+<p style="margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note, the draft inspector below the plan, and the four tweaks under <span style="font-family:var(--font-mono)">Demo harness</span> — exists to make the contract visible. Saving is a timer standing in for the plan-commit call; the comment above it says what to replace. The four tweaks under <span style="font-family:var(--font-mono)">Pattern properties</span> are not harness: <span style="font-family:var(--font-mono)">concurrency</span>, <span style="font-family:var(--font-mono)">entry</span>, <span style="font-family:var(--font-mono)">staleDraftPolicy</span> and <span style="font-family:var(--font-mono)">postSaveDisposition</span> are the §05 policies an adopting team must declare.</p>
+<p style="margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Edit a slot: the committed row is never touched until the save succeeds, and Cancel puts the committed figures back. Type a quantity that is not a multiple of the pack size, or one above what the chosen shift and manning can make, for an invalid draft that stays editable. Turn on <span style="font-family:var(--font-mono)">Plan commit fails</span> and save — the draft survives with a message that says nothing was committed. Turn on <span style="font-family:var(--font-mono)">Maintenance revises the slot you are editing</span> for a stale draft, and <span style="font-family:var(--font-mono)">Maintenance withdraws the slot</span> for an item removed mid-edit. Filter to another press while a draft is open to see it kept and reported rather than dropped.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Press shop · weekly capacity plan · week 2026-W37 · Chakan plant (PL-04) · IST</span>
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">Shift capacity plan</h1>
+<p style="margin:0;max-width:80ch;color:var(--text-secondary);font-size:var(--text-sm);line-height:1.55">One slot per press per day. The planner adjusts the quantity, the shift and the manning against what the line can actually make; committing a slot releases it to the MES day plan.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+
+<div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;padding:15px 18px;border-bottom:var(--border-hairline)">
+<div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Press" hint="{{ filterHint }}" hint-size="200px,56px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ pressOptions }}" value="{{ filterPress }}" onChange="{{ onFilter }}" size="sm" hint-size="180px,28px"></x-import>
+</x-import>
+</div>
+<span style="font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty;max-width:44ch">{{ editHeading }}</span>
+</div>
+
+<sc-if value="{{ hasNotices }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:10px;padding:15px 18px;border-bottom:var(--border-hairline)">
+<sc-for list="{{ notices }}" as="n" hint-placeholder-count="1">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ n.tone }}" title="{{ n.title }}" live="on" size="sm" action="{{ n.action }}" hint-size="100%,96px">{{ n.body }}</x-import>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ saving }}" hint-placeholder-val="{{ false }}">
+<div style="padding:12px 18px;border-bottom:var(--border-hairline)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Progress" variant="bar" size="sm" label="{{ savingLabel }}" delay="{{ 150 }}" hint-size="100%,20px"></x-import>
+</div>
+</sc-if>
+
+<div>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Table" caption="Press-shop shift capacity plan, week 2026-W37" columns="{{ columns }}" rows="{{ rows }}" rowKey="id" sort="{{ sort }}" onSortChange="{{ onSort }}" onRowClick="{{ onRowClick }}" minWidth="1140px" emptyMessage="{{ emptyMessage }}" hint-size="100%,440px"></x-import>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;border-top:var(--border-hairline);background:var(--surface-sunken)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ planSummary }}</span>
+<div role="status" aria-live="polite" style="min-height:17px;font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty;max-width:70ch">{{ announcement }}</div>
+</div>
+</div>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:12px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:15px 17px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Committed values, drafts &amp; save state · remove on copy</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px 20px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="8">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:110px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;border-top:var(--border-hairline);padding-top:11px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Committed (canonical)</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ committedText }}</pre>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Drafts (never written back until commit)</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ draftText }}</pre>
+</div>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">The draft is keyed by slot identity and carries the revision it was opened against. Nothing in the left column changes until a commit succeeds — which is why a failed save can leave the right column intact and still be honest about what the plan says (§10, §20).</p>
+</div>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1380,&quot;height&quot;:960},&quot;concurrency&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;single&quot;,&quot;multi&quot;],&quot;default&quot;:&quot;single&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Slots editable at once&quot;},&quot;entry&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;button&quot;,&quot;row&quot;],&quot;default&quot;:&quot;button&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Entering edit&quot;},&quot;staleDraftPolicy&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;block&quot;,&quot;overwrite&quot;],&quot;default&quot;:&quot;block&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Draft whose slot was revised&quot;},&quot;postSaveDisposition&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;exit&quot;,&quot;stay&quot;],&quot;default&quot;:&quot;exit&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;After a successful save&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:200,&quot;max&quot;:3000,&quot;step&quot;:100,&quot;default&quot;:900,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Plan-commit latency&quot;},&quot;commitFails&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Plan commit fails&quot;},&quot;maintenanceRevises&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Maintenance revises the slot you are editing&quot;},&quot;maintenanceWithdraws&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Maintenance withdraws the slot&quot;}}">
+// Press-shop shift capacity plan, week 2026-W37, PL-04. `rate` is pieces per
+// operator per shift for that die on that press; `pack` is the despatch pack
+// size the quantity must be a multiple of.
+const SLOTS = [
+  { id: 'PL-0301', press: 'PR-03', day: 'Mon 08 Sep', part: 'BRK-4820-A', pack: 200, rate: 2400 },
+  { id: 'PL-0302', press: 'PR-03', day: 'Tue 09 Sep', part: 'BRK-4820-B', pack: 200, rate: 2400 },
+  { id: 'PL-0501', press: 'PR-05', day: 'Mon 08 Sep', part: 'PLT-6601', pack: 100, rate: 1800 },
+  { id: 'PL-0502', press: 'PR-05', day: 'Wed 10 Sep', part: 'SPR-5502', pack: 250, rate: 3000 },
+  { id: 'PL-0701', press: 'PR-07', day: 'Tue 09 Sep', part: 'PLT-6604', pack: 100, rate: 1600 },
+  { id: 'PL-0702', press: 'PR-07', day: 'Thu 11 Sep', part: 'PLT-6604', pack: 100, rate: 1600 },
+  { id: 'PL-0801', press: 'PR-08', day: 'Wed 10 Sep', part: 'HSG-3120', pack: 50, rate: 900 },
+  { id: 'PL-0802', press: 'PR-08', day: 'Fri 12 Sep', part: 'HSG-3120', pack: 50, rate: 900 },
+  { id: 'PL-0901', press: 'PR-09', day: 'Thu 11 Sep', part: 'MCH-2201', pack: 60, rate: 720 },
+  { id: 'PL-0201', press: 'PR-02', day: 'Fri 12 Sep', part: 'GSK-8801', pack: 500, rate: 6000 }
+];
+const COMMITTED = {
+  'PL-0301': { qty: 4800, shift: 'A', manning: 2, rev: 4 },
+  'PL-0302': { qty: 4800, shift: 'A', manning: 2, rev: 3 },
+  'PL-0501': { qty: 3600, shift: 'B', manning: 2, rev: 2 },
+  'PL-0502': { qty: 3000, shift: 'B', manning: 1, rev: 1 },
+  'PL-0701': { qty: 4800, shift: 'A', manning: 3, rev: 5 },
+  'PL-0702': { qty: 3200, shift: 'C', manning: 2, rev: 2 },
+  'PL-0801': { qty: 1800, shift: 'A', manning: 2, rev: 1 },
+  'PL-0802': { qty: 900, shift: 'B', manning: 1, rev: 1 },
+  'PL-0901': { qty: 1440, shift: 'A', manning: 2, rev: 3 },
+  'PL-0201': { qty: 12000, shift: 'B', manning: 2, rev: 2 }
+};
+const SHIFTS = ['A', 'B', 'C'];
+const num = n => Number(n).toLocaleString('en-IN');
+const M = () => window.MeridianDesignSystem_962c43 || {};
+const slotOf = id => SLOTS.find(s => s.id === id);
+const nameOf = id => { const s = slotOf(id); return s.press + ' \u00b7 ' + s.day; };
+
+class Component extends DCLogic {
+  state = {
+    order: SLOTS.map(s => s.id),        // membership, by identity
+    committed: JSON.parse(JSON.stringify(COMMITTED)),   // canonical values
+    drafts: {},                          // id -> { qty, shift, manning, baseRev, touched }
+    saving: null,                        // { id, values, req }
+    saveError: null,                     // { id, why }
+    conflict: null,                      // { id, mine, theirs }
+    withdrawn: null,                     // { id, why, draft }
+    filterPress: 'All presses',
+    sort: { key: 'press', direction: 'asc' },
+    announcement: '',
+    commits: 0
+  };
+  req = 0;
+
+  policy(name, fallback) { return this.props[name] || fallback; }
+  draftOf(id) { return this.state.drafts[id]; }
+  visible() {
+    const f = this.state.filterPress;
+    const ids = f === 'All presses' ? this.state.order : this.state.order.filter(id => slotOf(id).press === f);
+    const s = this.state.sort, dir = s.direction === 'desc' ? -1 : 1;
+    return ids.slice().sort((a, b) => {
+      const x = s.key === 'qty' ? this.state.committed[a].qty : slotOf(a)[s.key];
+      const y = s.key === 'qty' ? this.state.committed[b].qty : slotOf(b)[s.key];
+      if (typeof x === 'number') return (x - y) * dir;
+      return String(x).localeCompare(String(y)) * dir;
+    });
+  }
+
+  // Validation runs over the DRAFT, as a whole: the quantity rule depends on
+  // the shift and manning chosen in the same draft (§09).
+  problems(id, draft) {
+    const slot = slotOf(id), p = {};
+    const qty = Number(draft.qty);
+    if (draft.qty === '' || Number.isNaN(qty)) p.qty = 'Enter a planned quantity.';
+    else if (!Number.isInteger(qty) || qty <= 0) p.qty = 'Whole pieces only, above zero.';
+    else if (qty % slot.pack !== 0) p.qty = 'Must be a multiple of the ' + slot.pack + '-piece pack.';
+    const manning = Number(draft.manning);
+    if (!Number.isInteger(manning) || manning < 1 || manning > 4) p.manning = '1 to 4 operators.';
+    else if (draft.shift === 'C' && manning < 2) p.manning = 'Shift C runs with two operators or more.';
+    const cap = slot.rate * (Number.isInteger(manning) && manning > 0 ? manning : 0);
+    if (!p.qty && !p.manning && qty > cap) p.qty = 'Shift ' + draft.shift + ' with ' + manning + ' operators makes ' + num(cap) + '. Over by ' + num(qty - cap) + '.';
+    return p;
+  }
+
+  focusIn(id) { setTimeout(() => { const el = document.querySelector('[data-qty-for="' + id + '"]'); if (el) el.focus({ preventScroll: true }); }, 30); }
+  focusBack(id) { setTimeout(() => { const el = document.querySelector('[data-edit-for="' + id + '"]'); if (el) el.focus({ preventScroll: true }); }, 30); }
+
+  // Entering edit initialises the draft FROM the committed values and records
+  // the revision it was opened against.
+  edit = (id) => {
+    if (this.state.drafts[id]) { this.focusIn(id); return; }
+    const open = Object.keys(this.state.drafts);
+    if (this.policy('concurrency', 'single') === 'single' && open.length) {
+      this.setState({ announcement: nameOf(open[0]) + ' is still open. Save or cancel it before editing ' + nameOf(id) + '.' });
+      this.focusIn(open[0]);
+      return;
+    }
+    const c = this.state.committed[id];
+    this.setState({
+      drafts: Object.assign({}, this.state.drafts, { [id]: { qty: String(c.qty), shift: c.shift, manning: String(c.manning), baseRev: c.rev, touched: false } }),
+      saveError: null, conflict: null, withdrawn: null,
+      announcement: 'Editing ' + nameOf(id) + '. The plan still reads ' + num(c.qty) + ' pieces until you save.'
+    });
+    this.focusIn(id);
+  };
+
+  change = (id, key, value) => {
+    const d = this.state.drafts[id];
+    if (!d) return;
+    this.setState({ drafts: Object.assign({}, this.state.drafts, { [id]: Object.assign({}, d, { [key]: value, touched: true }) }) });
+  };
+
+  // Cancel restores the committed values by discarding the draft — the
+  // committed values were never written to.
+  cancel = (id) => {
+    const drafts = Object.assign({}, this.state.drafts);
+    delete drafts[id];
+    this.setState({ drafts, saveError: null, conflict: null, announcement: 'Edit of ' + nameOf(id) + ' cancelled. The plan still reads ' + num(this.state.committed[id].qty) + ' pieces.' });
+    this.focusBack(id);
+  };
+
+  save = (id) => {
+    const d = this.state.drafts[id];
+    if (!d || this.state.saving) return;   // single-shot: guarded at the transition
+    const p = this.problems(id, d);
+    if (Object.keys(p).length) {
+      this.setState({ announcement: nameOf(id) + ' was not saved: ' + Object.values(p).join(' ') + ' The values you typed are still there.' });
+      this.focusIn(id);
+      return;
+    }
+    const live = this.state.committed[id];
+    if (!live) return;
+    if (live.rev !== d.baseRev) {
+      if (this.policy('staleDraftPolicy', 'block') === 'block') {
+        this.setState({ conflict: { id, mine: { qty: Number(d.qty), shift: d.shift, manning: Number(d.manning) }, theirs: live }, announcement: nameOf(id) + ' was revised by someone else while you were editing. Your figures are kept; choose which to keep.' });
+        return;
+      }
+    }
+    this.commit(id, { qty: Number(d.qty), shift: d.shift, manning: Number(d.manning) });
+  };
+
+  commit(id, values) {
+    const req = ++this.req;
+    this.setState({ saving: { id, values, req }, saveError: null, conflict: null, announcement: 'Saving ' + nameOf(id) + '\u2026' });
+    // REPLACE: stands in for the plan-commit call —
+    //   PUT /api/capacity-plan/slots/{id} { qty, shift, manning, baseRev }
+    // Canonical values are written only from its success (§20).
+    setTimeout(() => {
+      if (req !== this.req) return;         // a newer save superseded this one
+      if (!this.state.order.includes(id)) { this.setState({ saving: null }); return; }
+      if (this.props.commitFails) {
+        this.setState({
+          saving: null,
+          saveError: { id, why: 'The MES day plan refused the commit \u2014 the plan lock for week 2026-W37 is held by Anjali Deshmukh (00:41 old).' },
+          announcement: nameOf(id) + ' was NOT saved. Your figures are still in the row; the plan is unchanged.'
+        });
+        return;
+      }
+      const committed = Object.assign({}, this.state.committed, { [id]: Object.assign({}, values, { rev: this.state.committed[id].rev + 1 }) });
+      const stay = this.policy('postSaveDisposition', 'exit') === 'stay';
+      const drafts = Object.assign({}, this.state.drafts);
+      if (stay) drafts[id] = { qty: String(values.qty), shift: values.shift, manning: String(values.manning), baseRev: committed[id].rev, touched: false };
+      else delete drafts[id];
+      this.setState(s => ({
+        committed, drafts, saving: null, commits: s.commits + 1,
+        announcement: nameOf(id) + ' saved \u2014 ' + num(values.qty) + ' pieces, shift ' + values.shift + ', ' + values.manning + ' operators.' + (stay ? ' Still open for editing.' : '')
+      }));
+      if (!stay) this.focusBack(id);
+    }, this.props.latency ?? 900);
+  }
+
+  retry = () => { const e = this.state.saveError; if (e) this.save(e.id); };
+  keepMine = () => { const c = this.state.conflict; if (!c) return; const d = this.state.drafts[c.id]; this.setState({ drafts: Object.assign({}, this.state.drafts, { [c.id]: Object.assign({}, d, { baseRev: this.state.committed[c.id].rev }) }) }, () => this.commit(c.id, c.mine)); };
+  takeTheirs = () => {
+    const c = this.state.conflict; if (!c) return;
+    const live = this.state.committed[c.id];
+    this.setState({ conflict: null, drafts: Object.assign({}, this.state.drafts, { [c.id]: { qty: String(live.qty), shift: live.shift, manning: String(live.manning), baseRev: live.rev, touched: false } }), announcement: 'Your figures for ' + nameOf(c.id) + ' were discarded. The row now shows the revised plan, still open for editing.' });
+    this.focusIn(c.id);
+  };
+  dismissWithdrawn = () => this.setState({ withdrawn: null });
+  changeFilter = (e) => {
+    const v = e.target.value;
+    const open = Object.keys(this.state.drafts).filter(id => v !== 'All presses' && slotOf(id).press !== v);
+    this.setState({ filterPress: v, announcement: open.length ? open.length + ' edit in progress on a slot this filter hides \u2014 ' + open.map(nameOf).join(', ') + '. It is kept, not discarded.' : 'Showing ' + v + '.' });
+  };
+  changeSort = (sort) => this.setState({ sort });
+
+  componentDidUpdate(prev) {
+    // Harness: maintenance revises the slot being edited from another terminal.
+    if (this.props.maintenanceRevises && !prev.maintenanceRevises) {
+      const id = Object.keys(this.state.drafts)[0];
+      if (!id) { this.setState({ announcement: 'Nothing open \u2014 start editing a slot, then turn the tweak on.' }); return; }
+      const live = this.state.committed[id];
+      this.setState({
+        committed: Object.assign({}, this.state.committed, { [id]: { qty: Math.max(slotOf(id).pack, live.qty - slotOf(id).pack * 4), shift: live.shift, manning: live.manning, rev: live.rev + 1 } }),
+        announcement: nameOf(id) + ' was revised by Vikram Bhosale (maintenance window). Your draft is untouched; saving it will report the conflict.'
+      });
+    }
+    // Harness: the slot is withdrawn from the plan while it is being edited.
+    if (this.props.maintenanceWithdraws && !prev.maintenanceWithdraws) {
+      const id = Object.keys(this.state.drafts)[0];
+      if (!id) { this.setState({ announcement: 'Nothing open \u2014 start editing a slot, then turn the tweak on.' }); return; }
+      const drafts = Object.assign({}, this.state.drafts);
+      const draft = drafts[id];
+      delete drafts[id];
+      this.req++;
+      this.setState({
+        order: this.state.order.filter(x => x !== id), drafts, saving: null, saveError: null, conflict: null,
+        withdrawn: { id, why: 'Withdrawn from week 2026-W37 by Vikram Bhosale \u2014 shutdown booked on ' + slotOf(id).press + '.', draft },
+        announcement: nameOf(id) + ' was withdrawn from the plan while you were editing it. Your figures were not committed and cannot be.'
+      });
+    }
+  }
+
+  componentDidMount() { this.setState({ announcement: 'Ten slots planned. Edit a slot to change its quantity, shift or manning.' }); }
+
+  renderVals() {
+    const s = this.state;
+    const C = M();
+    const ids = this.visible();
+    const openIds = Object.keys(s.drafts);
+    const btn = (props, label) => C.Button ? React.createElement(C.Button, props, label) : null;
+
+    const cell = (id, key, label, opts) => {
+      const d = s.drafts[id];
+      const p = this.problems(id, d);
+      const busy = !!(s.saving && s.saving.id === id);
+      if (!C.Field) return String(d[key]);
+      // The editors sit in right-aligned numeric columns; the label, hint and
+      // error read left-to-right like any other message (§09).
+      return React.createElement('div', { style: { textAlign: 'left' } }, React.createElement(C.Field, { label: label + ' for ' + nameOf(id), labelHidden: true, error: p[key], hint: opts.hint },
+        opts.select
+          ? React.createElement(C.Select, { options: SHIFTS, value: d.shift, size: 'sm', disabled: busy, onChange: (e) => this.change(id, 'shift', e.target.value) })
+          : React.createElement(C.Input, {
+              value: d[key], size: 'sm', mono: true, inputMode: 'numeric', disabled: busy,
+              style: { width: opts.width },
+              'data-qty-for': key === 'qty' ? id : undefined,
+              onChange: (e) => this.change(id, key, e.target.value)
+            })
+      ));
+    };
+
+    return {
+      pressOptions: ['All presses'].concat(Array.from(new Set(SLOTS.map(x => x.press)))),
+      filterPress: s.filterPress,
+      onFilter: this.changeFilter,
+      filterHint: openIds.length ? openIds.length + ' slot open for editing' : 'Filtering never discards a draft',
+
+      columns: [
+        { key: 'press', header: 'Slot', width: '202px', mono: true, sortable: true, render: (row) => nameOf(row.id) },
+        { key: 'part', header: 'Part', mono: true, width: '112px' },
+        { key: 'qty', header: 'Planned qty', align: 'right', mono: true, width: '212px', sortable: true,
+          render: (row) => s.drafts[row.id] ? cell(row.id, 'qty', 'Planned quantity', { width: '108px', hint: 'multiples of ' + slotOf(row.id).pack }) : num(s.committed[row.id].qty) },
+        { key: 'shift', header: 'Shift', width: '104px',
+          render: (row) => s.drafts[row.id] ? cell(row.id, 'shift', 'Shift', { select: true }) : s.committed[row.id].shift },
+        { key: 'manning', header: 'Operators', align: 'right', width: '156px', mono: true,
+          render: (row) => s.drafts[row.id] ? cell(row.id, 'manning', 'Operators', { width: '64px' }) : String(s.committed[row.id].manning) },
+        { key: 'cap', header: 'Shift capacity', align: 'right', mono: true, width: '132px',
+          render: (row) => { const d = s.drafts[row.id]; const m = d ? Number(d.manning) : s.committed[row.id].manning; return num(slotOf(row.id).rate * (Number.isInteger(m) && m > 0 ? m : 0)); } },
+        { key: 'state', header: 'Row', width: '118px',
+          render: (row) => {
+            if (!C.Badge) return '';
+            const d = s.drafts[row.id];
+            if (s.saving && s.saving.id === row.id) return React.createElement(C.Badge, { tone: 'accent', size: 'sm', dot: true }, 'saving');
+            if (s.saveError && s.saveError.id === row.id) return React.createElement(C.Badge, { tone: 'critical', size: 'sm', dot: true }, 'not saved');
+            if (s.conflict && s.conflict.id === row.id) return React.createElement(C.Badge, { tone: 'warning', size: 'sm', dot: true }, 'revised');
+            if (d && Object.keys(this.problems(row.id, d)).length) return React.createElement(C.Badge, { tone: 'critical', size: 'sm', dot: true }, 'invalid');
+            if (d) return React.createElement(C.Badge, { tone: 'warning', size: 'sm', dot: true }, d.touched ? 'draft' : 'editing');
+            return React.createElement(C.Badge, { tone: 'neutral', size: 'sm' }, 'committed');
+          } },
+        { key: 'actions', header: 'Actions', width: '168px',
+          render: (row) => {
+            const d = s.drafts[row.id];
+            const busy = !!(s.saving && s.saving.id === row.id);
+            if (!d) return React.createElement('div', { style: { display: 'flex', gap: '6px' } },
+              btn({ key: 'e', variant: 'ghost', size: 'sm', type: 'button', 'aria-label': 'Edit the ' + nameOf(row.id) + ' slot', 'data-edit-for': row.id, onClick: () => this.edit(row.id) }, 'Edit'));
+            return React.createElement('div', { style: { display: 'flex', gap: '6px' } },
+              btn({ key: 's', variant: 'primary', size: 'sm', type: 'button', disabled: busy, 'aria-label': 'Save the ' + nameOf(row.id) + ' slot', onClick: () => this.save(row.id) }, busy ? 'Saving' : 'Save'),
+              btn({ key: 'c', variant: 'ghost', size: 'sm', type: 'button', disabled: busy, 'aria-label': 'Cancel the edit of ' + nameOf(row.id) + ' and restore the committed figures', onClick: () => this.cancel(row.id) }, 'Cancel'));
+          } }
+      ],
+      rows: ids.map(id => Object.assign({}, slotOf(id))),
+      sort: s.sort, onSort: this.changeSort,
+      onRowClick: (row) => { if (this.policy('entry', 'button') === 'row') this.edit(row.id); },
+      emptyMessage: 'No slots for this press in week 2026-W37.',
+
+      editHeading: openIds.length
+        ? openIds.length + (openIds.length === 1 ? ' slot open for editing \u00b7 ' : ' slots open for editing \u00b7 ') + openIds.map(nameOf).join(', ') + ' \u00b7 the plan is unchanged until each is saved'
+        : 'All ten slots committed \u00b7 ' + (this.policy('concurrency', 'single') === 'single' ? 'one slot may be edited at a time' : 'several slots may be edited at once'),
+
+      notices: [
+        s.saveError ? {
+          key: 'err', tone: 'danger',
+          title: nameOf(s.saveError.id) + ' was not saved',
+          body: s.saveError.why + ' Nothing was committed: the plan still reads ' + num(s.committed[s.saveError.id].qty) + ' pieces, and your figures are still in the row. Retry sends what is in the row now.',
+          action: btn({ variant: 'secondary', size: 'sm', type: 'button', onClick: this.retry }, 'Retry saving ' + nameOf(s.saveError.id))
+        } : null,
+        s.conflict ? {
+          key: 'conf', tone: 'warning',
+          title: nameOf(s.conflict.id) + ' was revised while you were editing it',
+          body: 'The plan now reads ' + num(s.conflict.theirs.qty) + ' pieces, shift ' + s.conflict.theirs.shift + ', ' + s.conflict.theirs.manning + ' operators (revision ' + s.conflict.theirs.rev + '). Your figures are ' + num(s.conflict.mine.qty) + ' pieces, shift ' + s.conflict.mine.shift + ', ' + s.conflict.mine.manning + ' operators. Nothing has been committed either way.',
+          action: React.createElement('div', { style: { display: 'flex', gap: '8px' } },
+            btn({ key: 'm', variant: 'secondary', size: 'sm', type: 'button', onClick: this.keepMine }, 'Save my figures over revision ' + s.conflict.theirs.rev),
+            btn({ key: 't', variant: 'ghost', size: 'sm', type: 'button', onClick: this.takeTheirs }, 'Discard mine and take the revision'))
+        } : null,
+        s.withdrawn ? {
+          key: 'gone', tone: 'info',
+          title: nameOf(s.withdrawn.id) + ' is no longer in the plan',
+          body: s.withdrawn.why + ' Your figures (' + num(s.withdrawn.draft.qty) + ' pieces, shift ' + s.withdrawn.draft.shift + ') were not committed and cannot be \u2014 the slot they belonged to is gone.',
+          action: btn({ variant: 'ghost', size: 'sm', type: 'button', onClick: this.dismissWithdrawn }, 'Dismiss')
+        } : null
+      ].filter(Boolean),
+      hasNotices: !!(s.saveError || s.conflict || s.withdrawn),
+
+      saving: !!s.saving,
+      savingLabel: s.saving ? 'Committing ' + nameOf(s.saving.id) + ' to the MES day plan' : '',
+
+      planSummary: ids.length + ' of ' + s.order.length + ' slots shown \u00b7 ' + openIds.length + ' open \u00b7 ' + s.commits + ' committed this session \u00b7 ' + num(s.order.reduce((t, id) => t + s.committed[id].qty, 0)) + ' pieces planned',
+      announcement: s.announcement,
+
+      stateRows: [
+        { k: 'row state', v: s.saving ? 'saving' : (s.saveError ? 'save failed' : (s.conflict ? 'stale draft' : (openIds.length ? (openIds.some(id => Object.keys(this.problems(id, s.drafts[id])).length) ? 'invalid draft' : 'editing') : 'read'))) },
+        { k: 'open drafts', v: openIds.length ? openIds.join(', ') : '\u2014' },
+        { k: 'concurrency', v: this.policy('concurrency', 'single') === 'single' ? 'one slot at a time' : 'several slots' },
+        { k: 'entry', v: this.policy('entry', 'button') === 'row' ? 'row activation' : 'explicit Edit button' },
+        { k: 'stale draft', v: this.policy('staleDraftPolicy', 'block') === 'block' ? 'block and ask' : 'overwrite' },
+        { k: 'after save', v: this.policy('postSaveDisposition', 'exit') === 'stay' ? 'stay in edit' : 'return to read' },
+        { k: 'request', v: '#' + this.req + (s.saving ? ' \u00b7 in flight' : ' \u00b7 settled') },
+        { k: 'commits', v: String(s.commits) },
+        { k: 'filter', v: s.filterPress },
+        { k: 'slots', v: s.order.length + ' of ' + SLOTS.length }
+      ],
+      committedText: JSON.stringify(openIds.length ? openIds.reduce((o, id) => Object.assign(o, { [id]: s.committed[id] }), {}) : { note: 'no slot open \u2014 nothing to compare' }, null, 1),
+      draftText: openIds.length ? JSON.stringify(s.drafts, null, 1) : '{}'
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Asynchronous action" description="Interaction pattern reference implementation, set in a manufacturing ERP — the planning console at the Chakan plant: an MRP regeneration that can block or run in the background, availability checks that overlap and answer out of order, repeat activation suppressed or superseded, retry that resumes rather than repeating completed stages, and a print job whose panel closes while it runs." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:1280px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/AsynchronousAction.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+</div>
+<p style="margin:0;max-width:84ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note, the operation log at the foot, and the seven tweaks under <span style="font-family:var(--font-mono)">Demo harness</span> — exists to make the contract visible. Every job here is a timer standing in for a real call; the comment above each one says what to replace. The six tweaks under <span style="font-family:var(--font-mono)">Pattern properties</span> are not harness: <span style="font-family:var(--font-mono)">blocking</span>, <span style="font-family:var(--font-mono)">repeatActivation</span>, <span style="font-family:var(--font-mono)">completionFeedback</span>, <span style="font-family:var(--font-mono)">orphanPolicy</span>, <span style="font-family:var(--font-mono)">durability</span> and <span style="font-family:var(--font-mono)">feedbackDelay</span> are the §05 policies an adopting team must declare.</p>
+<p style="margin:0;max-width:84ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Run the MRP regeneration and keep working in the table beneath it — that is <span style="font-family:var(--font-mono)">blocking: none</span>; switch to <span style="font-family:var(--font-mono)">scoped</span> or <span style="font-family:var(--font-mono)">page</span> to see the console, or the whole screen, held. Start availability checks on three work orders in a row, then turn on <span style="font-family:var(--font-mono)">Availability answers out of order</span>: the answers arrive backwards and still land on their own rows. Press a row's check twice to meet <span style="font-family:var(--font-mono)">repeatActivation</span>. Turn on <span style="font-family:var(--font-mono)">MRP fails at scheduling</span> and retry — stages 1 and 2 are not run again. Open a work order and print its gate label, then close the panel before it finishes, for <span style="font-family:var(--font-mono)">orphanPolicy</span>. For <span style="font-family:var(--font-mono)">durability</span>, start the MRP run and press <span style="font-family:var(--font-mono)">Simulate a reload</span> in the harness at the foot: under <span style="font-family:var(--font-mono)">context</span> the console comes back showing idle with a job still running at the plant, under <span style="font-family:var(--font-mono)">session</span> the job reads as an unknown outcome, and under <span style="font-family:var(--font-mono)">server</span> it is re-found by the identity the server issued — re-attached, never re-sent. Turn on <span style="font-family:var(--font-mono)">Sandeep's job already running on WO-24123</span> for the cross-user case: under <span style="font-family:var(--font-mono)">server</span> that row reads as checking, attributed to him, and your press is suppressed; under the other two policies his job is invisible and you start a second one.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Production planning console · Suryodaya Autocomp Ltd · Chakan plant (PL-04) · week 2026-W37 · IST</span>
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">Planning jobs</h1>
+<p style="margin:0;max-width:82ch;color:var(--text-secondary);font-size:var(--text-sm);line-height:1.55">Three jobs of different shapes: an MRP regeneration that runs in stages over the whole plant, availability checks that a planner fires off per work order, and a gate label that prints in a moment. None of them answers immediately, and the planner has to stay able to work while they run.</p>
+</div>
+
+<sc-if value="{{ hasReloadNotice }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ reloadNotice.tone }}" title="{{ reloadNotice.title }}" live="on" size="sm" action="{{ reloadNotice.action }}" onDismiss="{{ reloadNotice.onDismiss }}" hint-size="100%,108px">{{ reloadNotice.body }}</x-import>
+</sc-if>
+
+<div style="display:flex;flex-direction:column;gap:14px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);padding:19px 21px" aria-busy="{{ mrpBusyRegion }}">
+<div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:14px">
+<div style="display:flex;flex-direction:column;gap:3px;min-width:260px">
+<h2 style="margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em">MRP regeneration</h2>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary);max-width:64ch;text-wrap:pretty">Plant PL-04 · 12-week horizon · 3,412 items · three stages. {{ mrpSubline }}</p>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">{{ mrpActions }}</div>
+</div>
+
+<sc-if value="{{ mrpRunning }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:9px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Progress" variant="bar" size="md" value="{{ mrpPercent }}" showValue="{{ true }}" label="{{ mrpStageLabel }}" delay="{{ feedbackDelay }}" hint-size="100%,26px"></x-import>
+<div style="display:flex;flex-wrap:wrap;gap:6px 18px">
+<sc-for list="{{ mrpStages }}" as="st" hint-placeholder-count="3">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)">{{ st.line }}</span>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ hasMrpNotice }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ mrpNotice.tone }}" title="{{ mrpNotice.title }}" live="on" size="sm" action="{{ mrpNotice.action }}" onDismiss="{{ mrpNotice.onDismiss }}" hint-size="100%,108px">{{ mrpNotice.body }}</x-import>
+</sc-if>
+</div>
+
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px;padding:15px 18px;border-bottom:var(--border-hairline)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Released work orders · material availability</span>
+<span style="font-size:var(--text-xs);color:var(--text-secondary);max-width:58ch;text-wrap:pretty">{{ atpHeading }}</span>
+</div>
+
+<sc-if value="{{ hasAtpNotices }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:10px;padding:15px 18px;border-bottom:var(--border-hairline)">
+<sc-for list="{{ atpNotices }}" as="n" hint-placeholder-count="1">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ n.tone }}" title="{{ n.title }}" live="on" size="sm" action="{{ n.action }}" onDismiss="{{ n.onDismiss }}" hint-size="100%,96px">{{ n.body }}</x-import>
+</sc-for>
+</div>
+</sc-if>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Table" caption="Released work orders at PL-04 with material availability" columns="{{ columns }}" rows="{{ rows }}" rowKey="wo" minWidth="1120px" hint-size="100%,330px"></x-import>
+
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;border-top:var(--border-hairline);background:var(--surface-sunken)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ jobSummary }}</span>
+<div role="status" aria-live="polite" style="min-height:17px;font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty;max-width:64ch">{{ announcement }}</div>
+</div>
+</div>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:12px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:15px 17px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Operations, policies &amp; the response log · remove on copy</span>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding-bottom:11px;border-bottom:var(--border-hairline)">{{ harnessActions }}</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px 20px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="8">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:126px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:7px;border-top:var(--border-hairline);padding-top:11px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Operation log · newest first · one line per logical operation</span>
+<sc-for list="{{ log }}" as="l" hint-placeholder-count="4">
+<div style="display:grid;grid-template-columns:132px 96px 108px minmax(0,1fr);gap:12px;font-family:var(--font-mono);font-size:var(--text-2xs);padding:3px 0;border-bottom:var(--border-subtle)">
+<span style="color:var(--text-primary)">{{ l.id }}</span>
+<span style="color:var(--text-tertiary)">{{ l.kind }}</span>
+<span style="color:var(--text-secondary)">{{ l.status }}</span>
+<span style="color:var(--text-secondary);word-break:break-word">{{ l.detail }}</span>
+</div>
+</sc-for>
+<p style="margin:4px 0 0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">Each operation has a logical identity of its own — kind, subject and sequence — held apart from the button that started it and the row that shows it. That is what lets an answer arrive after its panel closed, out of order, or after a newer request superseded it, and still be filed correctly or discarded on purpose (§20).</p>
+</div>
+</div>
+
+</div>
+</div>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Drawer" open="{{ drawerOpen }}" title="{{ drawerTitle }}" description="{{ drawerDescription }}" side="right" size="md" modal="{{ false }}" onClose="{{ closeDrawer }}" footer="{{ drawerFooter }}" hint-size="460px,100%">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 18px">
+<sc-for list="{{ drawerFacts }}" as="fact" hint-placeholder-count="4">
+<div style="display:flex;flex-direction:column;gap:2px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ fact.k }}</span>
+<span style="font-size:var(--text-sm);color:var(--text-primary)">{{ fact.v }}</span>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:13px 15px;background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-md)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Material availability</span>
+<div aria-busy="{{ drawerAtpBusy }}" style="display:flex;flex-direction:column;gap:8px">{{ drawerAtpBody }}</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:13px 15px;background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-md)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Gate label · printer GT-01</span>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary);line-height:1.55;text-wrap:pretty">A short job, deliberately: with a feedback delay of {{ feedbackDelay }} ms nothing flashes on screen for a print that answers in a quarter of a second. Close this panel while it runs to meet the orphan policy.</p>
+<div aria-busy="{{ drawerLabelBusy }}" style="display:flex;flex-direction:column;gap:8px">{{ drawerLabelBody }}</div>
+</div>
+</div>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Dialog" open="{{ blockDialogOpen }}" title="MRP regeneration in progress" description="The plan is being rebuilt for plant PL-04. Planning is held until it finishes." width="md" dismissible="{{ false }}" footer="{{ blockDialogFooter }}" hint-size="520px,260px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Progress" variant="bar" size="md" value="{{ mrpPercent }}" showValue="{{ true }}" label="{{ mrpStageLabel }}" hint-size="100%,26px"></x-import>
+<p style="margin:0;font-size:var(--text-sm);color:var(--text-secondary);line-height:1.55;text-wrap:pretty">Blocking is a decision, not a side effect: it is declared because a half-rebuilt plan must not be read. It stays keyboard-operable, and the job can be sent to the background rather than trapping the planner behind it.</p>
+</div>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Snackbar" open="{{ snackOpen }}" message="{{ snackMessage }}" action="{{ snackAction }}" onDismiss="{{ dismissSnack }}" duration="{{ 6000 }}" scope="page" hint-size="420px,48px"></x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1340,&quot;height&quot;:1000},&quot;blocking&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;scoped&quot;,&quot;page&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Blocking while pending&quot;},&quot;repeatActivation&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;suppress&quot;,&quot;replace&quot;],&quot;default&quot;:&quot;suppress&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Repeat activation&quot;},&quot;completionFeedback&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;inline&quot;,&quot;snackbar&quot;],&quot;default&quot;:&quot;inline&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Completion feedback&quot;},&quot;orphanPolicy&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;report&quot;,&quot;abandon&quot;],&quot;default&quot;:&quot;report&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Result after its context closes&quot;},&quot;durability&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;context&quot;,&quot;session&quot;,&quot;server&quot;],&quot;default&quot;:&quot;context&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;How far the record reaches&quot;},&quot;feedbackDelay&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:600,&quot;step&quot;:50,&quot;default&quot;:300,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Delay before any indicator&quot;},&quot;mrpLatency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:600,&quot;max&quot;:6000,&quot;step&quot;:200,&quot;default&quot;:2400,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;MRP run duration&quot;},&quot;atpLatency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:300,&quot;max&quot;:4000,&quot;step&quot;:100,&quot;default&quot;:1200,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Availability-check latency&quot;},&quot;mrpFails&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;MRP fails at scheduling&quot;},&quot;atpFails&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Availability check fails&quot;},&quot;outOfOrder&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Availability answers out of order&quot;},&quot;settleWhileAway&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Jobs finish while the page is away&quot;},&quot;otherUserJob&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Sandeep's job already running on WO-24123&quot;}}">
+// Planning console, PL-04, week 2026-W37. Three kinds of asynchronous job:
+// an MRP regeneration in three stages, a per-work-order availability (ATP)
+// check, and a gate-label print.
+const WOS = [
+  { wo: 'WO-24118', part: 'BRK-4820-A', qty: 4800, line: 'PR-03', due: '2026-09-09', planner: 'Anjali Deshmukh' },
+  { wo: 'WO-24119', part: 'PLT-6601', qty: 3600, line: 'PR-05', due: '2026-09-09', planner: 'Anjali Deshmukh' },
+  { wo: 'WO-24123', part: 'HSG-3120', qty: 1800, line: 'PR-08', due: '2026-09-10', planner: 'Sandeep Kulkarni' },
+  { wo: 'WO-24127', part: 'CRB-7310-B', qty: 960, line: 'CNC-04', due: '2026-09-11', planner: 'Sandeep Kulkarni' },
+  { wo: 'WO-24131', part: 'GSK-8801', qty: 12000, line: 'PR-02', due: '2026-09-12', planner: 'Anjali Deshmukh' }
+];
+// What the ATP check answers with, per work order.
+const ATP = {
+  'WO-24118': { ok: false, text: 'Short 1,200 pcs of forging FRG-4820 \u2014 Nashik Forge & Machine Works, ETA 2026-09-10 (IST).' },
+  'WO-24119': { ok: true, text: 'All six components available from stores; 3,600 pcs coverable today.' },
+  'WO-24123': { ok: true, text: 'All four components available; 1,800 pcs coverable from lot HSG-2209.' },
+  'WO-24127': { ok: false, text: 'Short 240 pcs of bearing BRG-6204 \u2014 Sahyadri Bearings Pvt Ltd, PO 45012 due 2026-09-12 (IST).' },
+  'WO-24131': { ok: true, text: 'All three components available; 12,000 pcs coverable from lot GSK-2231.' }
+};
+const STAGES = [
+  { key: 'explode', label: 'Exploding BOMs for 3,412 items' },
+  { key: 'net', label: 'Netting requirements against stock and open POs' },
+  { key: 'schedule', label: 'Scheduling planned orders across PR-02 to PR-09' }
+];
+const LABEL_MS = 250;                     // the print really is this quick
+const M = () => window.MeridianDesignSystem_962c43 || {};
+const woOf = id => WOS.find(w => w.wo === id);
+const num = n => Number(n).toLocaleString('en-IN');
+const clock = () => new Date().toLocaleTimeString('en-IN', { hour12: false, timeZone: 'Asia/Kolkata' }) + ' IST';
+
+class Component extends DCLogic {
+  state = {
+    ops: {},              // opId -> { id, kind, subject, seq, status, startedAt, settledAt, detail }
+    current: {},          // subject -> opId of the operation that owns that subject now
+    results: {},          // subject -> { ok, text, at, stale }
+    mrp: { stages: {}, failedAt: null, lastRun: null },
+    background: false,    // a page-blocking MRP sent to the background
+    openWo: null,
+    snack: null,          // { message, action }
+    announcement: '',
+    reloaded: null,       // what the last simulated reload could recover
+    logOrder: []          // opIds, newest first
+  };
+  seq = 0;
+  timers = {};
+  // The plant server's own record of every operation, keyed by the identity IT
+  // issued. Deliberately NOT component state: a simulated reload throws the
+  // client's state away and this survives, which is the whole of durability.
+  // REPLACE: in a real console this is GET /api/operations?subjects=… on load.
+  server = {};
+  serverResults = {};
+
+  policy(name, fallback) { return this.props[name] ?? fallback; }
+  delayMs() { return this.policy('feedbackDelay', 300); }
+  opFor(subject) { const id = this.state.current[subject]; return id ? this.state.ops[id] : null; }
+  // A job started by ANOTHER planner, held in the server's record rather than
+  // in this client's. Only durability: server can see it — which is the whole
+  // argument for that policy on anything a second person can also start.
+  // REPLACE: in a real console this arrives with the reconciliation fetch.
+  foreignFor(subject) {
+    if (!this.props.otherUserJob || this.policy('durability', 'context') !== 'server') return null;
+    if (subject !== 'WO-24123' || this.state.results['WO-24123']) return null;
+    return { id: 'WO-24123#S1', kind: 'atp-check', subject: 'WO-24123', by: 'Sandeep Kulkarni', startedAt: '14:52:10 IST' };
+  }
+  pendingFor(subject) { const op = this.opFor(subject); return op && op.status === 'pending' ? op : null; }
+
+  start(kind, subject, detail) {
+    const seq = ++this.seq;
+    const id = subject + '#' + seq;
+    const op = { id, kind, subject, seq, status: 'pending', startedAt: clock(), settledAt: null, detail: detail || '' };
+    this.setState(s => ({
+      ops: Object.assign({}, s.ops, { [id]: op }),
+      current: Object.assign({}, s.current, { [subject]: id }),
+      logOrder: [id].concat(s.logOrder).slice(0, 12)
+    }));
+    return op;
+  }
+  settle(id, status, detail) {
+    // The server records the outcome whether or not a client is watching.
+    if (status === 'succeeded' || status === 'failed') this.server[id] = { status, detail: detail || '', at: clock() };
+    this.setState(s => {
+      const op = s.ops[id];
+      if (!op) return {};
+      // An operation already marked unknown stays unknown: a late answer the
+      // client cannot attribute does not become an outcome (§04).
+      if (op.status === 'unknown' && status !== 'unknown') {
+        return { ops: Object.assign({}, s.ops, { [id]: Object.assign({}, op, { detail: op.detail + ' \u00b7 a late answer arrived and was discarded' }) }) };
+      }
+      return { ops: Object.assign({}, s.ops, { [id]: Object.assign({}, op, { status, settledAt: clock(), detail: detail || op.detail }) }) };
+    });
+  }
+  // A response may only write shared state if its operation is still the one
+  // that owns its subject. Everything else is filed as superseded (§20).
+  owns(op) {
+    const held = this.state.ops[op.id];
+    return this.state.current[op.subject] === op.id && !!held && held.status === 'pending';
+  }
+
+  // ——— MRP regeneration: staged, and retried from the stage that failed ———
+  runMrp = (fromStage) => {
+    if (this.pendingFor('mrp')) return;                     // single-shot at the transition
+    const startIndex = fromStage ? STAGES.findIndex(x => x.key === fromStage) : 0;
+    const stages = fromStage ? Object.assign({}, this.state.mrp.stages) : {};
+    if (!fromStage) STAGES.forEach(x => { delete stages[x.key]; });
+    const op = this.start('mrp-regen', 'mrp', 'from stage ' + (startIndex + 1));
+    this.setState({
+      mrp: { stages, failedAt: null, lastRun: this.state.mrp.lastRun },
+      announcement: 'MRP regeneration started at ' + op.startedAt + (startIndex ? ', resuming at stage ' + (startIndex + 1) + ' of 3.' : '.') + ' ' + (this.policy('blocking', 'scoped') === 'none' ? 'The console stays usable while it runs.' : 'Planning is held until it finishes.')
+    });
+    const each = Math.max(200, this.props.mrpLatency ?? 2400) / 3;
+    const step = (i) => {
+      this.timers['mrp'] = setTimeout(() => {
+        if (!this.owns(op)) return;                          // superseded run
+        const stage = STAGES[i];
+        if (this.props.mrpFails && stage.key === 'schedule') {
+          this.setState(s => ({ mrp: Object.assign({}, s.mrp, { failedAt: 'schedule' }), announcement: 'MRP regeneration failed at stage 3 of 3, scheduling. Stages 1 and 2 completed and are kept; nothing needs running again.' }));
+          this.settle(op.id, 'failed', 'failed at scheduling; stages 1\u20132 kept');
+          return;
+        }
+        this.setState(s => ({ mrp: Object.assign({}, s.mrp, { stages: Object.assign({}, s.mrp.stages, { [stage.key]: clock() }) }) }));
+        if (i + 1 < STAGES.length) { step(i + 1); return; }
+        this.settle(op.id, 'succeeded', 'all three stages complete');
+        this.serverResults['mrp'] = { ok: true, stages: this.allStages(), at: clock(), text: '3,412 items replanned.' };
+        this.setState(s => ({
+          mrp: Object.assign({}, s.mrp, { failedAt: null, lastRun: clock() }),
+          background: false,
+          snack: this.policy('completionFeedback', 'inline') === 'snackbar' ? { message: 'MRP regenerated for PL-04', action: null } : s.snack,
+          announcement: 'MRP regeneration finished at ' + clock() + '. 3,412 items replanned; the plan is readable again.'
+        }));
+      }, each);
+    };
+    // REPLACE: stands in for the MRP call — POST /api/mrp/runs { plant, horizonWeeks }
+    // polled per stage; only the run that still owns the plant may write.
+    step(startIndex);
+  };
+  backgroundMrp = () => this.setState({ background: true, announcement: 'MRP regeneration sent to the background. It keeps running; the console is usable again.' });
+
+  // ——— Availability check, per work order ———
+  checkAtp = (wo) => {
+    // Suppression applies across users, not just across presses: the subject is
+    // already owned by an operation this planner did not start (§18).
+    const foreign = this.foreignFor(wo);
+    if (foreign && this.policy('repeatActivation', 'suppress') === 'suppress') {
+      this.setState({ announcement: 'The availability check for ' + wo + ' is already running \u2014 started by ' + foreign.by + ' at ' + foreign.startedAt + '. Your press did nothing; the answer will appear on this row for both of you.' });
+      return;
+    }
+    const pending = this.pendingFor(wo);
+    const mode = this.policy('repeatActivation', 'suppress');
+    if (pending) {
+      if (mode === 'suppress') {
+        this.setState({ announcement: 'The availability check for ' + wo + ' is already running (started ' + pending.startedAt + '). The second press did nothing.' });
+        return;
+      }
+      // replace: the older request stops owning the subject and its answer,
+      // when it lands, is discarded rather than rendered.
+      this.settle(pending.id, 'superseded', 'superseded by a newer check');
+    }
+    const op = this.start('atp-check', wo, 'availability for ' + wo);
+    this.setState(s => ({ results: Object.assign({}, s.results, { [wo]: null }), announcement: 'Checking material availability for ' + wo + '\u2026' }));
+    const base = Math.max(200, this.props.atpLatency ?? 1200);
+    // Out of order: each successive check answers sooner than the one before,
+    // so responses arrive backwards relative to initiation.
+    const delay = this.props.outOfOrder ? Math.max(220, base - (op.seq % 4) * 380) : base;
+    // REPLACE: stands in for GET /api/work-orders/{wo}/availability
+    this.timers[op.id] = setTimeout(() => {
+      if (!this.owns(op)) { this.settle(op.id, 'discarded', 'answer arrived after a newer check \u2014 discarded'); return; }
+      if (this.props.atpFails) {
+        this.settle(op.id, 'failed', 'MES gateway did not answer');
+        this.setState({ announcement: 'The availability check for ' + wo + ' failed. Nothing else on the console was affected; you can retry it.' });
+        return;
+      }
+      const a = ATP[wo];
+      this.settle(op.id, 'succeeded', a.ok ? 'available' : 'shortage reported');
+      this.serverResults[wo] = { ok: a.ok, text: a.text, at: clock() };
+      this.setState(s => ({
+        results: Object.assign({}, s.results, { [wo]: { ok: a.ok, text: a.text, at: clock() } }),
+        snack: this.policy('completionFeedback', 'inline') === 'snackbar' ? { message: 'Availability checked for ' + wo, action: null } : s.snack,
+        announcement: 'Availability for ' + wo + ': ' + (a.ok ? 'all components available.' : a.text)
+      }));
+    }, delay);
+  };
+
+  // ——— Gate label print, started inside the work-order panel ———
+  printLabel = (wo) => {
+    const running = this.pendingFor('label:' + wo);
+    if (running) {                                          // suppression, answered in words
+      this.setState({ announcement: 'The gate label for ' + wo + ' is already printing (started ' + running.startedAt + '). The second press did nothing.' });
+      return;
+    }
+    const op = this.start('label-print', 'label:' + wo, 'gate label for ' + wo);
+    this.setState({ announcement: 'Printing the gate label for ' + wo + ' on GT-01\u2026' });
+    // REPLACE: stands in for POST /api/print/gate-label { wo, printer }
+    this.timers[op.id] = setTimeout(() => {
+      // Not ours any more — superseded, or the page reloaded and this answer
+      // can no longer be attributed. It is filed, never written.
+      if (!this.owns(op)) { this.settle(op.id, 'discarded', 'answer arrived after the client stopped owning the job'); return; }
+      const orphaned = this.state.openWo !== wo;
+      const abandon = orphaned && this.policy('orphanPolicy', 'report') === 'abandon';
+      if (abandon) {
+        this.settle(op.id, 'abandoned', 'panel closed before it answered \u2014 result abandoned by policy');
+        this.setState({ announcement: 'The gate label job for ' + wo + ' finished after its panel closed. Under the abandon policy its result was discarded.' });
+        return;
+      }
+      this.settle(op.id, 'succeeded', orphaned ? 'printed; reported outside its panel' : 'printed');
+      this.serverResults['label:' + wo] = { ok: true, text: 'Gate label printed on GT-01 at ' + clock() + '.', at: clock() };
+      this.setState(s => ({
+        results: Object.assign({}, s.results, { ['label:' + wo]: { ok: true, text: 'Gate label printed on GT-01 at ' + clock() + '.', at: clock() } }),
+        snack: orphaned || this.policy('completionFeedback', 'inline') === 'snackbar' ? { message: 'Gate label printed for ' + wo, action: null } : s.snack,
+        announcement: 'Gate label for ' + wo + ' printed on GT-01' + (orphaned ? ' \u2014 its panel had already closed, so the result is reported here.' : '.')
+      }));
+    }, LABEL_MS);
+  };
+
+  openWo = (wo) => this.setState({ openWo: wo, announcement: wo + ' opened. Jobs started here keep their own identity if you close the panel.' });
+  closeDrawer = () => {
+    const wo = this.state.openWo;
+    const p = wo ? this.pendingFor('label:' + wo) || this.pendingFor(wo) : null;
+    this.setState({
+      openWo: null,
+      announcement: p ? 'Panel closed with a job still running for ' + wo + '. It keeps running; its result will be reported ' + (this.policy('orphanPolicy', 'report') === 'report' ? 'on the console.' : 'nowhere \u2014 the abandon policy discards it.') : (wo ? wo + ' panel closed.' : '')
+    });
+  };
+  dismissSnack = () => this.setState({ snack: null });
+  clearMrpFailure = () => this.setState(s => ({ mrp: Object.assign({}, s.mrp, { failedAt: null }) }));
+
+  allStages() { const o = {}; STAGES.forEach(x => { o[x.key] = clock(); }); return o; }
+
+  // ——— Durability (§05) ———
+  // Simulates closing the page and coming back: component state is thrown away,
+  // the server's record is not. What the console can then show is exactly what
+  // the durability policy reaches.
+  simulateReload = () => {
+    const d = this.policy('durability', 'context');
+    const s = this.state;
+    const pending = Object.values(s.ops).filter(o => o.status === 'pending');
+
+    // Harness: let the server finish the work while the page is away, so the
+    // "finished while nobody was watching" case is reachable on demand.
+    if (this.props.settleWhileAway) {
+      pending.forEach(op => {
+        clearTimeout(this.timers[op.id]);
+        if (op.kind === 'mrp-regen') clearTimeout(this.timers['mrp']);
+        this.server[op.id] = { status: 'succeeded', detail: 'completed while the page was away', at: clock() };
+        if (op.kind === 'mrp-regen') this.serverResults['mrp'] = { ok: true, stages: this.allStages(), at: clock(), text: '3,412 items replanned.' };
+        else if (op.kind === 'atp-check') { const a = ATP[op.subject]; this.serverResults[op.subject] = { ok: a.ok, text: a.text, at: clock() }; }
+        else this.serverResults[op.subject] = { ok: true, text: 'Gate label printed on GT-01 at ' + clock() + '.', at: clock() };
+      });
+    }
+
+    if (d === 'context') {
+      // Nothing reaches past the page. The console comes back knowing nothing.
+      this.setState({
+        ops: {}, current: {}, results: {}, logOrder: [], openWo: null, snack: null,
+        mrp: { stages: {}, failedAt: null, lastRun: null },
+        background: false, reloaded: pending.length ? { mode: 'context', jobs: pending.map(o => o.id) } : { mode: 'context', jobs: [] },
+        announcement: 'Reloaded. ' + (pending.length
+          ? 'The console has no record of the ' + (pending.length === 1 ? 'job that was running.' : pending.length + ' jobs that were running.')
+          : 'Nothing was running.')
+      });
+      return;
+    }
+
+    if (d === 'session') {
+      // The client's own record survives navigation but cannot be verified:
+      // anything in flight has an outcome nobody can now know.
+      const ops = {}; const current = {};
+      Object.values(s.ops).forEach(o => {
+        ops[o.id] = o.status === 'pending'
+          ? Object.assign({}, o, { status: 'unknown', settledAt: clock(), detail: 'outcome unknown after reload \u2014 client record only' })
+          : o;
+      });
+      // The subject keeps pointing at its operation, so the row can SAY unknown
+      // rather than falling back to idle. A late answer is refused by the guard
+      // in owns(), which now also requires the operation to still be pending.
+      Object.keys(s.current).forEach(subj => { if (s.ops[s.current[subj]]) current[subj] = s.current[subj]; });
+      this.setState({
+        ops, current, results: s.results, openWo: null, snack: null, background: false,
+        mrp: Object.assign({}, s.mrp, { failedAt: s.mrp.failedAt }),
+        reloaded: { mode: 'session', jobs: pending.map(o => o.id) },
+        announcement: 'Reloaded. ' + (pending.length
+          ? (pending.length === 1 ? 'One job was running and its outcome' : pending.length + ' jobs were running and their outcome') + ' cannot be recovered from the client\u2019s record.'
+          : 'Nothing was running.')
+      });
+      return;
+    }
+
+    // server: reconcile against the record the client did not write.
+    const ops = {}; const current = {}; const results = Object.assign({}, s.results);
+    let finishedAway = 0, stillRunning = 0;
+    Object.values(s.ops).forEach(o => {
+      const rec = this.server[o.id];
+      if (o.status === 'pending' && rec) {
+        ops[o.id] = Object.assign({}, o, { status: rec.status, settledAt: rec.at, detail: rec.detail || o.detail });
+        finishedAway++;
+        current[o.subject] = o.id;
+        if (this.serverResults[o.subject]) results[o.subject] = this.serverResults[o.subject];
+      } else if (o.status === 'pending') {
+        ops[o.id] = o; current[o.subject] = o.id; stillRunning++;      // re-attached, not re-sent
+      } else {
+        ops[o.id] = o; if (s.current[o.subject] === o.id) current[o.subject] = o.id;
+      }
+    });
+    const mrpDone = this.serverResults['mrp'];
+    this.setState({
+      ops, current, results, openWo: null, snack: null, background: false,
+      mrp: mrpDone ? { stages: mrpDone.stages, failedAt: null, lastRun: mrpDone.at } : s.mrp,
+      reloaded: { mode: 'server', finishedAway, stillRunning },
+      announcement: 'Reloaded. ' + (finishedAway ? finishedAway + ' job' + (finishedAway === 1 ? '' : 's') + ' finished while the page was away; ' : '') + (stillRunning ? stillRunning + ' still running and re-attached by its server identity.' : (finishedAway ? 'their results are reported below.' : 'Nothing was running.'))
+    });
+  };
+  dismissReload = () => this.setState({ reloaded: null });
+
+  componentDidMount() { this.setState({ announcement: 'Five released work orders. Availability has not been checked yet; the MRP plan was last regenerated yesterday at 21:40 IST.' }); }
+  componentWillUnmount() { Object.values(this.timers).forEach(clearTimeout); }
+
+  renderVals() {
+    const s = this.state, C = M();
+    const blocking = this.policy('blocking', 'scoped');
+    const mrpOp = this.pendingFor('mrp');
+    const mrpRunning = !!mrpOp;
+    const done = STAGES.filter(x => s.mrp.stages[x.key]).length;
+    const btn = (props, label) => C.Button ? React.createElement(C.Button, props, label) : null;
+    const badge = (tone, text, dot) => C.Badge ? React.createElement(C.Badge, { tone, size: 'sm', dot: !!dot }, text) : null;
+    const stageNow = STAGES[Math.min(done, STAGES.length - 1)];
+    const mrpOwner = this.opFor('mrp');
+    const mrpUnknown = !!(mrpOwner && mrpOwner.status === 'unknown');
+    const held = mrpRunning && blocking !== 'none' && !s.background;
+
+    const atpCell = (wo) => {
+      const p = this.pendingFor(wo);
+      const r = s.results[wo];
+      const op = this.opFor(wo);
+      const foreign = this.foreignFor(wo);
+      if (foreign && !p) return React.createElement('div', { 'aria-busy': true, style: { display: 'flex', flexDirection: 'column', gap: '4px' } },
+        C.Skeleton ? React.createElement(C.Skeleton, { key: 's', width: '82%', height: '0.85em', delay: this.delayMs() }) : null,
+        React.createElement('span', { key: 't', style: { fontSize: 'var(--text-2xs)', color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' } }, 'checking since ' + foreign.startedAt + ' \u00b7 started by ' + foreign.by));
+      if (p) return React.createElement('div', { 'aria-busy': true, style: { display: 'flex', flexDirection: 'column', gap: '4px' } },
+        C.Skeleton ? React.createElement(C.Skeleton, { key: 's', width: '82%', height: '0.85em', delay: this.delayMs() }) : null,
+        React.createElement('span', { key: 't', style: { fontSize: 'var(--text-2xs)', color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' } }, 'checking since ' + p.startedAt));
+      if (op && op.status === 'failed') return React.createElement('span', { style: { fontSize: 'var(--text-xs)', color: 'var(--text-critical)', lineHeight: 1.45 } }, 'MES did not answer within 30 s. Nothing about ' + wo + ' changed.');
+      // An outcome nobody can know is stated as such, never as idle (§04).
+      if (op && op.status === 'unknown') return React.createElement('span', { style: { fontSize: 'var(--text-xs)', color: 'var(--text-warning)', lineHeight: 1.45 } }, 'Outcome unknown \u2014 the check for ' + wo + ' was running when the page reloaded and the client\u2019s record cannot say how it ended. Run it again to find out.');
+      if (r) return React.createElement('span', { style: { fontSize: 'var(--text-xs)', color: r.ok ? 'var(--text-secondary)' : 'var(--text-warning)', lineHeight: 1.45 } }, r.text);
+      return React.createElement('span', { style: { fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' } }, 'not checked');
+    };
+
+    const drawerWo = s.openWo ? woOf(s.openWo) : null;
+    const dLabelPending = drawerWo ? this.pendingFor('label:' + drawerWo.wo) : null;
+    const dLabelResult = drawerWo ? s.results['label:' + drawerWo.wo] : null;
+    const dAtpPending = drawerWo ? this.pendingFor(drawerWo.wo) : null;
+
+    return {
+      feedbackDelay: this.delayMs(),
+      mrpBusyRegion: !!(mrpRunning && blocking === 'scoped' && !s.background),
+      mrpRunning,
+      mrpPercent: Math.round((done / STAGES.length) * 100),
+      mrpStageLabel: mrpRunning ? 'Stage ' + Math.min(done + 1, 3) + ' of 3 \u00b7 ' + stageNow.label : 'MRP regeneration',
+      mrpStages: STAGES.map((x, i) => ({ key: x.key, line: (s.mrp.stages[x.key] ? '\u2713 ' : (mrpRunning && i === done ? '\u2192 ' : '\u00b7 ')) + 'Stage ' + (i + 1) + ' ' + x.label + (s.mrp.stages[x.key] ? ' \u00b7 ' + s.mrp.stages[x.key] : '') })),
+      mrpSubline: mrpRunning
+        ? (s.background ? 'Running in the background \u2014 the console is usable and the plan is still being rebuilt.' : (blocking === 'none' ? 'Running \u2014 the console stays usable; the plan is not readable until it finishes.' : 'Running \u2014 planning is held under the ' + blocking + ' blocking policy.'))
+        : (mrpUnknown ? 'Outcome unknown \u2014 a regeneration was running when the page reloaded, and the client\u2019s record cannot say whether the plan was rebuilt. Running it again is a decision, not a repair.'
+          : (s.mrp.failedAt ? 'Stopped at stage 3 of 3. Stages 1 and 2 are complete and kept.' : (s.mrp.lastRun ? 'Last regenerated at ' + s.mrp.lastRun + '.' : 'Last regenerated yesterday at 21:40 IST.'))),
+      mrpActions: mrpRunning
+        ? [
+            badge('accent', 'running', true),
+            blocking === 'page' && !s.background ? btn({ key: 'bg', variant: 'secondary', size: 'sm', type: 'button', onClick: this.backgroundMrp }, 'Continue in background') : null
+          ]
+        : [
+            mrpUnknown ? badge('warning', 'outcome unknown', true) : null,
+            s.mrp.failedAt
+              ? btn({ key: 'resume', variant: 'primary', size: 'sm', type: 'button', 'data-retry': 'mrp', onClick: () => this.runMrp('schedule') }, 'Retry stage 3, scheduling')
+              : btn({ key: 'run', variant: 'primary', size: 'sm', type: 'button', onClick: () => this.runMrp(null) }, mrpUnknown ? 'Run all three stages again' : 'Run MRP regeneration'),
+            s.mrp.failedAt ? btn({ key: 'all', variant: 'ghost', size: 'sm', type: 'button', onClick: () => this.runMrp(null) }, 'Run all three stages again') : null
+          ],
+      hasMrpNotice: !!s.mrp.failedAt,
+      mrpNotice: s.mrp.failedAt ? {
+        tone: 'danger',
+        title: 'MRP regeneration failed at stage 3 of 3, scheduling',
+        body: 'The scheduling service rejected the run \u2014 capacity for PR-07 is locked by the shutdown booked by Vikram Bhosale. Stages 1 and 2 finished and were kept, so a retry starts at scheduling and does not re-explode 3,412 items. The plan on screen is the one from ' + (s.mrp.lastRun || 'yesterday 21:40 IST') + '; nothing else on the console was affected.',
+        action: React.createElement('div', { style: { display: 'flex', gap: '8px' } },
+          btn({ key: 'r', variant: 'secondary', size: 'sm', type: 'button', onClick: () => this.runMrp('schedule') }, 'Retry stage 3, scheduling'),
+          btn({ key: 'a', variant: 'ghost', size: 'sm', type: 'button', onClick: this.clearMrpFailure }, 'Dismiss'))
+      } : null,
+
+      hasReloadNotice: !!s.reloaded,
+      reloadNotice: (() => {
+        const r = s.reloaded; if (!r) return null;
+        const dismiss = { key: 'd', variant: 'ghost', size: 'sm', type: 'button', onClick: this.dismissReload };
+        if (r.mode === 'context') return {
+          tone: r.jobs.length ? 'danger' : 'info',
+          title: r.jobs.length ? 'The console came back with no record of ' + (r.jobs.length === 1 ? 'a running job' : r.jobs.length + ' running jobs') : 'Reloaded \u00b7 nothing was running',
+          body: r.jobs.length
+            ? 'Under durability: context the operation survives its panel but not the page. ' + r.jobs.join(', ') + ' may have completed, failed, or still be running at the plant \u2014 the console cannot say, and it is showing idle as if nothing had happened. That is the defect this policy causes for anything that writes; switch to server and reload again.'
+            : 'Under durability: context there was nothing to recover.',
+          action: React.createElement('div', { style: { display: 'flex', gap: '8px' } }, btn(dismiss, 'Dismiss')),
+          onDismiss: this.dismissReload
+        };
+        if (r.mode === 'session') return {
+          tone: 'warning',
+          title: r.jobs.length ? (r.jobs.length === 1 ? 'One job with an unknown outcome' : r.jobs.length + ' jobs with an unknown outcome') : 'Reloaded \u00b7 nothing was running',
+          body: r.jobs.length
+            ? 'The client\u2019s record survived the reload; the answers did not. ' + r.jobs.join(', ') + (r.jobs.length === 1 ? ' was in flight and its outcome cannot be recovered \u2014 so it reads as unknown rather than idle' : ' were in flight and their outcomes cannot be recovered \u2014 so they read as unknown rather than idle') + ', and rerunning is a decision the planner makes knowingly. A job that writes must not be quietly repeated on this evidence.'
+            : 'Under durability: session there was nothing in flight.',
+          action: React.createElement('div', { style: { display: 'flex', gap: '8px' } }, btn(dismiss, 'Dismiss')),
+          onDismiss: this.dismissReload
+        };
+        return {
+          tone: r.finishedAway || r.stillRunning ? 'success' : 'info',
+          title: 'Reconciled against the plant server',
+          body: (r.finishedAway ? r.finishedAway + ' job' + (r.finishedAway === 1 ? '' : 's') + ' finished while the page was away and ' + (r.finishedAway === 1 ? 'its result is' : 'their results are') + ' reported here rather than announced as if just completed. ' : '')
+            + (r.stillRunning ? r.stillRunning + ' job' + (r.stillRunning === 1 ? ' is' : 's are') + ' still running and re-attached by the identity the server issued \u2014 re-attached, not re-sent. ' : '')
+            + (!r.finishedAway && !r.stillRunning ? 'Nothing was open for these subjects. ' : '')
+            + 'The client\u2019s last view was an observation; the server\u2019s record is the state.',
+          action: React.createElement('div', { style: { display: 'flex', gap: '8px' } }, btn(dismiss, 'Dismiss')),
+          onDismiss: this.dismissReload
+        };
+      })(),
+      harnessActions: [
+        btn({ key: 'rl', variant: 'secondary', size: 'sm', type: 'button', onClick: this.simulateReload }, 'Simulate a reload'),
+        React.createElement('span', { key: 'h', style: { fontSize: 'var(--text-2xs)', color: 'var(--text-tertiary)', lineHeight: 1.5, maxWidth: '62ch' } },
+          'Throws the console\u2019s state away and comes back \u2014 the plant server\u2019s record survives. Start a job, press this, and compare durability: context, session and server. Turn on \u201cJobs finish while the page is away\u201d to force the finished-while-nobody-watched case.')
+      ],
+      atpHeading: (() => {
+        const pend = WOS.filter(w => this.pendingFor(w.wo)).length;
+        const checked = WOS.filter(w => s.results[w.wo]).length;
+        if (pend) return pend + ' availability ' + (pend === 1 ? 'check' : 'checks') + ' running \u00b7 every other row stays usable';
+        return checked + ' of ' + WOS.length + ' checked \u00b7 ' + (this.policy('repeatActivation', 'suppress') === 'suppress' ? 'a second press while one runs does nothing' : 'a second press supersedes the first');
+      })(),
+      columns: [
+        { key: 'wo', header: 'Work order', width: '124px', mono: true },
+        { key: 'part', header: 'Part', width: '118px', mono: true },
+        { key: 'qty', header: 'Qty', align: 'right', mono: true, width: '92px', render: (row) => num(row.qty) },
+        { key: 'line', header: 'Line', width: '86px', mono: true },
+        { key: 'due', header: 'Due (IST)', width: '108px', mono: true },
+        { key: 'availability', header: 'Material availability', width: '330px', wrap: true, render: (row) => atpCell(row.wo) },
+        { key: 'state', header: 'Job', width: '108px', render: (row) => {
+            const p = this.pendingFor(row.wo);
+            if (p) return badge('accent', 'checking', true);
+            if (this.foreignFor(row.wo)) return badge('accent', 'checking \u00b7 Sandeep', true);
+            const op = this.opFor(row.wo);
+            if (op && op.status === 'failed') return badge('critical', 'failed', true);
+            if (op && op.status === 'unknown') return badge('warning', 'unknown', true);
+            if (s.results[row.wo]) return badge(s.results[row.wo].ok ? 'success' : 'warning', s.results[row.wo].ok ? 'available' : 'short', true);
+            return badge('neutral', 'idle');
+          } },
+        { key: 'actions', header: 'Actions', width: '196px', render: (row) => {
+            const p = this.pendingFor(row.wo);
+            const op = this.opFor(row.wo);
+            const failed = !!(op && op.status === 'failed');
+            const suppress = this.policy('repeatActivation', 'suppress') === 'suppress';
+            return React.createElement('div', { style: { display: 'flex', gap: '6px' } },
+              btn({
+                key: 'c', variant: failed ? 'secondary' : 'ghost', size: 'sm', type: 'button',
+                // Not disabled while its own check runs: the press must reach the
+                // handler so suppression can answer in words (§14, §20). Only the
+                // unrelated blocking policy disables it.
+                disabled: !!held,
+                'aria-label': (failed ? 'Retry the availability check for ' : 'Check material availability for ') + row.wo,
+                'data-check-for': row.wo, onClick: () => this.checkAtp(row.wo)
+              }, p || this.foreignFor(row.wo) ? 'Checking\u2026' : (failed ? 'Retry check' : 'Check availability')),
+              btn({ key: 'o', variant: 'ghost', size: 'sm', type: 'button', disabled: !!held, 'aria-label': 'Open ' + row.wo, onClick: () => this.openWo(row.wo) }, 'Open'));
+          } }
+      ],
+      rows: WOS.map(w => Object.assign({}, w)),
+      jobSummary: (() => {
+        const all = Object.values(s.ops);
+        return all.length + ' operations this session \u00b7 ' + all.filter(o => o.status === 'pending').length + ' pending \u00b7 ' + all.filter(o => o.status === 'succeeded').length + ' succeeded \u00b7 ' + all.filter(o => o.status === 'failed').length + ' failed \u00b7 ' + all.filter(o => o.status === 'discarded' || o.status === 'superseded' || o.status === 'abandoned').length + ' not applied';
+      })(),
+      announcement: s.announcement,
+
+      drawerOpen: !!drawerWo,
+      drawerTitle: drawerWo ? drawerWo.wo + ' \u00b7 ' + drawerWo.part : '',
+      drawerDescription: drawerWo ? num(drawerWo.qty) + ' pcs on ' + drawerWo.line + ' \u00b7 due ' + drawerWo.due + ' (IST) \u00b7 planner ' + drawerWo.planner : '',
+      drawerFacts: drawerWo ? [
+        { k: 'work order', v: drawerWo.wo }, { k: 'part', v: drawerWo.part },
+        { k: 'quantity', v: num(drawerWo.qty) + ' pcs' }, { k: 'line', v: drawerWo.line },
+        { k: 'due (IST)', v: drawerWo.due }, { k: 'planner', v: drawerWo.planner }
+      ] : [],
+      drawerAtpBusy: !!dAtpPending,
+      drawerAtpBody: drawerWo ? React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '9px' } },
+        React.createElement('div', { key: 'r' }, atpCell(drawerWo.wo)),
+        btn({ key: 'b', variant: 'secondary', size: 'sm', type: 'button', 'aria-label': 'Check material availability for ' + drawerWo.wo, onClick: () => this.checkAtp(drawerWo.wo) }, dAtpPending ? 'Checking\u2026' : 'Check availability'),
+        React.createElement('span', { key: 'n', style: { fontSize: 'var(--text-2xs)', color: 'var(--text-tertiary)', lineHeight: 1.5 } }, 'The same logical operation as the row behind: start it here, close the panel, and the row still shows it running.')
+      ) : null,
+      drawerLabelBusy: !!dLabelPending,
+      drawerLabelBody: drawerWo ? React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '9px' } },
+        dLabelPending && C.Progress ? React.createElement(C.Progress, { key: 'p', variant: 'spinner', size: 'sm', label: 'Printing the gate label for ' + drawerWo.wo, delay: this.delayMs() }) : null,
+        dLabelResult && !dLabelPending ? React.createElement('span', { key: 'r', style: { fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' } }, dLabelResult.text) : null,
+        btn({ key: 'b', variant: 'secondary', size: 'sm', type: 'button', 'aria-label': 'Print the gate label for ' + drawerWo.wo + ' on printer GT-01', onClick: () => this.printLabel(drawerWo.wo) }, dLabelPending ? 'Printing\u2026' : 'Print gate label')
+      ) : null,
+      closeDrawer: this.closeDrawer,
+
+      blockDialogOpen: !!(mrpRunning && blocking === 'page' && !s.background),
+      blockDialogFooter: React.createElement('div', { style: { display: 'flex', gap: '8px', justifyContent: 'flex-end' } },
+        btn({ variant: 'secondary', size: 'sm', type: 'button', onClick: this.backgroundMrp }, 'Continue in background')),
+
+      snackOpen: !!s.snack,
+      snackMessage: s.snack ? s.snack.message : '',
+      snackAction: null,
+      dismissSnack: this.dismissSnack,
+
+      stateRows: [
+        { k: 'blocking', v: blocking === 'none' ? 'none \u00b7 console stays usable' : (blocking === 'scoped' ? 'scoped \u00b7 the MRP card is held' : 'page \u00b7 modal until backgrounded') },
+        { k: 'repeat press', v: this.policy('repeatActivation', 'suppress') === 'suppress' ? 'suppressed while pending' : 'supersedes the pending one' },
+        { k: 'completion', v: this.policy('completionFeedback', 'inline') === 'snackbar' ? 'snackbar + row state' : 'inline row and alert' },
+        { k: 'orphan result', v: this.policy('orphanPolicy', 'report') === 'report' ? 'reported on the console' : 'abandoned' },
+        { k: 'durability', v: (() => { const d = this.policy('durability', 'context'); return d === 'context' ? 'context \u00b7 survives its panel, not the page' : (d === 'session' ? 'session \u00b7 client record only; outcome unknown after reload' : 'server \u00b7 server-issued identity, reconciled on load'); })() },
+        { k: 'other users', v: this.props.otherUserJob ? (this.policy('durability', 'context') === 'server' ? 'WO-24123#S1 \u00b7 Sandeep Kulkarni \u00b7 visible, and your press is suppressed' : 'running at the plant \u2014 invisible under durability: ' + this.policy('durability', 'context')) : 'none' },
+        { k: 'server record', v: (() => { const n = Object.keys(this.server).length; return n ? n + ' settled operation' + (n === 1 ? '' : 's') + ' held outside the client' : 'empty'; })() },
+        { k: 'feedback delay', v: this.delayMs() + ' ms before any indicator' },
+        { k: 'mrp', v: mrpRunning ? (s.background ? 'running in background \u00b7 stage ' + Math.min(done + 1, 3) : 'running \u00b7 stage ' + Math.min(done + 1, 3)) : (s.mrp.failedAt ? 'failed at scheduling \u00b7 stages 1\u20132 kept' : 'idle') },
+        { k: 'pending ops', v: (() => { const p = Object.values(s.ops).filter(o => o.status === 'pending'); return p.length ? p.map(o => o.id).join(', ') : '\u2014'; })() },
+        { k: 'sequence', v: '#' + this.seq + ' issued' }
+      ],
+      log: s.logOrder.map(id => s.ops[id]).filter(Boolean).map(o => ({
+        id: o.id, kind: o.kind, status: o.status,
+        detail: o.startedAt + (o.settledAt ? ' \u2192 ' + o.settledAt : ' \u00b7 running') + (o.detail ? ' \u00b7 ' + o.detail : '')
+      }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

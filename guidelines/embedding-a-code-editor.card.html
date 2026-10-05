@@ -1,0 +1,67 @@
+<!-- @dsCard group="Guidelines" viewport="820x680" name="Embedding a code editor" subtitle="Textarea declines code chrome — here is the chrome, for a real editor to wear" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Embedding a code editor</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:26px}
+h1{margin:0 0 6px;font-size:var(--text-2xl);font-weight:var(--weight-light);letter-spacing:-0.02em}
+p{margin:0 0 12px;max-width:76ch;color:var(--text-secondary);text-wrap:pretty}
+h2{margin:22px 0 8px;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+pre{margin:0 0 14px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.65;color:var(--text-primary)}
+ul{margin:0 0 12px;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:76ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:18px;margin-bottom:14px}
+.lbl{font-size:var(--text-xs);color:var(--text-secondary);display:block;margin-bottom:6px}
+/* The chrome, exactly as Textarea composes it — this rule IS the artifact. */
+.editor-surface{display:flex;font-family:var(--font-mono);font-size:var(--text-sm);line-height:var(--leading-normal);color:var(--input-text);background:var(--input-background);border:var(--border-width) solid var(--input-border);border-radius:var(--input-radius);overflow:hidden;transition:var(--transition-control)}
+.editor-surface:focus-within{border-color:var(--input-border-focus);box-shadow:var(--focus-ring)}
+.gutter{flex:0 0 auto;padding:10px 10px 10px 12px;text-align:right;color:var(--text-tertiary);background:var(--surface-sunken);border-right:var(--border-width) solid var(--border-subtle);user-select:none;font-variant-numeric:tabular-nums}
+.code{flex:1;min-width:0;padding:10px 12px;white-space:pre;overflow:auto}
+.warn{border-left:2px solid var(--status-warning-solid);padding-left:12px}
+</style></head><body>
+<h1>Embedding a code editor</h1>
+<p><code>Textarea</code> declines code-editor chrome as a mode, and the reasoning has not changed: line numbers, syntax highlighting, bracket matching, tab capture and an undo stack that survives them are an editor, not a form control. A <code>Textarea</code> that grew half of them would be a worse editor than any real one and a worse textarea than it is now.</p>
+<p class="warn">What kept this item open was the other half of the sentence. The guidance said <em>“embed a real editor and give it this control’s chrome”</em> — and nothing in the system said what that chrome was. So here it is, as a rule you can copy.</p>
+
+<h2>The chrome</h2>
+<pre>.editor-surface {
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--input-text);
+  background: var(--input-background);
+  border: var(--border-width) solid var(--input-border);
+  border-radius: var(--input-radius);
+  overflow: hidden;
+  transition: var(--transition-control);
+}
+.editor-surface:focus-within {
+  border-color: var(--input-border-focus);
+  box-shadow: var(--focus-ring);
+}</pre>
+<p>Those are the same tokens <code>Textarea</code> reads, so an embedded CodeMirror or Monaco sits in a form beside real controls without looking pasted in. <code>:focus-within</code> is the important line: the editor owns focus internally, so the surface has to respond to focus landing <em>anywhere</em> inside it — this is the one place the control's focus ring cannot come from the focused element itself.</p>
+
+<div class="demo">
+  <span class="lbl">Routing rule · a real editor would replace the right-hand pane</span>
+  <div class="editor-surface">
+    <div class="gutter">1<br>2<br>3<br>4</div>
+    <div class="code" contenteditable="false">when alarm.severity == "fault"
+  and line.area in ["assembly"]
+then notify("shift-lead")
+  escalate after 5m</div>
+  </div>
+</div>
+
+<h2>What the system still owns</h2>
+<ul>
+  <li><strong>The label, hint and error.</strong> Wrap the editor in <code>Field</code> exactly as you would a Textarea — it supplies the <code>label</code>, the described-by wiring and the error message, none of which an editor library provides.</li>
+  <li><strong>The disabled and read-only look.</strong> Swap to <code>--input-background-disabled</code> and <code>--input-text-disabled</code>, and set the editor's own read-only flag — a greyed surface with a live cursor is the worst of both.</li>
+  <li><strong>The height.</strong> Give the surface a <code>max-height</code> and let the editor scroll inside it. An editor that grows without limit pushes the form's submit button off the screen.</li>
+</ul>
+<h2>What it does not</h2>
+<ul>
+  <li><strong>Keyboard behaviour inside the editor is the library's.</strong> Do not re-bind Tab, Escape or Enter from outside: Tab in a code editor indents, and a form that steals it makes the editor unusable. If the editor traps Tab, give the user a documented way out (Escape then Tab is the common contract) and say so in the field's hint.</li>
+  <li><strong>Announcements.</strong> A code editor is not a textarea to a screen reader, whatever ARIA it claims. Do not paper over it — say what the field is in its label ("Routing rule, code editor").</li>
+</ul>
+<p><strong>Still use <code>Textarea mono</code></strong> for anything that is merely monospaced — a key, a serial, a short expression, a log paste. The moment a field wants line numbers is the moment it stopped being a form field.</p>
+</body></html>

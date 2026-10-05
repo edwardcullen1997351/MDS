@@ -1,0 +1,164 @@
+.ds-tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-family-sans, system-ui, sans-serif);
+  container-type: inline-size;
+}
+
+/* Tab List */
+.ds-tab-list {
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: var(--spacing-1, 4px);
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Line Variant */
+.ds-tabs--variant-line .ds-tab-list {
+  border-bottom: 1px solid var(--color-neutral-200, #E5E7EB);
+  gap: var(--spacing-6, 24px);
+}
+
+.ds-tabs--variant-line .ds-tab-trigger {
+  position: relative;
+  background: transparent;
+  border: none;
+  color: var(--color-neutral-600, #4B5563);
+  font-weight: var(--font-weight-medium, 500);
+  padding: var(--spacing-3, 12px) 0;
+  cursor: pointer;
+  transition: color var(--duration-fast, 150ms) ease;
+  user-select: none;
+}
+
+.ds-tabs--variant-line .ds-tab-trigger:hover {
+  color: var(--color-neutral-900, #111827);
+}
+
+.ds-tabs--variant-line .ds-tab-trigger[aria-selected="true"] {
+  color: var(--color-brand-600, #2563EB);
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.ds-tabs--variant-line .ds-tab-trigger[aria-selected="true"]::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--color-brand-600, #2563EB);
+  border-radius: var(--radius-full, 9999px);
+}
+
+/* Pill / Capsule Variant */
+.ds-tabs--variant-pill .ds-tab-list {
+  background-color: var(--color-neutral-100, #F3F4F6);
+  padding: var(--spacing-1, 4px);
+  border-radius: var(--radius-lg, 8px);
+  width: fit-content;
+}
+
+.ds-tabs--variant-pill .ds-tab-trigger {
+  background: transparent;
+  border: none;
+  color: var(--color-neutral-600, #4B5563);
+  font-weight: var(--font-weight-medium, 500);
+  border-radius: var(--radius-md, 6px);
+  cursor: pointer;
+  transition: background-color var(--duration-fast, 150ms) ease, color var(--duration-fast, 150ms) ease, box-shadow var(--duration-fast, 150ms) ease;
+  user-select: none;
+}
+
+.ds-tabs--variant-pill .ds-tab-trigger:hover {
+  color: var(--color-neutral-900, #111827);
+}
+
+.ds-tabs--variant-pill .ds-tab-trigger[aria-selected="true"] {
+  background-color: var(--color-surface-card, #FFFFFF);
+  color: var(--color-neutral-900, #111827);
+  font-weight: var(--font-weight-semibold, 600);
+  box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+}
+
+/* Sizes */
+.ds-tabs--size-sm .ds-tab-trigger {
+  font-size: var(--font-size-xs, 12px);
+  padding: var(--spacing-1, 4px) var(--spacing-3, 12px);
+}
+.ds-tabs--variant-line.ds-tabs--size-sm .ds-tab-trigger {
+  padding: var(--spacing-2, 8px) 0;
+}
+
+.ds-tabs--size-md .ds-tab-trigger {
+  font-size: var(--font-size-sm, 14px);
+  padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+}
+.ds-tabs--variant-line.ds-tabs--size-md .ds-tab-trigger {
+  padding: var(--spacing-3, 12px) 0;
+}
+
+.ds-tabs--size-lg .ds-tab-trigger {
+  font-size: var(--font-size-base, 16px);
+  padding: var(--spacing-3, 12px) var(--spacing-5, 20px);
+}
+.ds-tabs--variant-line.ds-tabs--size-lg .ds-tab-trigger {
+  padding: var(--spacing-4, 16px) 0;
+}
+
+/* Disabled */
+.ds-tab-trigger[aria-disabled="true"],
+.ds-tab-trigger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Focus Visible */
+.ds-tab-trigger:focus-visible {
+  outline: 2px solid var(--color-brand-500, #3B82F6);
+  outline-offset: 2px;
+}
+
+/* Tab Panel */
+.ds-tab-panel {
+  padding-top: var(--spacing-4, 16px);
+  outline: none;
+}
+
+/* Container Queries for Tabs */
+@container (max-width: 480px) {
+  .ds-tab-list {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    width: 100%;
+  }
+
+  .ds-tab-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ds-tab-trigger {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .ds-tabs--variant-line .ds-tab-list {
+    gap: var(--spacing-4, 16px);
+  }
+
+  .ds-tabs--variant-pill .ds-tab-list {
+    width: 100%;
+    display: flex;
+  }
+
+  .ds-tabs--variant-pill .ds-tab-trigger {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+}

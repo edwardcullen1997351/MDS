@@ -1,0 +1,280 @@
+<!-- @dsCard group="Specs · Composite" viewport="1080x900" name="DateTimePicker" subtitle="Full specification — one moment assembled from a date and a time, local and zoneless" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>DateTimePicker — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px 28px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:118px;padding-top:8px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:14px 0 0}
+.log{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+.frame{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:16px}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { DateTimePicker, Field, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{flex:'1 1 460px',minWidth:0}}>{children}</div></div>;
+const IST = 'Asia/Kolkata';        // Indian Standard Time, UTC+5:30, no DST
+const DST_ZONE = 'Europe/Amsterdam';  // only for the two transition states IST cannot show
+
+function Spec(){
+/* The compiled bundle lags a same-turn component by one compile; without this
+   an undefined export throws inside render and blanks the whole document. */
+if (!DateTimePicker) return <div className="page"><div className="masthead"><span className="eyebrow">Composite · Component specification</span><h1>DateTimePicker</h1><p className="lede">The design-system bundle has not been recompiled with <code>components/composite/DateTimePicker.jsx</code> yet — reload once it has.</p></div></div>;
+const [at,setAt] = React.useState('2026-09-14T07:00:00Z');
+const [main,setMain] = React.useState({date:'2026-09-14',time:'09:00'});
+const [dst,setDst] = React.useState('2026-03-29T00:30:00Z');
+const [dateOnly,setDateOnly] = React.useState({date:'2026-09-14',time:undefined});
+const [timeOnly,setTimeOnly] = React.useState({date:undefined,time:'09:00'});
+const [dev,setDev] = React.useState(undefined);
+const [gate,setGate] = React.useState({valid:false,reason:'partial',complete:false});
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Composite · Component specification</span>
+    <h1>DateTimePicker</h1>
+    <p className="lede">A standardized control for one temporal value, assembled from a calendar date and a wall-clock time — and, when the value is an instant, placed on the Site's clock rather than the reader's.</p>
+    <div className="meta">
+      <span>Status · stable</span>
+      <span>Primitives · Box, Text</span>
+      <span>Core · DatePicker, TimeField, Icon · optional Field</span>
+      <span>Uses · forms/zone.js (added for this)</span>
+      <span>Zones · IANA, from the record's Site</span>
+      <span>Follows · Composite spec standard</span>
+    </div>
+  </div>
+
+  <Sec n="§01" title="Purpose" note="Why the composition exists at all">
+    <p>DateTimePicker standardizes the entry of one moment expressed as a date plus a time. Two controls produce two strings; something has to decide how they join, what a half-filled value means, how the pair is validated against a bound, what the whole thing serializes to, and how the two halves are named as one question. That is the composite.</p>
+    <ul>
+      <li><strong>Why a composite rather than a DatePicker with a time flag.</strong> Fusing time into <code>DatePicker</code> would change that component's value <em>type</em> on a boolean — <code>'2026-09-05'</code> and <code>'2026-09-05T04:12'</code> are different things, and every consumer's form model, validation and API call would change shape with the flag. Keeping both children honest and assembling above them is what makes the seam explicit instead of hidden in a prop.</li>
+      <li><strong>What the children still own.</strong> <code>DatePicker</code> owns date selection, its panel and its typed entry; <code>TimeField</code> owns time entry, its 24-hour parsing and its arrow-key stepping. The composite adds no parsing and no keyboard of its own.</li>
+      <li><strong>The value's type depends on whose clock it is on.</strong> With a Site <code>zone</code> the value is a <strong>UTC instant</strong>, stored in UTC and edited on that Site's clock with the zone named beside the field — what the principles require of an instant. Without a zone it is a <strong>floating wall clock</strong>, a local <code>'YYYY-MM-DDTHH:mm'</code> for a moment that genuinely has no zone yet (a shift template, a recurring cut-off), which never pretends to be an instant. Never the browser's zone: the record belongs to the Site, and a fault at 04:12 on Nights read from Chicago must not become 21:12 the day before.</li>
+      <li><strong>Conversion is real, and it is not this component's code.</strong> <code>components/forms/zone.js</code> was added for this composite: <code>Intl</code> carries the zone database, the conversion goes both ways, and no <code>Date</code> leaves that file. The composite calls it; it does not do date maths.</li>
+    </ul>
+    <div className="demo col">
+      <DateTimePicker label="Fault occurred" zone={IST} value={at} onChange={(v)=>v&&setAt(v)} step={15} hint="Shown on the site's clock — Indian Standard Time, where the record belongs." />
+      <span className="log">stored · {at}</span>
+    </div>
+  </Sec>
+
+  <Sec n="§02" title="Anatomy" note="Two halves of one answer">
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong><code>Box</code> — required.</strong> The composite structure: a <code>role="group"</code> wrapper named for the moment, holding the halves in date-then-time DOM order.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong><code>DatePicker</code> — required.</strong> The date half, with all of its own behaviour and its own id.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong><code>TimeField</code> — required.</strong> The time half: 24-hour, mono, arrow-steppable, with its own id.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong><code>Text</code> — required, twice.</strong> The half labels, as real <code>&lt;label&gt;</code> elements pointing at their inputs. This is what distinguishes the halves; position does not.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong><code>Text</code> — optional.</strong> Combined <code>hint</code> under the pair; <code>dateHint</code>/<code>timeHint</code> under their own half (§10).</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>Message region — required, always mounted.</strong> A <code>role="alert"</code> span under the pair carrying the combined failure, described to both halves.</span></div>
+      <div className="callout"><span className="cnum">7</span><span><strong><code>Field</code> — optional, outside.</strong> It supplies the heading and the form's own error; the composite claims its label as the group's name (§13).</span></div>
+      <div className="callout"><span className="cnum">8</span><span><strong>The zone label — rendered by <code>TimeField</code>.</strong> Derived from the zone <em>at that instant</em>, so a summer and a winter value read differently — <code>UTC+2</code> / <code>UTC+1</code>, or a real abbreviation where the platform has one. Never rendered by the composite, and never a fixed string (§10).</span></div>
+    </div>
+    <p>Relationship rules: date precedes time in the DOM in every arrangement; each half has a name of its own; the date half is given more width than the time half, so a wrapped row still reads as one value; and combined messages sit under the pair rather than inside one control.</p>
+  </Sec>
+
+  <Sec n="§03" title="Properties" note="One combined-value contract, constituents still reachable">
+    <T cols={['Prop','Type','Default','Meaning']} rows={[
+      ['label','string','—','Names the moment as a whole. Required outside a Field; the visible heading when there is no Field.'],
+      ['value',"string | {date, time}",'—',"A UTC instant when `zone` is set; otherwise a local 'YYYY-MM-DDTHH:mm' or the parts."],
+      ['zone','string','—',"The record's Site zone as an IANA name ('Asia/Kolkata', never 'IST'). Its presence chooses the mode (§01)."],
+      ['onChange','(value, parts) => void','—','value is the instant or the local string, undefined while a half is missing or the clock time does not exist; parts carries the halves, zone and DST flags (§14).'],
+      ['dateLabel / timeLabel','string',"'Date' / 'Time'",'Half terminology (§10).'],
+      ['min / max',"string | {date, time}",'—',"Inclusive, on the Site's clock, compared at the precision given (§06)."],
+      ['allowPartial','boolean','false','Whether one filled half is a valid intermediate value (§06, §14).'],
+      ['step','number','1','TimeField\u2019s arrow-key step in minutes. 15 or 30 for scheduled times.'],
+      ['error','ReactNode','—','Consumer message; shown instead of the derived one and marks both halves.'],
+      ['hint','ReactNode','—','A rule about the whole moment. Described to both halves.'],
+      ['dateHint / timeHint','ReactNode','—','A rule about one half (§10).'],
+      ['layout',"'auto' | 'inline' | 'stacked'","'auto'",'Arrangement only (§11).'],
+      ['size',"'sm' | 'md' | 'lg'","'md'",'One control height for both halves.'],
+      ['disabled / readOnly','boolean','false','Both halves together.'],
+      ['clearable / weekStartsOn / isDateDisabled','—','true / 1 / —','Passed to the children unchanged.'],
+      ['onValidityChange','({valid, reason, complete}) => void','—','A form\u2019s submit gate. Reports immediately (§14).'],
+    ]} />
+    <p>Deliberately absent: a timezone <em>picker</em>, a "now" button, and any <code>Date</code> in or out. The zone is a property of the record's Site, not a choice the person filling the form makes — offering it would invite filing a Tilburg fault on a Chicago clock. "Now" belongs to the form, which knows whether it is meaningful. A <code>Date</code> is the ambiguity both children were designed to eliminate.</p>
+  </Sec>
+
+  <Sec n="§06" title="States" note="Assembly, partiality, DST and combined validity">
+    <Row label="Empty"><DateTimePicker label="Empty value" zone={IST} value={undefined} onChange={()=>{}} /></Row>
+    <Row label="Date only"><DateTimePicker label="Date-only value" value={dateOnly} onChange={(v,p)=>setDateOnly(p)} /></Row>
+    <Row label="Time only"><DateTimePicker label="Time-only value" value={timeOnly} onChange={(v,p)=>setTimeOnly(p)} /></Row>
+    <Row label="Partial allowed"><DateTimePicker label="Filter, partial allowed" value={dateOnly} onChange={(v,p)=>setDateOnly(p)} allowPartial /></Row>
+    <Row label="Complete"><DateTimePicker label="Complete instant" zone={IST} value={at} onChange={(v)=>v&&setAt(v)} /></Row>
+    <Row label="DST edges"><DateTimePicker label="Changeover" zone={DST_ZONE} value={dst} onChange={(v)=>v&&setDst(v)} step={30} timeHint="Borrowed zone: IST has no transitions, so these two states cannot be shown on it. Try 02:30 on 29 Mar, then on 25 Oct." /></Row>
+    <Row label="Out of bounds"><DateTimePicker label="Bounded value" zone={IST} value="2026-09-01T03:30:00Z" onChange={()=>{}} min="2026-09-01T06:00" max="2026-09-30T22:00" /></Row>
+    <Row label="Disabled"><DateTimePicker label="Disabled value" zone={IST} value={at} onChange={()=>{}} disabled /></Row>
+    <Row label="Read-only"><DateTimePicker label="Read-only value" zone={IST} value={at} onChange={()=>{}} readOnly /></Row>
+    <ul>
+      <li><strong>Combined validity is owned here and nowhere else.</strong> 05:30 on the 1st is a perfectly good date and a perfectly good time; only the assembled value is out of range. Neither child can see it, which is the definition of a composite concern.</li>
+      <li><strong>Bounds are Site-clock, compared at the precision they were given.</strong> <code>'2026-09-01'</code> means from the start of that day; a date-only <code>max</code> means the <em>end</em> of that day — the off-by-one that otherwise rejects every time on the last permitted day. A UTC instant is accepted as a bound and read onto the same clock first.</li>
+      <li><strong>Time bounds bind only on a boundary day.</strong> With a window from 09:00 on the 1st, the time field is floored at 09:00 <em>on the 1st</em> and unconstrained on the 14th. Deriving it on every day would forbid 08:00 on the 14th — a constraint the consumer never expressed.</li>
+      <li><strong>A clock time that does not exist is invalid, and emits nothing.</strong> 02:30 on 29 March never happens in a zone that springs forward through it: the clock moves 02:00 → 03:00. The composite reports it and emits no instant, because the alternative — silently accepting the nearest moment — files the record an hour from where the operator wrote it. Indian Standard Time has no transitions at all, which is exactly why this state has to be handled by the component rather than left to whichever zone a product happens to start with.</li>
+      <li><strong>A clock time that happens twice is valid, and disclosed.</strong> 02:30 on 25 October happens twice in a zone that falls back through it. The earlier occurrence is used — the first 02:30 is the one an operator writing a log means — and a note under the field says so. Not an error: the entry is legitimate, and the ambiguity is the world's, not the user's.</li>
+      <li><strong>Partial behaviour is defined, not emergent.</strong> Default: a half-filled value is invalid, because a moment with no time is not a moment. <code>allowPartial</code> opts into the other reading for a filter or a saved view. Either way <strong>nothing is inferred</strong> — a date with no time does not become midnight, a time with no date does not become today. In instant mode the half-entered state is held by the composite, since no instant can represent it.</li>
+      <li><strong>The partial message waits to be earned.</strong> An empty half is only reported once it has been visited and left; entry is sequential and a form that reddens between two keystrokes teaches people to ignore it. Every other failure concerns something already committed, so none of them wait.</li>
+      <li><strong>Which half a failure marks.</strong> A combined bounds failure and a non-existent clock time mark both, because the fault is the assembled value; a malformed half, or a day outside the permitted range, marks only the half at fault.</li>
+      <li><strong>Disabled and read-only are aggregate.</strong> Half an editable moment is not a state.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§08" title="Accessibility" note="Relationships created by the composition">
+    <ul>
+      <li><strong>Distinguishable halves, one group purpose.</strong> Each half is a real <code>&lt;label for&gt;</code> on its own input — "Date", "Time" — inside a <code>role="group"</code> that carries the subject ("Delivery window opens"). The group says what the value is; the labels say which part you are editing.</li>
+      <li><strong>Labels never depend on visual order.</strong> Neither half is identified by being first, by being wider, or by a separator between them.</li>
+      <li><strong>Combined validation is associated, not merely displayed.</strong> The message region is referenced from both halves through <code>aria-describedby</code> and is a permanently-mounted <code>role="alert"</code>; each implicated half also gets <code>aria-invalid</code>, so the failure does not live in a red border alone.</li>
+      <li><strong>Reading and focus order is date then time</strong> — the order the value is written and read in — in the DOM, at every width and in every arrangement. The spec's own exception for locales that establish another sequence is not exercised here: this system's date format is ISO, and ISO is date-first.</li>
+      <li><strong>The zone is honoured, not merely announced.</strong> The label beside the time is derived from the zone at that instant — it changes with the season — and the value it labels really is converted. A label with no conversion behind it is the failure this section used to warn about; it is now a wiring error, not a design option.</li>
+      <li><strong>The DST disclosures are announced.</strong> A non-existent clock time reaches the <code>role="alert"</code> region; the twice-occurring case reaches both halves through <code>aria-describedby</code>, so a screen-reader user learns which occurrence was used at the same moment a sighted user reads it under the field.</li>
+      <li><strong>Each half's own semantics survive.</strong> <code>DatePicker</code> keeps its dialog and grid; <code>TimeField</code> keeps its live announcement of a stepped time. The composite re-implements neither.</li>
+      <li><strong>Inside a <code>Field</code>, the group takes the label by reference.</strong> Both halves keep their own ids and the Field is told to stop aiming its <code>htmlFor</code> at one control (§13) — otherwise the date half would be announced "Maintenance start Date" and the time half only "Time".</li>
+    </ul>
+    <div className="warn"><p>The failure this component is built to prevent is a time filed on the reader's clock. A fault entered as 04:12 IST at the Chennai line and stored from a Chicago browser lands at 17:42 the previous day — a different shift, a different operating day, and a different person to ask about it. Pass the record's Site zone, never <code>Intl.DateTimeFormat().resolvedOptions().timeZone</code>.</p></div>
+  </Sec>
+
+  <Sec n="§10" title="Content rules" note="What keeps one moment readable as one moment">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Name the moment for the event: "Delivery window opens", "Cut-off", "Reading taken".</li>
+        <li>Keep both halves in the children's formats — ISO date, 24-hour mono time.</li>
+        <li>Separate the three kinds of supporting text: <code>dateHint</code>, <code>timeHint</code>, and <code>hint</code> for the combined rule.</li>
+        <li>Show the zone wherever the value is an instant — it is part of reading the time, not decoration.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li>Put a combined rule in one half's hint, where it reads as applying to that half.</li>
+        <li>Reformat either half — <code>05/09/2026</code> is two different days, and <code>12:00 am</code> is two different times.</li>
+        <li>Pass an abbreviation as <code>zone</code>: <code>'IST'</code> is ambiguous (India, Ireland and Israel all claim it) and <code>'CET'</code> cannot express the summer half of its own year. IANA names only.</li>
+        <li>Label the halves "From"/"To" — that is a range, and this is one moment.</li>
+      </ul></div>
+    </div>
+    <div className="demo col">
+      <DateTimePicker label="Maintenance start" zone={IST} value={at} onChange={(v)=>v&&setAt(v)} step={30}
+        hint="Must fall inside the approved outage window." dateHint="Working days only." timeHint="Steps in 30 minutes." />
+    </div>
+  </Sec>
+
+  <Sec n="§11" title="Responsive" note="Arrangement changes; the value model does not">
+    <div className="frame" style={{maxWidth:280}}>
+      <DateTimePicker label="Narrow container" size="sm" zone={IST} value={at} onChange={(v)=>v&&setAt(v)} />
+    </div>
+    <div className="frame">
+      <DateTimePicker label="Wide container" zone={IST} value={at} onChange={(v)=>v&&setAt(v)} />
+    </div>
+    <ul>
+      <li><strong>Inline until the date no longer fits.</strong> <code>auto</code> lets the halves sit side by side and wrap to a column below the width where the date control starts clipping. The date half is given roughly three parts to the time's two, so the row does not read as two equal fields.</li>
+      <li><strong>Order and value model are invariant.</strong> Stacked or inline, date comes first in the DOM and the tab order; nothing merges into a single text input, and no half is dropped at a smaller size. A control that changes shape may not also change its contract.</li>
+      <li><strong>Focus order after reflow is unchanged</strong> because reflow is flex wrapping, not reordering — there is no <code>order</code> property anywhere in the composite.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§12" title="Anti-patterns" note="Recurring misuses">
+    <ul>
+      <li><strong>Filing an instant on the reader's clock.</strong> <code>Intl.DateTimeFormat().resolvedOptions().timeZone</code> is a property of the browser; the record is a property of the Site. Passing the browser's zone is the single most damaging misuse, because the value looks right to whoever entered it.</li>
+      <li><strong>Passing an abbreviation as the zone.</strong> <code>'IST'</code> is claimed by India, Ireland and Israel; <code>'CET'</code> is a label for half a year. <code>'Asia/Kolkata'</code> is a zone. The component refuses the former and falls back to floating mode with a warning.</li>
+      <li><strong>Accepting a non-existent clock time.</strong> Snapping 02:30 on 29 March to "the nearest real moment" files the record an hour from where it was written, with nothing on screen to say so.</li>
+      <li><strong>Inferring the missing half.</strong> Defaulting the time to midnight is the most common version, and it silently turns "the 14th, time to be confirmed" into a value someone will act on at 00:00.</li>
+      <li><strong>Dressing a floating value as an instant.</strong> A shift template has no zone; appending <code>Z</code> to it claims a moment nobody chose.</li>
+      <li><strong>Using it for a range.</strong> Two moments bounding an interval is <code>DateRangePicker</code>'s contract, not two DateTimePickers side by side.</li>
+      <li><strong>A dropdown of times instead of the time field.</strong> <code>TimeField</code> refuses that deliberately; wrapping it in a composite does not reopen the question.</li>
+      <li><strong>Domain rules inside the component.</strong> Business hours, blackout windows and lead times arrive as <code>min</code>/<code>max</code>, <code>isDateDisabled</code> or a consumer <code>error</code>.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§13" title="Implementation notes" note="Constraints not visible from the API">
+    <ul>
+      <li><strong>The composite owns assembly and disassembly, and nothing else about the value.</strong> It reads the incoming instant onto the Site's clock for the children, and assembles their output back into an instant; it never rewrites either half, and it holds no copy of the value — except the one case below.</li>
+      <li><strong>The half-entered state is the composite's, because no instant can hold it.</strong> There is no instant for "the 14th, no time yet", so a partial entry is held in pending state until it is whole; in floating mode the parts form of <code>value</code> can carry it instead, which is why both shapes are accepted.</li>
+      <li><strong>Nothing is emitted for a clock time that does not exist, and the typed pair is retained.</strong> With no instant to emit, <code>value</code> never changes — so the composite holds the typed halves in the same pending state a partial entry uses, and clears it only on a successful assembly. Clearing it on "both halves present" was a silent-acceptance bug: the halves fell back to the previous instant, <code>shifted</code> was recomputed from that reverted pair as <code>false</code>, and the entry survived only inside <code>TimeField</code>'s own text — no alert, no <code>aria-invalid</code>, and the record left an hour from where the operator wrote it.</li>
+      <li><strong>Conversion lives in <code>components/forms/zone.js</code>,</strong> added for this composite (1.28.0). <code>Intl</code> supplies the zone database; the wall-clock → instant direction guesses the offset, applies it, then re-reads the result in the zone and corrects once — two passes settle every case, because an offset error is at most a few hours and re-reading detects it. Ambiguity is probed by testing whether a candidate 30 or 60 minutes earlier shows the same clock. No <code>Date</code> leaves that file.</li>
+      <li><strong>Each half gets its own <code>FieldContext</code>.</strong> Both children read it for id, <code>aria-describedby</code>, <code>aria-invalid</code> and <code>aria-required</code>, so two children under one Field would take the same id. The composite consumes the outer Field, calls <code>claimGroup()</code> on it, and republishes a distinct context per half with the Field's own describedBy and invalid state merged in.</li>
+      <li><strong>Derived time bounds are conditional.</strong> <code>TimeField</code>'s <code>min</code>/<code>max</code> are set only when the selected date <em>is</em> the boundary day; on any other day they are withdrawn (§06). The date child's bounds are the date halves of the outer bounds, unchanged.</li>
+      <li><strong>Validity is computed, never stored.</strong> Ordering of checks is malformed → non-existent → bounds → partial, so the most fundamental failure is the one reported; only the <em>display</em> of the partial message is deferred by a touched flag, and a blur into a half's own calendar button or panel does not count as leaving it.</li>
+      <li><strong>The zone label is derived per instant and rendered by the child.</strong> The composite computes it from the zone and the current value and passes it to <code>TimeField</code>'s existing <code>zone</code> prop — one place for the label, and it stays part of the time field's own reading. <code>zone.js</code> takes the platform's short name only when it reads as a real abbreviation; an IANA id, a full sentence, or the engine's own <code>GMT+2</code> rendering is rejected in favour of one normalized <code>UTC±h</code> form — so Indian Standard Time reads <code>UTC+5:30</code>, half-hour offset included, on every engine.</li>
+      <li><strong>Development-time warnings</strong> cover a non-IANA <code>zone</code>, an instant with no zone to show it on, a wall clock passed in zoned mode, a malformed <code>value</code>, and a missing <code>label</code> outside a Field.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--date-time-gap','--field-label-text','--field-error-text','--field-message-gap','--input-* (via TimeField)','--datepicker-* (via DatePicker)'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="§14" title="Developer notes" note="Integration contract">
+    <div className="demo col">
+      <DateTimePicker label="Outage start" zone={IST} value={dev} onChange={(v,p)=>setDev(v)} min="2026-09-01T06:00" max="2026-09-30T22:00" step={30} onValidityChange={setGate} />
+      <span className="log">stored · {dev || 'undefined'} · valid {String(gate.valid)}{gate.reason?' · '+gate.reason:''}</span>
+    </div>
+    <pre>{`const [at, setAt] = React.useState(record.occurredAt);   // '2026-09-14T07:00:00Z'
+
+<DateTimePicker
+  label="Fault occurred"
+  zone={site.timezone}                    // IANA: 'Asia/Kolkata', never 'IST'
+  value={at}
+  onChange={(instant, parts) => {         // instant: UTC, or undefined
+    if (instant) setAt(instant);          // parts: { date, time, complete, zone,
+  }}                                      //          shifted, ambiguous }
+  min="2026-09-01T06:00"                   // on the Site's clock
+  step={15}
+  onValidityChange={({ valid }) => setCanSubmit(valid)}
+/>`}</pre>
+    <ul>
+      <li><strong>One value contract, constituents still reachable.</strong> Every change reports both: the serialized value for storage — a UTC instant, or the local string in floating mode — and <code>parts</code> for a form that keeps the halves separate or needs to persist a partial answer.</li>
+      <li><strong>Partial and complete changes are distinguishable without inspection.</strong> The emitted value is <code>undefined</code> exactly while the moment is not filable, and <code>parts.complete</code> says the same as a boolean — a consumer never string-tests to find out.</li>
+      <li><strong>The DST flags travel with the change.</strong> <code>parts.shifted</code> means no instant was emitted for a clock time that does not exist; <code>parts.ambiguous</code> means the earlier of two identical clock times was used. A consumer that logs or audits the entry can record which, without recomputing anything.</li>
+      <li><strong>Nothing is inferred, ever.</strong> There is no prop to default the missing half; a product that wants "midnight when no time is given" applies that itself, where it can be documented and audited.</li>
+      <li><strong>The zone comes from the record, not the reader.</strong> Pass the Site's IANA zone — <code>'Asia/Kolkata'</code>, never <code>'IST'</code> (India, Ireland and Israel all use that abbreviation) and never the browser's. The component refuses an abbreviation and warns.</li>
+      <li><strong>Validity is pushed, not polled,</strong> and reports immediately even while the partial message is still deferred — a submit gate must not depend on where the caret has been.</li>
+      <li><strong>No duration or lead-time rules.</strong> "At least 24 hours from now" is domain logic; it belongs in <code>min</code> or a consumer-computed <code>error</code>.</li>
+    </ul>
+  </Sec>
+
+  <p className="omitted">Omitted, per the composite spec standard: §04 Variants (the halves are fixed and arrangement is a property — there is no second semantically distinct form) · §05 Sizes (one <code>size</code> passed to both children unchanged; the composite adds no scale of its own beyond the wrap threshold, §11) · §07 Keyboard (the composition introduces no key: each half keeps its own contract, and the only coordination is tab order, which §08 and §11 own) · §09 Motion (no composite-owned transition; the date panel animates itself).</p>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

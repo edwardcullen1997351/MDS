@@ -1,0 +1,63 @@
+:host {
+  display: inline-block;
+  font-family: var(--font-family-sans, system-ui, sans-serif);
+}
+
+.ds-split-button {
+  display: inline-flex;
+  align-items: stretch;
+  vertical-align: middle;
+}
+
+.ds-split-button .ds-button-main {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: none;
+}
+
+.ds-split-button .ds-split-button-trigger {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: var(--ds-global-radius-md, 6px);
+  border-bottom-right-radius: var(--ds-global-radius-md, 6px);
+  padding-left: var(--spacing-2, 8px);
+  padding-right: var(--spacing-2, 8px);
+  min-width: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.ds-split-button .ds-button:focus-visible {
+  z-index: 2;
+  position: relative;
+}
+
+.ds-split-button--primary .ds-split-button-trigger {
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  border-right: 1px solid transparent;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+
+.ds-split-button--danger .ds-split-button-trigger {
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  border-right: 1px solid transparent;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+
+.ds-split-button--secondary .ds-split-button-trigger {
+  border-left: 1px solid var(--ds-semantic-color-border-default, #D1D5DB);
+  border-right: 1px solid var(--ds-semantic-color-border-default, #D1D5DB);
+  border-top: 1px solid var(--ds-semantic-color-border-default, #D1D5DB);
+  border-bottom: 1px solid var(--ds-semantic-color-border-default, #D1D5DB);
+}
+
+.ds-split-button--outline .ds-split-button-trigger {
+  border-left: 1px solid var(--ds-semantic-color-border-focus, #3B82F6);
+  border-right: 1px solid var(--ds-semantic-color-border-focus, #3B82F6);
+  border-top: 1px solid var(--ds-semantic-color-border-focus, #3B82F6);
+  border-bottom: 1px solid var(--ds-semantic-color-border-focus, #3B82F6);
+}

@@ -1,0 +1,1309 @@
+/* ==========================================================================
+   Planner Workbench Reference Assembly (ra-planner-workbench)
+   Connecting Asclepius (Plant F-119) and Anantshriveda (RM Warehouse H-9)
+   Strict Design Tokens — Zero Raw Hex Colors — WCAG 2.2 AA Reflow
+   ========================================================================== */
+
+.ds-planner-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+  font-family: var(--ds-global-fontFamily-sans, system-ui, sans-serif);
+  overflow: hidden;
+}
+
+.ds-planner-root ::selection {
+  background: var(--ds-global-color-brand-100, #dbeafe);
+  color: var(--ds-global-color-brand-900, #1e3a8a);
+}
+
+/* Themed Thin Scrollbars for Desktop and Power Scanners */
+.ds-planner-matrix-card,
+.ds-planner-tree-list,
+.ds-planner-center-pane,
+.ds-planner-inspector-pane {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ds-semantic-color-border-subtle, #cbd5e1) transparent;
+}
+
+.ds-planner-matrix-card::-webkit-scrollbar,
+.ds-planner-tree-list::-webkit-scrollbar,
+.ds-planner-center-pane::-webkit-scrollbar,
+.ds-planner-inspector-pane::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.ds-planner-matrix-card::-webkit-scrollbar-track,
+.ds-planner-tree-list::-webkit-scrollbar-track,
+.ds-planner-center-pane::-webkit-scrollbar-track,
+.ds-planner-inspector-pane::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ds-planner-matrix-card::-webkit-scrollbar-thumb,
+.ds-planner-tree-list::-webkit-scrollbar-thumb,
+.ds-planner-center-pane::-webkit-scrollbar-thumb,
+.ds-planner-inspector-pane::-webkit-scrollbar-thumb {
+  background: var(--ds-semantic-color-border-subtle, #cbd5e1);
+  border-radius: var(--ds-global-radius-full, 9999px);
+}
+
+.ds-planner-matrix-card::-webkit-scrollbar-thumb:hover,
+.ds-planner-tree-list::-webkit-scrollbar-thumb:hover,
+.ds-planner-center-pane::-webkit-scrollbar-thumb:hover,
+.ds-planner-inspector-pane::-webkit-scrollbar-thumb:hover {
+  background: var(--ds-semantic-color-border-default, #94a3b8);
+}
+
+/* Workbench Global Header */
+.ds-planner-header {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-global-space-3, 12px);
+  padding: var(--ds-global-space-4, 16px) var(--ds-global-space-4, 16px);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  box-shadow: var(--ds-semantic-elevation-flat, var(--ds-global-shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05)));
+}
+
+.ds-planner-header__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-global-space-3, 12px);
+}
+
+.ds-planner-header__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--ds-global-radius-md, 6px);
+  background: var(--ds-semantic-color-action-primary-default, #2563eb);
+  color: var(--ds-semantic-color-action-primary-text, #ffffff);
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+  font-size: var(--ds-global-fontSize-sm, 14px);
+}
+
+.ds-planner-header__titles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ds-planner-header__title {
+  font-size: var(--ds-global-fontSize-lg, 18px);
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+  margin: 0;
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.ds-planner-header__subtitle {
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  margin: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.ds-planner-header__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ds-global-space-2, 8px);
+}
+
+.ds-planner-header__action-cluster {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ds-global-space-2, 8px);
+}
+
+/* Intercompany Ribbon Container */
+.ds-planner-ribbon-bar {
+  flex: 0 0 auto;
+  padding: var(--ds-global-space-4, 16px) var(--ds-global-space-4, 16px) 0;
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+}
+
+/* Notification & Simulation Banners */
+.ds-planner-banner {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ds-global-space-2, 8px) var(--ds-global-space-4, 16px);
+  font-size: 12px;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+}
+
+.ds-planner-banner__content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.ds-planner-banner__code {
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  font-size: var(--text-2xs, 11px);
+  padding: 1px 6px;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  background: var(--ds-global-color-danger-100, #fee2e2);
+  color: var(--ds-global-color-danger-800, #991b1b);
+  font-weight: 700;
+}
+
+.ds-planner-banner--info {
+  background: var(--ds-global-color-brand-50, #eff6ff);
+  border-color: var(--ds-semantic-color-action-primary-default, #2563eb);
+  color: var(--ds-semantic-color-action-primary-default, #1d4ed8);
+}
+
+.ds-planner-banner--warning {
+  background: var(--ds-global-color-warning-50, #fffbeb);
+  border-color: var(--ds-global-color-warning-500, #f59e0b);
+  color: var(--ds-global-color-warning-700, #b45309);
+}
+
+.ds-planner-banner--danger {
+  background: var(--ds-global-color-danger-50, #fef2f2);
+  border-color: var(--ds-global-color-danger-500, #ef4444);
+  color: var(--ds-global-color-danger-700, #b91c1c);
+}
+
+.ds-planner-banner__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  background: transparent;
+  border: none;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  cursor: pointer;
+  font-size: 14px;
+  color: inherit;
+  padding: 0;
+}
+
+.ds-planner-banner__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--ds-global-space-2, 8px);
+  padding: var(--ds-global-space-1, 4px) var(--ds-global-space-2, 8px);
+  border-radius: var(--ds-global-radius-sm, 4px);
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font-size: var(--text-2xs, 11px);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease-out, opacity 0.15s ease-out;
+}
+
+.ds-planner-banner__action:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.ds-planner-banner__action:focus-visible {
+  outline: 2px solid var(--ds-semantic-color-focus-ring, #2563eb);
+  outline-offset: 2px;
+}
+
+/* §GB-4 Layout wrapper — fills remaining space after harness + header + ribbon + banner.
+   Workbench3PaneLayout now uses height: 100% + flex: 1 1 auto so no !important
+   override is needed for its height. */
+.ds-planner-layout-wrapper {
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding-inline: var(--ds-global-space-4, 16px);
+  padding-block: var(--ds-global-space-3, 12px) var(--ds-global-space-4, 16px);
+  overflow: hidden;
+}
+
+/* Confirm framework component fills the wrapper correctly */
+.ds-planner-layout-wrapper .ds-workbench-3pane {
+  height: 100%;
+  max-height: 100%;
+  flex: 1 1 0%;
+  min-height: 0;
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  border-radius: var(--ds-global-radius-lg, 8px);
+}
+
+/* Left Pane: Resource & Line Hierarchy */
+.ds-planner-resource-pane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1 1 0%;
+  min-height: 0;
+  gap: 0;
+  overflow: hidden;
+}
+
+.ds-planner-pane-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ds-global-space-2, 8px) var(--ds-global-space-3, 12px);
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+.ds-planner-pane-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-global-space-2, 8px);
+  min-width: 0;
+}
+
+.ds-planner-pane-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  background: transparent;
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  cursor: pointer;
+}
+
+.ds-planner-pane-toggle:hover,
+.ds-planner-pane-toggle--restore {
+  background: var(--ds-global-color-brand-50, #eff6ff);
+  color: var(--ds-global-color-brand-700, #1d4ed8);
+}
+
+.ds-planner-restore-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-global-space-2, 8px);
+  min-height: 30px;
+}
+
+.ds-planner-pane-toggle--restore {
+  width: auto;
+  min-height: 30px;
+  padding-inline: var(--ds-global-space-2, 8px);
+  gap: var(--ds-global-space-2, 8px);
+  border-color: var(--ds-semantic-color-border-subtle, #e2e8f0);
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  font-weight: 600;
+}
+
+.ds-planner-pane-toggle--right {
+  margin-left: auto;
+}
+
+.ds-planner-pane-toggle:focus-visible {
+  outline: 2px solid var(--ds-semantic-color-focus-ring, #2563eb);
+  outline-offset: 2px;
+}
+
+.ds-planner-pane-title {
+  font-size: var(--text-2xs, 11px);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps, 0.04em);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  margin: 0;
+}
+
+.ds-planner-order-code-long {
+  display: block;
+  max-width: 100%;
+  color: var(--ds-global-color-brand-700, #1d4ed8);
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.ds-planner-tree-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  gap: var(--space-half, 2px);
+  padding: var(--ds-global-space-1, 4px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Prevent scroll chaining to outer locked frame */
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ds-semantic-color-border-subtle, #cbd5e1) transparent;
+}
+
+.ds-planner-tree-list table,
+.ds-planner-tree-list tbody {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ds-planner-tree-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 2px;
+  padding: var(--ds-global-space-2, 8px);
+  border-radius: var(--ds-global-radius-sm, 4px);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.15s ease-out, color 0.15s ease-out;
+  user-select: none;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ds-planner-tree-item:hover {
+  background: var(--ds-global-color-brand-50, #eff6ff);
+}
+
+.ds-planner-tree-item--active {
+  background: var(--ds-global-color-brand-100, #dbeafe);
+  font-weight: 600;
+  color: var(--ds-global-color-brand-700, #1d4ed8);
+}
+
+.ds-planner-tree-item td {
+  padding: 0 !important;
+  border: none !important;
+  box-sizing: border-box;
+}
+
+.ds-planner-tree-item td:first-child {
+  width: 100%;
+  min-width: 0;
+}
+
+.ds-planner-tree-item td:first-child .ds-tree-grid-cell {
+  display: flex;
+  align-items: flex-start;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+}
+
+.ds-planner-tree-item td:first-child .ds-tree-grid-cell__content {
+  flex: 1 1 0%;
+  min-width: 0;
+  overflow: visible;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.ds-planner-tree-item td:first-child .ds-tree-grid-cell__content span {
+  overflow: visible;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  display: block;
+  min-width: 0;
+}
+
+.ds-planner-tree-item td:last-child {
+  width: 100%;
+  text-align: right;
+}
+
+.ds-planner-tree-item__count {
+  font-size: var(--text-2xs, 11px);
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  font-variant-numeric: tabular-nums;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  display: inline-block;
+}
+
+/* Center Pane: Time-Phased Matrix & Dispatch.
+   Requires height:100% so matrix-card's flex:1 has a constrained parent.
+   Without it, flex:1 has nothing to stretch against and collapses.
+   overflow:hidden clips to allocated space; matrix-card scrolls internally. */
+.ds-planner-center-pane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-global-space-3, 12px);
+  padding: var(--ds-global-space-3, 12px);
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+}
+
+.ds-planner-toolbar-group {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Right Pane: Work Order Inspector.
+   __inspector-content is structural-only (overflow:hidden), so this
+   component is the actual scroll container for the inspector region.
+   Consumer-owned scroll with overscroll-behavior:contain stops chain
+   to the outer locked frame. */
+.ds-planner-inspector-pane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-global-space-3, 12px);
+  padding: var(--ds-global-space-3, 12px);
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ds-semantic-color-border-subtle, #cbd5e1) transparent;
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+}
+
+.ds-planner-order-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  border-radius: var(--ds-global-radius-md, 6px);
+  padding: var(--ds-global-space-4, 16px);
+}
+
+.ds-planner-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--ds-global-space-3, 12px);
+  font-size: 12px;
+  line-height: 1.4;
+  padding: var(--ds-global-space-2, 8px) 0;
+  border-bottom: 1px solid var(--ds-semantic-color-surface-subtle, #f8fafc);
+}
+
+.ds-planner-detail-label {
+  flex: 0 0 108px;
+  padding-top: 1px;
+  font-size: var(--text-2xs, 11px);
+  font-weight: 500;
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  word-break: break-word;
+}
+
+.ds-planner-detail-value {
+  flex: 1 1 0%;
+  min-width: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+  text-align: right;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+
+.ds-planner-empty-wrapper {
+  padding: var(--ds-global-space-4, 16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-radius: var(--ds-global-radius-md, 6px);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+.ds-planner-loading-card {
+  padding: var(--ds-global-space-3, 12px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-global-space-2, 8px);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-radius: var(--ds-global-radius-md, 6px);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+/* Scenario Harness Bar for Headless Automation */
+.ds-planner-harness {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ds-global-space-2, 8px);
+  padding: 6px var(--ds-global-space-3, 12px);
+  background: var(--ds-semantic-color-surface-sunken, #0f172a);
+  color: var(--ds-semantic-color-surface-subtle, #f8fafc);
+  font-size: var(--ds-global-fontSize-xs, 12px);
+}
+
+.ds-planner-harness__label {
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+  text-transform: uppercase;
+  color: var(--ds-semantic-color-text-inverse-secondary, #cbd5e1);
+}
+
+.ds-planner-harness__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  min-width: 24px;
+  padding: 2px 8px;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  border: 1px solid var(--ds-semantic-color-border-default, #334155);
+  background: var(--ds-semantic-color-surface-raised, #1e293b);
+  color: var(--ds-semantic-color-border-subtle, #e2e8f0);
+  cursor: pointer;
+  font-size: var(--text-2xs, 11px);
+  font-family: inherit;
+  transition: background-color 0.15s ease-out, border-color 0.15s ease-out, color 0.15s ease-out;
+}
+
+.ds-planner-harness__btn:hover {
+  background: var(--ds-semantic-color-border-default, #334155);
+}
+
+.ds-planner-harness__btn--active {
+  background: var(--ds-semantic-color-action-primary-default, #2563eb);
+  border-color: var(--ds-semantic-color-action-primary-default, #2563eb);
+  color: var(--ds-semantic-color-action-primary-text, #ffffff);
+}
+
+/* Matrix Table and Components */
+.ds-planner-matrix-card {
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-radius: var(--ds-global-radius-md, 8px);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  /* Wide matrix tables need horizontal scroll — contained within this card */
+  overflow-x: auto;
+  overflow-y: auto;
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: auto;
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-planner-matrix-scroll-hint {
+  display: none;
+}
+
+/* Keep all four data columns inside the center pane on wide screens.
+   Below the readable minimum, the matrix card owns horizontal scrolling. */
+.ds-planner-matrix-table {
+  width: 100%;
+  min-width: 896px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: var(--ds-global-fontSize-xs, 12px);
+}
+
+.ds-planner-compact-transit {
+  display: none;
+}
+
+.ds-planner-matrix-th:nth-child(1) { width: 21%; }
+.ds-planner-matrix-th:nth-child(2) { width: 20%; }
+.ds-planner-matrix-th:nth-child(3) { width: 33%; }
+.ds-planner-matrix-th:nth-child(4) { width: 26%; }
+
+.ds-planner-matrix-td .ds-transfer-glyph {
+  padding-inline: var(--ds-global-space-1, 4px);
+}
+
+/* Column 1: Material SKU — content-driven, never below readable minimum */
+.ds-planner-matrix-th:nth-child(1),
+.ds-planner-matrix-td:nth-child(1) {
+  min-width: 180px;
+}
+
+/* Column 2: On-Hand Dual UOM */
+.ds-planner-matrix-th:nth-child(2),
+.ds-planner-matrix-td:nth-child(2) {
+  min-width: 140px;
+}
+
+/* Column 3: Stock Runway Horizon — visualization bars need room to render */
+.ds-planner-matrix-th:nth-child(3),
+.ds-planner-matrix-td:nth-child(3) {
+  min-width: 220px;
+}
+
+/* Column 4: Intercompany Road Transit — transit glyph + route label */
+.ds-planner-matrix-th:nth-child(4),
+.ds-planner-matrix-td:nth-child(4) {
+  min-width: 200px;
+}
+
+.ds-planner-matrix-th-row {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+  box-shadow: 0 1px 0 var(--ds-semantic-color-border-subtle, #e2e8f0);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  font-size: var(--text-2xs, 11px);
+  letter-spacing: var(--tracking-caps, 0.04em);
+  text-transform: uppercase;
+}
+
+.ds-planner-matrix-th {
+  position: sticky;
+  top: 0;
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+  padding: var(--ds-global-space-2, 8px) var(--ds-global-space-3, 12px);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-planner-matrix-tr {
+  border-bottom: 1px solid var(--ds-semantic-color-surface-subtle, #f1f5f9);
+  cursor: pointer;
+  transition: background-color 0.15s ease-out;
+}
+
+.ds-planner-matrix-tr:nth-child(even) {
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+}
+
+.ds-planner-matrix-tr:hover {
+  background: var(--ds-global-color-brand-50, #eff6ff);
+}
+
+.ds-planner-matrix-tr--active {
+  background: var(--ds-global-color-brand-50, #eff6ff) !important;
+  box-shadow: inset 2px 0 0 var(--ds-semantic-color-action-primary-default, #2563eb);
+}
+
+.ds-planner-matrix-tr:focus-visible {
+  outline: 2px solid var(--ds-semantic-color-focus-ring, #2563eb);
+  outline-offset: -2px;
+}
+
+.ds-planner-matrix-td .ds-dual-uom__secondary,
+.ds-planner-detail-row .ds-dual-uom__secondary {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ds-semantic-color-text-secondary, #475569);
+}
+
+.ds-planner-matrix-td {
+  padding: var(--ds-global-space-2, 8px) var(--ds-global-space-3, 12px);
+  font-variant-numeric: tabular-nums;
+  /* Do not clip — content is already contained by column min-widths.
+     Clipping here masked the underlying column-collapse issue. */
+  overflow: visible;
+}
+
+.ds-planner-matrix-td:first-child {
+  min-width: 0;
+}
+
+.ds-planner-matrix-sku {
+  font-weight: 600;
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  color: var(--ds-global-color-brand-700, #1d4ed8);
+  word-break: normal;
+  overflow-wrap: anywhere;
+  min-width: 140px;
+  max-width: 260px;
+}
+
+.ds-planner-matrix-tr--active .ds-planner-matrix-sku {
+  color: var(--ds-global-color-brand-800, #1e40af);
+}
+
+.ds-planner-matrix-name {
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  max-width: 320px;
+}
+
+.ds-planner-order-header {
+  margin-bottom: 4px;
+}
+
+.ds-planner-order-title {
+  margin: 0 0 4px 0;
+  font-size: var(--ds-global-fontSize-sm, 14px);
+  font-weight: 700;
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.ds-planner-order-batch {
+  font-size: var(--text-2xs, 11px);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+.ds-planner-role-notice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--ds-global-space-2, 8px);
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  border-radius: var(--ds-global-radius-sm, 4px);
+  font-size: var(--text-2xs, 11px);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  margin-bottom: var(--ds-global-space-2, 8px);
+}
+
+.ds-planner-order-actions {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ds-planner-order-actions button:disabled,
+.ds-planner-view-btn:disabled,
+.ds-planner-harness__btn:disabled,
+.ds-planner-legend-toggle:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ds-planner-order-actions button:focus-visible,
+.ds-planner-view-btn:focus-visible,
+.ds-planner-legend-toggle:focus-visible,
+.ds-planner-undo-toast__btn:focus-visible,
+.ds-planner-undo-toast__dismiss:focus-visible,
+.ds-planner-runway-legend__close:focus-visible,
+.ds-planner-banner__close:focus-visible,
+.ds-planner-banner__action:focus-visible,
+.ds-planner-harness__btn:focus-visible,
+.ds-planner-tree-item:focus-visible {
+  outline: 2px solid var(--ds-semantic-color-focus-ring, #2563eb);
+  outline-offset: 2px;
+}
+
+/* Runway Header & Legend Popover (§02 Readability) */
+.ds-planner-th-runway-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ds-planner-legend-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  min-height: 24px;
+  min-width: 24px;
+  font-size: var(--text-2xs, 11px);
+  font-weight: 500;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #cbd5e1);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  cursor: pointer;
+  transition: background-color 0.15s ease-out, color 0.15s ease-out, border-color 0.15s ease-out;
+}
+
+.ds-planner-legend-toggle:hover {
+  background: var(--ds-semantic-color-surface-subtle, #f1f5f9);
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+}
+
+.ds-planner-runway-legend {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--ds-global-space-2, 8px) var(--ds-global-space-3, 12px);
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  font-size: 12px;
+}
+
+.ds-planner-runway-legend__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.ds-planner-runway-legend__title {
+  font-weight: 700;
+  font-size: var(--text-2xs, 11px);
+  letter-spacing: var(--tracking-caps, 0.04em);
+  text-transform: uppercase;
+  color: var(--ds-semantic-color-text-secondary, #475569);
+}
+
+.ds-planner-runway-legend__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  background: transparent;
+  border: none;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--ds-semantic-color-text-secondary, #475569);
+}
+
+.ds-planner-runway-legend__close:hover {
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+}
+
+.ds-planner-runway-legend__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.ds-planner-runway-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+}
+
+.ds-planner-runway-legend__swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.ds-planner-runway-legend__swatch--safe {
+  background: var(--ds-global-color-success-500, #22c55e);
+}
+
+.ds-planner-runway-legend__swatch--reorder {
+  background: var(--ds-global-color-warning-500, #f59e0b);
+}
+
+.ds-planner-runway-legend__swatch--stockout {
+  background: var(--ds-global-color-danger-500, #ef4444);
+}
+
+/* Undo Notification Toast (§01 Ergonomics) */
+.ds-planner-undo-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-global-space-3, 12px);
+  padding: var(--ds-global-space-2, 8px) var(--ds-global-space-3, 12px);
+  background: var(--ds-semantic-color-surface-sunken, #0f172a);
+  color: var(--ds-semantic-color-surface-default, #ffffff);
+  border: 1px solid var(--ds-semantic-color-border-default, #334155);
+  border-radius: var(--ds-global-radius-md, 6px);
+  box-shadow: var(--ds-semantic-elevation-raised, var(--ds-global-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1)));
+  font-size: 12px;
+  max-width: calc(100vw - 40px);
+  animation: ds-planner-toast-enter 0.2s ease-out;
+}
+
+@keyframes ds-planner-toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ds-planner-undo-toast__content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ds-planner-undo-toast__icon {
+  font-size: 14px;
+  color: var(--ds-global-color-brand-400, #60a5fa);
+  flex-shrink: 0;
+}
+
+.ds-planner-undo-toast__msg {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.ds-planner-undo-toast__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.ds-planner-undo-toast__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--control-h-sm, 28px);
+  min-width: var(--control-h-sm, 28px);
+  padding: var(--ds-global-space-1, 4px) var(--ds-global-space-2, 8px);
+  border-radius: var(--ds-global-radius-sm, 4px);
+  border: none;
+  background: var(--ds-semantic-color-action-primary-default, #2563eb);
+  color: var(--ds-semantic-color-action-primary-text, #ffffff);
+  font-size: var(--text-2xs, 11px);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease-out;
+}
+
+.ds-planner-undo-toast__btn:hover {
+  background: var(--ds-semantic-color-action-primary-hover, #1d4ed8);
+}
+
+.ds-planner-undo-toast__dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  background: transparent;
+  border: none;
+  color: var(--ds-semantic-color-text-inverse-secondary, #cbd5e1);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.ds-planner-undo-toast__dismiss:hover {
+  color: var(--ds-semantic-color-surface-default, #ffffff);
+}
+
+/* Let the document scroll on desktop. The fixed-height shell and nested
+   vertical scroll areas made wheel scrolling feel trapped over each pane. */
+@media (min-width: 1025px) {
+  .ds-planner-layout-wrapper .ds-workbench-3pane__body--nav-collapsed .ds-workbench-3pane__nav,
+  .ds-planner-layout-wrapper .ds-workbench-3pane__body--both-collapsed .ds-workbench-3pane__nav,
+  .ds-planner-layout-wrapper .ds-workbench-3pane__body--inspector-collapsed .ds-workbench-3pane__inspector,
+  .ds-planner-layout-wrapper .ds-workbench-3pane__body--both-collapsed .ds-workbench-3pane__inspector {
+    display: none;
+  }
+
+  .ds-planner-root--focused {
+    min-height: 0;
+  }
+
+  .ds-planner-root--focused .ds-planner-layout-wrapper,
+  .ds-planner-root--focused .ds-workbench-3pane,
+  .ds-planner-root--focused .ds-workbench-3pane__body {
+    flex: none;
+  }
+
+  .ds-planner-root--focused .ds-workbench-3pane__body {
+    min-height: 0;
+  }
+
+  .ds-planner-root {
+    height: auto;
+    min-height: 100vh;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .ds-planner-layout-wrapper,
+  .ds-planner-layout-wrapper .ds-workbench-3pane {
+    height: auto;
+    max-height: none;
+    flex: 1 0 auto;
+    overflow: visible;
+  }
+
+  .ds-planner-layout-wrapper .ds-workbench-3pane__body {
+    height: auto;
+    min-height: 520px;
+    flex: 1 0 auto;
+    overflow: visible;
+  }
+
+  .ds-planner-layout-wrapper .ds-workbench-3pane__nav,
+  .ds-planner-layout-wrapper .ds-workbench-3pane__center,
+  .ds-planner-layout-wrapper .ds-workbench-3pane__inspector,
+  .ds-planner-layout-wrapper .ds-workbench-3pane__nav-content,
+  .ds-planner-layout-wrapper .ds-workbench-3pane__center-content,
+  .ds-planner-layout-wrapper .ds-workbench-3pane__inspector-content,
+  .ds-planner-resource-pane,
+  .ds-planner-center-pane,
+  .ds-planner-inspector-pane {
+    height: auto;
+    overflow: visible;
+  }
+
+  .ds-planner-layout-wrapper .ds-workbench-3pane__center-content {
+    scrollbar-gutter: auto;
+  }
+
+  .ds-planner-resource-pane,
+  .ds-planner-center-pane,
+  .ds-planner-inspector-pane {
+    flex-grow: 1;
+  }
+
+  .ds-planner-tree-list {
+    flex: none;
+    overflow: visible;
+  }
+
+  .ds-planner-matrix-card {
+    flex: none;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1500px) {
+  .ds-planner-layout-wrapper .ds-workbench-3pane__nav {
+    width: 240px;
+  }
+
+  .ds-planner-layout-wrapper .ds-workbench-3pane__inspector {
+    width: 300px;
+  }
+
+  .ds-planner-matrix-table {
+    min-width: 0;
+  }
+
+  .ds-planner-root:not(.ds-planner-root--side-pane-collapsed) .ds-planner-matrix-th:nth-child(1) { width: 24%; }
+  .ds-planner-root:not(.ds-planner-root--side-pane-collapsed) .ds-planner-matrix-th:nth-child(2) { width: 28%; }
+  .ds-planner-root:not(.ds-planner-root--side-pane-collapsed) .ds-planner-matrix-th:nth-child(3) { width: 48%; }
+
+  .ds-planner-root:not(.ds-planner-root--side-pane-collapsed) .ds-planner-matrix-th:nth-child(4),
+  .ds-planner-root:not(.ds-planner-root--side-pane-collapsed) .ds-planner-matrix-td:nth-child(4) {
+    display: none;
+  }
+
+  .ds-planner-matrix-th:nth-child(1),
+  .ds-planner-matrix-td:nth-child(1),
+  .ds-planner-matrix-sku {
+    min-width: 0;
+  }
+
+  .ds-planner-root:not(.ds-planner-root--side-pane-collapsed) .ds-planner-compact-transit {
+    display: block;
+    margin-top: var(--ds-global-space-2, 8px);
+  }
+
+  .ds-planner-inspector-pane .ds-planner-pane-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--ds-global-space-2, 8px);
+  }
+
+  .ds-planner-inspector-pane .ds-planner-detail-label {
+    flex-basis: 88px;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1180px) {
+  .ds-planner-layout-wrapper .ds-workbench-3pane__body {
+    flex-wrap: wrap;
+  }
+
+  .ds-planner-layout-wrapper .ds-workbench-3pane__inspector {
+    flex: 0 0 100%;
+    width: 100%;
+    border-left: 0;
+    border-top: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  }
+
+  .ds-planner-layout-wrapper .ds-workbench-splitter--inspector {
+    display: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .ds-planner-pane-toggle {
+    display: none;
+  }
+  .ds-planner-root {
+    height: auto;
+    min-height: 100vh;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .ds-planner-layout-wrapper {
+    flex: none;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .ds-planner-resource-pane,
+  .ds-planner-center-pane,
+  .ds-planner-inspector-pane {
+    height: auto;
+    overflow: visible;
+  }
+
+  .ds-planner-tree-list {
+    flex: none;
+    overflow: visible;
+  }
+
+  .ds-planner-matrix-card {
+    flex: none;
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .ds-planner-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ds-planner-header__actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: var(--ds-global-space-3, 12px);
+  }
+}
+
+@media (max-width: 768px) {
+  .ds-planner-header {
+    padding: var(--ds-global-space-2, 8px) var(--ds-global-space-3, 12px);
+  }
+
+  .ds-planner-center-pane {
+    padding: var(--ds-global-space-2, 8px);
+  }
+
+  .ds-planner-matrix-scroll-hint {
+    display: block;
+    position: sticky;
+    left: 0;
+    width: calc(100% - var(--ds-global-space-4, 16px));
+    margin: 0;
+    padding: var(--ds-global-space-2, 8px);
+    color: var(--ds-semantic-color-text-secondary, #475569);
+    background: var(--ds-semantic-color-surface-default, #ffffff);
+    border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+    font-size: var(--ds-global-fontSize-xs, 12px);
+  }
+
+  .ds-planner-inspector-pane {
+    padding: var(--ds-global-space-2, 8px);
+  }
+
+  .ds-planner-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ds-planner-view-toggle {
+    width: 100%;
+  }
+
+  .ds-planner-view-btn {
+    flex: 1;
+  }
+
+  .ds-planner-undo-toast {
+    bottom: 12px;
+    right: 12px;
+    left: 12px;
+    max-width: calc(100vw - 24px);
+  }
+}
+
+@media (max-width: 500px) {
+  .ds-planner-ribbon-bar .ds-stock-ribbon__metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ds-planner-ribbon-bar .ds-stock-ribbon__card {
+    min-width: 0;
+  }
+}
+
+@media (min-width: 1800px) {
+  .ds-planner-order-card {
+    max-width: 480px;
+  }
+}
+
+@media (pointer: coarse), (max-width: 768px) {
+  .ds-planner-banner__close,
+  .ds-planner-runway-legend__close,
+  .ds-planner-undo-toast__dismiss {
+    position: relative;
+  }
+
+  .ds-planner-banner__close::before,
+  .ds-planner-runway-legend__close::before,
+  .ds-planner-undo-toast__dismiss::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-planner-tree-item,
+  .ds-planner-view-btn,
+  .ds-planner-banner,
+  .ds-planner-undo-toast {
+    animation: none !important;
+    transition: none !important;
+  }
+}

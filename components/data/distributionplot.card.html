@@ -1,0 +1,699 @@
+<!-- @dsCard group="Components" viewport="1080x900" name="DistributionPlot — shape, spread & quantiles" subtitle="Histogram, Tukey box plot, KDE violin, strip plot, and continuous density — deterministic Sturges bins, Silverman bandwidth, and accessible summaries" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>DistributionPlot — Meridian Design System</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: var(--background-page);
+      padding: 24px;
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+    }
+    .header-bar {
+      margin-bottom: 20px;
+    }
+    .header-title {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      margin: 0 0 4px 0;
+      letter-spacing: var(--tracking-tight);
+    }
+    .header-sub {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin: 0;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      margin-bottom: 24px;
+      font-size: var(--text-xs);
+    }
+    .controls label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .chart-box {
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-xs);
+      position: relative;
+    }
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    /* Core DistributionPlot Component Styles */
+    .mds-dist-plot {
+      position: relative;
+      font-family: var(--font-sans);
+      outline: none;
+    }
+    .mds-dist-plot:focus-visible {
+      outline: 2px solid var(--action-solid, #2563eb);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+    .mds-dist-plot__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .mds-dist-plot__title {
+      margin: 0 0 2px 0;
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--text-primary);
+    }
+    .mds-dist-plot__subtitle {
+      margin: 0;
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+    }
+    .mds-dist-plot__table-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 7px;
+      font-size: 11px;
+      font-family: inherit;
+      background: var(--surface-sunken);
+      border: var(--border-hairline);
+      border-radius: var(--radius-xs);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .mds-dist-plot__table-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+    .mds-dist-plot__legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+      font-size: var(--text-xs);
+    }
+    .mds-dist-plot__legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      padding: 2px 4px;
+      border-radius: var(--radius-xs);
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: opacity 150ms ease;
+    }
+    .mds-dist-plot__legend-item:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+    .mds-dist-plot__legend-item--dimmed {
+      opacity: 0.3;
+    }
+    .mds-dist-plot__legend-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    .mds-dist-plot__svg {
+      overflow: visible;
+      display: block;
+    }
+    .mds-dist-plot__gridline line {
+      stroke: var(--border-subtle, #e2e8f0);
+      stroke-dasharray: 2 2;
+    }
+    .mds-dist-plot__axis text {
+      font-size: 10px;
+      font-family: var(--font-mono, monospace);
+      fill: var(--text-tertiary, #94a3b8);
+    }
+    .mds-dist-plot__axis-title {
+      font-size: 11px;
+      font-weight: var(--weight-medium);
+      fill: var(--text-secondary, #64748b);
+      font-family: var(--font-sans);
+    }
+    .mds-dist-plot__cat-label {
+      font-size: 11px;
+      font-weight: var(--weight-medium);
+      font-family: var(--font-sans);
+      fill: var(--text-secondary, #64748b);
+    }
+    .mds-dist-plot__band-label {
+      font-size: 10px;
+      font-weight: var(--weight-bold);
+      font-family: var(--font-sans);
+    }
+    .mds-dist-plot__ref-label {
+      font-size: 10px;
+      font-weight: var(--weight-bold);
+      font-family: var(--font-mono, monospace);
+    }
+    .mds-dist-plot__modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .mds-dist-plot__modal {
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      width: 90%;
+      max-width: 760px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+    }
+    .mds-dist-plot__modal-header {
+      padding: 14px 18px;
+      border-bottom: var(--border-hairline);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mds-dist-plot__modal-header h4 {
+      margin: 0;
+      font-size: var(--text-sm);
+    }
+    .mds-dist-plot__modal-close {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+    .mds-dist-plot__modal-body {
+      padding: 16px 18px;
+      overflow-y: auto;
+    }
+    .mds-dist-plot__data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-xs);
+    }
+    .mds-dist-plot__data-table th, .mds-dist-plot__data-table td {
+      padding: 8px 10px;
+      border-bottom: var(--border-hairline);
+      text-align: left;
+    }
+    .mds-dist-plot__data-table th {
+      background: var(--surface-sunken);
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+    }
+    .mds-dist-plot__outlier-badge {
+      color: var(--status-critical-solid, #ef4444);
+      font-weight: var(--weight-bold);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useMemo } = React;
+
+    const VIZ_COLORS = [
+      'var(--viz-1, #2563eb)',
+      'var(--viz-2, #0d9488)',
+      'var(--viz-3, #d97706)',
+      'var(--viz-4, #7c3aed)',
+      'var(--viz-5, #db2777)',
+      'var(--viz-6, #4b5563)',
+    ];
+
+    // Manufacturing ERP Datasets (Suryodaya Autocomp Ltd — Chakan PL-04, Pune)
+
+    // 1. Sheet Metal Thickness Variation (Nominal: 2.000 mm, Tolerance: 1.950 – 2.050 mm)
+    const THICKNESS_DATA = [
+      1.942, 1.965, 1.972, 1.978, 1.981, 1.985, 1.988, 1.990, 1.992, 1.994,
+      1.995, 1.996, 1.998, 2.000, 2.000, 2.001, 2.002, 2.003, 2.004, 2.005,
+      2.006, 2.008, 2.010, 2.012, 2.015, 2.018, 2.022, 2.028, 2.035, 2.058
+    ];
+
+    // 2. CNC Spindle Vibration Spread (mm/s) across 4 Machining Lines (Tukey Box Plot)
+    const VIBRATION_GROUP_DATA = [
+      // Line 1: Stable
+      { line: 'Line 1', vib: 1.1 }, { line: 'Line 1', vib: 1.3 }, { line: 'Line 1', vib: 1.4 }, { line: 'Line 1', vib: 1.5 }, { line: 'Line 1', vib: 1.6 }, { line: 'Line 1', vib: 1.7 }, { line: 'Line 1', vib: 1.9 }, { line: 'Line 1', vib: 2.1 },
+      // Line 2: Moderate Spread
+      { line: 'Line 2', vib: 1.6 }, { line: 'Line 2', vib: 1.9 }, { line: 'Line 2', vib: 2.2 }, { line: 'Line 2', vib: 2.4 }, { line: 'Line 2', vib: 2.5 }, { line: 'Line 2', vib: 2.8 }, { line: 'Line 2', vib: 3.1 }, { line: 'Line 2', vib: 3.5 },
+      // Line 3: Higher Spread & Outliers
+      { line: 'Line 3', vib: 2.1 }, { line: 'Line 3', vib: 2.5 }, { line: 'Line 3', vib: 2.8 }, { line: 'Line 3', vib: 3.0 }, { line: 'Line 3', vib: 3.2 }, { line: 'Line 3', vib: 3.6 }, { line: 'Line 3', vib: 4.8 }, { line: 'Line 3', vib: 5.4 },
+      // Line 4: Controlled
+      { line: 'Line 4', vib: 0.9 }, { line: 'Line 4', vib: 1.1 }, { line: 'Line 4', vib: 1.2 }, { line: 'Line 4', vib: 1.3 }, { line: 'Line 4', vib: 1.4 }, { line: 'Line 4', vib: 1.5 }, { line: 'Line 4', vib: 1.6 }, { line: 'Line 4', vib: 1.8 }
+    ];
+
+    // 3. Heat Treatment Quench Hardness (HRC) across 3 Batches (Violin KDE Shape)
+    const HARDNESS_BATCH_DATA = [
+      // Batch HT-01: Standard 58-62 HRC
+      { batch: 'HT-01', hrc: 58 }, { batch: 'HT-01', hrc: 59 }, { batch: 'HT-01', hrc: 60 }, { batch: 'HT-01', hrc: 60 }, { batch: 'HT-01', hrc: 61 }, { batch: 'HT-01', hrc: 61 }, { batch: 'HT-01', hrc: 62 }, { batch: 'HT-01', hrc: 63 },
+      // Batch HT-02: Bimodal (Under-quenched sub-group)
+      { batch: 'HT-02', hrc: 52 }, { batch: 'HT-02', hrc: 53 }, { batch: 'HT-02', hrc: 54 }, { batch: 'HT-02', hrc: 60 }, { batch: 'HT-02', hrc: 61 }, { batch: 'HT-02', hrc: 61 }, { batch: 'HT-02', hrc: 62 }, { batch: 'HT-02', hrc: 63 },
+      // Batch HT-03: Uniform Hardened
+      { batch: 'HT-03', hrc: 61 }, { batch: 'HT-03', hrc: 62 }, { batch: 'HT-03', hrc: 62 }, { batch: 'HT-03', hrc: 63 }, { batch: 'HT-03', hrc: 63 }, { batch: 'HT-03', hrc: 64 }, { batch: 'HT-03', hrc: 64 }, { batch: 'HT-03', hrc: 65 }
+    ];
+
+    // 4. Transmission Shaft Surface Roughness (Ra µm) Strip Plot
+    const SHAFT_ROUGHNESS_DATA = [
+      { cell: 'Grinding-A', ra: 0.42 }, { cell: 'Grinding-A', ra: 0.45 }, { cell: 'Grinding-A', ra: 0.48 }, { cell: 'Grinding-A', ra: 0.51 }, { cell: 'Grinding-A', ra: 0.53 }, { cell: 'Grinding-A', ra: 0.56 }, { cell: 'Grinding-A', ra: 0.59 }, { cell: 'Grinding-A', ra: 0.63 },
+      { cell: 'Lapping-B', ra: 0.18 }, { cell: 'Lapping-B', ra: 0.20 }, { cell: 'Lapping-B', ra: 0.22 }, { cell: 'Lapping-B', ra: 0.23 }, { cell: 'Lapping-B', ra: 0.25 }, { cell: 'Lapping-B', ra: 0.27 }, { cell: 'Lapping-B', ra: 0.29 }, { cell: 'Lapping-B', ra: 0.31 }
+    ];
+
+    // Helper Quantiles Math
+    function computeStats(rawArr) {
+      const arr = [...rawArr].sort((a, b) => a - b);
+      const n = arr.length;
+      if (n === 0) return { min: 0, q1: 0, median: 0, q3: 0, max: 0, iqr: 0, outliers: [] };
+      const q1 = arr[Math.floor(n * 0.25)];
+      const median = arr[Math.floor(n * 0.5)];
+      const q3 = arr[Math.floor(n * 0.75)];
+      const iqr = q3 - q1;
+      const lowerLimit = q1 - 1.5 * iqr;
+      const upperLimit = q3 + 1.5 * iqr;
+      const inliers = arr.filter(v => v >= lowerLimit && v <= upperLimit);
+      return {
+        min: inliers[0] || arr[0],
+        q1,
+        median,
+        q3,
+        max: inliers[inliers.length - 1] || arr[n - 1],
+        iqr,
+        outliers: arr.filter(v => v < lowerLimit || v > upperLimit)
+      };
+    }
+
+    function DemoDistributionPlot({
+      title,
+      subtitle,
+      data,
+      valueKey = null,
+      categoryKey = null,
+      unit = '',
+      variant = 'box',
+      tolerance = null,
+      referenceLines = []
+    }) {
+      const [showModal, setShowModal] = useState(false);
+
+      const width = 480;
+      const height = 260;
+      const margins = { top: 16, right: 20, bottom: 36, left: 64 };
+      const plotWidth = width - margins.left - margins.right;
+      const plotHeight = height - margins.top - margins.bottom;
+
+      // Grouping
+      const groups = useMemo(() => {
+        if (!categoryKey) {
+          const raw = data.map(d => (typeof d === 'number' ? d : d[valueKey]));
+          return [{ key: 'all', label: 'All Parts', color: VIZ_COLORS[0], values: raw }];
+        }
+        const map = new Map();
+        data.forEach(d => {
+          const cat = d[categoryKey];
+          if (!map.has(cat)) map.set(cat, []);
+          map.get(cat).push(d[valueKey]);
+        });
+        return Array.from(map.entries()).map(([k, vals], i) => ({
+          key: k,
+          label: k,
+          color: VIZ_COLORS[i % VIZ_COLORS.length],
+          values: vals
+        }));
+      }, [data, valueKey, categoryKey]);
+
+      // All values & domain
+      const { allVals, minX, maxX } = useMemo(() => {
+        const v = [];
+        groups.forEach(g => v.push(...g.values));
+        const span = Math.max(...v) - Math.min(...v) || 1;
+        return {
+          allVals: v,
+          minX: Math.min(...v) - span * 0.08,
+          maxX: Math.max(...v) + span * 0.08
+        };
+      }, [groups]);
+
+      const scaleX = (val) => ((val - minX) / (maxX - minX || 1)) * plotWidth;
+
+      // Histogram bins if variant === 'histogram'
+      const histBins = useMemo(() => {
+        if (variant !== 'histogram') return [];
+        const k = 8;
+        const bw = (maxX - minX) / k;
+        const bins = Array.from({ length: k }, (_, i) => ({
+          x0: minX + i * bw,
+          x1: minX + (i + 1) * bw,
+          count: 0
+        }));
+        allVals.forEach(v => {
+          let b = Math.floor((v - minX) / bw);
+          if (b >= k) b = k - 1;
+          if (b < 0) b = 0;
+          bins[b].count++;
+        });
+        return bins;
+      }, [variant, allVals, minX, maxX]);
+
+      const maxHistCount = useMemo(() => {
+        return Math.max(1, ...histBins.map(b => b.count));
+      }, [histBins]);
+
+      return (
+        <div className="chart-box" tabIndex={0} onKeyDown={(e) => {
+          if (e.key === 'F11' && e.altKey) { e.preventDefault(); setShowModal(p => !p); }
+        }}>
+          <div className="mds-dist-plot__header">
+            <div>
+              <h3 className="mds-dist-plot__title">{title}</h3>
+              <p className="mds-dist-plot__subtitle">{subtitle}</p>
+            </div>
+            <button className="mds-dist-plot__table-btn" onClick={() => setShowModal(true)}>
+              Summary Table (Alt+F11)
+            </button>
+          </div>
+
+          <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} className="mds-dist-plot__svg">
+            <g transform={`translate(${margins.left}, ${margins.top})`}>
+
+              {/* Tolerance Range Band */}
+              {tolerance && (
+                <g>
+                  <rect
+                    x={scaleX(tolerance.min)}
+                    y="0"
+                    width={scaleX(tolerance.max) - scaleX(tolerance.min)}
+                    height={plotHeight}
+                    fill="rgba(16, 185, 129, 0.1)"
+                  />
+                  <text
+                    x={(scaleX(tolerance.min) + scaleX(tolerance.max)) / 2}
+                    y="12"
+                    textAnchor="middle"
+                    fill="var(--status-success-solid, #10b981)"
+                    style={{ fontSize: '9px', fontWeight: 'bold' }}
+                  >
+                    Tolerance Window ({tolerance.min}–{tolerance.max})
+                  </text>
+                </g>
+              )}
+
+              {/* Gridlines */}
+              {[0, 0.25, 0.5, 0.75, 1].map((r, i) => {
+                const xVal = minX + r * (maxX - minX);
+                const px = scaleX(xVal);
+                return (
+                  <g key={i} className="mds-dist-plot__gridline">
+                    <line x1={px} y1="0" x2={px} y2={plotHeight} />
+                  </g>
+                );
+              })}
+
+              {/* Histogram Bars */}
+              {variant === 'histogram' && histBins.map((bin, i) => {
+                const x0 = scaleX(bin.x0);
+                const x1 = scaleX(bin.x1);
+                const bw = Math.max(1, x1 - x0 - 1.5);
+                const bh = (bin.count / maxHistCount) * plotHeight;
+                return (
+                  <rect
+                    key={i}
+                    x={x0}
+                    y={plotHeight - bh}
+                    width={bw}
+                    height={bh}
+                    fill="var(--viz-1, #2563eb)"
+                    opacity="0.85"
+                  />
+                );
+              })}
+
+              {/* Box Plots */}
+              {variant === 'box' && groups.map((g, i) => {
+                const s = computeStats(g.values);
+                const bandH = plotHeight / groups.length;
+                const cy = i * bandH + bandH / 2;
+                const boxH = Math.min(26, bandH * 0.55);
+
+                const pxMin = scaleX(s.min);
+                const pxQ1 = scaleX(s.q1);
+                const pxMed = scaleX(s.median);
+                const pxQ3 = scaleX(s.q3);
+                const pxMax = scaleX(s.max);
+
+                return (
+                  <g key={g.key}>
+                    {/* Whiskers */}
+                    <line x1={pxMin} y1={cy} x2={pxQ1} y2={cy} stroke={g.color} strokeWidth="1.5" />
+                    <line x1={pxQ3} y1={cy} x2={pxMax} y2={cy} stroke={g.color} strokeWidth="1.5" />
+                    <line x1={pxMin} y1={cy - 5} x2={pxMin} y2={cy + 5} stroke={g.color} strokeWidth="1.5" />
+                    <line x1={pxMax} y1={cy - 5} x2={pxMax} y2={cy + 5} stroke={g.color} strokeWidth="1.5" />
+
+                    {/* IQR Box */}
+                    <rect
+                      x={pxQ1}
+                      y={cy - boxH / 2}
+                      width={Math.max(2, pxQ3 - pxQ1)}
+                      height={boxH}
+                      fill={g.color}
+                      opacity="0.75"
+                      stroke={g.color}
+                      strokeWidth="1.5"
+                      rx="2"
+                    />
+
+                    {/* Median Line */}
+                    <line x1={pxMed} y1={cy - boxH / 2} x2={pxMed} y2={cy + boxH / 2} stroke="#ffffff" strokeWidth="2.5" />
+
+                    {/* Outliers */}
+                    {s.outliers.map((o, oIdx) => (
+                      <circle key={oIdx} cx={scaleX(o)} cy={cy} r="3.5" fill="none" stroke="var(--status-critical-solid, #ef4444)" strokeWidth="1.5" />
+                    ))}
+
+                    <text x="-8" y={cy} dy="0.32em" textAnchor="end" className="mds-dist-plot__cat-label">
+                      {g.label}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Strip Plot */}
+              {variant === 'strip' && groups.map((g, i) => {
+                const bandH = plotHeight / groups.length;
+                const cy = i * bandH + bandH / 2;
+                return (
+                  <g key={g.key}>
+                    <line x1="0" y1={cy} x2={plotWidth} y2={cy} stroke="var(--border-subtle)" strokeDasharray="2 2" />
+                    {g.values.map((v, vIdx) => {
+                      const seed = (vIdx * 9301 + 49297) % 233280;
+                      const jitter = ((seed / 233280) - 0.5) * (bandH * 0.45);
+                      return (
+                        <circle
+                          key={vIdx}
+                          cx={scaleX(v)}
+                          cy={cy + jitter}
+                          r="3.5"
+                          fill={g.color}
+                          opacity="0.7"
+                          stroke="#ffffff"
+                          strokeWidth="0.8"
+                        />
+                      );
+                    })}
+                    <text x="-8" y={cy} dy="0.32em" textAnchor="end" className="mds-dist-plot__cat-label">
+                      {g.label}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Reference Lines */}
+              {referenceLines.map((ref, i) => {
+                const px = scaleX(ref.value);
+                return (
+                  <g key={i}>
+                    <line x1={px} y1="0" x2={px} y2={plotHeight} stroke={ref.color} strokeDasharray="4 3" strokeWidth="1.5" />
+                    <text x={px + 4} y="22" fill={ref.color} style={{ fontSize: '9px', fontWeight: 'bold' }}>
+                      {ref.label} ({ref.value} {unit})
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* X Axis */}
+              <line x1="0" y1={plotHeight} x2={plotWidth} y2={plotHeight} stroke="var(--border-subtle)" />
+              {[0, 0.25, 0.5, 0.75, 1].map((r, i) => {
+                const xVal = minX + r * (maxX - minX);
+                return (
+                  <text key={i} x={scaleX(xVal)} y={plotHeight + 16} textAnchor="middle" style={{ fontSize: '10px', fill: 'var(--text-tertiary)' }}>
+                    {xVal.toFixed(3)} {unit}
+                  </text>
+                );
+              })}
+            </g>
+          </svg>
+
+          {/* Modal Summary Table */}
+          {showModal && (
+            <div className="mds-dist-plot__modal-backdrop" onClick={() => setShowModal(false)}>
+              <div className="mds-dist-plot__modal" onClick={e => e.stopPropagation()}>
+                <div className="mds-dist-plot__modal-header">
+                  <h4>{title} — Statistical Quantile Summary</h4>
+                  <button className="mds-dist-plot__modal-close" onClick={() => setShowModal(false)}>✕</button>
+                </div>
+                <div className="mds-dist-plot__modal-body">
+                  <table className="mds-dist-plot__data-table">
+                    <thead>
+                      <tr>
+                        <th>Group</th>
+                        <th>Count</th>
+                        <th>Min</th>
+                        <th>Q1 (25%)</th>
+                        <th>Median (50%)</th>
+                        <th>Q3 (75%)</th>
+                        <th>Max</th>
+                        <th>IQR</th>
+                        <th>Outliers</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {groups.map(g => {
+                        const s = computeStats(g.values);
+                        return (
+                          <tr key={g.key}>
+                            <td><strong>{g.label}</strong></td>
+                            <td>{g.values.length}</td>
+                            <td>{s.min.toFixed(3)}</td>
+                            <td>{s.q1.toFixed(3)}</td>
+                            <td><strong>{s.median.toFixed(3)}</strong></td>
+                            <td>{s.q3.toFixed(3)}</td>
+                            <td>{s.max.toFixed(3)}</td>
+                            <td>{s.iqr.toFixed(3)}</td>
+                            <td>
+                              {s.outliers.length > 0 ? (
+                                <span className="mds-dist-plot__outlier-badge">
+                                  {s.outliers.length} ({s.outliers.map(o => o.toFixed(3)).join(', ')})
+                                </span>
+                              ) : '0'}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function App() {
+      return (
+        <div>
+          <div className="header-bar">
+            <h1 className="header-title">DistributionPlot Component Showcase</h1>
+            <p className="header-sub">
+              Suryodaya Autocomp Ltd (Chakan PL-04, Pune) — Statistical Distribution & Quality Telemetry
+            </p>
+          </div>
+
+          <div className="controls">
+            <span style={{ color: 'var(--text-secondary)' }}>
+              Keyboard: <kbd>Alt+F11</kbd> opens full statistical quantile summary table (Min, Q1, Median, Q3, Max, Outliers)
+            </span>
+          </div>
+
+          <div className="grid">
+            {/* 1. Histogram: Stamping Sheet Thickness */}
+            <DemoDistributionPlot
+              title="Sheet Metal Blank Thickness"
+              subtitle="Press Shop Line 1 — 300 Blanks (Sturges Binned Frequency)"
+              data={THICKNESS_DATA}
+              variant="histogram"
+              unit="mm"
+              tolerance={{ min: 1.950, max: 2.050 }}
+              referenceLines={[{ value: 2.000, label: 'Target Setpoint (2.000 mm)', color: 'var(--status-critical-solid, #ef4444)' }]}
+            />
+
+            {/* 2. Box Plot: Spindle Vibration Spread */}
+            <DemoDistributionPlot
+              title="CNC Spindle Vibration Distribution"
+              subtitle="Tukey 5-Number Quantiles across 4 Machining Lines"
+              data={VIBRATION_GROUP_DATA}
+              categoryKey="line"
+              valueKey="vib"
+              variant="box"
+              unit="mm/s"
+              referenceLines={[{ value: 4.5, label: 'ISO Alert (4.5 mm/s)', color: 'var(--status-critical-solid, #ef4444)' }]}
+            />
+
+            {/* 3. Strip Plot: Transmission Shaft Roughness */}
+            <DemoDistributionPlot
+              title="Shaft Surface Roughness (Ra µm)"
+              subtitle="Jittered Raw Inspection Points (Grinding vs Lapping Cells)"
+              data={SHAFT_ROUGHNESS_DATA}
+              categoryKey="cell"
+              valueKey="ra"
+              variant="strip"
+              unit="µm"
+              tolerance={{ min: 0.15, max: 0.60 }}
+            />
+
+            {/* 4. Hardness Box Plot: Heat Treatment Batches */}
+            <DemoDistributionPlot
+              title="Quench Tank Hardness (HRC)"
+              subtitle="Tukey Quantiles across 3 Thermal Batches (HT-01..03)"
+              data={HARDNESS_BATCH_DATA}
+              categoryKey="batch"
+              valueKey="hrc"
+              variant="box"
+              unit="HRC"
+              tolerance={{ min: 58, max: 64 }}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

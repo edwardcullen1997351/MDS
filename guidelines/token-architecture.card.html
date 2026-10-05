@@ -1,0 +1,28 @@
+<!-- @dsCard group="Tokens" viewport="820x452" name="Three-tier architecture" subtitle="primitive → semantic → component · references point one way only" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="../styles.css"><style>body{margin:0;padding:18px 20px;background:var(--surface-card);color:var(--text-primary)}.mono{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);letter-spacing:0}.cap{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold)}.r{display:flex}.c{display:flex;flex-direction:column}.g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden}.col{padding:14px;border-right:var(--border-hairline-subtle)}.col:last-child{border-right:0}.h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}.n{font-size:var(--text-sm);font-weight:var(--weight-semibold)}.q{font-size:var(--text-2xs);color:var(--text-tertiary);margin-bottom:10px;display:block}.t{display:flex;align-items:center;gap:7px;padding:4px 0;font-family:var(--font-mono);font-size:var(--text-2xs)}.sw{width:14px;height:14px;border-radius:2px;border:var(--border-hairline-subtle);flex:none}.rule{display:grid;grid-template-columns:78px 1fr;gap:10px;font-size:var(--text-xs);padding:4px 0;border-bottom:var(--border-hairline-subtle)}</style></head><body><div class="c" style="gap:14px">
+<div class="g">
+<div class="col"><div class="h"><div class="n">1 · Primitive</div><div class="mono">263</div></div><span class="q">What it <em>is</em>. Literal values, no opinion about use.</span>
+<div class="t"><span class="sw" style="background:var(--blue-600)"></span>--blue-600</div>
+<div class="t"><span class="sw" style="background:var(--grey-300)"></span>--grey-300</div>
+<div class="t"><span class="sw" style="background:var(--surface-sunken)"></span>--space-4</div>
+<div class="t"><span class="sw" style="background:var(--surface-sunken)"></span>--radius-8</div>
+<div class="mono" style="margin-top:10px;color:var(--text-disabled)">references: nothing</div></div>
+<div class="col" style="background:var(--background-page)"><div class="h"><div class="n">2 · Semantic</div><div class="mono">117</div></div><span class="q">What it's <em>for</em>. The rebrand and dark-mode layer.</span>
+<div class="t"><span class="sw" style="background:var(--action-solid)"></span>--action-solid</div>
+<div class="t"><span class="sw" style="background:var(--border-strong)"></span>--border-strong</div>
+<div class="t"><span class="sw" style="background:var(--surface-card)"></span>--surface-card</div>
+<div class="t"><span class="sw" style="background:var(--status-critical-soft)"></span>--status-critical-soft</div>
+<div class="mono" style="margin-top:10px">references: primitives, or a sibling</div></div>
+<div class="col"><div class="h"><div class="n">3 · Component</div><div class="mono">171</div></div><span class="q">Where it's <em>used</em>. One component each.</span>
+<div class="t"><span class="sw" style="background:var(--button-primary-background)"></span>--button-primary-background</div>
+<div class="t"><span class="sw" style="background:var(--card-border)"></span>--card-border</div>
+<div class="t"><span class="sw" style="background:var(--table-header-text)"></span>--table-header-text</div>
+<div class="t"><span class="sw" style="background:var(--input-border-invalid)"></span>--input-border-invalid</div>
+<div class="mono" style="margin-top:10px">references: semantics only</div></div>
+</div>
+<div class="r" style="gap:10px;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-secondary)"><span>--grey-300</span><span style="color:var(--action-solid)">→</span><span>--border-strong</span><span style="color:var(--action-solid)">→</span><span>--card-border-hover</span><span style="color:var(--text-tertiary)">→ the hovered card you are looking at</span></div>
+<div class="c" style="border-top:var(--border-hairline);padding-top:10px">
+<div class="rule"><div class="cap" style="color:var(--text-success)">Do</div><div>Reference one tier up, never two. A component token is a <em>rename</em> of a semantic token, never a new value.</div></div>
+<div class="rule"><div class="cap" style="color:var(--text-success)">Do</div><div>Build new UI on semantic tokens. Reach for component tokens only to retheme a shipped component in isolation.</div></div>
+<div class="rule"><div class="cap" style="color:var(--text-critical)">Never</div><div>A primitive in product code — <span class="mono" style="color:var(--text-critical)">var(--grey-200)</span> renders right in light mode and wrong in dark.</div></div>
+<div class="rule" style="border-bottom:0"><div class="cap" style="color:var(--text-critical)">Never</div><div>Mix foundations and tokens in one declaration: the value can be correct while the contract is missing.</div></div></div></div></body></html>

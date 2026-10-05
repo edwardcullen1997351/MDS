@@ -1,0 +1,522 @@
+<!-- @dsCard group="Components" viewport="1080x900" name="Heatmap — 2D matrix patterns & intensity" subtitle="Matrix, calendar, correlation, and clustered variants — sequential & diverging color ramps, text contrast inversion, and missing-cell hatching" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Heatmap — Meridian Design System</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: var(--background-page);
+      padding: 24px;
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+    }
+    .header-bar {
+      margin-bottom: 20px;
+    }
+    .header-title {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      margin: 0 0 4px 0;
+      letter-spacing: var(--tracking-tight);
+    }
+    .header-sub {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin: 0;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      margin-bottom: 24px;
+      font-size: var(--text-xs);
+    }
+    .controls label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .chart-box {
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-xs);
+      position: relative;
+    }
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    /* Core Heatmap Styles */
+    .mds-heatmap {
+      position: relative;
+      font-family: var(--font-sans);
+      outline: none;
+    }
+    .mds-heatmap:focus-visible {
+      outline: 2px solid var(--action-solid, #2563eb);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+    .mds-heatmap__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .mds-heatmap__title {
+      margin: 0 0 2px 0;
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--text-primary);
+    }
+    .mds-heatmap__subtitle {
+      margin: 0;
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+    }
+    .mds-heatmap__table-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 7px;
+      font-size: 11px;
+      font-family: inherit;
+      background: var(--surface-sunken);
+      border: var(--border-hairline);
+      border-radius: var(--radius-xs);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .mds-heatmap__table-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+    .mds-heatmap__svg {
+      overflow: visible;
+      display: block;
+    }
+    .mds-heatmap__row-label {
+      font-size: 11px;
+      font-weight: var(--weight-medium);
+      font-family: var(--font-sans);
+      fill: var(--text-secondary, #64748b);
+    }
+    .mds-heatmap__col-label {
+      font-size: 10px;
+      font-family: var(--font-mono, monospace);
+      fill: var(--text-tertiary, #94a3b8);
+    }
+    .mds-heatmap__legend-title {
+      font-size: 9px;
+      font-family: var(--font-mono);
+      font-weight: var(--weight-bold);
+      fill: var(--text-secondary, #64748b);
+    }
+    .mds-heatmap__legend-tick {
+      font-size: 9px;
+      font-family: var(--font-mono);
+      fill: var(--text-tertiary, #94a3b8);
+    }
+    .mds-heatmap__tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: var(--surface-card, #ffffff);
+      border: var(--border-hairline);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-md);
+      padding: 10px 12px;
+      font-size: var(--text-xs);
+      z-index: 50;
+      min-width: 170px;
+    }
+    .mds-heatmap__tooltip-header {
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: var(--border-hairline);
+      color: var(--text-primary);
+    }
+    .mds-heatmap__tooltip-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 3px;
+      color: var(--text-secondary);
+    }
+    .mds-heatmap__tooltip-row strong {
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+    .mds-heatmap__tooltip-row--sub {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+    .mds-heatmap__modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .mds-heatmap__modal {
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      width: 90%;
+      max-width: 760px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+    }
+    .mds-heatmap__modal-header {
+      padding: 14px 18px;
+      border-bottom: var(--border-hairline);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mds-heatmap__modal-header h4 {
+      margin: 0;
+      font-size: var(--text-sm);
+    }
+    .mds-heatmap__modal-close {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+    .mds-heatmap__modal-body {
+      padding: 16px 18px;
+      overflow-y: auto;
+    }
+    .mds-heatmap__data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-xs);
+    }
+    .mds-heatmap__data-table th, .mds-heatmap__data-table td {
+      padding: 8px 10px;
+      border-bottom: var(--border-hairline);
+      text-align: left;
+    }
+    .mds-heatmap__data-table th {
+      background: var(--surface-sunken);
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useMemo } = React;
+
+    // Manufacturing ERP Datasets (Suryodaya Autocomp Ltd — Chakan PL-04, Pune)
+
+    // 1. Machine Cell vs Shift Hour Thermal Load (°C)
+    const THERMAL_MATRIX_DATA = [
+      { row: 'CNC-01', col: '06:00', val: 42 }, { row: 'CNC-01', col: '10:00', val: 56 }, { row: 'CNC-01', col: '14:00', val: 68 }, { row: 'CNC-01', col: '18:00', val: 62 }, { row: 'CNC-01', col: '22:00', val: 48 }, { row: 'CNC-01', col: '02:00', val: 38 },
+      { row: 'CNC-02', col: '06:00', val: 45 }, { row: 'CNC-02', col: '10:00', val: 61 }, { row: 'CNC-02', col: '14:00', val: 74 }, { row: 'CNC-02', col: '18:00', val: 69 }, { row: 'CNC-02', col: '22:00', val: 52 }, { row: 'CNC-02', col: '02:00', val: 40 },
+      { row: 'CNC-03', col: '06:00', val: 40 }, { row: 'CNC-03', col: '10:00', val: 52 }, { row: 'CNC-03', col: '14:00', val: 58 }, { row: 'CNC-03', col: '18:00', val: null }, { row: 'CNC-03', col: '22:00', val: null }, { row: 'CNC-03', col: '02:00', val: 35 }, // null indicates downtime
+      { row: 'CNC-04', col: '06:00', val: 48 }, { row: 'CNC-04', col: '10:00', val: 66 }, { row: 'CNC-04', col: '14:00', val: 82 }, { row: 'CNC-04', col: '18:00', val: 76 }, { row: 'CNC-04', col: '22:00', val: 58 }, { row: 'CNC-04', col: '02:00', val: 44 },
+      { row: 'Press-01', col: '06:00', val: 52 }, { row: 'Press-01', col: '10:00', val: 78 }, { row: 'Press-01', col: '14:00', val: 91 }, { row: 'Press-01', col: '18:00', val: 85 }, { row: 'Press-01', col: '22:00', val: 64 }, { row: 'Press-01', col: '02:00', val: 46 }
+    ];
+
+    // 2. Sensor Correlation Matrix (Symmetric Square r in [-1, +1])
+    const CORRELATION_DATA = [
+      { row: 'Speed', col: 'Speed', val: 1.00 }, { row: 'Speed', col: 'Vibration', val: 0.82 }, { row: 'Speed', col: 'Current', val: 0.74 }, { row: 'Speed', col: 'BearingTemp', val: 0.65 }, { row: 'Speed', col: 'CoolantFlow', val: -0.45 },
+      { row: 'Vibration', col: 'Speed', val: 0.82 }, { row: 'Vibration', col: 'Vibration', val: 1.00 }, { row: 'Vibration', col: 'Current', val: 0.88 }, { row: 'Vibration', col: 'BearingTemp', val: 0.79 }, { row: 'Vibration', col: 'CoolantFlow', val: -0.62 },
+      { row: 'Current', col: 'Speed', val: 0.74 }, { row: 'Current', col: 'Vibration', val: 0.88 }, { row: 'Current', col: 'Current', val: 1.00 }, { row: 'Current', col: 'BearingTemp', val: 0.71 }, { row: 'Current', col: 'CoolantFlow', val: -0.55 },
+      { row: 'BearingTemp', col: 'Speed', val: 0.65 }, { row: 'BearingTemp', col: 'Vibration', val: 0.79 }, { row: 'BearingTemp', col: 'Current', val: 0.71 }, { row: 'BearingTemp', col: 'BearingTemp', val: 1.00 }, { row: 'BearingTemp', col: 'CoolantFlow', val: -0.81 },
+      { row: 'CoolantFlow', col: 'Speed', val: -0.45 }, { row: 'CoolantFlow', col: 'Vibration', val: -0.62 }, { row: 'CoolantFlow', col: 'Current', val: -0.55 }, { row: 'CoolantFlow', col: 'BearingTemp', val: -0.81 }, { row: 'CoolantFlow', col: 'CoolantFlow', val: 1.00 }
+    ];
+
+    // Helper Color Interpolators
+    function interpolateRgb(hex1, hex2, ratio) {
+      const p = (h) => [parseInt(h.slice(1,3), 16), parseInt(h.slice(3,5), 16), parseInt(h.slice(5,7), 16)];
+      const c1 = p(hex1), c2 = p(hex2);
+      const r = Math.round(c1[0] + (c2[0] - c1[0]) * ratio);
+      const g = Math.round(c1[1] + (c2[1] - c1[1]) * ratio);
+      const b = Math.round(c1[2] + (c2[2] - c1[2]) * ratio);
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function DemoHeatmap({
+      title,
+      subtitle,
+      data,
+      variant = 'matrix',
+      unit = '',
+      colorType = 'sequential',
+      colors = ['#eff6ff', '#1d4ed8'],
+      showValues = false
+    }) {
+      const [activeCell, setActiveCell] = useState(null);
+      const [showModal, setShowModal] = useState(false);
+
+      const width = 480;
+      const height = 260;
+      const margins = { top: 16, right: 64, bottom: 36, left: 72 };
+      const plotWidth = width - margins.left - margins.right;
+      const plotHeight = height - margins.top - margins.bottom;
+
+      const rowLabels = useMemo(() => Array.from(new Set(data.map(d => d.row))), [data]);
+      const colLabels = useMemo(() => Array.from(new Set(data.map(d => d.col))), [data]);
+
+      const cellW = plotWidth / colLabels.length;
+      const cellH = plotHeight / rowLabels.length;
+
+      const { minVal, maxVal, cellMap } = useMemo(() => {
+        const m = new Map();
+        const vals = [];
+        data.forEach(d => {
+          m.set(`${d.row}:::${d.col}`, d.val);
+          if (d.val != null && !isNaN(d.val)) vals.push(d.val);
+        });
+        return {
+          minVal: colorType === 'diverging' ? -1 : (vals.length > 0 ? Math.min(...vals) : 0),
+          maxVal: colorType === 'diverging' ? 1 : (vals.length > 0 ? Math.max(...vals) : 100),
+          cellMap: m
+        };
+      }, [data, colorType]);
+
+      const getColor = (val) => {
+        if (val == null) return 'url(#missing-hatch)';
+        if (colorType === 'diverging') {
+          if (val < 0) {
+            const ratio = (val - (-1)) / (0 - (-1));
+            return interpolateRgb('#ef4444', '#f8fafc', Math.max(0, Math.min(1, ratio)));
+          } else {
+            const ratio = val / 1;
+            return interpolateRgb('#f8fafc', '#2563eb', Math.max(0, Math.min(1, ratio)));
+          }
+        }
+        const ratio = (val - minVal) / (maxVal - minVal || 1);
+        return interpolateRgb(colors[0], colors[1], Math.max(0, Math.min(1, ratio)));
+      };
+
+      return (
+        <div className="chart-box" tabIndex={0} onKeyDown={(e) => {
+          if (e.key === 'F11' && e.altKey) { e.preventDefault(); setShowModal(p => !p); }
+        }}>
+          <div className="mds-heatmap__header">
+            <div>
+              <h3 className="mds-heatmap__title">{title}</h3>
+              <p className="mds-heatmap__subtitle">{subtitle}</p>
+            </div>
+            <button className="mds-heatmap__table-btn" onClick={() => setShowModal(true)}>
+              Table (Alt+F11)
+            </button>
+          </div>
+
+          <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} className="mds-heatmap__svg">
+            <defs>
+              <pattern id="missing-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45 0 0)">
+                <line x1="0" y1="0" x2="0" y2="6" stroke="#94a3b8" strokeWidth="1.2" opacity="0.4" />
+              </pattern>
+            </defs>
+
+            <g transform={`translate(${margins.left}, ${margins.top})`}>
+              {/* Matrix Cells */}
+              {rowLabels.map((r, rIdx) => (
+                <g key={r}>
+                  {colLabels.map((c, cIdx) => {
+                    const val = cellMap.get(`${r}:::${c}`);
+                    const px = cIdx * cellW;
+                    const py = rIdx * cellH;
+                    const isActive = activeCell && activeCell.row === r && activeCell.col === c;
+
+                    return (
+                      <g key={c} onMouseEnter={() => setActiveCell({ row: r, col: c, val })}>
+                        <rect
+                          x={px + 1}
+                          y={py + 1}
+                          width={cellW - 2}
+                          height={cellH - 2}
+                          rx="2"
+                          fill={getColor(val)}
+                          stroke={isActive ? 'var(--text-primary)' : 'rgba(0,0,0,0.06)'}
+                          strokeWidth={isActive ? 2 : 1}
+                          style={{ cursor: 'pointer' }}
+                        />
+                        {showValues && val != null && (
+                          <text
+                            x={px + cellW / 2}
+                            y={py + cellH / 2}
+                            dy="0.32em"
+                            textAnchor="middle"
+                            style={{
+                              fontSize: '10px',
+                              fontFamily: 'monospace',
+                              fill: (colorType === 'diverging' ? Math.abs(val) > 0.6 : (val - minVal) / (maxVal - minVal) > 0.55) ? '#ffffff' : '#0f172a',
+                              pointerEvents: 'none'
+                            }}
+                          >
+                            {val.toFixed(colorType === 'diverging' ? 2 : 0)}
+                          </text>
+                        )}
+                      </g>
+                    );
+                  })}
+                  {/* Row Label */}
+                  <text x="-8" y={rIdx * cellH + cellH / 2} dy="0.32em" textAnchor="end" className="mds-heatmap__row-label">
+                    {r}
+                  </text>
+                </g>
+              ))}
+
+              {/* Col Labels */}
+              {colLabels.map((c, cIdx) => (
+                <text key={c} x={cIdx * cellW + cellW / 2} y={plotHeight + 16} textAnchor="middle" className="mds-heatmap__col-label">
+                  {c}
+                </text>
+              ))}
+
+              {/* Legend Ramp */}
+              <g transform={`translate(${plotWidth + 18}, 10)`}>
+                <text x="0" y="-4" className="mds-heatmap__legend-title">{unit || 'Scale'}</text>
+                <rect x="0" y="0" width="10" height={plotHeight - 20} fill={`url(#legend-grad-${colorType})`} rx="2" stroke="#cbd5e1" />
+                <text x="14" y="6" dy="0.32em" className="mds-heatmap__legend-tick">{maxVal.toFixed(1)}</text>
+                <text x="14" y={plotHeight - 24} dy="0.32em" className="mds-heatmap__legend-tick">{minVal.toFixed(1)}</text>
+              </g>
+            </g>
+          </svg>
+
+          {/* Tooltip */}
+          {activeCell && (
+            <div className="mds-heatmap__tooltip" style={{ right: 20, top: 45 }}>
+              <div className="mds-heatmap__tooltip-header">
+                <strong>{activeCell.row} × {activeCell.col}</strong>
+              </div>
+              <div className="mds-heatmap__tooltip-body">
+                <div className="mds-heatmap__tooltip-row">
+                  <span>Measured:</span>
+                  <strong>{activeCell.val != null ? `${activeCell.val} ${unit}` : 'Machine Downtime'}</strong>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Modal Data Table */}
+          {showModal && (
+            <div className="mds-heatmap__modal-backdrop" onClick={() => setShowModal(false)}>
+              <div className="mds-heatmap__modal" onClick={e => e.stopPropagation()}>
+                <div className="mds-heatmap__modal-header">
+                  <h4>{title} — Matrix Records</h4>
+                  <button className="mds-heatmap__modal-close" onClick={() => setShowModal(false)}>✕</button>
+                </div>
+                <div className="mds-heatmap__modal-body">
+                  <table className="mds-heatmap__data-table">
+                    <thead>
+                      <tr>
+                        <th>Machine / Sensor</th>
+                        {colLabels.map(col => <th key={col}>{col}</th>)}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rowLabels.map(r => (
+                        <tr key={r}>
+                          <td><strong>{r}</strong></td>
+                          {colLabels.map(c => {
+                            const val = cellMap.get(`${r}:::${c}`);
+                            return <td key={c}>{val != null ? `${val} ${unit}` : '—'}</td>;
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function App() {
+      const [showValues, setShowValues] = useState(true);
+
+      return (
+        <div>
+          <div className="header-bar">
+            <h1 className="header-title">Heatmap Component Showcase</h1>
+            <p className="header-sub">
+              Suryodaya Autocomp Ltd (Chakan PL-04, Pune) — 2D Shop-Floor Matrix Visualizations
+            </p>
+          </div>
+
+          <div className="controls">
+            <label>
+              <input
+                type="checkbox"
+                checked={showValues}
+                onChange={e => setShowValues(e.target.checked)}
+              />
+              Show In-Cell Numerical Values (Automated Contrast Inversion)
+            </label>
+            <span style={{ color: 'var(--text-tertiary)' }}>·</span>
+            <span style={{ color: 'var(--text-secondary)' }}>
+              Keyboard: <kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd> traverse grid cells, <kbd>Alt+F11</kbd> tabular matrix
+            </span>
+          </div>
+
+          <div className="grid">
+            {/* 1. Thermal Load Matrix */}
+            <DemoHeatmap
+              title="Machine Cell Thermal Load (°C)"
+              subtitle="24h Operating Cycle (Hatched cells represent machine downtime)"
+              data={THERMAL_MATRIX_DATA}
+              variant="matrix"
+              unit="°C"
+              colorType="sequential"
+              colors={['#eff6ff', '#1d4ed8']}
+              showValues={showValues}
+            />
+
+            {/* 2. Sensor Correlation Matrix */}
+            <DemoHeatmap
+              title="Sensor Cross-Correlation Matrix"
+              subtitle="Diverging Pearson r in [-1, +1] (Red = Inverse, Blue = Direct)"
+              data={CORRELATION_DATA}
+              variant="correlation"
+              unit="r"
+              colorType="diverging"
+              colors={['#ef4444', '#f8fafc', '#2563eb']}
+              showValues={showValues}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

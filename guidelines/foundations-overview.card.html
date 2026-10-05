@@ -1,0 +1,124 @@
+<!-- @dsCard group="Guidelines" viewport="1040x1400" name="Foundations overview" subtitle="Master navigation taxonomy indexing all 51+ foundation guideline cards in the Meridian Design System" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Foundations Master Overview</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:32px}
+.wrap{max-width:1040px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0;max-width:78ch;color:var(--text-secondary);text-wrap:pretty}
+.rules{margin:24px 0 16px;padding:20px 22px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:12px}
+.rules.why{border-left:2px solid var(--action-solid)}
+.rules h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+p{margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:82ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:32px 0 14px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec{display:grid;grid-template-columns:220px minmax(0,1fr);gap:28px;padding:22px 0;border-bottom:var(--border-hairline)}
+.sec:last-child{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:7px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.body{display:flex;flex-direction:column;gap:12px;min-width:0}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:normal;word-break:normal}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card-tax{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.card-tax h4{margin:0;font-size:var(--text-xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)}
+.card-tax ul{padding-left:14px;font-size:var(--text-xs);gap:4px}
+.sig{margin-top:40px;padding-top:14px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:12px}.grid2{grid-template-columns:1fr}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Guidelines · Foundations</span>
+<h1>Foundations Master Overview</h1>
+<p class="lede">The Meridian Design System visual foundation is documented across 51 guideline cards. This master overview indexes every foundation domain into a structured taxonomy for rapid wayfinding and onboarding.</p>
+
+<div class="groupline"><h2>1. Visual Foundations Taxonomy</h2><span>7 Core Domains</span></div>
+
+<div class="grid2">
+  <div class="card-tax">
+    <h4>1. Color & Theming (7 cards)</h4>
+    <ul>
+      <li><strong>Ramps:</strong> Grey scale, blue action, semantic state hues (green, orange, red, teal).</li>
+      <li><strong>Semantics:</strong> Text roles (primary, secondary, tertiary, disabled), surfaces, borders.</li>
+      <li><strong>Dark Scope:</strong> Multi-theme token overrides with alpha compositing.</li>
+      <li><strong>Data Viz:</strong> <code>--viz-1…6</code> series sequence.</li>
+    </ul>
+  </div>
+
+  <div class="card-tax">
+    <h4>2. Typography & Numerals (8 cards)</h4>
+    <ul>
+      <li><strong>Typefaces:</strong> Inter (sans) for prose/labels, JetBrains Mono for codes/identifiers.</li>
+      <li><strong>Tabular Figures:</strong> <code>tabular-nums</code> on all numeric data columns.</li>
+      <li><strong>Scale:</strong> <code>--text-2xs</code> (10px) to <code>--text-4xl</code> (32px).</li>
+      <li><strong>Hierarchy:</strong> Strict heading levels independent of visual size.</li>
+    </ul>
+  </div>
+
+  <div class="card-tax">
+    <h4>3. Geometry & Spacing (6 cards)</h4>
+    <ul>
+      <li><strong>4px Base Grid:</strong> <code>--space-1</code> (4px) to <code>--space-16</code> (64px).</li>
+      <li><strong>Control Heights:</strong> Standardized 28px / 34px / 44px rhythm.</li>
+      <li><strong>Row Rhythm:</strong> 36px (compact), 44px (comfortable), 56px (expanded).</li>
+    </ul>
+  </div>
+
+  <div class="card-tax">
+    <h4>4. Radius & Hairlines (6 cards)</h4>
+    <ul>
+      <li><strong>Radius Scale:</strong> <code>--radius-xs</code> (2px) to <code>--radius-full</code> (9999px).</li>
+      <li><strong>Structural Borders:</strong> Hairlines (1px) carry architecture; 0 ordinals.</li>
+      <li><strong>Control Boundaries:</strong> <code>--border-control</code> for 3:1 WCAG AA compliance.</li>
+    </ul>
+  </div>
+
+  <div class="card-tax">
+    <h4>5. Elevation & Layers (5 cards)</h4>
+    <ul>
+      <li><strong>Z-Index Ladder:</strong> Strict 6-level stacking ladder (0 to 500).</li>
+      <li><strong>Shadow Roles:</strong> <code>--elevation-0</code> to <code>--elevation-5</code>.</li>
+      <li><strong>Focus Rings:</strong> Inset / outline focus rules preventing container clipping.</li>
+    </ul>
+  </div>
+
+  <div class="card-tax">
+    <h4>6. Motion & Choreography (5 cards)</h4>
+    <ul>
+      <li><strong>3-Loop Budget:</strong> <code>mer-spin</code>, <code>mer-indeterminate</code>, <code>mer-skeleton-sweep</code>.</li>
+      <li><strong>Durations:</strong> Instant (50ms), Fast (120ms), Base (180ms), Slow (240ms).</li>
+      <li><strong>A11y:</strong> Instantaneous 1ms collapse under <code>prefers-reduced-motion</code>.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="groupline"><h2>2. Composition & Assembly</h2><span>Reference Standards</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§01</span><h3>Core Guidelines</h3></div>
+  <div class="body">
+    <table><thead><tr><th>Document</th><th>Path</th><th>Purpose</th></tr></thead><tbody>
+      <tr><td class="k">Universal Composition Rules</td><td class="k"><a href="composition-rules.card.html">composition-rules.card.html</a></td><td>Container nesting laws, table-card union, feedback boundaries.</td></tr>
+      <tr><td class="k">Form Composition</td><td class="k"><a href="form-composition.card.html">form-composition.card.html</a></td><td>Measure caps, single-column sequence, fieldset legends.</td></tr>
+      <tr><td class="k">Layout Template Standard</td><td class="k"><a href="layout-template-spec-standard.card.html">layout-template-spec-standard.card.html</a></td><td>14-section layout specification standard.</td></tr>
+      <tr><td class="k">Data Visualization Standard</td><td class="k"><a href="data-visualization-spec-standard.card.html">data-visualization-spec-standard.card.html</a></td><td>14-section data visualization system specification standard.</td></tr>
+      <tr><td class="k">Visualization Infrastructure</td><td class="k"><a href="visualization-infrastructure.card.html">visualization-infrastructure.card.html</a></td><td>The 10 shared infrastructure systems powering the chart layer.</td></tr>
+      <tr><td class="k">Declarative Runtime</td><td class="k"><a href="dc-runtime.card.html">dc-runtime.card.html</a></td><td>DC custom tags, DCLogic lifecycle, and data-props schema.</td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<div class="sig">
+  <span>Meridian Design System · Master Foundations Guide</span><br>
+  <span>Location: <code>guidelines/*.card.html</code> · <code>tokens/*.css</code></span>
+</div>
+</div>
+</body></html>

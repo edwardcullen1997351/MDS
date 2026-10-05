@@ -1,0 +1,294 @@
+<!-- @dsCard group="Specs · Composite" viewport="1080x900" name="FileUpload" subtitle="Full specification — one attachment set: the aggregate state that decides whether the record may be saved" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>FileUpload — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:5px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:14px 0 0}
+a,a:hover{color:var(--text-link)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { FileUpload, FileDropzone, FileItem, Field, Text, Button, Badge } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+
+/* The reference implementation IS the component now — built at 1.30.0 from
+   this specification. The demos below drive the real FileUpload. */
+function FileUploadDemo(){
+  const [files,setFiles] = React.useState([
+    {id:'a',name:'BRK-4820-A_rev-C.pdf',size:2438144,state:'complete',meta:'Sheet 1 of 2'},
+    {id:'b',name:'BOM_BRK-4820-A_rev-C.csv',size:18944,state:'uploading',progress:64},
+  ]);
+  const [status,setStatus] = React.useState('busy');
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:10,width:460}}>
+      <FileUpload label="Revised drawing and BOM"
+        targetLabel="Drop the revised drawing and BOM here, or browse"
+        hint="PDF, DWG or CSV · up to 20 MB each · 5 files"
+        accept=".pdf,.dwg,.csv" maxSize={20*1024*1024} maxFiles={5} required
+        value={files} onChange={setFiles} onStatusChange={setStatus} />
+      <div style={{display:'flex',alignItems:'center',gap:10}}>
+        <Button size="sm" disabled={status!=='idle'}>Release ECR-2291</Button>
+        <Badge tone={status==='idle'?'success':status==='busy'?'info':'danger'}>{status}</Badge>
+        {status==='busy' && <Text size="xs" tone="tertiary">Waiting for 1 upload</Text>}
+        {status==='failed' && <Text size="xs" tone="critical">Resolve the failed file first</Text>}
+      </div>
+    </div>
+  );
+}
+
+function FileUploadRequiredEmpty(){
+  const [files,setFiles] = React.useState([]);
+  return (
+    <div style={{width:460}}>
+      <FileUpload label="Revised drawing and BOM"
+        targetLabel="Drop the revised drawing and BOM here, or browse"
+        hint="PDF, DWG or CSV · up to 20 MB each · 5 files"
+        accept=".pdf,.dwg,.csv" maxSize={20*1024*1024} maxFiles={5} required
+        value={files} onChange={setFiles} />
+    </div>
+  );
+}
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Composite · Component specification</span>
+    <h1>FileUpload</h1>
+    <p className="lede">One attachment set, on one record. The composite exists for the thing neither part can see: whether the set as a whole is complete, whether anything is still in flight, and therefore whether the record may be saved. <code>FileDropzone</code> knows only the last drop; <code>FileItem</code> knows only its own row. The relationship between them is the contract, and it is the only thing specified here.</p>
+    <div className="meta">
+      <span>components/composite/FileUpload.jsx</span><span>window.MeridianDesignSystem_962c43.FileUpload</span><span style={{color:'var(--text-primary)'}}>status: frozen 7 Sep 2026 · 1.30.1 · 0 open items</span><span>parts: FileDropzone, FileItem, Field</span>
+    </div>
+  </div>
+
+  <Sec n="§01" title="Purpose" note="The set, and whether the record may be saved.">
+    <p>Every surface that takes attachments repeats the same four decisions: where files come in, how each one is shown, what the set means when one of them has failed, and whether Save is allowed while bytes are still moving. The first two are Core components. The last two are the composition, and they were being answered differently on every screen — which is how a routing change gets released with a BOM that is still at 64%.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['One attachment set on one record','FileUpload','This composite.'],
+      ['Only take files','FileDropzone','No set, no aggregate state.'],
+      ['Only show files','FileItem','A read-only attachment list on a released record.'],
+      ['Twenty attachments with author, date, revision','Table + FileDropzone','Past about eight rows the set is a table; the aggregate rules here still apply.'],
+      ['Import a data file and process it','Not this','An import is an asynchronous action with a result — see the asynchronous-action pattern.'],
+      ['Gate a record on its evidence','This, under a pattern',<span>The commit relationship — when files gate a save, what survives a failure, who may remove them afterwards — is the <a href="../patterns/EvidenceAttachment.spec.html">evidence attachment</a> pattern. This composite is the set it uses.</span>],
+    ]}/>
+    <p><strong>What the composition adds, and nothing else:</strong> one aggregate state over the set (§06), one identity and one validation message for the set as a field (§08), the relationship between the set and the surface's submit (§14), and a coordinated <code>size</code> down a single column (§05).</p>
+    <div className="demo"><FileUploadDemo /></div>
+  </Sec>
+
+  <Sec n="§02" title="Anatomy" note="One column: field label, target, rows, aggregate message.">
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Field</strong> (required) — supplies the set's label and its <em>one</em> error slot. It does <strong>not</strong> carry the rules line: <code>Field</code> renders its hint after its children, which would put “up to 20 MB each” below the target and below rows the operator has already dropped. The rules belong to the target (part 2), before the attempt. The set is a single form field with several values, exactly like a <code>CheckboxGroup</code>.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>FileDropzone</strong> (required, exactly one) — always the first child, above the rows. Two dropzones in one set is two sets.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>FileItem list</strong> (required when the set is non-empty) — one row per file, in <strong>selection order</strong>, directly below the target so a drop and its result share an edge.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Aggregate message</strong> (conditional) — the set-level failure, in the <code>Field</code> error slot: a rejection, a required-but-empty set, or “one file did not upload”. Per-file reasons stay on their rows (§10).</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Submit</strong> (external, but in the contract) — the surface's own Save or Release button. It belongs to the surface, and the composite tells it whether it may fire (§14).</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>No count badge, no total size, no “2 of 5 files”.</strong> The rows are the count. Optional, and only when <code>maxFiles</code> is set and near.</span></div>
+    </div>
+    <T cols={['Part','Required','Order']} rows={[
+      ['Field','Yes','Wraps everything'],
+      ['FileDropzone','Yes — exactly one','First'],
+      ['FileItem','When non-empty','Below, selection order'],
+      ['Aggregate error','When the set is invalid','Field error slot'],
+      ['Alert','Never inside the set','Batch-level failures only, at surface level'],
+    ]}/>
+    <p><strong>The target stays above the rows and never beside them.</strong> A two-column split puts the drop target out of reach of the list it produces, and on a phone one of the two columns wins.</p>
+  </Sec>
+
+  <Sec n="§03" title="Properties" note="The set-level API the parts cannot express.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['value',<span className="t">FileEntry[]</span>,<span className="t">[]</span>,'The set. One entry per file: { id, name, size, state, progress, error, meta }. Controlled — the composite never owns the queue.'],
+      ['onChange',<span className="t">(next: FileEntry[]) => void</span>,'—','Fired on select, remove and cancel. The single write path for the set.'],
+      ['label',<span className="t">ReactNode</span>,'—','Passed to Field. Names the SET; the set has one name.'],
+      ['targetLabel',<span className="t">ReactNode</span>,'“Drop files here, or browse”','The dropzone\u2019s own label \u2014 both routes, with the content ("Drop the revised drawing and BOM here, or browse"). Without it every set in the product renders the generic default, and a frozen set still reads as an invitation.'],
+      ['hint',<span className="t">ReactNode</span>,'—','The rules. Rendered INSIDE the target, not under the set \u2014 see \u00a702 and \u00a708.'],
+      ['error',<span className="t">ReactNode</span>,'—','The set-level message. Overrides any derived one (§06).'],
+      ['required',<span className="t">boolean</span>,<span className="t">false</span>,'An empty set is invalid. The only rule the composite may assert on its own.'],
+      ['requiredMessage',<span className="t">ReactNode</span>,'“At least one file is required.”','The required sentence in the record\u2019s own words. Separate from error, which would otherwise clobber the rejection and failed-upload messages \u2014 \u00a710 asks for surface-specific wording, and error could not give it without losing the others.'],
+      ['showRequired',<span className="t">boolean</span>,<span className="t">false</span>,'Reveal the required message before the set has been touched \u2014 pass true on an attempted submit. See \u00a706.'],
+      ['accept / maxSize / maxFiles',<span className="t">string | number</span>,'—','Forwarded to the dropzone. maxFiles is counted against value.length by the composite, not by the caller.'],
+      ['size',<span className="t">\'sm\' | \'md\'</span>,<span className="t">\'md\'</span>,'One size for the whole column. §05.'],
+      ['disabled',<span className="t">boolean</span>,<span className="t">false</span>,'Aggregate: the target and every row’s actions go inert together. §06.'],
+      ['onStatusChange',<span className="t">(s: SetStatus) => void</span>,'—',"'idle' | 'busy' | 'failed' | 'invalid'. How the surface learns whether it may submit — see §14."],
+    ]}/>
+    <p><strong><code>currentCount</code> disappears.</strong> It exists on <code>FileDropzone</code> only because a bare dropzone cannot see the set; the composite can, so it derives it from <code>value.length</code>. A composite that still asked for it would be exposing its own internals.</p>
+    <p><strong>There is no <code>onUpload</code>, and no transport prop.</strong> The composite coordinates state; it does not hold a request. Every entry's <code>state</code> and <code>progress</code> arrive from the caller's queue, which is the same rule both parts follow.</p>
+  </Sec>
+
+  <Sec n="§05" title="Sizes" note="One size down one column.">
+    <T cols={['size','Dropzone','Rows','Use']} rows={[
+      ['sm','sm target, 14 px padding','sm controls','A drawer, a side panel, a dense form.'],
+      ['md','md target, 22 px padding','sm controls','Default.'],
+    ]}/>
+    <p>The set is one vertical rhythm, and only the composite knows every piece of it: a <code>md</code> target with rows left at their own default reads as two components that happen to be stacked. Rows stay on <code>sm</code> controls at both sizes — the actions are secondary to the file name, and a <code>md</code> IconButton on every row turns a four-file list into a column of buttons. Density still applies underneath, so <code>expanded</code> grows the row targets without any change here.</p>
+  </Sec>
+
+  <Sec n="§06" title="States" note="The aggregate — the whole reason the composite exists.">
+    <T cols={['Set status','Derived from','What it means','Submit']} rows={[
+      ['idle','no entry is queued or uploading, none failed','Everything the record needs is here.','Allowed'],
+      ['busy','any entry queued or uploading','Bytes are still moving.','Blocked — with a reason beside the button'],
+      ['failed','any entry failed','One file is not attached, and the operator must retry or remove it.','Blocked'],
+      ['invalid','required and empty, or an unrendered rejection','The set breaks a rule of its own.','Blocked'],
+    ]}/>
+    <ul>
+      <li><strong>The aggregate is derived, never stored.</strong> One state machine per file, in the caller's queue; the set's status is a pure function of them, so it can never disagree with the rows.</li>
+      <li><strong><code>failed</code> outranks <code>busy</code>.</strong> Three files uploading and one failed is a failed set — the operator has something to do now, and a spinner would hide it.</li>
+      <li><strong>Aggregate disabled is all-or-nothing.</strong> When the record is released, the target refuses and every row loses its actions in the same paint. A frozen record with live remove buttons is the defect this exists to prevent.</li>
+      <li><strong>Removing the last file re-asserts <code>required</code></strong> immediately, rather than waiting for a submit — the field was valid a moment ago, and the change is the user's own.</li>
+      <li><strong>Status and message are on different clocks.</strong> An empty required set is <code>invalid</code> from mount, so the submit is blocked before anyone touches anything — but the message waits until the set has been touched, or until the surface passes <code>showRequired</code> after an attempted submit. A form that reddens on arrival teaches people to ignore red. This split was found by the first consumer, not by this specification: written from the spec alone, the component showed “At least one file is required.” on an untouched, unopened ECR.</li>
+    </ul>
+    <div className="demo col">
+      <Row label="busy"><FileUploadDemo /></Row>
+      <Row label="required, empty"><FileUploadRequiredEmpty /></Row>
+    </div>
+  </Sec>
+
+  <Sec n="§08" title="Accessibility" note="One field, one name, one error — over several controls.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['One field identity (1.3.1)','The Field label names the SET, and names it ONCE, on a wrapper: the dropzone claims the field group, so the Field stops aiming its own <label for> at the picker, and the dashed target carries role="group" labelled by the field label. The picker inside it keeps its own single name ("Drop the revised drawing and BOM here, or browse"), so the set name is never concatenated onto the control — by the browser or by hand. A set of attachments is one form field with several values, like CheckboxGroup, not five unrelated controls that happen to be adjacent.'],
+      ['One validation association (3.3.1)','The Field error is linked from the dropzone input with aria-describedby. Per-file reasons live on their rows and are NOT duplicated into the field error, so a screen reader hears the set-level problem once and the file-level problem where the file is.'],
+      ['Announcing arrivals (4.1.3)','Rows added by a drop are announced by a polite live region owned by the composite — "2 files added, 1 refused" — because a drag-and-drop gesture gives no other feedback to a non-visual user. Per-file percentages stay in each row’s own status.'],
+      ['Focus after removal (2.4.3)','Removing a row moves focus to the next row’s remove control, or to the dropzone if the set is now empty. Focus lost to the document body is the most common composite-level a11y defect there is.'],
+      ['Reading order','Label, then the target with its rules line inside it, then the rows, then the error. The rules are read before the attempt (3.3.2), which is only true if they sit in the target — a hint on the Field renders after the children, i.e. after the files. The target always precedes its results, in the DOM as well as on screen.'],
+      ['Aggregate disabled (4.1.2)','Disabling the set disables real controls; nothing is left focusable-but-inert, and the reason goes in the Field hint, since a disabled control cannot announce one.'],
+      ['Submit relationship (3.3.1)','The submit button is not disabled silently: the reason ("Waiting for 1 upload") sits beside it in text, not in a tooltip.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="§10" title="Content rules" note="Set-level messages up, file-level messages down.">
+    <T cols={['Message','Where','Write','Not']} rows={[
+      ['Set is required','Field error','A drawing is required before ECR-2291 can be released.','This field is required'],
+      ['A drop was refused','Field error, naming the file','press-setup-notes.docx — over the 20 MB limit','Invalid file'],
+      ['One file failed to upload','Field error, general','One file did not upload. Retry it, or remove it.','Upload failed'],
+      ['Why THAT file failed','The row’s own error','MES did not answer.','(never repeated in the field error)'],
+      ['Submit is blocked','Beside the button','Waiting for 1 upload','(a disabled button with no reason)'],
+      ['Set is frozen','Field hint','ECR-2291 is released; attachments are frozen.','Not available'],
+    ]}/>
+    <ul>
+      <li><strong>Each message appears once.</strong> A reason on the row and the same sentence in the field error reads as two problems.</li>
+      <li><strong>The set-level message points at the set</strong>; it says how many and what to do, never why a particular byte stream died.</li>
+      <li><strong>Selection order, always.</strong> Not alphabetical, not failures-first: the operator remembers the order they dropped them in, and a list that reorders itself under a failure loses them.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Derive the set status from the rows.</li>
+        <li>Block submit while <code>busy</code> or <code>failed</code>, and say why in text.</li>
+        <li>Keep selection order.</li>
+        <li>Move focus after a removal.</li>
+        <li>One error slot for the set, one per row.</li>
+        <li>Disable the whole set together.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>Two dropzones in one set.</li>
+        <li>A set-level spinner instead of per-file bars.</li>
+        <li>Allow Save while a file is at 64%.</li>
+        <li>Repeat a row’s reason in the field error.</li>
+        <li>Reorder rows by state.</li>
+        <li>A dropzone beside its own file list.</li>
+        <li>Hold the queue inside the composite.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this composite exists to prevent.</strong> ECR-2291 released with the BOM at 64%. The rows were right, the bar was right, and nothing connected either to the Release button — because no component owned the question “is this set finished?”. That question is the composite, and everything else here is Core.</p>
+  </Sec>
+
+  <Sec n="§13" title="Implementation notes" note="Derivation, forwarding, focus.">
+    <ul>
+      <li><strong>Nothing is stored.</strong> The composite holds no files and no status; <code>value</code> in, <code>onChange</code> out, status derived on every render in the order <code>invalid → failed → busy → idle</code>.</li>
+      <li><strong><code>currentCount</code> is supplied, not accepted</strong> — <code>value.length</code>, forwarded to the dropzone with <code>maxFiles</code>.</li>
+      <li><strong>Rejections are consumed, not passed through.</strong> The composite receives <code>onSelect(accepted, rejected)</code>, appends the accepted as <code>queued</code> entries, and turns rejections into the field error itself. This is the one place the reason codes become sentences, so they are written once (§10).</li>
+      <li><strong>Focus after removal</strong> is the composite's job because only it knows the row order: next row's remove control, else the dropzone input.</li>
+      <li><strong>One polite live region</strong> for arrivals and refusals, owned by the composite and separate from each row's own status region.</li>
+      <li><strong>Ids:</strong> the Field owns the label and error ids; the dropzone input gets both via <code>aria-labelledby</code> / <code>aria-describedby</code>. Rows are not associated with the field error.</li>
+      <li><strong>The console warnings fire on a discarded write, not on render.</strong> A missing <code>onChange</code> is reported when a selection or a removal is actually lost, and a missing <code>label</code> a tick after mount — neither during render, which is where both checks started. A Design Component's template renders once with its <code>{'{{ }}'}</code> holes unresolved, so the render-time version warned on every DC that mounted this composite <em>even with a handler wired</em>, including its own reference implementations. The <code>label</code> check is deferred by one tick for the same reason rather than moved to a write, because a nameless set is wrong from the moment it renders and should not wait for an interaction to say so — a hole that resolves on the next tick simply clears the timeout first. The same defect class as <code>Field</code>'s conditionally-mounted live region: a diagnostic that cries wolf teaches a team to ignore every warning the system emits, and the reference implementations are exactly what consuming teams copy.</li>
+            <li><strong>Aggregate disabled</strong> forwards to the dropzone's <code>disabled</code> and to every row's <code>disabled</code> — it never omits the handlers, because a released record's rows should still read as rows that once had actions.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§14" title="Developer notes" note="How the surface learns whether it may save.">
+    <pre>{`// the queue is the surface's; the composite derives the set's status from it
+const [files, setFiles] = React.useState([]);
+const status = deriveStatus(files);   // 'idle' | 'busy' | 'failed' | 'invalid'
+
+<FileUpload
+  label="Revised drawing and BOM"
+  hint="ECR-2291 · routing change · BRK-4820-A"
+  accept=".pdf,.dwg,.csv" maxSize={20 * 1024 * 1024} maxFiles={5}
+  required
+  value={files} onChange={setFiles}
+  onStatusChange={setStatus} />
+
+<Button disabled={status !== 'idle'} onClick={release}>Release ECR-2291</Button>
+{status === 'busy'   && <Text size="xs" tone="tertiary">Waiting for 1 upload</Text>}
+{status === 'failed' && <Text size="xs" tone="critical">Resolve the failed file first</Text>}`}</pre>
+    <ul>
+      <li><strong>Controlled only.</strong> There is no uncontrolled mode: the queue lives with whoever owns the transport, and a composite that kept a private copy would be one render behind the bytes.</li>
+      <li><strong><code>onStatusChange</code> is the whole integration.</strong> It is what makes the Release button correct, and it is the reason this composite is worth standardizing rather than assembling by hand each time.</li>
+      <li><strong>Cancel is a removal.</strong> <code>onChange</code> fires with the entry gone; aborting the in-flight request is the caller's, via an <code>AbortController</code> per entry (see <a href="../forms/FileItem.spec.html">FileItem §14</a>).</li>
+      <li><strong>Save is not the upload.</strong> Files may be uploaded as they arrive and referenced by id at save time, or held and sent with the record — the composite supports both, and the copy must match whichever it is (§10: never “Upload” on the target).</li>
+      <li><strong>Testing.</strong> Assert submit is blocked at <code>busy</code> and at <code>failed</code>; that the blocking reason is text and not a tooltip; that removing a row moves focus; that a refusal is announced once, in the field error, naming the file; that <code>maxFiles</code> counts <code>value.length</code>.</li>
+      <li><strong>Built at 1.30.0, from this document.</strong> The specification was closed first and the component written from it without reopening it — which is the point of writing the standard before the code. Two surfaces had assembled this by hand (ECR attachments, NC evidence); both are non-conforming until they adopt it, and the conformance test is unchanged: an attachment set that derives no aggregate status, or lets Save fire at <code>busy</code>, is wrong whether or not it uses this component. <strong>Earlier drafts of this section cited a “composite policy · rule of three” as the reason no code existed. No such policy is written anywhere in this system</strong> — that was an invented citation, and it is withdrawn here rather than quietly deleted. When to promote a hand-assembly to a composite is now written down, in the <a href="../../guidelines/promotion-policy.card.html">promotion policy</a> — which this composite passes on both of its tests (an aggregate no part can hold; a failure worth preventing), and which states plainly that there is no count that promotes anything on its own.</li>
+      <li><strong>What the first consumer changed.</strong> The two props above — <code>requiredMessage</code> and the touched/<code>showRequired</code> split — were found by building a real surface against this composite, not by writing this specification. With only <code>error</code>, a surface could not word its own required sentence without clobbering the rejection and failure messages that share that slot; and the set was announcing “required” on an untouched record. Both are additive, and both are demonstrated in the surviving consumer, <a href="../patterns/EvidenceAttachment.spec.html">evidence attachment</a>'s <a href="../patterns/evidence-attachment-reference.card.html">reference implementation</a> (gauge GG-2214 returning to service), which passes <code>requiredMessage</code> and drives <code>showRequired</code> from its own submit attempt. <em>The surface that originally found them</em> — an ECR-2291 attachments template — was deleted once that reference implementation superseded it: it demonstrated strictly less, and two file-upload templates in one flat picker is the ambiguity this system keeps paying for. That is why the freeze followed the migration and not the build.</li>
+      <li><strong>Correction — there were no two hand-assemblies.</strong> Earlier drafts of this spec, and its index entry, said “two surfaces assemble this by hand today (ECR attachments, NC evidence)” and that both were non-conforming until they adopted it. No such surfaces exist in this project; the claim was invented alongside the withdrawn “rule of three” and is retracted here rather than deleted. The one real consumer is the template above.</li>
+      <li><strong>Closed as decided — no bulk actions.</strong> “Retry all” and “Remove all” are the right controls for the wrong object: they only become useful past about eight files, and past about eight files the set is a <code>Table</code> (§01), which already owns selection and bulk action through the <a href="../../templates/bulk-selection-action/BulkSelectionAction.dc.html">bulk selection and action</a> pattern. Adding them to a stack of four rows would duplicate that pattern's contract at a size where every row already carries its own Retry and Remove — two ways to remove one file, one of which needs a selection model this set does not have.</li>
+      <li><strong>Frozen 7 Sep 2026 · 1.30.1.</strong> API closed: <code>value</code>, <code>onChange</code>, <code>label</code>, <code>targetLabel</code>, <code>hint</code>, <code>error</code>, <code>required</code>, <code>requiredMessage</code>, <code>showRequired</code>, <code>accept</code>, <code>maxSize</code>, <code>maxFiles</code>, <code>size</code>, <code>disabled</code>, <code>onStatusChange</code>, <code>style</code> — plus the <code>deriveStatus</code> export. Frozen after the migration rather than after the build, per the <a href="../../guidelines/promotion-policy.card.html">promotion policy</a>'s freezing rule — a shape has survived nothing until something outside the design system has used it: the two props above were added <em>by</em> that migration.</li>
+    </ul>
+  </Sec>
+
+  <p className="omitted">Omitted, per the composite spec standard — the numbers never renumber. <strong>§04 Variants:</strong> the read-only attachment list is the same composition with no handlers, and the table form past eight files is a different component, not a variant of this one. <strong>§07 Keyboard:</strong> the parts fully determine it — one tab stop on the target, ordinary buttons per row, no roving focus, because an attachment set is a form field, not a composite widget. <strong>§09 Motion:</strong> the only motion in the set is <code>FileItem</code>’s progress fill, which that component owns; rows deliberately do not animate in or out. <strong>§11 Responsive:</strong> one column at every width — ordinary layout handles it, and the parts already specify their own reflow.</p>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

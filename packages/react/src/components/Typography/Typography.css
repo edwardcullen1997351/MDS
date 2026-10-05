@@ -1,0 +1,164 @@
+/* Base Font Families */
+.ds-heading,
+.ds-text {
+  font-family: var(--ds-global-fontFamily-sans, sans-serif);
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.ds-text--mono,
+.ds-code {
+  font-family: var(--ds-global-fontFamily-mono, monospace) !important;
+}
+
+/* Heading Sizes */
+.ds-heading--4xl {
+  font-size: var(--ds-global-fontSize-4xl, 36px);
+  line-height: 1.2;
+}
+
+.ds-heading--3xl {
+  font-size: var(--ds-global-fontSize-3xl, 30px);
+  line-height: 1.25;
+}
+
+.ds-heading--2xl {
+  font-size: var(--ds-global-fontSize-2xl, 24px);
+  line-height: 1.3;
+}
+
+.ds-heading--xl {
+  font-size: var(--ds-global-fontSize-xl, 20px);
+  line-height: 1.35;
+}
+
+.ds-heading--lg {
+  font-size: var(--ds-global-fontSize-lg, 18px);
+  line-height: 1.4;
+}
+
+.ds-heading--base {
+  font-size: var(--ds-global-fontSize-base, 16px);
+  line-height: 1.45;
+}
+
+/* Text Sizes */
+.ds-text--xs {
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  line-height: 1.4;
+}
+
+.ds-text--sm {
+  font-size: var(--ds-global-fontSize-sm, 14px);
+  line-height: 1.45;
+}
+
+.ds-text--base {
+  font-size: var(--ds-global-fontSize-base, 16px);
+  line-height: 1.5;
+}
+
+.ds-text--lg {
+  font-size: var(--ds-global-fontSize-lg, 18px);
+  line-height: 1.55;
+}
+
+.ds-text--xl {
+  font-size: var(--ds-global-fontSize-xl, 20px);
+  line-height: 1.6;
+}
+
+/* Font Weights */
+.ds-weight-regular {
+  font-weight: var(--ds-global-fontWeight-regular, 400);
+}
+
+.ds-weight-medium {
+  font-weight: var(--ds-global-fontWeight-medium, 500);
+}
+
+.ds-weight-semibold {
+  font-weight: var(--ds-global-fontWeight-semibold, 600);
+}
+
+.ds-weight-bold {
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+}
+
+/* Semantic Color Modifiers */
+.ds-color-primary {
+  color: var(--ds-semantic-color-text-primary, #111827);
+}
+
+.ds-color-secondary {
+  color: var(--ds-semantic-color-text-secondary, #4B5563);
+}
+
+.ds-color-muted {
+  color: var(--ds-semantic-color-text-secondary, #4B5563);
+}
+
+.ds-color-brand {
+  color: var(--ds-semantic-color-text-interactive, #2563EB);
+}
+
+.ds-color-success {
+  color: var(--ds-global-color-success-700, #15803D);
+}
+
+.ds-color-warning {
+  color: var(--ds-global-color-warning-700, #B45309);
+}
+
+.ds-color-danger {
+  color: var(--ds-global-color-danger-700, #B91C1C);
+}
+
+.ds-color-inverse {
+  color: var(--ds-semantic-color-text-inverse, #FFFFFF);
+}
+
+/* Specialized Typography Variants */
+.ds-text--overline {
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  font-weight: var(--ds-global-fontWeight-semibold, 600);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ds-semantic-color-text-secondary, #4B5563);
+}
+
+.ds-text--caption {
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  color: var(--ds-semantic-color-text-secondary, #4B5563);
+}
+
+/* Inline Code Element */
+.ds-code {
+  padding: 2px 6px;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  background-color: var(--ds-semantic-color-surface-muted, #F3F4F6);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #E5E7EB);
+  font-size: 0.875em;
+  color: var(--ds-global-color-brand-700, #1D4ED8);
+}
+
+/* Truncation & Clamp */
+.ds-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ds-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

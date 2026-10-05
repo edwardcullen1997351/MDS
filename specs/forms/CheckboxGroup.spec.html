@@ -1,0 +1,379 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="CheckboxGroup" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>CheckboxGroup — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:20px 40px}
+.demo.col{flex-direction:column;align-items:stretch;gap:16px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+td.num,th.num{text-align:right;font-family:var(--font-mono)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:5px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { CheckboxGroup, Checkbox, Field, Input, Button, Icon } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows,numCols=[]}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i} className={numCols.includes(i)?'num':''}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={(j===0?'k ':'')+(numCols.includes(j)?'num':'')}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const AREAS = ['Mixing','Filling','Packing','Palletising'];
+const NOTIFY = [
+  { value:'fail', label:'Failures', description:'Paged immediately, day or night.' },
+  { value:'digest', label:'Weekly OEE digest', description:'Mondays at 09:00 CET.' },
+  { value:'audit', label:'Audit exports', description:'Locked to the compliance address.', disabled:true },
+];
+
+function Live(){
+  const [areas,setAreas] = React.useState(['Mixing','Packing']);
+  return (
+    <CheckboxGroup label="Areas included in the report" hint="Pick at least one area."
+      selectAll="All areas" options={AREAS} value={areas} onChange={setAreas} style={{width:260}} />
+  );
+}
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>CheckboxGroup</h1>
+    <p className="lede">The scaffolding a set of checkboxes needs and a single box cannot supply: one question that names the whole set, a value that is an array, a select-all parent that does the partial-selection maths, and one error message for the set rather than a red box beside each option.</p>
+    <div className="meta">
+      <span>components/forms/CheckboxGroup.jsx</span><span>window.MeridianDesignSystem_962c43.CheckboxGroup</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 0 open items</span><span>since: 1.2.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Two or more related boxes are a group, not two boxes.">
+    <p>A CheckboxGroup exists because the question lives above the options: “which areas”, “what to notify me about”. That question has to be attached to the set in markup, not just printed above it — and a <code>Field</code> cannot do it, because a <code>&lt;label for&gt;</code> addresses exactly one control. This component renders a real <code>&lt;fieldset&gt;</code> with a <code>&lt;legend&gt;</code>, which is the one construct every screen reader announces as the name of a set.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['One boolean on its own','Checkbox','No shared question, no group.'],
+      ['Several related booleans under one question','CheckboxGroup','This component.'],
+      ['One of several exclusive options','Radio in a group','Exclusive choice. Same scaffolding problem, still open — §14.'],
+      ['A long list to search and multi-select','Not in 1.2.0','Past ~12 options a group becomes a filterable list. Unbuilt; do not grow this.'],
+      ['Row selection in a table','Checkbox (bare, aria-label)','Table owns the header select-all.'],
+      ['Several live settings','Switch, stacked','A switch applies on flip; nothing about a set changes that.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> whenever two or more checkboxes answer the same question.</li>
+      <li><strong>Do not wrap it in a <code>Field</code></strong> — you would get two labels, one of them pointing nowhere.</li>
+      <li><strong>Do not use</strong> for one box: the component warns, because a legend plus one option is scaffolding with nothing to hold.</li>
+      <li><strong>Do not use</strong> for unrelated booleans that merely sit near each other. A group asserts they answer one question.</li>
+    </ul>
+    <div className="demo">
+      <Live />
+      <CheckboxGroup label="Notify me about" options={NOTIFY} defaultValue={['fail','audit']} style={{width:300}} />
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Legend, optional parent, option grid, one message.">
+    <div className="demo"><Live /></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Legend</strong> — the question, 12 px medium in <code>--field-label-text</code>: identical type to a <code>Field</code> label, so a group sits in a form without announcing itself as a different kind of thing.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Required mark</strong> — <code>aria-hidden</code> asterisk in <code>--field-required-mark</code>. The rule itself goes in the hint (§08).</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Select-all parent</strong> — optional, a real Checkbox with <code>indeterminate</code> derived here. It sits above the set, at the same indent as the legend.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Option grid</strong> — one column by default, <code>--space-1</code> row gap (the boxes carry their own 28 px target rows, so a bigger gap only spreads them out). Indented 24 px when a select-all is present, so the children align under the parent's label text.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Hint or error</strong> — one line for the whole set, under everything, referenced by the fieldset's <code>aria-describedby</code>. The error carries <code>role="alert"</code>.</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>No box, no border, no card.</strong> A fieldset draws nothing here — the legend and the indent are the grouping. A bordered group in a form of unbordered fields reads as a panel.</span></div>
+    </div>
+    <T cols={['Region','Value','Token']} rows={[
+      ['Legend type','12 px, medium','--text-xs · --weight-medium · --field-label-text'],
+      ['Legend → set gap','8 px','--space-2'],
+      ['Row gap between options','4 px (plus each box\u2019s 28 px row)','--space-1'],
+      ['Column gap (columns=2)','24 px','--space-6'],
+      ['Child indent under select-all','24 px','—'],
+      ['Hint / error','12 px','--field-hint-text · --field-error-text'],
+      ['Fieldset chrome','none — border 0, margin 0, padding 0','—'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Eleven props. The value is an array, and onChange is not an event.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['label',<span className="t">ReactNode</span>,<span style={{color:'var(--text-critical)'}}>required</span>,'The question. Warns if missing — a nameless group is the defect this component prevents.'],
+      ['options',<span className="t">Array&lt;string | Option&gt;</span>,<span className="t">[]</span>,'Strings are value and label. Option = { value, label, description?, disabled? }.'],
+      ['value',<span className="t">string[]</span>,'—','Selected values. With onChange the group is controlled.'],
+      ['defaultValue',<span className="t">string[]</span>,'—','Initial selection when uncontrolled.'],
+      ['onChange',<span className="t">(next: string[]) =&gt; void</span>,'—','Receives the NEXT ARRAY, not an event. §13.'],
+      ['selectAll',<span className="t">ReactNode</span>,'—','Label for the parent box. Its indeterminate state is derived, never passed.'],
+      ['hint',<span className="t">ReactNode</span>,'—','One line for the set. Hidden while error is set.'],
+      ['error',<span className="t">ReactNode</span>,'—','Group-level message with role="alert". Individual boxes are never reddened.'],
+      ['required',<span className="t">boolean</span>,<span className="t">false</span>,'Asterisk only. State the rule in hint — ARIA has no required state for a group (§08).'],
+      ['columns',<span className="t">1 | 2</span>,<span className="t">1</span>,'2 is for short labels only; forced back to 1 when any option has a description.'],
+      ['disabled',<span className="t">boolean</span>,<span className="t">false</span>,'Disables the whole set through the fieldset — one attribute, every box.'],
+      ['children',<span className="t">ReactNode</span>,'—','Escape hatch: bespoke content instead of options. You own the wiring; the scaffold still gives you legend, hint and error.'],
+      ['style',<span className="t">CSSProperties</span>,'—','Layout only, on the fieldset.'],
+    ]}/>
+    <p><strong><code>onChange</code> deliberately breaks with <code>Checkbox</code>.</strong> A single box reports an event because the interesting thing is one input; a group reports the whole next array, because the interesting thing is the set. Reading <code>e.target.checked</code> here and reconstructing the array is what every hand-rolled group got wrong.</p>
+    <p><strong>No <code>max</code>, no <code>min</code>.</strong> “Pick at least one” and “pick up to three” are validation, not layout: state the rule in <code>hint</code> and put the message in <code>error</code> on submit. A group that silently refuses the fourth click looks broken.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="No variant prop. Four configurations.">
+    <T cols={['Configuration','When','Note']} rows={[
+      ['Plain set','2–6 related options','The default.'],
+      ['With select-all','A set where "everything" is a real answer','Areas, lines, columns, permissions. Adds the parent and the 24 px indent.'],
+      ['With option descriptions','The cost or scope of each option is not obvious','Forces one column.'],
+      ['children escape hatch','Options that are not a flat list — nested sets, an input beside a box','You wire the state; the group still names it.'],
+    ]}/>
+    <div className="demo">
+      <CheckboxGroup label="Plain set" options={['Mixing','Filling','Packing']} defaultValue={['Mixing']} style={{width:200}} />
+      <Live />
+      <CheckboxGroup label="With descriptions" options={NOTIFY.slice(0,2)} defaultValue={['fail']} style={{width:280}} />
+    </div>
+    <div className="demo col">
+      <span className="lbl">children</span>
+      <CheckboxGroup label="Export options" hint="Applies to the next export only." style={{maxWidth:420}}>
+        <Checkbox label="Include station detail" defaultChecked />
+        <Checkbox label="Include operator names" description="Personal data — audit logged." />
+        <div style={{display:'flex',alignItems:'center',gap:12,marginTop:4}}>
+          <Checkbox label="Split by shift" />
+          <Field label="Shift length" style={{width:120}}><Input size="sm" mono defaultValue="8" suffix="h" /></Field>
+        </div>
+      </CheckboxGroup>
+    </div>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="No size prop. Columns and count are the only dials.">
+    <T cols={['Options','Layout','Note']} numCols={[]} rows={[
+      ['2–6','One column','The default, and right almost always. A set read down is scanned in one movement.'],
+      ['7–12','columns={2}, short labels only','Reading order becomes ambiguous the moment labels wrap — so two columns need one-word labels.'],
+      ['12+','Not this component','A filterable list, or a Select with multiple. Twelve boxes is twelve tab stops.'],
+      ['Any, with descriptions','One column, forced','Two blocks of secondary text side by side cannot be scanned.'],
+    ]}/>
+    <div className="demo">
+      <CheckboxGroup label="One column (default)" options={AREAS} defaultValue={['Mixing']} style={{width:200}} />
+      <CheckboxGroup label="Two columns" columns={2} options={['Mixing','Filling','Packing','Palletising','Labelling','Wrapping']} defaultValue={['Mixing','Packing']} style={{width:300}} />
+    </div>
+    <ul>
+      <li><strong>The boxes do not scale</strong> — 16 px everywhere, with the target coming from <code>--control-h-sm</code> and density (Checkbox §05).</li>
+      <li><strong>Row gap is deliberately small.</strong> Each Checkbox already reserves a 28 px row, so a 4 px gap gives ~32 px of pitch; adding <code>--space-3</code> on top makes a six-option set look like six separate questions.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="06" title="States" note="The group has three; the options keep their own eight.">
+    <T cols={['State','What changes','Notes']} rows={[
+      ['Rest','—','Legend, options, hint.'],
+      ['Partially selected','The select-all parent shows the minus mark and announces "mixed"','Derived here: selected.length > 0 and not all. Never passed in.'],
+      ['All selected','The parent is checked','A click on it clears the set; a click on a mixed parent selects everything.'],
+      ['Error','Hint is replaced by the message, in --field-error-text with the alert glyph and role="alert"','No box turns red — see below.'],
+      ['Disabled (group)','Every option renders disabled AND the fieldset blocks interaction','`disabled` is passed down to each box (inline styles cannot inherit the native cascade) with the fieldset attribute as the enforcement layer — so a dead group also LOOKS dead.'],
+      ['Disabled (one option)','That box only','Excluded from the select-all maths, so "all" means "all the ones you can pick".'],
+    ]}/>
+    <div className="demo">
+      <CheckboxGroup label="Error state" error="Pick at least one area." options={AREAS.slice(0,3)} style={{width:240}} />
+      <CheckboxGroup label="Disabled set" disabled options={AREAS.slice(0,3)} defaultValue={['Mixing']} style={{width:200}} />
+      <CheckboxGroup label="One option disabled" options={NOTIFY} defaultValue={['audit']} style={{width:280}} />
+    </div>
+    <p className="warn"><strong>A checkbox is never invalid.</strong> Each box holds a legitimate boolean; what fails validation is the <em>set</em> (“at least one”, “not both”). So the error belongs to the group and nothing inside it changes colour — reddening four boxes to say “pick one of them” tells the user every option is wrong.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="N boxes, N tab stops. That is correct, and it is why 12 is the ceiling.">
+    <T cols={['Key','Behaviour','Note']} rows={[
+      ['Tab / Shift-Tab','Moves through every box in the group, including the select-all.','A checkbox group is NOT a radio group: no arrow-key roving, no single tab stop. Independent options each need their own stop.'],
+      ['Space','Toggles the focused box.','Space on the select-all applies to the whole set — the largest single keystroke in the group, which is the point of it.'],
+      ['Enter','Submits the form.','Unchanged.'],
+      ['Arrow keys','Nothing.','Adding them would make the group behave like a radio group, whose semantics are exclusive.'],
+    ]}/>
+    <ul>
+      <li><strong>The select-all is the keyboard shortcut.</strong> It exists so a keyboard user can take twelve options in one keystroke instead of twelve — which is also why it must be a real focusable checkbox and not an icon button.</li>
+      <li><strong>Tab order is source order.</strong> With <code>columns={'{2}'}</code> that means down column one, then down column two — so a two-column set must not be read as rows. If the options have an order that matters, use one column.</li>
+      <li><strong>Nothing here traps focus</strong>, and nothing may be added that does.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="This component IS an accessibility fix. Three things it gets right.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Group name (1.3.1)','A real <fieldset> with a <legend>. Every screen reader announces the legend with each option inside it — "Areas included in the report, Mixing, checkbox, checked". No ARIA needed, and no dependence on an id reference that can silently break.'],
+      ['Why not role="group" + aria-labelledby','It works, and it was the documented workaround until 1.2.0 — but it relies on an id the caller has to keep unique and correct. fieldset/legend cannot be wired wrongly. role="group" stays valid for a container you cannot make a fieldset.'],
+      ['Group description (1.3.1)','hint and error render with an id and the fieldset points aria-describedby at it, so the helper text is announced with the group rather than orphaned above the first box.'],
+      ['Error announcement (3.3.1)','role="alert" on the error, so a message that appears after submit is read without moving focus. The message names the rule, not the failure ("Pick at least one area", not "Invalid selection").'],
+      ['Required (3.3.2)','The asterisk is aria-hidden and there is NO aria-required: ARIA defines no required state for a group, and putting it on each box would claim every option is individually required. State the rule in the hint — "Pick at least one". Implemented by Fieldset since 1.9.1 — where this decision was accidentally reversed, leaving this row false until 1.16.1 (Fieldset §08).'],
+      ['Disabled set','The `disabled` prop is passed to every option Checkbox for the appearance, and the fieldset `disabled` attribute blocks focus and submission natively. Both are needed: inline styles do not inherit the fieldset cascade, and a group that swallows clicks while looking interactive is worse than an obviously dead one.'],
+      ['Mixed parent (4.1.2)','The select-all uses Checkbox indeterminate, which sets the native DOM property, so it announces as "mixed" rather than "not checked".'],
+      ['Target size · contrast · focus','Inherited from Checkbox: 28 px target rows (24 compact, 34 expanded), --border-control at 4.74:1, a :focus-visible-gated 3 px ring.'],
+      ['Reading order','One column by default. Two columns are DOM columns, so tab order runs down each in turn (§07) — never used for an ordered set.'],
+      ['Reduced motion','Nothing animates beyond each box\u2019s 140 ms colour change.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="wrong"><Field label="Areas included in the report" style={{width:260}}><div style={{display:'flex',flexDirection:'column',gap:4,paddingTop:2}}><Checkbox label="Mixing" /><Checkbox label="Filling" /></div></Field></Row>
+      <Row label="right"><CheckboxGroup label="Areas included in the report" options={['Mixing','Filling']} style={{width:260}} /></Row>
+    </div>
+    <p className="warn"><strong>The pattern on the left is the reason this component exists.</strong> A <code>Field</code> around a set of boxes prints the question and associates it with nothing: the <code>&lt;label for&gt;</code> points at a generated id no control claims, so the question is announced for no one and each box arrives context-free. It looks identical on screen, which is what made it survive.</p>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="None of its own.">
+    <T cols={['Change','Duration','Easing','Property']} rows={[
+      ['Option fill / border / ring','140 ms','--ease-out','inherited from Checkbox'],
+      ['Error message appearing','0 ms','—','no slide, no fade'],
+      ['Select-all cascade','0 ms','—','all boxes change in the same frame'],
+      ['Layout (columns, indent)','—','—','never animated'],
+    ]}/>
+    <ul>
+      <li><strong>No stagger on select-all.</strong> A cascade that ripples down twelve boxes takes half a second to say something that happened instantly, and in a table-adjacent context it reads as a re-render.</li>
+      <li><strong>The error does not slide in.</strong> It appears; the layout below shifts once. Animating it delays the message and moves the submit button twice.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="The legend is a question. The options are its answers.">
+    <T cols={['Slot','Job','Write','Not']} rows={[
+      ['Legend','Name the question the set answers','Areas included in the report','Areas · Options · Settings'],
+      ['Option label','One answer, parallel with its siblings','Packing','Packing area (optional)'],
+      ['Option description','The cost or scope of that option','Paged immediately, day or night.','Enable this option'],
+      ['selectAll','The whole-set answer, in the set\u2019s own words','All areas','Select all · Toggle all'],
+      ['hint','The rule, before the error','Pick at least one area.','Required'],
+      ['error','The rule, restated as an instruction','Pick at least one area.','Invalid selection · This field is required'],
+    ]}/>
+    <ul>
+      <li><strong>The legend is not a heading.</strong> It is 12 px like a field label; a group is a field, not a section. If it needs a heading, it is a section with a group inside it.</li>
+      <li><strong>Keep option labels parallel</strong> — all nouns or all verb phrases. A set is read as a list, and one odd entry reads as a different kind of thing.</li>
+      <li><strong>Name the select-all in the set\u2019s vocabulary.</strong> “All areas”, not “Select all” — the operator is answering a question, not operating a control.</li>
+      <li><strong>Hint and error usually say the same thing.</strong> That is correct: the hint is the rule stated early, the error is the rule stated again after it was missed. Do not make the error scold.</li>
+      <li><strong>Never phrase an option as a negative</strong> (Checkbox §10), and never make one option mean “none of the above” — that is the empty set.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="One column, always, below tablet.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','One column regardless of the columns prop — two columns of touch targets at 320 px puts them 140 px apart with mis-taps between them. Expanded density gives 34 px rows.'],
+      ['tablet ≥ 600','columns={2} is viable for one-word labels. The grid is minmax(0,1fr), so labels wrap rather than overflow.'],
+      ['desktop ≥ 1024','As authored. A group sits in the form column at the same width as the fields above it.'],
+      ['ultrawide ≥ 1600','Unchanged; the group does not stretch. Options are scanned vertically, so extra width adds nothing.'],
+    ]}/>
+    <div className="demo col" style={{maxWidth:300}}>
+      <CheckboxGroup label="Areas included in the report" hint="Pick at least one area." selectAll="All areas" options={AREAS} defaultValue={['Mixing']} />
+      <CheckboxGroup label="Long labels wrap, and the indent survives" options={[{value:'a',label:'Include stations starved by an upstream stop in the same shift'},{value:'b',label:'Include planned downtime'}]} selectAll="Everything" />
+    </div>
+    <ul>
+      <li><strong>The 24 px child indent is fixed</strong>, not proportional: it aligns children with the parent\u2019s label text at every width, and it survives wrapping because it is a margin on the grid rather than padding per row.</li>
+      <li><strong>Do not put a group in a two-column form row.</strong> Its legend would sit at the same level as a field label while its contents are three times as tall, and the row baseline breaks.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Use it for any two or more related boxes.</li>
+        <li>Phrase the legend as the question.</li>
+        <li>Put the rule in <code>hint</code> and repeat it in <code>error</code>.</li>
+        <li><code>selectAll</code> when “everything” is a real answer.</li>
+        <li>One column, unless labels are single words.</li>
+        <li>Let <code>disabled</code> on the fieldset do the work.</li>
+        <li>Read the array in <code>onChange</code>.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>Wrap it in a <code>Field</code>.</li>
+        <li>Use it for one option.</li>
+        <li>Pass <code>indeterminate</code> yourself.</li>
+        <li>Redden the options on error.</li>
+        <li>Add arrow-key navigation.</li>
+        <li>Two columns with descriptions, or with ordered options.</li>
+        <li>Enforce a maximum by refusing clicks.</li>
+        <li>More than ~12 options.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this component invites.</strong> Reaching for <code>Checkbox</code> N times because it is the component you already know, and printing the question in a <code>Text</code> above it. On screen it is indistinguishable from this component; in the accessibility tree the question does not exist. Every hand-rolled set in this project was that, until 1.2.0.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="How it is built.">
+    <ul>
+      <li><strong><code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code>, reset to nothing:</strong> <code>border: 0; margin: 0; padding: 0; min-inline-size: 0</code>, and <code>display: flex</code> on the fieldset. The <code>min-inline-size</code> reset matters — a fieldset defaults to <code>min-content</code> width, which stops it shrinking inside a grid cell.</li>
+      <li><strong>The legend is styled as a field label</strong> (<code>--text-xs</code>, medium, <code>--field-label-text</code>), with <code>float: none</code> so it participates in the flex column instead of the legend\u2019s legacy layout.</li>
+      <li><strong>Semi-controlled:</strong> pass <code>onChange</code> and it is controlled by <code>value</code>; omit it and internal state is seeded from <code>defaultValue ?? value</code>. Same shape as Select and Checkbox.</li>
+      <li><strong>The select-all maths lives here, once:</strong> <code>allOn</code> is every <em>enabled</em> option being selected; <code>someOn</code> is a non-empty selection that is not all. A click on the parent commits either the full enabled list or the empty array. Disabled options are never added or removed by it — “all” means “all the ones you can pick”.</li>
+      <li><strong>Each option is a real <code>Checkbox</code></strong>, so contrast, hover, focus-visible, target size and the mixed-state fix all come from one place (Checkbox §13). This component adds no chrome of its own.</li>
+      <li><strong>Options are keyed by <code>value</code></strong>, and <code>onChange</code> emits the next array. Callers never rebuild the set from an event.</li>
+      <li><strong><code>disabled</code> works on two levels.</strong> The prop is threaded down to every option (and the select-all) so each box paints its disabled state, and the <code>&lt;fieldset disabled&gt;</code> attribute is the enforcement layer that removes them from focus and submission. Only doing the second — as the first build did — gives a group that looks live and silently ignores clicks.</li>
+      <li><strong>Four console warnings:</strong> a missing <code>label</code>; fewer than two options; <code>options</code> and <code>children</code> together (children win); <code>columns &gt; 1</code> with option descriptions (rendered as one column). The last is corrective, not advisory.</li>
+      <li><strong>No new tokens.</strong> It borrows <code>--field-*</code> so a group and a field are visually the same species, and the spacing steps it uses are the ones every form uses.</li>
+      <li><strong>Tokens consumed:</strong></li>
+    </ul>
+    <div className="tokenlist">
+      <span>--field-label-text</span><span>--field-hint-text</span><span>--field-error-text</span><span>--field-required-mark</span><span>--text-xs</span><span>--weight-medium</span><span>--tracking-body</span><span>--space-1</span><span>--space-2</span><span>--space-6</span><span>(plus every --checkbox-* token, via Checkbox)</span>
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { CheckboxGroup } from '@meridian/ds';
+
+// controlled — onChange gives you the next ARRAY
+const [areas, setAreas] = React.useState(['Mixing']);
+
+<CheckboxGroup
+  label="Areas included in the report"
+  hint="Pick at least one area."
+  selectAll="All areas"
+  options={['Mixing', 'Filling', 'Packing', 'Palletising']}
+  value={areas}
+  onChange={setAreas}
+/>
+
+// options with cost stated, one disabled
+<CheckboxGroup label="Notify me about" defaultValue={['fail']} options={[
+  { value: 'fail',   label: 'Failures',          description: 'Paged immediately.' },
+  { value: 'digest', label: 'Weekly OEE digest', description: 'Mondays at 09:00 CET.' },
+  { value: 'audit',  label: 'Audit exports',     disabled: true },
+]} />
+
+// validate on submit, not on click
+<CheckboxGroup label="Areas" options={AREAS} value={areas} onChange={setAreas}
+  error={submitted && areas.length === 0 ? 'Pick at least one area.' : undefined} />`}</pre>
+    <ul>
+      <li><strong>Validation is the caller\u2019s.</strong> The group renders the message you give it; it never refuses a click. “At least one” and “at most three” are checked on submit, and the <code>hint</code> should have said the rule first.</li>
+      <li><strong>Testing.</strong> <code>getByRole('group', {'{ name: /areas included/i }'})</code> — that assertion is the whole point of the component, so it goes first. Then <code>getByRole('checkbox', {'{ name: /packing/i }'})</code> inside it. For the select-all assert <code>input.indeterminate</code> on a partial selection, and that clicking it emits the full array. Assert the error is <code>role="alert"</code> and reaches <code>aria-describedby</code> on the fieldset.</li>
+      <li><strong>Lint.</strong> Flag a <code>Field</code> whose children contain more than one <code>Checkbox</code> (the §08 defect), two or more sibling <code>Checkbox</code>es not inside a <code>CheckboxGroup</code>, and a hand-written <code>role="group"</code> wrapper around Checkboxes.</li>
+      <li><strong>Frozen 4 Sep 2026.</strong> API closed: <code>label</code>, <code>options</code>, <code>value</code>, <code>defaultValue</code>, <code>onChange</code>, <code>selectAll</code>, <code>hint</code>, <code>error</code>, <code>required</code>, <code>columns</code>, <code>disabled</code>, <code>children</code>, <code>style</code>.</li>
+      <li><strong>Additive:</strong> nothing changes for existing call sites. Hand-rolled sets keep working — they are just wrong in the accessibility tree, so migrate them; the group is a drop-in for the common flat case.</li>
+      <li><strong>Migration.</strong> The console kit has one settings set to convert (a Switch pair plus a Checkbox in Settings). It is deliberately not converted here: those three are live settings answering three questions, not one set — which is itself the test for whether a group applies.</li>
+      <li><strong>Closed — <code>RadioGroup</code> shipped.</strong> Radio has the same missing scaffolding <em>and</em> a keyboard contract this component does not: one tab stop, arrow-key roving between options, and <code>name</code> to enforce exclusivity. It also still carries the 1.4.11 border and the description bug Checkbox fixed. Next. It carries the fieldset scaffold, the generated <code>name</code> and the platform keyboard contract; frozen 4 Sep 2026.</li>
+      <li><strong>Closed in 1.19.0 — <code>MultiCombobox</code> shipped.</strong> Past ~12 options this component is the wrong shape: twelve tab stops, no search, no counts. A filterable multi-select is a different component and should not be reached by growing this one. It is the filterable multi-select this entry asked for: search, tokens and an overflow rule, reached as a different component rather than by growing this one.</li>
+      <li><strong>Closed as decided — <code>max</code>/<code>min</code> props.</strong> Refusing clicks to enforce a limit produces a control that looks broken; limits are validated on submit and stated in the hint.</li>
+      <li><strong>Closed as decided — no group border or card.</strong> A fieldset that draws a box makes every group look like a panel and doubles the visual weight of a form; the legend and indent are the grouping.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

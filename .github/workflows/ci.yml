@@ -1,0 +1,91 @@
+name: Meridian Design System — Quality Gates
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+# Cancel in-progress runs on the same branch (saves CI minutes)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gates:
+    name: Quality Gates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: "Gate 0 · Dependency Audit"
+        run: npm audit --audit-level=moderate
+
+      # ────────────────────────────────────────────────────────────
+      # GATE 1 — Token Architecture Integrity
+      # Verifies W3C DTCG token format, one-direction reference rule
+      # (primitive ← semantic ← component), and forbidden aliases.
+      # Failure: token tier inversion or malformed token reference.
+      # ────────────────────────────────────────────────────────────
+      - name: "Gate 1 · Token Architecture Lint"
+        run: |
+          npm run verify
+          npm run check:browser-artifacts
+
+      # ────────────────────────────────────────────────────────────
+      # GATE 2 — Build & Cross-Package Type Safety
+      # Compiles all packages in dependency order via Turbo.
+      # Failure: TypeScript errors in any package.
+      # ────────────────────────────────────────────────────────────
+      - name: "Gate 2 · Build & Typecheck"
+        run: |
+          npx turbo run build
+          npx turbo run typecheck
+          npm run test:phase3-contracts
+          npm run test:phase4-types
+
+      # ────────────────────────────────────────────────────────────
+      # GATE 3 — Import Hygiene (oxlint — fast Rust linter)
+      # Enforces:
+      #   • no-restricted-imports: consumers must import from @ds/react,
+      #     never from internal component paths
+      #   • react/forbid-elements: no banned raw HTML elements in DS code
+      # Warnings are advisory; errors block merge.
+      # Failure: import from component internals instead of public API.
+      # ────────────────────────────────────────────────────────────
+      - name: "Gate 3 · Import Hygiene (oxlint)"
+        run: |
+          npx oxlint \
+            --config .oxlintrc.json \
+            packages/react/src/ \
+            apps/storybook/src/
+        # Configured import and forbidden-element violations are errors.
+        # Other Oxlint warnings remain advisory until they are resolved.
+        continue-on-error: false
+
+      # ────────────────────────────────────────────────────────────
+      # GATE 4 — Strict JSX accessibility lint. Existing findings are tracked
+      # in a source-node baseline; any new error fails this job.
+      # ────────────────────────────────────────────────────────────
+      - name: "Gate 4 · JSX Accessibility Lint"
+        run: npm run lint:a11y
+
+      - name: "Gate 5 · Install Chromium"
+        run: npx playwright install --with-deps chromium
+
+      - name: "Gate 5 · Storybook Axe Accessibility"
+        run: A11Y_SCOPE=all npm run test:a11y
+
+      - name: "Gate 5 · Angular Runtime Accessibility"
+        run: npm run test:phase4-angular

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><script src="./ds-base.js"></script></helmet>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 5 }}" hint-size="100%,100%">
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<h2 style="margin:0;font-size:var(--text-sm);font-weight:var(--weight-semibold)">Release criteria</h2>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ countLine }}</span>
+</div>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.SearchField" label="Search the queue" placeholder="Work order, part, description…" size="sm" value="{{ q }}" onChange="{{ on.q }}" hint-size="100%,32px"></x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.CheckboxGroup" label="Line" hint="Press shop only — weld cell W-1 is planned separately." options="{{ lineOptions }}" value="{{ lines }}" onChange="{{ on.lines }}" hint-size="100%,120px"></x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Shift" hint="A 06:00–14:30, B 14:30–23:00, C 23:00–06:00 (IST)" hint-size="100%,64px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ shiftOptions }}" value="{{ shift }}" onChange="{{ on.shift }}" size="sm" hint-size="100%,32px"></x-import>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.CheckboxGroup" label="Material position" hint="What stores can issue against the work order today." options="{{ materialOptions }}" value="{{ material }}" onChange="{{ on.material }}" hint-size="100%,120px"></x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Due window" hint-size="100%,58px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ dueOptions }}" value="{{ due }}" onChange="{{ on.due }}" size="sm" hint-size="100%,32px"></x-import>
+</x-import>
+
+<div style="display:flex;flex-direction:column;gap:8px;border-top:var(--border-hairline);padding-top:12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Applied</span>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.TagList" gap="{{ 2 }}" hint-size="100%,54px">
+<sc-for list="{{ applied }}" as="tag" hint-placeholder-count="3">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Tag" size="sm" font="mono" hint-size="90px,22px">{{ tag.label }}</x-import>
+</sc-for>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" onClick="{{ on.clear }}" hint-size="120px,28px">Clear criteria</x-import>
+</div>
+
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty">Criteria narrow what is in the queue. They never change what a release does — the counts, the clearing semantics and the applied-criteria summary belong to the collection refinement pattern, not to this frame.</p>
+
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:320,&quot;height&quot;:720},&quot;criteria&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;Record&lt;string, any&gt;&quot;},&quot;on&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;Record&lt;string, Function&gt;&quot;},&quot;matched&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:14,&quot;tsType&quot;:&quot;number&quot;},&quot;total&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:14,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const c = this.props.criteria || { q: '', lines: [], shift: 'A', material: [], due: '' };
+    const matched = this.props.matched ?? 0;
+    const total = this.props.total ?? 0;
+    const labels = { full: 'Full kit', short: 'Short', none: 'Not issued' };
+    const applied = [];
+    if (c.q) applied.push({ label: '"' + c.q + '"' });
+    if (c.lines.length < 3) applied.push({ label: 'line ' + c.lines.join(', ') });
+    applied.push({ label: 'shift ' + c.shift });
+    if (c.material.length < 3) applied.push({ label: c.material.map((m) => labels[m]).join(', ') || 'no material state' });
+    if (c.due !== 'This week (to 2026-09-13)') applied.push({ label: c.due });
+    return {
+      on: this.props.on || {},
+      q: c.q,
+      lines: c.lines,
+      shift: c.shift,
+      material: c.material,
+      due: c.due,
+      countLine: matched + ' of ' + total + ' work orders match',
+      lineOptions: [
+        { value: 'P-1', label: 'P-1 · 400T press', description: '1,200 min / shift' },
+        { value: 'P-2', label: 'P-2 · 630T press', description: '1,200 min / shift' },
+        { value: 'P-3', label: 'P-3 · 250T press', description: '1,200 min / shift · die change today' },
+      ],
+      shiftOptions: [
+        { value: 'A', label: 'A — 06:00 to 14:30 (IST)' },
+        { value: 'B', label: 'B — 14:30 to 23:00 (IST)' },
+        { value: 'C', label: 'C — 23:00 to 06:00 (IST)' },
+      ],
+      materialOptions: [
+        { value: 'full', label: 'Full kit available', description: 'Stores can issue everything today' },
+        { value: 'short', label: 'Short', description: 'Part of the kit is in, the rest has an ETA' },
+        { value: 'none', label: 'Not issued', description: 'Nothing reserved against the order yet' },
+      ],
+      dueOptions: ['This week (to 2026-09-13)', 'Next three days (to 2026-09-10)', 'Overdue only'],
+      applied,
+    };
+  }
+}
+</script>
+</body>
+</html>

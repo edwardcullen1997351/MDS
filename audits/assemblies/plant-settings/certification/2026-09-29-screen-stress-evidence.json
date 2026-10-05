@@ -1,0 +1,617 @@
+{
+  "assembly": "ra-plant-settings",
+  "version": "0.1.0",
+  "executedAt": "2026-09-29T12:25:55.374Z",
+  "storybookBaseUrl": "http://127.0.0.1:6006",
+  "sourceStressChecks": "pass",
+  "scenarioMatrix": [
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "ready",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "dirty",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nUnsaved modifications\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Unsaved modifications pending. Review parameters before dispatching save.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "restricted-section",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 0
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRestricted section access\n\nModifying enterprise security policies and role assignments requires Plant Security Officer (PL-SO) privileges. Your current role has read-only access to role directories.\n\nRequest policy elevation",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "concurrent-conflict",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nConcurrent Conflict\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Concurrent modification detected. Configuration revision #REV-4089 was committed by Sandeep Kulkarni at 10:14 IST. Review diff before overwriting.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "stress-long-content",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "high-density",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "ready",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "dirty",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nUnsaved modifications\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Unsaved modifications pending. Review parameters before dispatching save.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "restricted-section",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 0
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRestricted section access\n\nModifying enterprise security policies and role assignments requires Plant Security Officer (PL-SO) privileges. Your current role has read-only access to role directories.\n\nRequest policy elevation",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "concurrent-conflict",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nConcurrent Conflict\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Concurrent modification detected. Configuration revision #REV-4089 was committed by Sandeep Kulkarni at 10:14 IST. Review diff before overwriting.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "stress-long-content",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "high-density",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "ready",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "dirty",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nUnsaved modifications\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Unsaved modifications pending. Review parameters before dispatching save.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "restricted-section",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 0
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRestricted section access\n\nModifying enterprise security policies and role assignments requires Plant Security Officer (PL-SO) privileges. Your current role has read-only access to role directories.\n\nRequest policy elevation",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "concurrent-conflict",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nConcurrent Conflict\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Concurrent modification detected. Configuration revision #REV-4089 was committed by Sandeep Kulkarni at 10:14 IST. Review diff before overwriting.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "stress-long-content",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "high-density",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "ready",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "dirty",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nUnsaved modifications\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Unsaved modifications pending. Review parameters before dispatching save.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "restricted-section",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 0
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRestricted section access\n\nModifying enterprise security policies and role assignments requires Plant Security Officer (PL-SO) privileges. Your current role has read-only access to role directories.\n\nRequest policy elevation",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "concurrent-conflict",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nConcurrent Conflict\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Concurrent modification detected. Configuration revision #REV-4089 was committed by Sandeep Kulkarni at 10:14 IST. Review diff before overwriting.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "stress-long-content",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "high-density",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Plant platform settings ready. All 5 operational domains synchronized with plant registry.\nRegional Defaults and System Localization\n\nConfigure global timezone calculation, monetary currency scales, and operational shift boundaries.\n\nDefault Operational Timezone\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\nUTC (Coordinated Universal Time) · Cloud Standard\nEST (Eastern Standard Time) · HQ Telemetry Link\nCET (Central European Time) · Partner Assembly\nIST (Asia/Kolkata) UTC+05:30 · Chakan Plant Official\n▼\n\nAll supervisory SCADA records and shift logs are rendered in this local operational zone.\n\nMonetary Valuation & Number Scale\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n$ USD (United States Dollar · Million grouping)\n€ EUR (Euro · Million grouping)\n₹ INR (Indian Rupee · Lakh/Crore grouping)\n▼\n\nGoverns material requisitions, work order valuation, and maintenance expenditure reports.\n\nPlant Work Shift Model\n3-Shift Continuous (24x7 Manufacturing Operation)\n2-Shift Standard (16h Production + 8h Maintenance)\nSingle Shift Inspection & Tooling\n3-Shift Continuous (24x7 Manufacturing Operation)\n▼\n\nDetermines handover boundary timestamps and operator attendance aggregation intervals.\n\nReset Defaults\nSave regional defaults",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "navItems": 5
+      }
+    }
+  ],
+  "assemblyStates": [
+    {
+      "assemblyState": "loading",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 20,
+        "incompleteCount": 1
+      },
+      "hasHorizontalScroll": false,
+      "overlappingControls": 0,
+      "textSample": "Inspection controls - current state: loading\nLoading plant settings\nLoading content..."
+    },
+    {
+      "assemblyState": "offline",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 21,
+        "incompleteCount": 0
+      },
+      "hasHorizontalScroll": false,
+      "overlappingControls": 0,
+      "textSample": "Inspection controls - current state: offline\nplant settings is unavailable\n\nThe plant service did not respond. No entered values were discarded.\n\nRetry"
+    },
+    {
+      "assemblyState": "restricted",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 21,
+        "incompleteCount": 0
+      },
+      "hasHorizontalScroll": false,
+      "overlappingControls": 0,
+      "textSample": "Inspection controls - current state: restricted\nAccess restricted\n\nYour current plant role cannot view plant settings. Request access from the PL-04 administrator.\n\nRequest access"
+    },
+    {
+      "assemblyState": "stale",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "hasHorizontalScroll": false,
+      "overlappingControls": 0,
+      "textSample": "Inspection controls - current state: stale\nData may be stale. Last successful refresh: 28 Sep 2026, 15:10 (IST).\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, ale"
+    }
+  ],
+  "saveOutcomes": [
+    {
+      "saveOutcome": "success",
+      "found": true,
+      "pendingMs": 34,
+      "outcomeMs": 697,
+      "textSample": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Regional Defaults settings saved successfully. Audit event #AUD-9102 logged to plant immutable ledger.\nRegional Defaults and System Localiz"
+    },
+    {
+      "saveOutcome": "failure",
+      "found": true,
+      "pendingMs": 24,
+      "outcomeMs": 593,
+      "textSample": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Save failed for Regional Defaults. The configuration service did not respond. All unsaved entries are preserved on screen.\nRegional Default"
+    },
+    {
+      "saveOutcome": "reauth-required",
+      "found": true,
+      "pendingMs": 26,
+      "outcomeMs": 593,
+      "textSample": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Re-authentication required. Privileged configuration changes to Regional Defaults require plant administrator authorization.\nRegional Defau"
+    },
+    {
+      "saveOutcome": "unknown",
+      "found": true,
+      "pendingMs": 24,
+      "outcomeMs": 584,
+      "textSample": "Inspection controls - current state: ready\nChakan Plant PL-04\nReference Assembly\nPlant platform settings\n\nEnterprise configuration for regional defaults, role access, alert routing, integrations, and audit records.\n\nRefresh Registry\nCONFIGURATION DOMAINS\nRegional defaults\nAccess and roles\n5\nAlert channels\nIntegrations\nAlert\nAudit and logs\nOperational status: Save outcome unknown for Regional Defaults. Inspect plant audit ledger before reapplying changes.\nRegional Defaults and System Localization"
+    }
+  ]
+}

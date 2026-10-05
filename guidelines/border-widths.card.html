@@ -1,0 +1,15 @@
+<!-- @dsCard group="Borders" viewport="760x262" name="Widths & composites" subtitle="Width carries meaning: 1px structure, 1.5px emphasis, 2px focus" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="../styles.css"><style>body{margin:0;padding:18px 20px;background:var(--surface-card);color:var(--text-primary)}.mono{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);letter-spacing:0}.cap{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold)}.r{display:flex}.c{display:flex;flex-direction:column}.g{display:flex;gap:12px}.b{width:120px;height:52px;border-radius:var(--radius-md);background:var(--surface-card);display:flex;align-items:flex-end;padding:6px}.li{display:grid;grid-template-columns:190px 1fr;gap:10px;font-size:var(--text-xs);padding:2px 0;border-bottom:var(--border-hairline-subtle)}</style></head><body><div class="c" style="gap:14px"><div class="g">
+<div class="b" style="border:var(--border-hairline-subtle)"><span class="mono">subtle 1px</span></div>
+<div class="b" style="border:var(--border-hairline)"><span class="mono">default 1px</span></div>
+<div class="b" style="border:var(--border-hairline-strong)"><span class="mono">strong · hover</span></div>
+<div class="b" style="border:var(--border-width-strong) solid var(--action-solid)"><span class="mono">1.5px selected</span></div>
+<div class="b" style="border:var(--border-focus-ring);box-shadow:var(--focus-ring)"><span class="mono">2px focus</span></div>
+<div class="b" style="border:var(--border-dashed);background:var(--background-page)"><span class="mono">dashed · drop target</span></div></div>
+<div class="c" style="border-top:var(--border-hairline);padding-top:8px">
+<div class="li"><div class="mono">--border-width</div><div style="color:var(--text-secondary)">1px — structure. Every card, input, table rule.</div></div>
+<div class="li"><div class="mono">--border-width-strong</div><div style="color:var(--text-secondary)">1.5px — checked, current, selected edge</div></div>
+<div class="li"><div class="mono">--border-width-emphasis</div><div style="color:var(--text-secondary)">2px — focus border, active tab underline</div></div>
+<div class="li"><div class="mono">--border-hairline</div><div style="color:var(--text-secondary)">composite: 1px solid var(--border-default) — use this, not three declarations</div></div>
+<div class="li"><div class="mono">--border-dashed</div><div style="color:var(--text-secondary)">drop targets and empty slots only. Never on a card, never decorative.</div></div></div>
+<div style="font-size:var(--text-2xs);color:var(--text-tertiary)">The border is the elevation system. A coloured left-border accent card does not exist in Meridian.</div></div></body></html>

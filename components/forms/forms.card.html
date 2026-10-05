@@ -1,0 +1,39 @@
+<!-- @dsCard group="Components" viewport="700x780" name="Forms — inputs and choices" subtitle="Field, Input, Textarea, Select, Combobox, Autocomplete, Checkbox, Radio, Switch, Slider" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Forms</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--surface-card);padding:20px;font-family:var(--font-sans)}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.col{display:flex;flex-direction:column;gap:12px}.lbl{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold)}.grid{display:grid;gap:16px}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Field, Input, Textarea, Select, Combobox, Autocomplete, Checkbox, Radio, Switch, Slider } = window.MeridianDesignSystem_962c43;
+function Demo(){
+  const [tier,setTier]=React.useState('dedicated');
+  const [on,setOn]=React.useState(true);
+  const [ck,setCk]=React.useState(true);
+  const [part,setPart]=React.useState('BRK-41');
+  const [thr,setThr]=React.useState(65);
+  return (
+  <div className="grid" style={{gridTemplateColumns:'1fr 1fr',gap:'20px 28px'}}>
+    <Field label="Site name" hint="Lowercase, no spaces." required htmlFor="ws"><Input id="ws" defaultValue="tilburg-site" /></Field>
+    <Field label="Search" htmlFor="s"><Input id="s" iconLeft="search" placeholder="Search resources" /></Field>
+    <Field label="API key" htmlFor="k"><Input id="k" mono defaultValue="ak_live_9f2c41b8" suffix="key" readOnly /></Field>
+    <Field label="Cycle target" error="Must be under 600 s." htmlFor="t"><Input id="t" invalid defaultValue="900" suffix="s" /></Field>
+    <Field label="Shift" htmlFor="e"><Select id="e" options={['Days','Swing','Nights']} defaultValue="Days" /></Field>
+    <Field label="Area" htmlFor="r"><Select id="r" placeholder="All areas" options={['assembly','fabrication','finishing','packaging']} /></Field>
+    <Field label="Line" htmlFor="ln"><Combobox id="ln" placeholder="Search lines" options={[{value:'l-01',label:'L-01',description:'Assembly · Bay 3'},{value:'l-02',label:'L-02',description:'Assembly · Bay 4'},{value:'l-07',label:'L-07',description:'Fabrication · Bay 1'},{value:'l-11',label:'L-11',description:'Finishing · Bay 2'}]} /></Field>
+    <Field label="Part number" hint="Suggestions from recent orders." htmlFor="pn"><Autocomplete id="pn" value={part} onChange={setPart} placeholder="e.g. BRK-4120" suggestions={[{value:'BRK-4120',description:'Brake pad · 412 in stock'},{value:'BRK-4180',description:'Brake pad, wide · 38 in stock'},{value:'BRK-4120-R',description:'Brake pad, reman · 0 in stock'},'BSH-2210','CLP-0090']} /></Field>
+    <Field label="Notes" htmlFor="n"><Textarea id="n" rows={3} placeholder="What does this alarm mean?" /></Field>
+    <div className="col" style={{gap:12}}>
+      <Checkbox label="Email me on faults" checked={ck} onChange={e=>setCk(e.target.checked)} />
+      <Checkbox indeterminate label="Select all areas" />
+      <Checkbox label="Disabled option" disabled />
+      <Radio name="tier" value="shared" label="First stop" checked={tier==='shared'} onChange={()=>setTier('shared')} />
+      <Radio name="tier" value="dedicated" label="Constraint" description="Attributed to the bottleneck machine." checked={tier==='dedicated'} onChange={()=>setTier('dedicated')} />
+      <Switch label="Auto-hold on fault" description="Holds the work order when the line stops." checked={on} onChange={e=>setOn(e.target.checked)} />
+      <Slider label="Fault threshold" unit="%" step={5} value={thr} onChange={e=>setThr(Number(e.target.value))} marks={[{value:0,label:'0'},{value:50,label:'50'},{value:100,label:'100'}]} />
+    </div>
+  </div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

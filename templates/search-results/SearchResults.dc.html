@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Search results" description="Interaction pattern reference implementation, set in a manufacturing ERP — item master lookup for a short material: one result set per query state, stale results labelled rather than lied about, no-results and failure kept apart, obsolete responses discarded, pagination reset when the position stops existing." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:1180px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/SearchResults.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+</div>
+<p style="margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note, the query-state panel on the right, and the three tweaks under <span style="font-family:var(--font-mono)">Demo harness</span> — exists to make the contract visible. The item master call is a timer standing in for the service; the comment above it says what to replace. The four tweaks under <span style="font-family:var(--font-mono)">Pattern properties</span> are not harness: <span style="font-family:var(--font-mono)">trigger</span>, <span style="font-family:var(--font-mono)">debounce</span>, <span style="font-family:var(--font-mono)">staleResults</span> and <span style="font-family:var(--font-mono)">emptyQuery</span> are the §05 policies an adopting team must declare.</p>
+<p style="margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Search <span style="font-family:var(--font-mono)">brake</span> for two pages of matches, then go to page 2 and narrow to <span style="font-family:var(--font-mono)">brake caliper</span> — the position stops existing and resets to page 1, and the reset is announced rather than silently applied. Search <span style="font-family:var(--font-mono)">BRK-4899</span> for a part number that is not in the item master: a completed retrieval with zero matches. Turn on <span style="font-family:var(--font-mono)">Item master unreachable</span> and search again: failure keeps the query, keeps the last results it retrieved, and never claims nothing matched. Turn on <span style="font-family:var(--font-mono)">Delay every other response</span> and type quickly — the obsolete response lands after the newer one and is discarded, counted in the panel. Results never take focus: the caret stays in the field through every update.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">WO-24118 · line 3 material short · BRK-4820-A, 40 pcs</span>
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">Item master lookup</h1>
+<p style="margin:0;max-width:76ch;color:var(--text-secondary);font-size:var(--text-sm);line-height:1.55">Anjali Deshmukh (planning) is looking for a substitute the press shop can run this shift, Chakan plant (PL-04). Stock and standard cost are as of 2026-09-07 06:00 (IST).</p>
+</div>
+
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:start">
+
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+
+<div style="display:flex;flex-direction:column;gap:12px;padding:18px 20px;border-bottom:var(--border-hairline)">
+<div style="max-width:520px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.SearchField" label="Search item master" placeholder="Part number or description" value="{{ vQuery }}" onChange="{{ onQuery }}" onSubmit="{{ onSubmitQuery }}" onClear="{{ onClear }}" submit="{{ submitMode }}" hint="{{ searchHint }}" size="md" hint-size="100%,60px"></x-import>
+</div>
+<div role="status" aria-live="polite" style="min-height:19px;font-size:var(--text-xs);line-height:1.55;color:var(--text-secondary);text-wrap:pretty">{{ announcement }}</div>
+<sc-if value="{{ showPending }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:var(--text-xs);line-height:1.55;color:var(--text-secondary);text-wrap:pretty">{{ pendingNote }}</div>
+</sc-if>
+<sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Progress" variant="bar" size="sm" label="{{ progressLabel }}" delay="{{ 200 }}" hint-size="100%,20px"></x-import>
+</sc-if>
+</div>
+
+<sc-if value="{{ showFailure }}" hint-placeholder-val="{{ false }}">
+<div style="padding:16px 20px;border-bottom:var(--border-hairline)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="danger" title="Item master did not answer" live="on" size="sm" action="{{ retryAction }}" hint-size="100%,72px">{{ failBody }}</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{ showInitial }}" hint-placeholder-val="{{ true }}">
+<div style="padding:26px 20px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.EmptyState" variant="first-run" title="Search the item master" size="md" icon="search" headingLevel="{{ 2 }}" hint="{{ initialHint }}" hint-size="100%,180px">Part numbers are indexed whole and by prefix; descriptions by word. 1,412 active items at PL-04.</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{ showEmpty }}" hint-placeholder-val="{{ false }}">
+<div style="padding:26px 20px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.EmptyState" variant="no-results" title="{{ emptyTitle }}" size="md" live="polite" headingLevel="{{ 2 }}" hint="{{ emptyHint }}" actions="{{ emptyActions }}" hint-size="100%,170px">{{ emptyBody }}</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{ showTable }}" hint-placeholder-val="{{ false }}">
+<div>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Table" caption="{{ tableCaption }}" columns="{{ columns }}" rows="{{ pageRows }}" rowKey="part" loading="{{ tableLoading }}" loadingRows="{{ 4 }}" minWidth="760px" sort="{{ sort }}" onSortChange="{{ onSort }}" hint-size="100%,340px"></x-import>
+</div>
+</sc-if>
+
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-top:var(--border-hairline);background:var(--surface-sunken)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ summary }}</span>
+<sc-if value="{{ showPagination }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Pagination" page="{{ page }}" totalItems="{{ totalItems }}" pageSize="{{ pageSize }}" onPageChange="{{ onPage }}" variant="numbered" size="sm" itemLabel="items" showSummary="{{ false }}" label="Item master results" hint-size="260px,28px"></x-import>
+</sc-if>
+</div>
+</div>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:14px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:16px 18px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Query &amp; result state · remove on copy</span>
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="7">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:104px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+<div style="border-top:var(--border-hairline);padding-top:12px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Requests</span>
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ requestRows }}" as="row" hint-placeholder-count="4">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:104px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="border-top:var(--border-hairline);padding-top:12px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Declared policies (§05)</span>
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ policyRows }}" as="row" hint-placeholder-count="4">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:104px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">Every displayed result set names the query that produced it — §04. A response whose request is no longer the current one is discarded, never rendered.</p>
+</div>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1240,&quot;height&quot;:900},&quot;trigger&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;as-you-type&quot;,&quot;on-submit&quot;],&quot;default&quot;:&quot;as-you-type&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Query trigger&quot;},&quot;debounce&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:600,&quot;step&quot;:50,&quot;default&quot;:250,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Debounce (as-you-type only)&quot;},&quot;staleResults&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;retain&quot;,&quot;replace&quot;],&quot;default&quot;:&quot;retain&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Previous results while retrieving&quot;},&quot;emptyQuery&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;prompt&quot;,&quot;all-results&quot;],&quot;default&quot;:&quot;prompt&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Empty query means&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:200,&quot;max&quot;:2400,&quot;step&quot;:100,&quot;default&quot;:700,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Simulated latency&quot;},&quot;unreachable&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Item master unreachable&quot;},&quot;outOfOrder&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Delay every other response&quot;}}">
+// Item master extract, PL-04. Stock as of 2026-09-07 06:00 IST.
+const ITEMS = [
+  { part: 'BRK-4820-A', desc: 'Brake caliper bracket, LH, machined', uom: 'NOS', stock: 0, cost: 412, lead: 12, src: 'Nashik Forge & Machine Works' },
+  { part: 'BRK-4820-B', desc: 'Brake caliper bracket, RH, machined', uom: 'NOS', stock: 260, cost: 412, lead: 12, src: 'Nashik Forge & Machine Works' },
+  { part: 'BRK-4821-A', desc: 'Brake caliper bracket, LH, raw casting', uom: 'NOS', stock: 96, cost: 268, lead: 9, src: 'Nashik Forge & Machine Works' },
+  { part: 'BRK-4822-C', desc: 'Brake pedal bracket assembly', uom: 'NOS', stock: 1480, cost: 736, lead: 21, src: 'Deccan Machine Supply' },
+  { part: 'BRK-4830-A', desc: 'Brake hose retaining bracket, zinc flake', uom: 'NOS', stock: 3120, cost: 58, lead: 7, src: 'Deccan Machine Supply' },
+  { part: 'WLD-4410', desc: 'Welded brake mount subassembly, LH', uom: 'NOS', stock: 40, cost: 1290, lead: 18, src: 'in-house · weld shop' },
+  { part: 'MCH-2201', desc: 'Machined hub carrier, PL-04 finish', uom: 'NOS', stock: 214, cost: 2450, lead: 15, src: 'in-house · machine shop' },
+  { part: 'CAS-9001', desc: 'Aluminium housing casting, gearbox mount', uom: 'NOS', stock: 88, cost: 1975, lead: 24, src: 'Deccan Machine Supply' },
+  { part: 'CAS-9004', desc: 'Cast iron hub carrier, raw', uom: 'NOS', stock: 340, cost: 1120, lead: 20, src: 'Nashik Forge & Machine Works' },
+  { part: 'BRG-1120', desc: 'Taper roller bearing 30205', uom: 'NOS', stock: 1260, cost: 189, lead: 10, src: 'Sahyadri Bearings Pvt Ltd' },
+  { part: 'BRG-1124', desc: 'Needle roller bearing HK1512', uom: 'NOS', stock: 640, cost: 96, lead: 10, src: 'Sahyadri Bearings Pvt Ltd' },
+  { part: 'BRG-1210', desc: 'Deep groove ball bearing 6204-2RS', uom: 'NOS', stock: 2840, cost: 74, lead: 6, src: 'Sahyadri Bearings Pvt Ltd' },
+  { part: 'BSH-3301', desc: 'Suspension bush, natural rubber', uom: 'NOS', stock: 1980, cost: 47, lead: 14, src: 'Deccan Machine Supply' },
+  { part: 'BSH-3302', desc: 'Suspension bush, polyurethane', uom: 'NOS', stock: 0, cost: 63, lead: 28, src: 'Deccan Machine Supply' },
+  { part: 'SEL-7702', desc: 'Oil seal 35 x 52 x 7, nitrile', uom: 'NOS', stock: 4400, cost: 31, lead: 8, src: 'Deccan Machine Supply' },
+  { part: 'SEL-7705', desc: 'O-ring 28 x 3, viton', uom: 'NOS', stock: 8600, cost: 9, lead: 8, src: 'Deccan Machine Supply' },
+  { part: 'GSK-8801', desc: 'Exhaust manifold gasket, graphite', uom: 'NOS', stock: 720, cost: 138, lead: 11, src: 'Deccan Machine Supply' },
+  { part: 'FST-0208', desc: 'Hex bolt M8 x 30, 10.9, zinc flake', uom: 'NOS', stock: 24000, cost: 4, lead: 5, src: 'Deccan Machine Supply' },
+  { part: 'FST-0210', desc: 'Hex bolt M10 x 45, 10.9, zinc flake', uom: 'NOS', stock: 16400, cost: 7, lead: 5, src: 'Deccan Machine Supply' },
+  { part: 'FST-0308', desc: 'Flange nut M8, 10.9', uom: 'NOS', stock: 31000, cost: 3, lead: 5, src: 'Deccan Machine Supply' },
+  { part: 'WSH-0408', desc: 'Spring washer M8, phosphated', uom: 'NOS', stock: 42000, cost: 1, lead: 5, src: 'Deccan Machine Supply' },
+  { part: 'SPR-5502', desc: 'Compression spring, clutch return', uom: 'NOS', stock: 860, cost: 54, lead: 16, src: 'Nashik Forge & Machine Works' },
+  { part: 'PLT-6601', desc: 'Stamped mounting plate, 2.5 mm HR', uom: 'NOS', stock: 2260, cost: 88, lead: 13, src: 'in-house · press shop' },
+  { part: 'PLT-6604', desc: 'Stamped heat shield, 0.8 mm SS', uom: 'NOS', stock: 540, cost: 176, lead: 13, src: 'in-house · press shop' },
+  { part: 'TLG-3300', desc: 'Press tool insert, blank die, D2', uom: 'NOS', stock: 6, cost: 48500, lead: 45, src: 'tool room · Priya Iyer' },
+  { part: 'LUB-0501', desc: 'Assembly lubricant, 20 L drum', uom: 'LTR', stock: 180, cost: 214, lead: 9, src: 'Deccan Machine Supply' }
+];
+const PAGE = 4;
+const rupee = n => '\u20B9' + n.toLocaleString('en-IN');
+// The design system's Button, read off the bundle namespace — needed because
+// EmptyState's `actions` and Alert's `action` take nodes, not markup.
+const Btn = () => window.MeridianDesignSystem_962c43.Button;
+// A broader query to offer when nothing matched: the first word, or the part
+// number's prefix.
+const broadenOf = q => q.includes(' ') ? q.split(/\s+/)[0] : q.replace(/[-\s].*$/, '').slice(0, 3);
+
+class Component extends DCLogic {
+  state = {
+    query: '',              // what is in the field
+    resultQuery: null,      // the query the displayed result set belongs to
+    requestedQuery: null,   // the query of the request in flight or last resolved
+    status: 'initial',      // initial | results | empty | failed
+    loading: false,
+    rows: [],
+    total: 0,
+    page: 1,
+    sort: { key: 'part', direction: 'asc' },
+    announcement: '',
+    requests: 0,
+    discarded: 0,
+    lastResolved: '\u2014'
+  };
+  seq = 0;
+
+  // ─── Matching stands in for the item master index: part numbers whole and
+  // by prefix, descriptions by word.
+  match(q) {
+    const t = q.trim().toLowerCase();
+    const words = t.split(/\s+/).filter(Boolean);
+    const hit = it => {
+      const hay = (it.part + ' ' + it.desc + ' ' + it.uom).toLowerCase();
+      return words.every(w => hay.includes(w));
+    };
+    const found = t === '' ? ITEMS.slice() : ITEMS.filter(hit);
+    const s = this.state.sort;
+    const dir = s.direction === 'desc' ? -1 : 1;
+    return found.sort((a, b) => {
+      const x = a[s.key], y = b[s.key];
+      if (typeof x === 'number') return (x - y) * dir;
+      return String(x).localeCompare(String(y)) * dir;
+    });
+  }
+
+  emptyPolicy() { return this.props.emptyQuery || 'prompt'; }
+  trigger() { return this.props.trigger || 'as-you-type'; }
+
+  // Returning to the initial state is a local decision — no request is issued,
+  // and anything in flight stops being current, so its response is discarded.
+  toInitial(q) {
+    this.seq += 1;
+    clearTimeout(this._debounce);
+    this.setState({ query: q, resultQuery: null, requestedQuery: null, status: 'initial', loading: false, rows: [], total: 0, page: 1, announcement: 'Query cleared. Enter a part number or description to search the item master.' });
+  }
+
+  // ─── One retrieval. Every response carries the id of the request that
+  // produced it; only the current id may write result state.
+  run(q, page) {
+    const id = ++this.seq;
+    clearTimeout(this._debounce);
+    // A new query resets the pagination position; the reset is stated, not
+    // silently applied, because the user chose the page they were on.
+    const resetFrom = (page === 1 && this.state.page > 1 && q !== this.state.resultQuery) ? this.state.page : 0;
+    const latency = this.props.latency ?? 700;
+    const delay = (this.props.outOfOrder && id % 2 === 1) ? latency * 3 : latency;
+    this.setState(s => ({
+      loading: true, page, requestedQuery: q, requests: s.requests + 1,
+      announcement: 'Searching the item master for \u201C' + q.trim() + '\u201D\u2026'
+    }));
+    // REPLACE: stands in for the item master service —
+    //   fetch('/api/item-master?q=' + encodeURIComponent(q) + '&page=' + page)
+    // Keep the id guard below: it is what stops an obsolete response from
+    // overwriting a newer result set.
+    setTimeout(() => {
+      if (id !== this.seq) {
+        this.setState(s => ({ discarded: s.discarded + 1, lastResolved: 'discarded #' + id + ' \u201C' + q.trim() + '\u201D' }));
+        return;
+      }
+      if (this.props.unreachable) {
+        // Failure preserves the query and whatever was last retrieved. It is
+        // never reported as zero matches.
+        this.setState({ status: 'failed', loading: false, lastResolved: 'failed #' + id, announcement: 'The item master did not answer. Your query is unchanged.' });
+        return;
+      }
+      const all = this.match(q);
+      const pageCount = Math.max(1, Math.ceil(all.length / PAGE));
+      const clamped = page > pageCount;
+      const p = Math.min(page, pageCount);
+      const rows = all.slice((p - 1) * PAGE, p * PAGE);
+      const from = all.length ? (p - 1) * PAGE + 1 : 0;
+      const to = Math.min(p * PAGE, all.length);
+      const said = all.length
+        ? all.length + (all.length === 1 ? ' item matches \u201C' : ' items match \u201C') + q.trim() + '\u201D. Showing ' + from + '\u2013' + to + '.' + (clamped ? ' Page 1 \u2014 the page you were on no longer exists for this query.' : (resetFrom ? ' Back to page 1 \u2014 page ' + resetFrom + ' belonged to the previous query.' : ''))
+        : 'No items in the item master match \u201C' + q.trim() + '\u201D. The search completed; nothing was found.';
+      this.setState({
+        status: all.length ? 'results' : 'empty',
+        loading: false, rows, total: all.length, page: p, resultQuery: q,
+        lastResolved: 'resolved #' + id + ' \u2192 ' + all.length + ' items',
+        announcement: said
+      });
+    }, delay);
+  }
+
+  onQueryChange = (next) => {
+    this.setState({ query: next });
+    if (this.trigger() !== 'as-you-type') return;
+    if (next.trim() === '' && this.emptyPolicy() === 'prompt') { this.toInitial(next); return; }
+    // Request frequency is controlled so that rapid edits do not each issue a
+    // retrieval; the id guard handles whatever still overlaps.
+    clearTimeout(this._debounce);
+    const wait = this.props.debounce ?? 250;
+    this._debounce = setTimeout(() => this.run(next, 1), wait);
+  };
+
+  submitQuery = (q) => {
+    if (q.trim() === '' && this.emptyPolicy() === 'prompt') { this.toInitial(q); return; }
+    this.run(q, 1);
+  };
+
+  // Retry operates on the query the user currently intends — the one in the
+  // field, not the one that failed, if they have since edited it.
+  retry = () => { const q = this.state.query; if (q.trim() === '' && this.emptyPolicy() === 'prompt') { this.toInitial(q); return; } this.run(q, 1); };
+
+  changePage = (p) => this.run(this.state.resultQuery ?? this.state.query, p);
+
+  changeSort = (sort) => {
+    this.setState({ sort }, () => {
+      if (this.state.status === 'results' || this.state.status === 'empty') this.run(this.state.resultQuery ?? this.state.query, 1);
+    });
+  };
+
+  broaden = () => {
+    const shorter = broadenOf(this.state.query.trim());
+    this.setState({ query: shorter });
+    this.run(shorter, 1);
+  };
+
+  clearAll = () => { const p = this.emptyPolicy(); if (p === 'prompt') this.toInitial(''); else this.run('', 1); };
+
+  componentWillUnmount() { clearTimeout(this._debounce); }
+
+  renderVals() {
+    const s = this.state;
+    const shortened = broadenOf((s.requestedQuery ?? '').trim());
+    const trigger = this.trigger();
+    const stale = this.props.staleResults || 'retain';
+    const policy = this.emptyPolicy();
+    const hasRows = s.rows.length > 0;
+    const tableLoading = s.loading && (stale === 'replace' || !hasRows);
+    const from = s.total ? (s.page - 1) * PAGE + 1 : 0;
+    const to = Math.min(s.page * PAGE, s.total);
+    const rq = (s.resultQuery ?? '').trim();
+    const pending = trigger === 'on-submit' && !s.loading && s.status !== 'initial' && s.query.trim() !== rq;
+
+    const summary = s.status === 'initial'
+      ? 'no query \u00b7 no result set'
+      : (hasRows ? s.total + ' items \u00b7 showing ' + from + '\u2013' + to + ' for \u201C' + rq + '\u201D' : (s.status === 'failed' ? 'retrieval failed \u00b7 query kept' : '0 items for \u201C' + (s.requestedQuery ?? '').trim() + '\u201D'));
+
+    return {
+      vQuery: s.query,
+      onQuery: this.onQueryChange,
+      onSubmitQuery: this.submitQuery,
+      onClear: () => {},
+      submitMode: trigger === 'on-submit' ? 'button' : 'none',
+      searchHint: trigger === 'on-submit'
+        ? 'Searches when you press Search or Enter. Nothing is retrieved while you type.'
+        : 'Searches as you type, ' + (this.props.debounce ?? 250) + ' ms after you stop. Enter searches at once.',
+      announcement: s.announcement,
+      loading: s.loading,
+      progressLabel: 'Retrieving items for \u201C' + (s.requestedQuery ?? '').trim() + '\u201D',
+      showPending: pending,
+      pendingNote: 'The results below are for \u201C' + rq + '\u201D. Press Search to retrieve \u201C' + s.query.trim() + '\u201D.',
+
+      showInitial: s.status === 'initial' && !s.loading,
+      initialHint: policy === 'all-results' ? 'An empty query lists every active item, 4 to a page.' : 'An empty query retrieves nothing \u2014 clearing the field returns here.',
+
+      showEmpty: s.status === 'empty' && !s.loading,
+      emptyTitle: 'No item matches \u201C' + (s.requestedQuery ?? '').trim() + '\u201D',
+      emptyBody: 'The item master answered and holds no active item for that part number or description. If the substitute exists physically, it has not been created in the item master \u2014 raise it with Priya Iyer in the tool room before planning against it.',
+      emptyHint: 'Searched: part numbers whole and by prefix, descriptions by word.',
+      // Actions belong to EmptyState's and Alert's own action slots, which own
+      // their grouping and spacing — not to a sibling row beside them.
+      emptyActions: [
+        React.createElement(Btn(), { key: 'broaden', variant: 'secondary', type: 'button', onClick: this.broaden }, 'Search \u201C' + shortened + '\u201D instead'),
+        React.createElement(Btn(), { key: 'clear', variant: 'ghost', type: 'button', onClick: this.clearAll }, 'Clear query')
+      ],
+      retryAction: React.createElement(Btn(), { variant: 'secondary', type: 'button', onClick: this.retry }, 'Retry \u201C' + s.query.trim() + '\u201D'),
+
+      showFailure: s.status === 'failed',
+      failBody: 'The item master (MES-IM) did not answer within 8 s. Your query \u201C' + (s.requestedQuery ?? '').trim() + '\u201D is unchanged and nothing has been searched. This is not a statement that no item matches.' + (hasRows ? ' The ' + s.total + ' items below were retrieved for \u201C' + rq + '\u201D before the failure.' : ''),
+
+      showTable: hasRows || tableLoading,
+      tableLoading,
+      pageRows: tableLoading ? [] : s.rows.map(it => ({ part: it.part, desc: it.desc, uom: it.uom, stock: it.stock === 0 ? 'nil' : it.stock.toLocaleString('en-IN'), cost: rupee(it.cost), lead: it.lead + ' d', src: it.src })),
+      columns: [
+        { key: 'part', header: 'Part', mono: true, width: '128px', sortable: true },
+        { key: 'desc', header: 'Description', wrap: true },
+        { key: 'src', header: 'Source', width: '190px' },
+        { key: 'uom', header: 'UoM', width: '64px' },
+        { key: 'stock', header: 'Stock PL-04', align: 'right', mono: true, width: '108px' },
+        { key: 'cost', header: 'Std cost', align: 'right', mono: true, width: '96px' },
+        { key: 'lead', header: 'Lead', align: 'right', mono: true, width: '72px' }
+      ],
+      tableCaption: s.loading && tableLoading ? 'Retrieving item master results' : 'Item master results for \u201C' + rq + '\u201D',
+      sort: s.sort,
+      onSort: this.changeSort,
+
+      showPagination: hasRows && !tableLoading,
+      page: s.page, totalItems: s.total, pageSize: PAGE, onPage: this.changePage,
+      summary,
+
+      stateRows: [
+        { k: 'query', v: s.query === '' ? '\u2014 empty \u2014' : '\u201C' + s.query + '\u201D' },
+        { k: 'requested', v: s.requestedQuery == null ? '\u2014' : '\u201C' + s.requestedQuery.trim() + '\u201D' },
+        { k: 'result set', v: s.resultQuery == null ? '\u2014 none \u2014' : '\u201C' + rq + '\u201D' },
+        { k: 'status', v: s.loading ? s.status + ' + retrieving' : s.status },
+        { k: 'results', v: s.total + ' items \u00b7 page ' + s.page + ' of ' + Math.max(1, Math.ceil(s.total / PAGE)) },
+        { k: 'coherent', v: s.loading ? 'retrieving \u2014 shown set still belongs to \u201C' + rq + '\u201D' : (s.resultQuery === s.requestedQuery || s.status === 'initial' ? 'yes' : 'no \u2014 failure kept the earlier set') }
+      ],
+      requestRows: [
+        { k: 'issued', v: String(s.requests) },
+        { k: 'current id', v: String(this.seq) },
+        { k: 'discarded', v: s.discarded + (s.discarded ? ' obsolete response' + (s.discarded === 1 ? '' : 's') : '') },
+        { k: 'last', v: s.lastResolved }
+      ],
+      policyRows: [
+        { k: 'trigger', v: trigger },
+        { k: 'debounce', v: trigger === 'as-you-type' ? (this.props.debounce ?? 250) + ' ms' : 'n/a \u2014 explicit submission' },
+        { k: 'stale', v: stale === 'retain' ? 'retain, labelled' : 'replace with skeleton' },
+        { k: 'empty query', v: policy === 'prompt' ? 'initial prompt' : 'all results' }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

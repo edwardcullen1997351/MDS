@@ -1,0 +1,366 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="Textarea" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Textarea — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:16px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+td.num,th.num{text-align:right;font-family:var(--font-mono)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:4px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.col280{width:280px}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Textarea, Input, Field, Button, Icon } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows,numCols=[]}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i} className={numCols.includes(i)?'num':''}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={(j===0?'k ':'')+(numCols.includes(j)?'num':'')}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const NOTE = 'Line 3 stopped 14:20 — mixer seal replaced, ran up clean at 14:52. Next shift: watch the feed pressure on the second changeover, it drifted twice.';
+const YAML = 'line: 3\nstation: mixer\nthresholds:\n  pressure_kpa: 320\n  drift_pct: 4.5';
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>Textarea</h1>
+    <p className="lede">Input with a height. Same box, same border, same states, same tokens — the differences are all consequences of the value having lines: how tall it starts, who is allowed to resize it, what Enter does, and the fact that a person will write two hundred words in it and expect them to survive.</p>
+    <div className="meta">
+      <span>components/forms/Textarea.jsx</span><span>window.MeridianDesignSystem_962c43.Textarea</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 2 open items</span><span>since: 1.0.0 · revised 1.2.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Prose the operator writes, or a machine value with lines in it.">
+    <p>Textarea takes text whose length the system cannot predict: a shift note, a reason for a deviation, a query, a YAML block. It is the same control as <code>Input</code> with one added dimension, and it reads as the same control on purpose — a form that mixes two chrome vocabularies looks broken before anyone types.</p>
+    <T cols={['You want to…','Component','Notes']} rows={[
+      ['One line of text','Input','A textarea for a name invites a paragraph.'],
+      ['A note, a reason, a description','Textarea','This component.'],
+      ['A query, YAML, a log paste','Textarea mono','Mono, and spell-check off — see §04.'],
+      ['Editable code with syntax, gutters, folding','Not in the system','That is an editor, not a form control. Embed one; do not grow this.'],
+      ['A long value the operator only reads','Textarea readOnly, or a <pre>','readOnly if it must be selected and copied; pre if it does not.'],
+      ['A rich-text body','Not in the system','No WYSIWYG. If markup is needed, take Markdown in mono and render it elsewhere.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> when the honest answer to “how long is this value?” is “it depends”.</li>
+      <li><strong>Do not use</strong> as a safety valve on a structured field. Three <code>Input</code>s beat one textarea whose contents must be parsed later.</li>
+      <li><strong>Do not use</strong> for a value the system must validate strictly. Free prose cannot be validated, so anything you will reject belongs in a constrained control.</li>
+    </ul>
+    <div className="demo">
+      <Field label="Shift note" hint="What the next shift needs to know." style={{width:340}}><Textarea rows={4} defaultValue={NOTE} /></Field>
+      <Field label="Threshold override" hint="YAML, applied on save." style={{width:300}}><Textarea rows={5} mono defaultValue={YAML} /></Field>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="One element. Everything is on the box itself.">
+    <div className="demo"><div style={{width:360}}><Textarea aria-label="Anatomy example" rows={4} defaultValue={NOTE} /></div></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Box</strong> — a real <code>&lt;textarea&gt;</code>, styled directly. Unlike <code>Input</code> there is no wrapper: with no icon and no suffix there is nothing to lay out, so the element that holds the text also holds the border and the ring.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Border</strong> — <code>--input-border</code>, the same load-bearing control edge as Input at 4.74:1 (§08). Identical border, radius and ring, so a textarea under an input looks like one family.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Text block</strong> — <code>--leading-normal</code> (1.5) rather than the control leading, because this is the one form control whose value is read as prose. Padding is vertical <em>and</em> horizontal here: 8 px / 12 px at md.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Height</strong> — <code>rows</code>. Four rows at md is 96 px: 4 × 19.5 px of line box, plus 16 px padding, plus 2 px of border.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Resize handle</strong> — the browser corner grip, vertical only. It is the one place where a user changes the layout of a form, which is why it cannot be horizontal (§13).</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>No counter, no toolbar, no autogrow.</strong> Nothing is drawn inside the box; a character count lives in the <code>Field</code> hint (§10).</span></div>
+      <div className="callout"><span className="cnum">7</span><span><strong>Label, hint, error — not here.</strong> <code>Field</code> owns them, and the id wiring with them.</span></div>
+    </div>
+    <T cols={['Region','Value (md, comfortable)','Token']} rows={[
+      ['Padding','8 px / 12 px','--space-2 · --control-px-md'],
+      ['Line box','19.5 px (13 px × 1.5)','--text-sm · --leading-normal'],
+      ['Height at rows=4','96 px','rows'],
+      ['Minimum height','34 px — the handle cannot collapse it to a sliver','--control-h-md'],
+      ['Radius','4 px','--input-radius'],
+      ['Border','1 px solid, 4.74:1 on a card','--border-width · --input-border'],
+      ['Focus','3 px ring + action border','--input-focus-ring · --input-border-focus'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Eight props. Seven of them are Input's, plus rows.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['rows',<span className="t">number</span>,<span className="t">4</span>,'Visible lines at rest, and the only height control. §05.'],
+      ['size',<span className="t">'sm' | 'md' | 'lg'</span>,<span className="t">'md'</span>,'Padding and type step, matched to Input so a mixed form aligns. Added 1.2.0.'],
+      ['invalid',<span className="t">boolean</span>,<span className="t">false</span>,'Danger border, danger ring, aria-invalid. Inherited from Field error.'],
+      ['mono',<span className="t">boolean</span>,<span className="t">false</span>,'IBM Plex Mono, --tracking-mono, and spell-check / autocorrect / autocapitalise off. §04.'],
+      ['resize',<span className="t">'none' | 'vertical'</span>,<span className="t">'vertical'</span>,'"both" is refused with a warning — it drags the control over its neighbours.'],
+      ['disabled',<span className="t">boolean</span>,<span className="t">false</span>,'Native disabled: not focusable, and the content cannot be scrolled or copied.'],
+      ['readOnly',<span className="t">boolean</span>,<span className="t">false</span>,'Focusable, scrollable, copyable; sunken fill, full-contrast text. Added 1.2.0.'],
+      ['style',<span className="t">CSSProperties</span>,'—','Width and layout. Setting height here overrides rows — prefer rows.'],
+      ['…rest',<span className="t">TextareaHTMLAttributes</span>,'—','value / defaultValue, onChange, placeholder, maxLength, name, wrap, aria-*.'],
+    ]}/>
+    <p><strong>No <code>autogrow</code>, and no <code>maxRows</code>.</strong> A box that grows as you type reflows everything beneath it on every keystroke, and in a dense form that means the Save button moves while you are aiming at it. Pick a <code>rows</code> that fits the expected answer and let the user drag or scroll.</p>
+    <p><strong>No <code>showCount</code>.</strong> A counter inside the box either covers text or steals a line of it; if a limit matters, state it in the <code>Field</code> hint (§10).</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Same three flags as Input. mono does more work here.">
+    <T cols={['Flag','Reads as','Use']} rows={[
+      ['— (default)','Prose the operator writes','Notes, reasons, descriptions. Spell-check on, wrapping on.'],
+      ['mono','A machine value with lines','Queries, YAML, JSON, paths, log pastes. Digits and brackets align; spell-check, autocorrect and autocapitalise are off, because all three corrupt a query silently.'],
+      ['readOnly','A long value to read and copy','A generated manifest, an audit payload, a rendered template. Sunken fill; text stays at full contrast, and the box still scrolls.'],
+      ['invalid','Content the system rejected','Only with a message. Border and ring only — prose never turns red.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="default"><div style={{width:360}}><Textarea aria-label="Default" rows={3} defaultValue={NOTE} /></div></Row>
+      <Row label="mono"><div style={{width:360}}><Textarea aria-label="Mono" rows={5} mono defaultValue={YAML} /></div></Row>
+      <Row label="readOnly"><div style={{width:360}}><Textarea aria-label="Read only" rows={3} mono readOnly defaultValue={YAML} /></div></Row>
+      <Row label="invalid"><div style={{width:360}}><Field error="Unbalanced parenthesis on line 2."><Textarea rows={3} mono defaultValue={'select * from lines\nwhere station = (mixer'} /></Field></div></Row>
+    </div>
+    <p><strong>Mono turning off spell-check is the point of the flag.</strong> A red squiggle under every identifier trains the operator to ignore squiggles, and iOS autocapitalising <code>select</code> to <code>Select</code> breaks a query with no visible cause.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Height is rows; size is only padding and type.">
+    <T cols={['size','Type','Padding','Line box','rows=4 height','Use']} numCols={[]} rows={[
+      ['sm','12 px','4 / 8 px','18 px','82 px','A note column inside a table row or a side panel.'],
+      ['md','13 px','8 / 12 px','19.5 px','96 px','Default, every form.'],
+      ['lg','16 px','12 / 16 px','24 px','122 px','Touch and one-field pages. 16 px (--text-lg) is the largest type iOS Safari will not zoom to on focus.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="sm"><div style={{width:300}}><Textarea aria-label="Small" size="sm" rows={3} defaultValue={NOTE} /></div></Row>
+      <Row label="md"><div style={{width:300}}><Textarea aria-label="Medium" size="md" rows={3} defaultValue={NOTE} /></div></Row>
+      <Row label="lg"><div style={{width:300}}><Textarea aria-label="Large" size="lg" rows={3} defaultValue={NOTE} /></div></Row>
+    </div>
+    <T cols={['rows','Height (md)','Means'] } numCols={[1]} rows={[
+      ['2','57','A one-line answer that occasionally runs over. Rare — prefer Input.'],
+      ['3','76','A sentence: a reason, a short comment.'],
+      ['4','96','Default. A short paragraph, which is what most notes are.'],
+      ['6','135','A written explanation someone will re-read.'],
+      ['8','174','A query or a config block, with mono.'],
+      ['10+','—','Too tall for a form. Put it in a Dialog or on its own page.'],
+    ]}/>
+    <p><strong><code>rows</code> is a promise about the expected answer.</strong> Two rows says “a sentence”; eight says “take your time”. Setting eight for a one-line reason wastes the screen and makes the form look unfinished; setting two for a deviation report makes people write less than they should.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Identical to Input, plus a scroll state Input cannot have.">
+    <T cols={['State','Border','Fill / ring','Notes']} rows={[
+      ['Rest','--input-border (4.74:1)','card fill','—'],
+      ['Hover','--input-border-hover (7.78:1)','card fill','Border only.'],
+      ['Focus','--input-border-focus','3 px --input-focus-ring','box-shadow ring, so no reflow and nothing clipped.'],
+      ['Invalid','--input-border-invalid','—','Border only; the text never changes colour.'],
+      ['Invalid + focus','critical border','3 px --input-focus-ring-invalid','Focus does not overwrite the error signal.'],
+      ['Overflowing','resting border','—','Past rows the box scrolls; it never grows. The scrollbar is the browser default, which is the only honest cue that there is more text.'],
+      ['Resized by user','unchanged','—','A dragged height wins over rows until reload. Nothing is persisted — see §14.'],
+      ['Read-only','resting border','--surface-sunken fill','Focusable and scrollable. Full-contrast text.'],
+      ['Disabled','resting border','--surface-disabled fill, --input-text-disabled','2.27:1. Content cannot be scrolled — so a long disabled value is unreadable past the fourth line.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="overflow"><div style={{width:300}}><Textarea aria-label="Overflow" rows={2} defaultValue={NOTE + ' ' + NOTE} /></div></Row>
+      <Row label="readOnly"><div style={{width:300}}><Textarea aria-label="Read only state" rows={2} readOnly defaultValue={NOTE} /></div></Row>
+      <Row label="disabled"><div style={{width:300}}><Textarea aria-label="Disabled state" rows={2} disabled defaultValue={NOTE} /></div></Row>
+    </div>
+    <p className="warn"><strong>Never <code>disabled</code> on a textarea with content.</strong> A disabled textarea cannot be focused, scrolled or selected, so any value taller than the box is simply lost to the user — worse here than on an Input, where the value is one line. Use <code>readOnly</code>.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Enter is a newline. That changes the form contract.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab / Shift-Tab','Moves focus out. Tab must NEVER insert a tab character — that traps the keyboard user inside the field. This is the one rule in this section with no exceptions.'],
+      ['Enter','Inserts a newline. It does not submit, which means a form containing a textarea needs a visible submit button; Enter-to-submit is not available.'],
+      ['⌘/Ctrl-Enter','Submit, by convention, where a submit exists. The form owns the handler, not this component — and if you implement it, say so next to the button.'],
+      ['⌘/Ctrl-A · C · V · Z','Native. Undo survives only if you do not rewrite the value on every keystroke.'],
+      ['↑ ↓ · PgUp / PgDn · Home / End','Caret and scroll within the value. The component claims no arrow key.'],
+      ['Escape','Nothing. Do not close a Dialog on Escape while a textarea inside it has unsaved text — see §14.'],
+    ]}/>
+    <ul>
+      <li><strong>The resize handle is pointer-only</strong>, in every browser. That is acceptable because it is an enhancement — a keyboard user scrolls instead — but it means resizing can never be the only way to see the content.</li>
+      <li><strong>Do not intercept Enter</strong> to submit “helpfully”. In a shift note, Enter is how paragraphs get made, and losing a half-written note to an accidental submit is the exact failure this control must not have.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="Input's requirements, plus two that only apply to a scrolling box.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Role & name','Native <textarea>, announced as a multi-line edit field. The name comes from Field via context (React.useId), so no hand-passed ids. Warns when there is no name.'],
+      ['Instructions & errors (1.3.1 · 3.3.1)','Field renders hint or error under <id>-msg with role="alert"; the control points aria-describedby at it and sets aria-invalid. Warns when invalid has no description.'],
+      ['Control boundary (1.4.11)','--input-border at --border-control: 4.74:1 on a card, 4.46:1 on the page band, 6.96:1 in dark. Hover 7.78:1. Same retarget as Input in 1.2.0.'],
+      ['Value contrast','Primary text on the card fill. Placeholder 4.73:1 via base.css. Disabled 2.27:1 — exempt, and never where the value matters.'],
+      ['Focus (2.4.7 · 2.4.11)','3 px ring plus an action border, drawn as box-shadow so a scrolling panel cannot clip it.'],
+      ['Keyboard trap (2.1.2)','Tab leaves the field. Nothing in this component captures Tab, and nothing may be added that does.'],
+      ['Scrollable region (2.1.1)','The overflowing box is reachable and scrollable by keyboard because the textarea itself is focusable — which is exactly what disabled removes. Never disable a textarea with content.'],
+      ['Reflow (1.4.10)','The box is width: 100% of its column and wraps; no horizontal scrolling at 320 px, and resize="both" is refused partly for this reason.'],
+      ['Spell-check','On for prose, off for mono. Persistent squiggles under every identifier are noise that teaches people to ignore real ones.'],
+      ['Zoom on focus (iOS)','size="lg" carries 16 px type. Below 16 px, iOS Safari zooms in on focus and does not zoom back.'],
+      ['Reduced motion','Only 140 ms colour and shadow transitions.'],
+    ]}/>
+    <p className="warn"><strong>A character limit must be stated, not just enforced.</strong> <code>maxLength</code> stops typing dead at the limit and silently truncates a paste — with no message, no announcement and no explanation (3.3.1 · 3.3.2). If you set it, put the number in the <code>Field</code> hint, and prefer validating on submit over blocking input.</p>
+    <div className="demo col">
+      <Row label="wrong"><div style={{width:320}}><Field label="Reason"><Textarea rows={2} maxLength={80} /></Field></div></Row>
+      <Row label="right"><div style={{width:320}}><Field label="Reason" hint="Up to 80 characters."><Textarea rows={2} maxLength={80} /></Field></div></Row>
+    </div>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="Colour and shadow, 140 ms. The box height is never animated.">
+    <T cols={['Change','Duration','Easing','Property']} rows={[
+      ['Hover border','140 ms','--ease-out','border-color'],
+      ['Focus ring','140 ms','--ease-out','box-shadow · border-color'],
+      ['Invalid border','140 ms','--ease-out','border-color'],
+      ['Fill (readOnly / disabled)','140 ms','--ease-out','background-color'],
+      ['Height','—','—','never — not on resize, not on content, not on focus'],
+    ]}/>
+    <ul>
+      <li><strong>Height is not in <code>--transition-control</code></strong>, and must not be added: an animated height means the resize drag lags the pointer, which feels broken rather than smooth.</li>
+      <li><strong>No autogrow, so no growth animation.</strong> A textarea that expands on focus pushes the rest of the form down at the moment the user has committed to typing.</li>
+      <li>No shake, flash or pulse on error. The border changes colour and the message appears.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="The label sets the scope; the hint sets the length.">
+    <T cols={['Slot','Job','Write','Not']} rows={[
+      ['Field label','Name the content','Shift note','Notes field · Comments (optional)'],
+      ['Field hint','Say what to include, or the limit','What the next shift needs to know. Up to 500 characters.','Please enter your notes here'],
+      ['Placeholder','An example of the CONTENT, or nothing','Line 3 stopped 14:20, seal replaced.','Type your note… · Enter text'],
+      ['Field error','What is wrong, and where','Unbalanced parenthesis on line 2.','Invalid input'],
+      ['Submit button','Name the act','Save note','Submit'],
+    ]}/>
+    <ul>
+      <li><strong>The placeholder shows the KIND of answer wanted.</strong> On a textarea it is genuinely useful — one realistic example sets the register and the length far better than an instruction does.</li>
+      <li><strong>Say “optional” in the hint, not the label.</strong> A parenthetical in the label is read out with the name of the field every time.</li>
+      <li><strong>Never ask for structure in prose.</strong> “List the affected stations, one per line” is a request to parse free text later; use a repeatable field.</li>
+      <li><strong>Do not promise a live counter</strong> unless the product draws one. If there is a limit, name the number.</li>
+      <li><strong>Preserve what people write.</strong> Trim trailing whitespace on save at most; never collapse newlines, and never reformat prose on blur.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Full width, always. The height is what changes.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','Full width, size="lg" so iOS does not zoom. Drop to rows={3}: the on-screen keyboard takes half the viewport, and a 122 px box under it is all the operator can see anyway.'],
+      ['tablet ≥ 600','Full width of its column. A textarea never shares a row with another field — the label alignment breaks and the resize handle lands on its neighbour.'],
+      ['desktop ≥ 1024','md, rows to suit the answer. The box takes the whole form column even when the fields above it are narrower; a stepped right edge is worse than a wide box.'],
+      ['ultrawide ≥ 1600','The column stops at --measure-narrow (46ch). Prose past ~70 characters per line is measurably harder to read, so the box does not keep growing.'],
+    ]}/>
+    <div className="demo col" style={{maxWidth:340}}>
+      <Field label="Deviation reason" hint="Full width of the column, whatever the column is."><Textarea rows={3} placeholder="Feed pressure drifted twice on changeover." /></Field>
+      <div style={{display:'flex',gap:12}}>
+        <Field label="Code" style={{width:96}}><Input mono placeholder="4471" inputMode="numeric" /></Field>
+        <Field label="Station" style={{flex:1}}><Input placeholder="Mixer" /></Field>
+      </div>
+    </div>
+    <ul>
+      <li><strong>The box is <code>width: 100%</code></strong> and takes its width from the column. Set width on the <code>Field</code> or the grid cell, not on the control.</li>
+      <li><strong>Watch the resize handle in a narrow layout.</strong> A user-dragged height persists while the page lives, so a box dragged tall on desktop stays tall if the window is then narrowed.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Wrap it in a <code>Field</code> with a label.</li>
+        <li>Set <code>rows</code> to the expected answer.</li>
+        <li><code>mono</code> for queries, YAML and logs.</li>
+        <li><code>readOnly</code> instead of <code>disabled</code>.</li>
+        <li>State a limit in the hint if you set <code>maxLength</code>.</li>
+        <li>Give the form a visible submit button.</li>
+        <li>Keep it on its own row, full column width.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>A placeholder as the label.</li>
+        <li><code>resize="both"</code>, or resize on a fixed-layout page.</li>
+        <li>Autogrow, or an animated height.</li>
+        <li>Enter to submit.</li>
+        <li>Tab to insert a tab character.</li>
+        <li>A counter, toolbar or clear button inside the box.</li>
+        <li><code>rows={'{'}12{'}'}</code> in a form — that is a page, not a field.</li>
+        <li>Reformat or re-wrap what the user wrote.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this component invites.</strong> A textarea in a Dialog that closes on Escape or on backdrop click. The operator writes six lines, brushes Escape, and the text is gone with no confirmation — the single most destructive interaction in a console, and it is caused by the container, not the control. If a Dialog holds a textarea, it must confirm before discarding.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="What ships, and what changed in 1.2.0.">
+    <ul>
+      <li><strong>One element, styled directly.</strong> No wrapper: with no icon and no suffix there is nothing to lay out, so the <code>&lt;textarea&gt;</code> carries the border, radius, fill and ring itself. This is the deliberate difference from <code>Input</code>, and the reason <code>style</code> lands on the control rather than a box around it.</li>
+      <li><strong>Field context, same as Input.</strong> <code>id</code>, <code>aria-describedby</code>, <code>aria-invalid</code>, <code>aria-required</code> from <code>FieldContext</code>; explicit props win.</li>
+      <li><strong><code>size</code> is new in 1.2.0.</strong> Before it, every textarea was 13 px with md padding, so a <code>size="lg"</code> Input sat above a visually smaller textarea in the same form. Height still comes from <code>rows</code> alone — <code>size</code> only moves padding and type.</li>
+      <li><strong><code>resize="both"</code> is refused and warned</strong>, rendering <code>vertical</code>. Horizontal drag lets a user pull the control over the field beside it and, at a narrow viewport, past the edge of the page — a reflow failure the user causes themselves.</li>
+      <li><strong><code>minHeight: --control-h-md</code></strong> so the handle cannot drag the box down to a one-line sliver that no longer reads as a multi-line field.</li>
+      <li><strong><code>mono</code> sets three native attributes</strong> — <code>spellCheck={'{false}'}</code>, <code>autoCapitalize="off"</code>, <code>autoCorrect="off"</code> — each overridable. It also switches <code>letter-spacing</code> to <code>--tracking-mono</code>; before 1.2.0 mono text kept the body tracking.</li>
+      <li><strong><code>readOnly</code> gets the sunken fill</strong> at full text contrast, matching Input. Previously it was indistinguishable from an editable field.</li>
+      <li><strong>Handlers merge:</strong> <code>onFocus</code>, <code>onBlur</code>, <code>onMouseEnter</code>, <code>onMouseLeave</code> from props are called after the internal state update. Before 1.2.0 <code>{'{...rest}'}</code> was spread after them and any consumer handler silently killed the hover or focus state.</li>
+      <li><strong>Three console warnings:</strong> no accessible name; <code>invalid</code> with no <code>aria-describedby</code>; <code>resize="both"</code>. Only the last changes rendering.</li>
+      <li><strong>Tokens consumed:</strong></li>
+    </ul>
+    <div className="tokenlist">
+      <span>--input-radius</span><span>--input-background</span><span>--input-background-disabled</span><span>--input-border</span><span>--input-border-hover</span><span>--input-border-focus</span><span>--input-border-invalid</span><span>--input-text</span><span>--input-text-disabled</span><span>--input-placeholder (via base.css)</span><span>--input-focus-ring</span><span>--input-focus-ring-invalid</span><span>--space-1 · --space-2 · --space-3</span><span>--control-px-sm · md · lg</span><span>--control-h-md (min height)</span><span>--surface-sunken (readOnly)</span><span>--text-xs · --text-sm · --text-lg</span><span>--leading-normal</span><span>--font-mono · --tracking-mono</span><span>--transition-control</span>
+    </div>
+    <p>It shares every <code>--input-*</code> token with Input and Select by design: three controls, one chrome. A change to the input border is a change to all three, which is what keeps a form looking like one thing.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { Field, Textarea } from '@meridian/ds';
+
+// the default shape: Field owns the label, hint and wiring
+<Field label="Shift note" hint="What the next shift needs to know.">
+  <Textarea rows={4} value={note} onChange={(e) => setNote(e.target.value)} />
+</Field>
+
+// machine value: mono turns off spell-check, autocorrect and autocapitalise
+<Field label="Threshold override" hint="YAML, applied on save.">
+  <Textarea rows={6} mono value={yaml} onChange={onYaml} />
+</Field>
+
+// a long generated value to read and copy — never disabled
+<Field label="Audit payload"><Textarea rows={8} mono readOnly value={payload} /></Field>
+
+// a limit: enforce AND state it
+<Field label="Reason" hint="Up to 500 characters.">
+  <Textarea rows={3} maxLength={500} value={reason} onChange={onReason} />
+</Field>`}</pre>
+    <ul>
+      <li><strong>Unsaved text is the real risk.</strong> A textarea is the only control in the system where a mis-click can destroy minutes of work. Guard the container: confirm before closing a Dialog that holds a dirty textarea, and prompt on route change. The control cannot do this for you — it does not know what “saved” means.</li>
+      <li><strong>Controlled and uncontrolled both work;</strong> the component holds only hover and focus state.</li>
+      <li><strong>Do not reformat on blur.</strong> Input formats on blur (§07 there); a textarea must not — re-wrapping or trimming a paragraph loses the shape the author gave it.</li>
+      <li><strong>Testing.</strong> <code>getByLabelText('Shift note')</code> first. Assert Tab moves focus out (2.1.2) — trivially true today, and worth locking so nobody adds tab-to-indent. For the error path assert <code>aria-invalid="true"</code> and that <code>aria-describedby</code> resolves to the message. Assert <code>resize</code> computes to <code>vertical</code> even when <code>both</code> is passed.</li>
+      <li><strong>Lint.</strong> Flag a bare <code>&lt;textarea&gt;</code>, <code>resize: both</code> in any stylesheet, <code>maxLength</code> on a Textarea whose Field has no hint, and a Textarea with <code>disabled</code> and a non-empty value.</li>
+      <li><strong>Frozen 4 Sep 2026.</strong> API closed: <code>rows</code>, <code>size</code>, <code>invalid</code>, <code>mono</code>, <code>resize</code>, <code>disabled</code>, <code>readOnly</code>, <code>style</code>, plus native textarea attributes.</li>
+      <li><strong>Breaking, narrow:</strong> <code>resize</code> no longer accepts <code>'both'</code> in the type, and coerces it at runtime. No call site in this project used it.</li>
+      <li><strong>Closed as decided, not deferred — autogrow.</strong> It was the most requested addition at the first draft and it is refused: a height that changes per keystroke reflows the form beneath it, moving the submit button under the pointer. Revisit only for a single-field composer surface, which would be a new component.</li>
+      <li><strong>Closed as decided — a character counter.</strong> Nothing is drawn inside the box; the limit is stated in the hint. A live counter is a product-level affordance, and one built on Field could serve every control rather than this one.</li>
+      <li><strong>Open — resized height is not persisted.</strong> A drag lasts until reload, and an operator who widens their note box every shift will re-drag it every shift. Persisting it needs a per-user store the system does not have; logged rather than faked with localStorage inside a component.</li>
+      <li><strong>Open — no Combobox, no editor.</strong> Both were declined in §01. If a surface genuinely needs code editing, embed a real editor and give it this control's chrome, rather than growing this one.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

@@ -1,0 +1,126 @@
+<!-- @dsCard group="Specs · Composite" viewport="900x620" name="Composite index" subtitle="What each composite owns, what it refuses, and the section set it was written against" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Composite components — index</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:28px}
+.wrap{max-width:860px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-3xl);font-weight:var(--weight-light);letter-spacing:-0.02em}
+p{margin:0;max-width:78ch;color:var(--text-secondary);text-wrap:pretty}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}
+a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+.rule{margin:20px 0 0;border-top:var(--border-width) solid var(--border-strong)}
+.item{display:grid;grid-template-columns:150px minmax(0,1fr);gap:24px;padding:20px 0;border-bottom:var(--border-hairline)}
+.item:last-of-type{border-bottom:none}
+.head{display:flex;flex-direction:column;gap:6px}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+.parts{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:10px;min-width:0}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+.secs{display:flex;flex-wrap:wrap;gap:5px}
+.s{font-family:var(--font-mono);font-size:var(--text-2xs);padding:1px 6px;border-radius:var(--radius-xs);background:var(--surface-sunken);color:var(--text-secondary)}
+.s.off{background:transparent;border:var(--border-hairline);color:var(--text-tertiary)}
+.legend{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:14px}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+@media (max-width:700px){.item{grid-template-columns:1fr;gap:12px}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Composite components</span>
+<h1>Composite index</h1>
+<p>Every composite here is a standardized assembly of existing Core Components that carries meaning the parts do not carry alone, and each specification documents only what the composition adds — see the <a href="../../guidelines/composite-spec-standard.card.html">composite spec standard</a> for the section set and the include/omit tests. The one recurring theme so far: every composite here coordinates a control <code>size</code> its children could not agree on by themselves. <code>FileUpload</code> is the first that also coordinates a <em>status</em> — whether the set it holds is finished — which is what its surface's Save button depends on.</p>
+<div class="rule"></div>
+
+<div class="item">
+  <div class="head"><h2><a href="Toolbar.spec.html">Toolbar</a></h2><span class="parts">Box, Divider · Button, IconButton, ButtonGroup, SegmentedControl, Menu</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> the <code>role="toolbar"</code> boundary and name, one tab stop with a coordinated arrow contract, the visible/overflowed relationship, one control size, and an aggregate disabled state.</li>
+      <li><strong>Refuses</strong> navigation, unrelated controls, and use as a horizontal alignment device.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s off">§04</span><span class="s">§05</span><span class="s">§06</span><span class="s">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s">§11</span><span class="s">§12</span><span class="s">§13</span><span class="s off">§14</span>
+    </div>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="SearchField.spec.html">SearchField</a></h2><span class="parts">Box, Text · Input, Icon, IconButton, Button</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> the query contract (<code>value</code>/<code>onChange</code>, clearing as an ordinary value change), search semantics, clear and submit as permanently separate actions, and one size across field, clear and submit.</li>
+      <li><strong>Refuses</strong> results, suggestions, filters and result counts — suggestions are <code>Autocomplete</code>'s contract, not a feature of this one.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s off">§04</span><span class="s">§05</span><span class="s">§06</span><span class="s">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s off">§12</span><span class="s">§13</span><span class="s">§14</span>
+    </div>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="SplitButton.spec.html">SplitButton</a></h2><span class="parts">Box · Button, IconButton, Menu, MenuList, Icon</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> the relationship between a default action and its alternatives: which action is primary, that the disclosure never invokes it, one aggregate disabled state, two distinct accessible purposes, matched geometry with a single seam, and the menu's ownership by the cap.</li>
+      <li><strong>Refuses</strong> space-saving, unrelated commands in the menu, use where no action is clearly primary, and standing in for <code>ButtonGroup</code> when actions are peers.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s">§06</span><span class="s">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s">§13</span><span class="s">§14</span>
+    </div>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="DateRangePicker.spec.html">DateRangePicker</a></h2><span class="parts">Box, Text · DatePicker, Icon · optional Field</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> one range value (<code>[start, end]</code>), ordering, cross-field validation and which endpoint a failure implicates, per-endpoint accessible identity and validation association, bounds on each endpoint derived from the other, and an arrangement that may stack without reordering time.</li>
+      <li><strong>Refuses</strong> domain rules (duration caps, blackout periods), open-ended intervals, presets, and swapping the user's entries — correct in <code>DatePicker range</code>'s one panel, wrong across two named fields.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s off">§04</span><span class="s">§05</span><span class="s">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s">§11</span><span class="s">§12</span><span class="s">§13</span><span class="s">§14</span>
+    </div>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="DateTimePicker.spec.html">DateTimePicker</a></h2><span class="parts">Box, Text · DatePicker, TimeField, Icon · optional Field</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> assembly and disassembly of one moment — a UTC instant edited on the Site's clock, or an explicitly floating <code>'YYYY-MM-DDTHH:mm'</code> when there is no zone — plus explicitly defined partial behaviour (nothing inferred), the two daylight-saving states that only exist once conversion is real, combined validation against Site-clock bounds compared at the precision given, per-half identity and validation association, and reflow that never reorders date and time.</li>
+      <li><strong>Refuses</strong> the reader's clock (the zone comes from the record's Site, as an IANA name — an abbreviation is refused), silently accepting a clock time that does not exist, inferred halves, and domain rules.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s off">§04</span><span class="s off">§05</span><span class="s">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s">§11</span><span class="s">§12</span><span class="s">§13</span><span class="s">§14</span>
+    </div>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="FileUpload.spec.html">FileUpload</a></h2><span class="parts">Field · FileDropzone, FileItem</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> the set: one aggregate status derived from every file's own state (<code>idle</code> / <code>busy</code> / <code>failed</code> / <code>invalid</code>) and therefore whether the record may be saved, one field identity and one validation message across several controls, rejection codes turned into sentences once, focus after a removal, an aggregate disabled state, and one size down a single column.</li>
+      <li><strong>Refuses</strong> the queue and the transport (both stay with the surface, as they do on both parts), a set-level spinner in place of per-file bars, reordering rows by state, two dropzones in one set, and the table form of a large attachment list.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s off">§04</span><span class="s">§05</span><span class="s">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s">§13</span><span class="s">§14</span>
+    </div>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="SortableCollection.spec.html">SortableCollection</a></h2><span class="parts">IconButton</span><span class="parts">Promoted from the direct-manipulation-of-order pattern · unfrozen, API open</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> the grab as one object carrying identity <em>and</em> origin index, a modal keyboard grab whose arrows move the proposal rather than the focus, per-candidate-position legality declared as a reason rather than a boolean and evaluated by one function from three call sites, the insertion indicator, the position text on every row, one control rhythm across handle and steppers, an origin index re-derived when the collection changes underneath a live grab, and every announcement of a grab, proposal, refusal, abandon and result.</li>
+      <li><strong>Refuses</strong> the commit entirely — it never reorders <code>items</code>, holds no optimism and computes no rollback — plus <code>items</code> keyed by index, a <code>canDrop</code> that answers false, a handle that grabs and refuses everywhere, a drag as the only route to an off-screen destination, reordering offered under a foreign sort, two live regions, and transfer between two collections, whose commit spans both and stays a pattern.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s off">§04</span><span class="s">§05</span><span class="s">§06</span><span class="s">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s">§13</span><span class="s">§14</span>
+    </div>
+  </div>
+</div>
+
+<p class="legend">Filled = included · outlined = omitted, with the reason stated at the foot of that spec. Numbers never renumber.</p>
+</div>
+</body></html>

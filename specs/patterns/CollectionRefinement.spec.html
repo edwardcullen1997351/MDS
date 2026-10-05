@@ -1,0 +1,259 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Collection refinement" subtitle="Full specification — one canonical criteria model behind the controls, the tags and the collection · manufacturing ERP reference" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Collection refinement — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.mf{display:flex;flex-direction:column;gap:4px}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mi{height:28px;border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);display:flex;align-items:center;padding:0 8px;font-size:11px;color:var(--text-primary)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.mn{font-size:10px;color:var(--text-secondary)}
+.mb{align-self:flex-start;height:26px;padding:0 10px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:10px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{height:22px;display:flex;align-items:center;gap:5px;padding:0 8px;border:var(--border-hairline);border-radius:var(--radius-full);font-size:10px;color:var(--text-primary);background:var(--surface-card)}
+.chip.on{border-color:var(--action-solid);color:var(--action-solid);background:var(--status-info-soft)}
+.chip.off{color:var(--text-disabled);background:var(--surface-sunken)}
+.chip .c{font-family:var(--font-mono);color:var(--text-tertiary)}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tg{height:22px;display:flex;align-items:center;gap:6px;padding:0 6px 0 8px;border:var(--border-hairline);border-radius:var(--radius-sm);font-size:10px;color:var(--text-primary);background:var(--surface-card)}
+.tg .x{color:var(--text-tertiary)}
+.rows{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-card)}
+.rows div{display:flex;gap:10px;padding:5px 8px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);border-bottom:var(--border-subtle)}
+.rows div:last-child{border-bottom:none}
+.rows span:first-child{color:var(--text-primary);width:106px;flex:none}
+.mcount{font-size:10px;font-family:var(--font-mono);color:var(--text-tertiary)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Collection refinement</h1>
+  <p class="lede">Narrowing a collection through several independently adjustable criteria, with one canonical refinement state behind the controls, the active-criteria display and the collection — so that what is selected, what is listed as applied, and what is on screen can never describe three different refinements.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: at least one filtering control, List or Table</span><span>Reference implementation: <a href="collection-refinement-reference.card.html">card</a> · <a href="../../templates/collection-refinement/CollectionRefinement.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — triaging the maintenance work request backlog</span><span>Sections included: 12 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>A maintenance head arrives at a backlog of 24 open work requests and needs the six that shift A can actually take on: two areas, breakdowns only, nothing waiting on a part. Each criterion is a separate control, the criteria compose, and the same refinement is represented in three places at once — in the controls, in whatever lists what is currently applied, and in the collection itself. The pattern owns that agreement: one state model, explicit composition rules, a defined unrefined state to clear back to, and reconciliation of anything the collection carried that a new refinement invalidates.</p>
+    <p><strong>Use it when</strong> a user narrows a collection they already have, through reusable criteria they will adjust repeatedly.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>A work queue, backlog or register triaged by several dimensions.</li><li>Criteria that persist across a session and are adjusted one at a time.</li><li>Refinement whose active criteria must be visible, and removable, away from the controls.</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>Query and retrieval.</strong> A query the user composes as text, whose lifecycle — loading, none, failed, stale — is the contract, is <a href="SearchResults.spec.html">search results</a>. That pattern owns retrieval; this one owns coordinated criteria. A free-text criterion inside a refinement set is still this pattern.</li><li><strong>Choosing values in a form.</strong> Controls whose values are submitted rather than reflected in a collection are <a href="ValidatedSubmission.spec.html">validated submission</a>: there is nothing to keep synchronized while the user works.</li><li><strong>One control switching between prepared views.</strong> A saved-view selector replaces the collection wholesale; nothing composes.</li><li><strong>Sorting.</strong> Ordering changes no membership and produces no empty result. It rides along, and is not a criterion.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">Criterion controls</td><td><code>ChipGroup</code>, <code>SegmentedControl</code>, <code>Select</code>, <code>Checkbox</code>, <code>CheckboxGroup</code>, <code>Radio</code>, <code>RadioGroup</code>, <code>Combobox</code>, <code>MultiCombobox</code>, <code>RangeSlider</code>, <code>DatePicker</code>, <code>DateRangePicker</code>, <code>SearchField</code></td><td>Required, at least one. One control per dimension. Single-value and multiple-value criteria are both legitimate and the control chosen is what declares which (§05).</td></tr>
+      <tr><td class="k">Refined collection</td><td><code>Table</code> or <code>List</code></td><td>Required. Shows the collection under the applied refinement, and nothing else. Its pagination, selection and expansion are collection-dependent state the pattern reconciles (§04).</td></tr>
+      <tr><td class="k">Active criteria</td><td><code>Tag</code> + <code>TagList</code>, or <code>Chip</code> + <code>ChipGroup</code> where the offered set is small enough to stay on screen</td><td>Required whenever a criterion can be active while its control is out of view — a collapsed panel, a drawer, a scrolled rail. Each entry names its dimension and its value and removes that one criterion.</td></tr>
+      <tr><td class="k">Application &amp; clearing</td><td><code>Button</code></td><td>Apply is required under explicit application (§05) and forbidden without it. Clear is required wherever more than one criterion can be active, and states its scope in its label (§14).</td></tr>
+      <tr><td class="k">Update indication</td><td><code>Progress</code> · <code>Skeleton</code> or <code>Table loading</code></td><td>Required where refinement is not instantaneous. The collection is not blanked while it updates unless there is nothing yet to keep.</td></tr>
+      <tr><td class="k">No matches</td><td><code>EmptyState variant="no-results"</code></td><td>Required. A valid combination matching nothing is a normal outcome of refinement and needs a way back (§14), never first-run copy.</td></tr>
+      <tr><td class="k">Status</td><td>Live region (<code>role="status"</code>)</td><td>Required. One polite statement per settled refinement: the count, the range, and any collection-dependent state that was reset.</td></tr>
+    </tbody></table>
+    <p>What the pattern owns is the model beneath this list: one refinement object, read by the controls, by the active-criteria display, by the counts, and by whatever retrieves the collection.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>Entry.</strong> The collection opens in the declared unrefined state, or under criteria restored from a session, a URL or a saved view — which are evaluated on arrival exactly as user-set criteria are.</li>
+      <li><strong>Change.</strong> The user adjusts one criterion. Under immediate refinement this settles and updates the collection; under explicit application it changes the pending refinement only, and the collection continues to describe what is applied.</li>
+      <li><strong>Application.</strong> Immediate: on the settled value. Explicit: on the apply action, for every pending change at once — never a partial application of some dimensions.</li>
+      <li><strong>Update.</strong> The collection is refined by the full criteria set under the composition rules of §04. Collection-dependent state is reconciled in the same pass.</li>
+      <li><strong>Statement.</strong> The settled result is announced politely, once, with the count and anything reconciled. Focus stays where the user put it.</li>
+      <li><strong>Removal.</strong> A criterion is removed from its own control or from its active-criteria entry; either writes the same model, and the other reflects it immediately.</li>
+      <li><strong>Clearing.</strong> Clearing returns controls, active criteria and collection to the same unrefined state defined in step 1 — not to the state the user arrived in, if that was refined, unless that is what the label says.</li>
+    </ol>
+    <p>Order matters in one place: reconcile collection-dependent state before announcing. An announcement of the count that precedes the pagination reset states a range the user is not looking at.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Controls, active criteria and collection represent one refinement state.</strong> Each is a view of the same model. Three renderings of one object cannot disagree; three copies always eventually do.</li>
+      <li><strong>Removing an active criterion updates its originating control.</strong> Removal is not a second mechanism that hides rows — it writes the model, and the chip, token or range the criterion came from returns to its unset value.</li>
+      <li><strong>Removing an active criterion is an explicit act.</strong> Under explicit application it applies at once rather than becoming a pending change: the user acted on something labelled as applied, and expects the collection, not a queue.</li>
+      <li><strong>Composition is stated as a rule, not implied by layout.</strong> Different dimensions must all hold; several values within one dimension mean any of them; ranges are inclusive. The rule is written where the criteria are, because the same controls could plausibly mean either.</li>
+      <li><strong>Clearing returns to a defined unrefined state,</strong> identical for controls and collection, whatever route was taken to get there.</li>
+      <li><strong>Refinement that invalidates collection-dependent state resets or reconciles it, and says so.</strong> A pagination position past the new end, a selection of rows that are no longer members, an expanded row that fell out: each is reconciled in the same pass and reported with the count.</li>
+      <li><strong>Counts offered against options state what choosing them would leave</strong> — computed against the other dimensions, not against the whole collection and not against the refinement including that dimension itself. A count that ignores the current refinement is a promise the next click breaks.</li>
+      <li><strong>Only the current refinement may write collection state.</strong> A slow update for criteria the user has already moved past is discarded (§17).</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="chips"><span class="chip on">Press shop <span class="c">2</span></span><span class="chip">Machine shop <span class="c">1</span></span><span class="chip off">Assembly <span class="c">0</span></span></div><div class="tags"><span class="tg">Area: Press shop <span class="x">×</span></span><span class="tg">Priority: Breakdown <span class="x">×</span></span></div><span class="mcount">3 of 24 requests · 2 criteria · all must hold</span></div><p class="why">One model: the chip is selected, the tag exists, the count is 3. Removing the tag deselects the chip, because both are reading the same value.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="chips"><span class="chip on">Press shop <span class="c">5</span></span><span class="chip">Machine shop <span class="c">4</span></span><span class="chip">Assembly <span class="c">4</span></span></div><div class="tags"><span class="tg">Area: Press shop <span class="x">×</span></span><span class="tg">Priority: Breakdown <span class="x">×</span></span><span class="tg">Spares required <span class="x">×</span></span></div><span class="mcount">9 of 24 requests</span></div><p class="why">A third tag no control holds, counts computed against the whole backlog, and a total that matches neither. The maintenance head cannot tell which of the three is the truth.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+  <div class="body">
+    <p>Four choices belong to the application of the pattern. The first is the one that changes the state model, so it is declared once for a refinement set and never mixed within one.</p>
+    <table><thead><tr><th>Property</th><th>Options</th><th>What it decides</th></tr></thead><tbody>
+      <tr><td class="k">mode</td><td><code>immediate</code> · <code>explicit</code></td><td>Whether a criterion change refines at once or waits for an apply action. <code>immediate</code> where the collection is cheap and the user refines by feel; <code>explicit</code> where an update is expensive, or where several criteria are normally set together and intermediate results are noise. One mode per refinement interaction: a set where some controls apply immediately and others wait has no legible state.</td></tr>
+      <tr><td class="k">debounce</td><td>A stated interval, in ms — <code>immediate</code> only</td><td>How long a continuous control must settle before the collection updates. Named, not emergent: a range slider or a text criterion otherwise issues an update per pixel or per keystroke (§17).</td></tr>
+      <tr><td class="k">unavailableOptions</td><td><code>disabled-with-count</code> · <code>hidden</code></td><td>How a value that would leave nothing presents. <code>disabled-with-count</code> keeps the dimension's shape stable and shows the zero, which is itself information; <code>hidden</code> keeps the panel short where the option set is long and volatile. Never silently reordering, and never removing a value that is currently selected.</td></tr>
+      <tr><td class="k">zeroResultRecovery</td><td><code>remove-last</code> · <code>clear-all</code></td><td>The way back offered when a valid combination matches nothing. <code>remove-last</code> names the narrowest criterion and undoes just that; <code>clear-all</code> is right where criteria are few and starting again is cheaper than reasoning about which one to drop.</td></tr>
+    </tbody></table>
+    <p>Whether a dimension is single-value or multiple-value is not a property of the pattern: it is declared by the control supplied for that dimension, and the composition rule (§04) covers both.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <table><thead><tr><th>State</th><th>What is true</th><th>What is displayed</th></tr></thead><tbody>
+      <tr><td class="k">unrefined</td><td>No criterion is active. The defined baseline, and the target of clearing.</td><td>The whole collection, and a statement that it is unrefined. No active-criteria row, no clear action.</td></tr>
+      <tr><td class="k">changed · unapplied</td><td><code>explicit</code> only: the controls hold criteria the collection is not refined by.</td><td>The controls as edited; the active criteria and the collection as applied; a count of pending changes with apply and discard.</td></tr>
+      <tr><td class="k">refined</td><td>One or more criteria active, collection consistent with them.</td><td>The collection, the active criteria, the count against the unrefined total, and the composition rule.</td></tr>
+      <tr><td class="k">updating</td><td>An update for known criteria is in flight. Held with whichever outcome is on screen.</td><td>The previous collection with an indication, or skeleton rows where there is nothing to keep.</td></tr>
+      <tr><td class="k">refined · no matches</td><td>The combination is valid and the collection holds nothing satisfying all of it.</td><td><code>no-results</code> empty state naming the criteria count, with the declared way back. No pagination.</td></tr>
+    </tbody></table>
+    <p class="warn"><strong>Unrefined and no-matches are opposite ends, not neighbours.</strong> Both show no criteria-specific content, and implementations routinely collapse them into "nothing to show" — which tells a user who has narrowed four times that the backlog is empty. Keep the criteria count in the state: zero active criteria and zero matches are different sentences.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Each control declares what it constrains and what it affects.</strong> The dimension is the control's accessible name, and the controls sit in a region named for the collection they refine — a chip group called "Area" beside a table of work requests, not a bare row of place names.</li>
+      <li><strong>Active criteria are not conveyed by styling alone.</strong> A selected chip reports its selected state through the platform; an active-criteria token carries its dimension and value in text and a real remove control, keyboard-reachable, named "Remove criterion Area: Press shop".</li>
+      <li><strong>The collection announces politely and does not take focus.</strong> Focus stays on the control the user just operated, so refining several dimensions in sequence remains possible from the keyboard.</li>
+      <li><strong>One statement per settled refinement,</strong> naming the count, the range shown and anything reconciled. Not one per keystroke of a range slider, and not one per dimension when several are applied together.</li>
+      <li><strong>The collection region carries <code>aria-busy</code> while updating,</strong> and its skeletons stay <code>aria-hidden</code>.</li>
+      <li><strong>An unavailable option explains itself outside the control.</strong> A disabled chip may never be read; its count and the reason belong in the group's description.</li>
+      <li><strong>Removing the criterion a user is focused on moves focus predictably</strong> — to the next active-criteria entry, or to the clear action, never to the document.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>A criterion label names the dimension being constrained,</strong> not the act of filtering: "Area", "Priority", "Estimated downtime" — never "Filter", "Options", or a bare list of values whose dimension the user has to infer.</li>
+      <li><strong>An active criterion keeps enough context to be read alone.</strong> "Area: Press shop", not "Press shop"; "Downtime: 10–16 h", not "10–16". A token that has left its control must still say what it constrains, and must not be truncated past the point where it does.</li>
+      <li><strong>Clearing states its scope.</strong> "Clear all 4 criteria" — a bare "Clear" beside a panel of controls could mean this dimension, this panel, or everything, and the cost of guessing wrong is the whole refinement.</li>
+      <li><strong>The composition rule is written where the criteria are,</strong> in words: different criteria must all hold, several values within one count as any of them.</li>
+      <li><strong>Counts state what they count.</strong> "3 of 24 requests" rather than "3 results", so the refined count is always read against the unrefined total.</li>
+      <li><strong>No-matches copy says the combination is valid and the collection is not empty,</strong> names how many criteria are active, and offers the declared way back. It never invites creation as if nothing existed.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="tags"><span class="tg">Area: Paint shop <span class="x">×</span></span><span class="tg">Priority: Planned <span class="x">×</span></span><span class="tg">Downtime: 10–16 h <span class="x">×</span></span></div><span class="ml">No request matches these 3 criteria</span><span class="mn">The combination is valid and the backlog is not empty — all 24 open requests are still there, and none satisfies every criterion at once.</span><div class="mb">Remove “Downtime: 10–16 h”</div></div><p class="why">Each token names its dimension, the count is against 24, and the way back is the specific criterion that narrowed hardest.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="tags"><span class="tg">Paint shop <span class="x">×</span></span><span class="tg">Planned <span class="x">×</span></span><span class="tg">10–16 <span class="x">×</span></span></div><span class="ml">No requests</span><span class="mn">There is nothing here yet.</span><div class="mb">Raise work request</div></div><p class="why">Tokens without dimensions — “Planned” could be a status — and first-run copy inviting a new request against a backlog of 24. “10–16” is not even a unit.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§17</span><h2>Performance</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Immediate refinement controls its own update frequency.</strong> Continuous criteria — a range slider dragged, a text criterion typed — settle on a stated interval (§05) rather than issuing an update per event.</li>
+      <li><strong>Stale updates never override newer criterion state.</strong> Each update carries the refinement that requested it, and only the current one may write the collection. Debouncing reduces the overlap; the identity guard is what makes it correct.</li>
+      <li><strong>Discrete criteria apply without delay.</strong> Debounce is for continuous input; delaying a chip toggle makes the control feel broken.</li>
+      <li><strong>Update indication is delayed past the flicker threshold</strong> — roughly 300 ms — so a fast refinement does not strobe.</li>
+      <li><strong>Controls stay live while the collection updates.</strong> Disabling the panel during an update turns every slow response into a lost adjustment, and blocks the user from correcting the criterion that caused it.</li>
+      <li><strong>Option counts are computed with the collection, not per control.</strong> One pass over the current refinement yields every dimension's counts; a request per dimension multiplies the cost of every change.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+      <tr><td class="k">Zero active criteria</td><td>The unrefined state — stated as such, with no clear action and no active-criteria row. Not an empty result, and not a prompt.</td></tr>
+      <tr><td class="k">Mutually restrictive criteria</td><td>The refinement is applied and reports no matches, with the criteria count and the declared way back. Combinations are never silently prevented, and one criterion never quietly drops another.</td></tr>
+      <tr><td class="k">Option becomes unavailable</td><td>Presented under the declared <code>unavailableOptions</code> policy. A value that is currently selected is never hidden or disabled — the user must always be able to undo their own criterion.</td></tr>
+      <tr><td class="k">Option disappears from the source data</td><td>A selected value that no longer exists stays visible as an active criterion, marked as no longer offered, so it can be removed. Dropping it silently changes the result set without the user acting.</td></tr>
+      <tr><td class="k">Criterion removed while an update is pending</td><td>The pending update ceases to be current at that moment. Its response is discarded, and the removal produces the next update.</td></tr>
+      <tr><td class="k">Collection shrinks below the pagination position</td><td>Reconciled to the last existing page — page 1 for a criteria change, the new last page for a re-fetch of the same criteria — and the reconciliation is announced with the count.</td></tr>
+      <tr><td class="k">Selection outside the new collection</td><td>Rows that are no longer members leave the selection, and the drop is stated with the count. A selection that survives invisibly is acted on by the next bulk action.</td></tr>
+      <tr><td class="k">Rapid successive changes</td><td>The settled criteria decide. Intermediate refinements produce no announcement and no rendered collection.</td></tr>
+      <tr><td class="k">Restored criteria that match nothing</td><td>Evaluated on arrival, and presented as refined-with-no-matches — never as an empty collection. The recovery action is present before the user has touched anything.</td></tr>
+      <tr><td class="k">Explicit mode, criteria changed then navigated away</td><td>Pending changes are either applied or discarded explicitly; they are never carried invisibly into a later view where the controls and the collection would disagree on arrival.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>One canonical refinement object.</strong> Controls, active-criteria display, option counts and collection retrieval all read it, and every change writes it. This single rule is most of the pattern.</li>
+      <li><strong>No second copy of a criterion.</strong> No control-local state mirroring the model, no separate list of tokens built at add-time, no derived "filter string" that is edited independently. Every copy is a divergence waiting for the first unusual path.</li>
+      <li><strong>Under explicit application, hold exactly two versions of the one model</strong> — pending and applied — and derive the pending count by comparing them. A per-dimension dirty flag drifts from the values it claims to describe.</li>
+      <li><strong>Represent the unrefined state as a value,</strong> not as absence. Clearing assigns that value; comparison against it is what tells you a criterion is active, and what makes "clear all" and "arrive fresh" identical by construction.</li>
+      <li><strong>Composition is one pure function of the model over the collection,</strong> evaluated in a defined order over dimensions. Rules scattered across the controls cannot be read as a whole or tested as a whole.</li>
+      <li><strong>Option counts come from the model minus that dimension,</strong> which is why the count function takes the dimension to exclude. Excluding nothing produces counts that contradict the panel; excluding everything produces counts that ignore the refinement.</li>
+      <li><strong>Every update carries the refinement identity</strong> and only the current one may write. Cancelling the request is an optimisation; the guard on write is the correctness measure.</li>
+      <li><strong>Reconcile collection-dependent state in the same pass that applies the refinement,</strong> and derive the announcement from the reconciled result — so the statement matches what is on screen.</li>
+      <li><strong>Serialise the model, not the controls,</strong> when refinement goes into a URL or a saved view. A restored refinement is then evaluated by the same function as a user-set one.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted"><strong>Omitted sections and why.</strong>
+§06 Variants — <code>immediate</code> and <code>explicit</code> are declared policies within one contract (§05), and a rail, a drawer and a toolbar of the same criteria differ in layout only.
+§07 Sizes — no coordinated sizing exists at the pattern level; each control follows its own size scale and the collection its component's density.
+§09 Validation — a criterion is not judged for correctness. A combination matching nothing is a valid refinement with an empty outcome (§08), not an invalid input; where one criterion's <em>value</em> depends on another's, that dependency is <a href="ConditionalInput.spec.html">conditional input</a>.
+§10 Error handling — the pattern commits nothing. A failed retrieval of the refined collection is owned by whatever retrieves it, under §10 of <a href="SearchResults.spec.html">search results</a>; the criteria themselves survive it because they are held above the collection (§20).
+§11 Input &amp; interaction modalities — every affordance is an ordinary control. The one cross-component responsibility, focus when a focused criterion is removed, is a focus contract and is stated in §12.
+§13 Motion — a collection may cross-fade between refinements for continuity, but no motion carries pattern-owned meaning, and none may delay the §12 announcement.
+§15 Responsive — the criteria may move from a rail into a drawer or a popover, which changes their presentation and not the interaction; the one behavior that follows from it, active criteria remaining visible when their controls are not, is required in §02 regardless of width.
+§16 Internationalization — locale-sensitive parsing and formatting of individual criterion values belong to the capturing controls, and the pattern is direction-agnostic. Its one cross-cutting requirement, that a token name its dimension, is stated in §14.
+§19 Anti-patterns — the refusals in §01, the single-model and removal rules in §04, and the collapse warned against in §08 cover the recurring misuses.
+§21 Developer notes — the contract in §04, §05, §08 and §20 is the whole contract; the canonical model and the refinement identity are the only technical requirements, and both are stated there.</p>
+</div></body></html>

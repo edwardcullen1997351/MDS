@@ -1,0 +1,279 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Recoverable failure" subtitle="Full specification — failure kept apart from validation and emptiness, user state preserved through it, and recovery scoped to what actually failed · manufacturing ERP reference" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Recoverable failure — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.mn{font-size:10px;color:var(--text-secondary);line-height:1.5}
+.mb{align-self:flex-start;height:26px;padding:0 10px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:10px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.mb.q{background:var(--surface-sunken);color:var(--text-primary);border:var(--border-hairline)}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-warning-soft);color:var(--text-warning)}
+.ma.bad{background:var(--status-critical-soft);color:var(--text-critical)}
+.ma.ok{background:var(--status-success-soft);color:var(--text-success)}
+.split{display:grid;grid-template-columns:118px minmax(0,1fr);gap:8px}
+.rows{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-card)}
+.rows div{display:flex;align-items:center;gap:7px;padding:5px 7px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);border-bottom:var(--border-subtle)}
+.rows div:last-child{border-bottom:none}
+.rows div.on{background:var(--surface-sunken);color:var(--text-primary)}
+.dot{width:9px;height:9px;border:1px solid var(--border-strong);border-radius:50%;flex:none}
+.dot.on{border:3px solid var(--action-solid)}
+.panel{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:8px 9px;display:flex;flex-direction:column;gap:5px}
+.panel .t{font-family:var(--font-mono);font-size:10px;color:var(--text-primary)}
+.panel .f{display:flex;justify-content:space-between;gap:8px;font-size:9.5px;color:var(--text-secondary);font-family:var(--font-mono)}
+.sk{height:7px;border-radius:3px;background:var(--surface-sunken)}
+.mcount{font-size:10px;font-family:var(--font-mono);color:var(--text-tertiary)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Recoverable failure</h1>
+  <p class="lede">An operation failed, the user's work is still good, and there is a way forward — so the pattern's job is to say what did not happen, keep everything that remains valid, and offer a recovery that targets the failure rather than repeating work that already succeeded. Failure, validation and emptiness are three different things, and this is the specification that keeps them apart.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: Alert, Button</span><span>Reference implementation: <a href="recoverable-failure-reference.card.html">card</a> · <a href="../../templates/recoverable-failure/RecoverableFailure.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — posting a shift's production confirmations</span><span>Sections included: 12 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>At 22:10 IST the line supervisor on PR-05 posts six production confirmations and a downtime note he has just typed. MES does not answer. Nothing about the shift is wrong: the figures are right, the note is right, and in thirty seconds the gateway will be back. What decides whether he loses ten minutes of work is entirely in the interface — whether the note survives, whether the retry sends the four confirmations that already posted a second time, and whether the message tells him the shift is unposted or merely that "something went wrong".</p>
+    <p><strong>Use it when</strong> an operation or retrieval has failed and the user can meaningfully retry or correct the situation while keeping useful context.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>An operation that failed for reasons outside the user's control — an outage, a lock, a refusal by another system.</li><li>A retrieval that failed while the screen still holds the user's own work.</li><li>A failure where part of the work succeeded and the rest must be recovered without repeating it.</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>Field validation.</strong> A rule about the user's input is decided locally, shown on the control, and is not a failure — it belongs to <a href="ValidatedSubmission.spec.html">validated submission</a> and the components' own contracts. Presenting it as an operational error blames the user for a rule the screen could have stated.</li><li><strong>A successful operation that returned nothing.</strong> Zero confirmations, zero results, an empty queue: the system answered, and the answer was none. That is <code>EmptyState</code>, with no cause and no retry.</li><li><strong>Pending.</strong> Work in flight is <a href="AsynchronousAction.spec.html">asynchronous action</a>; this pattern begins at the moment that operation resolves badly, and inherits its identity, guard and pending rules.</li><li><strong>A failure with no recovery of any kind.</strong> If nothing the user can do changes anything, the honest interface states the condition and who to contact — and does not draw a retry button (§10).</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">The failure</td><td><code>Alert</code></td><td>Required. <code>danger</code> for a failed operation, <code>warning</code> for a partial one. Persistent, named after the operation and its subject, and placed with the state it concerns. Never a timed <code>Toast</code> or <code>Snackbar</code>: a transient failure notice is a failure the user cannot re-read.</td></tr>
+      <tr><td class="k">Recovery</td><td><code>Button</code></td><td>Required. Retry, or another direct action that changes the situation. Its label says what will be attempted; there are at most two, and the second is the alternative route, not a duplicate.</td></tr>
+      <tr><td class="k">Retry in flight</td><td><code>Progress</code></td><td>Required where the retry is slow enough to notice — under <a href="AsynchronousAction.spec.html">asynchronous action</a>'s rules, in the region that failed.</td></tr>
+      <tr><td class="k">Preserved input</td><td><code>Field</code> + its control</td><td>Required to remain mounted, populated and editable. Its values are the state this pattern exists to protect.</td></tr>
+      <tr><td class="k">Preserved collection</td><td><code>Table</code> or <code>List</code></td><td>Remains in place where its content is still meaningful; where it is stale, it stays labelled as stale rather than being silently presented as current.</td></tr>
+      <tr><td class="k">Emptiness</td><td><code>EmptyState</code></td><td>Present for the adjacent situation this pattern must not be confused with. It takes no cause and no retry, which is exactly what distinguishes it from an <code>Alert</code>.</td></tr>
+      <tr><td class="k">Recovered</td><td><code>Toast</code>, <code>Snackbar</code>, or in-place state</td><td>Optional and transient is fine for success — the failure it replaces must be removed at the same moment (§04).</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>An operation fails.</strong> The failure is captured with the context needed to retry it: what was attempted, on which subjects, with which of them succeeded, and which attempt this was.</li>
+      <li><strong>The failure is communicated</strong> where the affected state is, saying first what did not happen and then why.</li>
+      <li><strong>Recoverable state remains.</strong> Input, selection, scroll position and already-succeeded work are untouched.</li>
+      <li><strong>The user recovers</strong> — retrying, or correcting the relevant input, or taking the alternative route the failure named.</li>
+      <li><strong>The attempt runs again,</strong> scoped by <code>retryScope</code> and guarded by <code>retryBackoff</code>, with pending feedback.</li>
+      <li><strong>It resolves.</strong> Success clears the failure. Another failure replaces it — with the attempt count, and under <code>repeatedFailure</code> an escalated message — rather than accumulating beside it.</li>
+    </ol>
+    <p>The failure is a state of the operation, not a message that was shown once: it is created at step 1, replaced at step 6, and cleared the moment its condition stops being current — including when a fresh retrieval or a different route has made it obsolete.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Failure destroys nothing that is still valid.</strong> Typed input, chosen values, selection and the results of the parts that succeeded all survive. This is the pattern's first obligation and the one most often broken by unmounting the region that failed.</li>
+      <li><strong>Recovery targets the failed operation, or its current valid replacement.</strong> If the user changed the input after the failure, the retry sends what is on screen now — never a replay of the attempt that failed.</li>
+      <li><strong>Work that succeeded is not repeated.</strong> Where the composition can tell which parts went through, the retry covers only the rest, and says so in its label.</li>
+      <li><strong>One failure state, replaced not stacked.</strong> A second failure supersedes the first and carries the attempt count; three alerts for three attempts is a screen that cannot be read and a state model that cannot be trusted.</li>
+      <li><strong>Success clears obsolete failure state,</strong> at the same moment it reports success. So does any other event that makes the failure untrue — a fresh retrieval, a recovery by another route, a change that removes the condition.</li>
+      <li><strong>Failure is a category of its own.</strong> Validation, emptiness, pending and operational failure are four separate states, each with its own component and its own copy, and none is rendered in another's clothing.</li>
+      <li><strong>Stale content is labelled, not disguised.</strong> Content kept through a failed refresh says when it was read and that it may no longer be current.</li>
+      <li><strong>A non-recoverable failure offers no retry.</strong> It states the condition and the route that does exist — a different document, a different terminal, a person.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma bad">Nothing was posted — MES did not answer<br><span class="mh">Your 6 confirmations, the downtime reason and the note are all still here. The retry sends what you can see now.</span></div><div class="panel"><span class="t">note · 58 characters</span><span class="f"><span>reason: Die change over-run</span><span>kept</span></span></div><div class="mb">Retry posting 6 confirmations</div></div><p class="why">The failure is stated in the shift's own terms, the supervisor's work is intact, and the retry is aimed at exactly what did not happen.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma bad">Error 500</div><div class="panel"><span class="t">note · empty</span><span class="f"><span>reason: —</span><span>form reset</span></span></div><div class="ma bad">Error 500</div><div class="ma bad">Error 500</div></div><p class="why">The form was rebuilt on failure, so ten minutes of typing is gone; three attempts left three identical alerts, and none of them says whether the shift posted.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Options</th><th>What it decides</th></tr></thead><tbody>
+      <tr><td class="k">retryScope</td><td><code>failed-only</code> · <code>whole-operation</code></td><td>What a retry sends after a partial failure. <code>failed-only</code> is the default and the correct one wherever repeating succeeded work has an effect — a duplicate confirmation is a duplicate booking. <code>whole-operation</code> is defensible only where the operation is idempotent as a whole, and the label must then say how many it is sending.</td></tr>
+      <tr><td class="k">repeatedFailure</td><td><code>escalate</code> · <code>same</code></td><td>What the second consecutive failure says. <code>escalate</code> adds the attempt count and the route that exists when retrying is evidently not working — another terminal, another person, a deadline. <code>same</code> is for a failure with no alternative, where an escalating message would only add noise.</td></tr>
+      <tr><td class="k">failureFeedback</td><td><code>inline-region</code> · <code>page-banner</code></td><td>Where the failure sits. <code>inline-region</code> keeps it beside the state it concerns, which is what lets the user see that their work survived. <code>page-banner</code> is for a failure that invalidates the whole screen; it must still name the region it came from.</td></tr>
+      <tr><td class="k">retrievalPreservation</td><td><code>keep</code> · <code>clear</code></td><td>What happens to already-retrieved content when a refresh fails. <code>keep</code> — labelled with its age — is right wherever stale data is better than no data, which on a shop floor it usually is. <code>clear</code> is for content whose staleness is dangerous, and it then has to say that it cleared and why.</td></tr>
+      <tr><td class="k">retryBackoff</td><td>ms, typically 0–5000</td><td>The guard between attempts, so a jabbed retry cannot start two operations. The button stays enabled and answers in words — "Retry is held for another 2 s" — because a dead control reads as a broken one.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <table><thead><tr><th>State</th><th>What is true</th><th>What is displayed</th></tr></thead><tbody>
+      <tr><td class="k">stable</td><td>No failure is current.</td><td>The work, and whatever the last resolution left. No stale error anywhere on screen.</td></tr>
+      <tr><td class="k">failed</td><td>An operation resolved badly and recovery is possible.</td><td>What did not happen, the cause, the preserved state, and one recovery action naming what it will attempt.</td></tr>
+      <tr><td class="k">recovering</td><td>A retry or corrective attempt is in flight.</td><td>Pending feedback in the failed region, the previous failure replaced by it rather than shown alongside, and no claim of success.</td></tr>
+      <tr><td class="k">recovery failed</td><td>The retry failed too.</td><td>One failure state, carrying the attempt count, escalated under <code>repeatedFailure</code>. Never a second alert.</td></tr>
+      <tr><td class="k">recovered</td><td>The operation, or another route, resolved the situation.</td><td>The success, and the failure gone at the same moment. Under an alternative route, what was raised and who now owns it.</td></tr>
+      <tr><td class="k">not recoverable</td><td>The failure cannot be changed by retrying.</td><td>The condition, the statement that nothing was done, and the route that exists instead — with no retry control at all.</td></tr>
+    </tbody></table>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — three states, three treatments</div><div class="mock"><span class="mn"><strong>validation</strong> · on the field: "A downtime reason needs a note of at least 12 characters."</span><span class="mn"><strong>empty</strong> · EmptyState: "No confirmations recorded on PR-05 this shift" — no retry.</span><span class="mn"><strong>failure</strong> · Alert danger: "Nothing was posted — MES did not answer" + retry.</span></div><p class="why">Each category says who has to act: the user, nobody, or the system. That distinction is the whole content of the difference.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma bad">Could not load confirmations. Check your entries and try again.</div><span class="mh">shown when MES timed out, when the shift was empty, and when the note was too short</span></div><p class="why">One message for three situations: it blames the supervisor for an outage, invites a retry against an empty shift, and hides the one rule he could actually satisfy.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Error handling</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Recoverable and non-recoverable failures are distinguished before anything is rendered.</strong> The distinction decides whether a retry control exists at all.</li>
+      <li><strong>No retry where repeating the operation cannot change the outcome.</strong> A closed period, a revoked permission, a rejected reference: retrying produces the same refusal and teaches the user that the button is decorative.</li>
+      <li><strong>A non-recoverable failure names the route that exists</strong> — the correction document, the other terminal, the person who can reopen the period — and carries the user's work into it rather than making them retype it.</li>
+      <li><strong>Partial failure reports both halves.</strong> What went through, what did not, and per item why; the recovery covers only the remainder under <code>retryScope</code>.</li>
+      <li><strong>Retrieval failure and operation failure are different failures</strong> with different recoveries: read again, or post again. They are never merged into one "something went wrong".</li>
+      <li><strong>The cause is stated at the level that supports recovery.</strong> "The cost centre is blocked for period 2026-09" is actionable; a stack trace and "Error 500" are not, and neither is "unexpected error".</li>
+      <li><strong>Sequential failures replace each other</strong> and keep a count. Two consecutive failures of the same operation are one state with attempt 2, not two states.</li>
+      <li><strong>Obsolete failures are cleared,</strong> not left to be contradicted by the screen around them.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma bad">Period 2026-09 is closed — this shift cannot be posted<br><span class="mh">Plant controlling closed it at 06:00 IST. Posting the same shift again will fail the same way. Nothing was posted.</span></div><div style="display:flex;gap:6px"><div class="mb">Raise a correction document (4C)</div><div class="mb q">Who can reopen the period</div></div></div><p class="why">No retry, because retrying is futile — and two real routes out, with the six confirmations and the note carried into the correction.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma bad">Posting failed. Please try again.</div><div class="mb">Retry</div><span class="mh">attempt 5 · same refusal every time</span></div><p class="why">A retry that cannot succeed, offered against a closed period: the supervisor presses it until the shift is late, and nothing on screen mentions the correction document that would have worked.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The failure is communicated in text, not by colour or an icon alone.</strong> The <code>Alert</code>'s title names the failure; tone is reinforcement, never the message.</li>
+      <li><strong>A failure that appears announces itself</strong> as an alert, because the user's belief about what happened is now wrong. One announcement per failure, not one per attempt artefact.</li>
+      <li><strong>The recovery action is in logical focus order,</strong> immediately after the text that explains it — not before it, and not in a toolbar elsewhere on the page.</li>
+      <li><strong>Repeated failure is announced with its count,</strong> so a screen-reader user can tell attempt 2 from attempt 1; an identical announcement twice is indistinguishable from nothing having happened.</li>
+      <li><strong>Successful recovery is announced,</strong> and says that the earlier failure no longer applies. Silently removing an alert leaves the user believing the failure stands.</li>
+      <li><strong>Preserved state is stated,</strong> not merely still rendered: "your note and the downtime reason are unchanged" is the only way a non-sighted user knows nothing was lost.</li>
+      <li><strong>Focus stays where the user was.</strong> Failure does not steal focus; a validation refusal moves focus to the field that must change, because that is where the user must act.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Lead with what did not happen, in the domain's own terms.</strong> "Nothing was posted" before "gateway timeout".</li>
+      <li><strong>Explain at the level recovery requires,</strong> and no deeper. The supervisor needs to know whether to retry, wait, or raise a correction — not which service returned which code.</li>
+      <li><strong>Never blame the user for an operational failure.</strong> "Check your entries and try again" against an outage is a false accusation, and it sends the user hunting for a mistake that does not exist.</li>
+      <li><strong>Say what is preserved.</strong> Naming the note, the reason and the four confirmations that posted is what makes the guarantee visible.</li>
+      <li><strong>Recovery labels describe the next action and its scope.</strong> "Retry the 2 refused confirmations", "Repost all 6", "Raise a correction document (4C)" — never a bare "Retry" where the scope is ambiguous.</li>
+      <li><strong>Empty is not phrased as failure, and failure is not phrased as empty.</strong> "No confirmations recorded this shift" against "The shift could not be read" — one is an answer, the other is the absence of one.</li>
+      <li><strong>An escalated message adds a route, not adjectives.</strong> "MES has refused twice; post from the plant office terminal or hand it to Anjali Deshmukh" beats "Still failing. Please try again later."</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma">2 of 6 confirmations were refused by MES<br><span class="mh">OP-30: no open operation quantity left — 940 pcs already booked at 14:12 IST. The 4 that went through are posted and will not be sent again.</span></div><div class="mb">Retry the 2 refused confirmations</div></div><p class="why">Both halves reported, the refusal explained per operation, and a label whose scope cannot be misread.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma bad">Some records failed. Check your entries and try again.</div><div class="mb">Retry</div></div><p class="why">Which records? Whose fault? And a retry that will repost the four that succeeded — turning a partial failure into duplicate bookings.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§17</span><h2>Performance</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>A retry shows pending feedback under perceptible latency,</strong> in the region that failed, under <a href="AsynchronousAction.spec.html">asynchronous action</a>'s appearance threshold. A retry that looks like nothing happened gets pressed again.</li>
+      <li><strong>Repeated retries never run concurrently.</strong> One attempt at a time, guarded at the state transition; <code>retryBackoff</code> additionally rate-limits the control, and the press that lands inside the guard is answered in words rather than ignored.</li>
+      <li><strong>Automatic retry, where a product chooses it, is bounded, visible and interruptible</strong> — a stated attempt count and a way to stop. Silent background retries make the state model unreadable to the user and to whoever debugs it later.</li>
+      <li><strong>The failure state does not depend on a timer.</strong> Nothing about it expires; only the user's recovery or a change in the underlying condition removes it.</li>
+      <li><strong>Only the current attempt may write.</strong> A response from a superseded attempt is discarded, exactly as in <a href="AsynchronousAction.spec.html">asynchronous action</a> §20.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+      <tr><td class="k">Dependency remains unavailable</td><td>Each attempt replaces the failure and increments the count; under <code>escalate</code> the message adds the alternative route. Never an unbounded loop of identical alerts.</td></tr>
+      <tr><td class="k">User changes relevant state before retrying</td><td>The retry sends the current valid state, not the attempt that failed. Where the change resolves the failure's cause, the failure is cleared rather than retried.</td></tr>
+      <tr><td class="k">Retry succeeds after the original context changed</td><td>Success is reported against what was actually sent, and the failure is cleared. A result that no longer has a subject is reported, not written blind (<a href="AsynchronousAction.spec.html">asynchronous action</a> §05).</td></tr>
+      <tr><td class="k">Partial failure</td><td>Both halves reported; recovery scoped by <code>retryScope</code>; the succeeded part never sent again under <code>failed-only</code>.</td></tr>
+      <tr><td class="k">Partial failure, then a full failure of the remainder</td><td>One failure state describing the remainder, with the earlier successes still recorded as posted.</td></tr>
+      <tr><td class="k">Failure while validation is also outstanding</td><td>Both are shown in their own places — the rule on its field, the failure in its region — and the recovery makes clear which must be resolved first.</td></tr>
+      <tr><td class="k">Retrieval fails while the user has unsaved input</td><td>Input untouched; retrieved content kept or cleared per <code>retrievalPreservation</code>, labelled either way.</td></tr>
+      <tr><td class="k">Retrieval succeeds after an operation failed</td><td>The operation's failure is obsolete once the state has been re-read; it is cleared, and the user is told it was.</td></tr>
+      <tr><td class="k">Non-recoverable failure resolved by another route</td><td>The failure is replaced by what the route produced — a document number, an owner, a next step — not left on screen beside its own resolution.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Hold the failure as state with its retry context:</strong> <code>{ kind, recoverable, why, subjects, failedSubjects, attempt }</code>. A message string is not a failure state, and everything in this specification needs the context that a string throws away.</li>
+      <li><strong>Never rebuild the region that failed.</strong> Preservation is achieved by not unmounting and not resetting — every scheme that restores values after the fact loses something.</li>
+      <li><strong>Keep four state categories separate in code, not just in copy:</strong> validation problems, emptiness, pending, and operational failure. One <code>error</code> field used for all four is how an outage ends up telling a supervisor to check his entries.</li>
+      <li><strong>Record which subjects succeeded</strong> as they succeed, so the remainder is derivable and <code>failed-only</code> retry is a consequence of the data rather than a special case.</li>
+      <li><strong>Derive the retry payload at press time</strong> from current state, not from the failed attempt's payload.</li>
+      <li><strong>Clear the failure wherever its condition stops being current</strong> — success, a fresh retrieval, a resolving edit, recovery by another route. Put those clears next to the events that cause them, or stale errors will outlive their cause.</li>
+      <li><strong>Model non-recoverability explicitly</strong> as a flag on the failure, set from what the service said. Deciding it in the view means the retry button appears wherever someone forgot.</li>
+      <li><strong>Guard the retry at the transition and rate-limit the control,</strong> answering a press inside the guard rather than disabling it (§05, §17).</li>
+      <li><strong>Keep an attempt log, including refusals and discarded responses.</strong> A failure that is retried five times and then resolves by another route is a story someone will have to reconstruct.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted"><strong>Omitted sections and why.</strong>
+§06 Variants — a retrieval failure, an operation failure and a partial failure are one contract with different recoveries; the behavioural choices are declared properties (§05).
+§07 Sizes — no coordinated sizing exists at the pattern level.
+§09 Validation — deliberately not this pattern's business: validation is a separate state category (§04, §08) owned by <a href="ValidatedSubmission.spec.html">validated submission</a> and the controls. The only rule here is that the two are never conflated.
+§11 Input &amp; interaction modalities — the controls own their own pointer, touch and keyboard behaviour; the pattern's cross-component obligations are the focus and announcement rules in §12.
+§13 Motion — nothing about a failure or its recovery is carried by motion, and no transition may delay the announcement of either.
+§15 Responsive — where an inline failure becomes a banner, that is the declared <code>failureFeedback</code> property, not a responsive rule; every other rule is width-independent.
+§16 Internationalization — the pattern is direction-agnostic; locale-sensitive formatting of the values it reports belongs to the product's locale rules.
+§19 Anti-patterns — the refusals in §01, the category rules in §04 and §08, and the futile-retry rule in §10 cover the recurring misuses.
+§21 Developer notes — the contract in §04, §05, §08, §10 and §20 is the whole contract; its one requirement of an API, a failure response that says whether retrying can help and which subjects it refused, is stated in §20.</p>
+</div></body></html>

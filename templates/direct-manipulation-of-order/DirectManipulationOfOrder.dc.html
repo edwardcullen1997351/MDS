@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Direct manipulation of order" description="Interaction pattern reference implementation, set in a manufacturing ERP — resequencing the routing of BRK-4820-A and subcontracting one of its operations: SortableCollection supplies the grab, the keyboard grab and the legality check; this page owns the order, the commit, the optimism and the rollback." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:1320px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/DirectManipulationOfOrder.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+<a href="../../specs/composite/SortableCollection.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">SortableCollection §01–§14</a>
+</div>
+<p style="margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note, the state inspector at the foot, and the tweaks under <span style="font-family:var(--font-mono)">Demo harness</span> — exists to make the contract visible. The sequence write is a timer standing in for the MES routing call; the comment above it says what to replace. The five tweaks under <span style="font-family:var(--font-mono)">Pattern properties</span> are not harness: <span style="font-family:var(--font-mono)">commitTiming</span>, <span style="font-family:var(--font-mono)">rollbackTarget</span>, <span style="font-family:var(--font-mono)">dropLegality</span>, <span style="font-family:var(--font-mono)">transferAtomicity</span> and <span style="font-family:var(--font-mono)">announcementScope</span> are the §05 policies an adopting team must declare.</p>
+<p style="margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55"><strong>Where the line falls:</strong> <span style="font-family:var(--font-mono)">SortableCollection</span> owns the grab, the modal keyboard grab, the insertion indicator, the per-position legality check and the announcements — three inputs, one operation: drag a handle, or focus a handle and press <span style="font-family:var(--font-mono)">Space</span> then the arrow keys then <span style="font-family:var(--font-mono)">Space</span> again (<span style="font-family:var(--font-mono)">Esc</span> puts it back, <span style="font-family:var(--font-mono)">Home</span>/<span style="font-family:var(--font-mono)">End</span> jump), or use the Earlier / Later controls. This page owns the order and everything about the write. Try op 30 Deburr above op 20 Pierce for the move the spec is written around; op 50 CNC bore above op 20 for a position refused by fixture FX-2210; op 10 or op 80 for a pinned operation. Turn on <span style="font-family:var(--font-mono)">MES refuses the sequence</span> for a failure that leaves the routing exactly where it was, <span style="font-family:var(--font-mono)">Outcome unknown</span> for a write that claims neither, and the two other tweaks for a routing resequenced or an operation withdrawn underneath a grab.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Process plan · BRK-4820-A · Suryodaya Autocomp Ltd · Chakan plant (PL-04) · IST</span>
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">Routing sequence</h1>
+<p style="margin:0;max-width:80ch;color:var(--text-secondary);font-size:var(--text-sm);line-height:1.55">The order the operations run in, and which of them are subcontracted. Committing a sequence releases it to MES for the current work orders, so the routing on this screen and the routing the shop floor is working to must never disagree.</p>
+</div>
+
+<sc-if value="{{ hasNotices }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ notices }}" as="n" hint-placeholder-count="1">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ n.tone }}" title="{{ n.title }}" live="on" size="sm" action="{{ n.action }}" hint-size="100%,96px">{{ n.body }}</x-import>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ grabbed }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:12px 16px;border:var(--border-width) solid var(--action-solid);border-radius:var(--radius-md);background:var(--status-info-soft)">
+<span style="font-size:var(--text-sm);color:var(--text-primary);flex:1 1 320px;text-wrap:pretty">{{ grabbedText }}</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)">the grab belongs to SortableCollection · this page has not been asked to commit anything yet</span>
+</div>
+</sc-if>
+
+<div style="display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:20px;align-items:start">
+
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;padding:14px 18px;border-bottom:var(--border-hairline)">
+<span style="font-size:var(--text-base);font-weight:var(--weight-semibold)">In-house at PL-04</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ inHouseMeta }}</span>
+</div>
+<sc-if value="{{ pendingLine }}" hint-placeholder-val="{{ false }}">
+<div style="padding:10px 18px;border-bottom:var(--border-hairline);background:var(--surface-sunken);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.6">{{ pendingLine }}</div>
+</sc-if>
+<div style="padding:8px 8px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.SortableCollection" label="Routing sequence for BRK-4820-A" items="{{ shownOrder }}" itemName="{{ itemName }}" canDrop="{{ canDrop }}" canMove="{{ canMoveItem }}" onMove="{{ onMove }}" onGrabChange="{{ onGrabChange }}" onAnnounce="{{ onAnnounce }}" liveRegion="{{ false }}" announcementScope="{{ announcementScope }}" size="sm" hint-size="100%,300px">
+<sc-for list="{{ inRows }}" as="op" hint-placeholder-count="7">
+<div style="position:relative;display:flex;align-items:center;gap:10px;padding:4px 2px">
+<sc-if value="{{ op.busy }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:-4px -6px;z-index:-1;background:var(--surface-sunken);pointer-events:none;border-radius:var(--radius-sm)"></div>
+</sc-if>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);width:24px;flex:none">{{ op.seq }}</span>
+<div style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 180px">
+<span style="font-size:var(--text-sm);color:var(--text-primary)">{{ op.name }}</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ op.meta }}</span>
+<sc-if value="{{ op.reason }}" hint-placeholder-val="{{ false }}">
+<span style="font-size:var(--text-2xs);color:var(--text-warning);line-height:1.5;text-wrap:pretty">{{ op.reason }}</span>
+</sc-if>
+</div>
+<sc-if value="{{ op.badgeText }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Badge" tone="{{ op.badgeTone }}" size="sm" dot="{{ true }}" hint-size="88px,20px">{{ op.badgeText }}</x-import>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" onClick="{{ op.onTransfer }}" disabled="{{ op.transferBusy }}" hint-size="104px,28px">Subcontract</x-import>
+</div>
+</sc-for>
+</x-import>
+</div>
+<div style="padding:12px 18px;border-top:var(--border-hairline);background:var(--surface-sunken)">
+<div role="status" aria-live="polite" style="min-height:18px;font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty">{{ announcement }}</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+<div style="display:flex;flex-direction:column;gap:3px;padding:14px 18px;border-bottom:var(--border-hairline)">
+<span style="font-size:var(--text-base);font-weight:var(--weight-semibold)">Subcontract</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ subMeta }}</span>
+</div>
+<div style="display:flex;flex-direction:column;padding:8px 0;min-height:96px">
+<sc-for list="{{ subRows }}" as="op" hint-placeholder-count="1">
+<div style="position:relative;display:flex;align-items:center;gap:10px;padding:8px 14px">
+<sc-if value="{{ op.busy }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:-1;background:var(--surface-sunken);pointer-events:none"></div>
+</sc-if>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);width:24px;flex:none">{{ op.seq }}</span>
+<div style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 auto">
+<span style="font-size:var(--text-sm);color:var(--text-primary)">{{ op.name }}</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ op.meta }}</span>
+<sc-if value="{{ op.reason }}" hint-placeholder-val="{{ false }}">
+<span style="font-size:var(--text-2xs);color:var(--text-warning);line-height:1.5;text-wrap:pretty">{{ op.reason }}</span>
+</sc-if>
+</div>
+<sc-if value="{{ op.badgeText }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Badge" tone="{{ op.badgeTone }}" size="sm" dot="{{ true }}" hint-size="88px,20px">{{ op.badgeText }}</x-import>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" onClick="{{ op.onTransfer }}" disabled="{{ op.transferBusy }}" hint-size="120px,28px">Bring in-house</x-import>
+</div>
+</sc-for>
+<sc-if value="{{ subEmpty }}" hint-placeholder-val="{{ false }}">
+<div style="padding:18px;text-align:center;font-size:var(--text-xs);color:var(--text-tertiary)">No operations subcontracted. Every operation runs at PL-04.</div>
+</sc-if>
+</div>
+<div style="padding:12px 18px;border-top:var(--border-hairline);background:var(--surface-sunken);font-size:var(--text-xs);color:var(--text-secondary);line-height:1.55;text-wrap:pretty">{{ subFooter }}</div>
+</div>
+
+</div>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:12px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:15px 17px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Committed order, grab &amp; in-flight move · remove on copy</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px 20px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="10">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:118px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;border-top:var(--border-hairline);padding-top:11px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Committed (canonical, this page's)</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ committedText }}</pre>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Grab (SortableCollection's) &amp; in-flight write</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ grabText }}</pre>
+</div>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">The grab carries the identity <em>and the origin index</em>, and it lives in the component. The left column lives here, and only a successful write changes it — which is why a refusal needs no rollback to compute (pattern §04, §10, §20; composite §01).</p>
+</div>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1380,&quot;height&quot;:1000},&quot;commitTiming&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;pending&quot;,&quot;optimistic&quot;],&quot;default&quot;:&quot;pending&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;When the new order shows&quot;},&quot;rollbackTarget&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;origin-index&quot;,&quot;service-order&quot;],&quot;default&quot;:&quot;origin-index&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Where a refused move returns&quot;},&quot;dropLegality&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;refuse-on-hover&quot;,&quot;refuse-on-drop&quot;],&quot;default&quot;:&quot;refuse-on-hover&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Illegal position refused&quot;},&quot;transferAtomicity&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;all-or-nothing&quot;,&quot;per-item&quot;],&quot;default&quot;:&quot;all-or-nothing&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Transfer commit&quot;},&quot;announcementScope&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;position-and-neighbours&quot;,&quot;position-only&quot;],&quot;default&quot;:&quot;position-and-neighbours&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;What a result states&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:200,&quot;max&quot;:3000,&quot;step&quot;:100,&quot;default&quot;:900,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Sequence-write latency&quot;},&quot;mesRefuses&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;MES refuses the sequence&quot;},&quot;unknownOutcome&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Outcome unknown (timeout)&quot;},&quot;othersResequence&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Another planner resequences&quot;},&quot;withdrawOp&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Op 40 Wash withdrawn&quot;}}">
+// Routing for BRK-4820-A, process plan rev 7, PL-04. `wc` is the work centre,
+// `cycle` the standard cycle time per piece on it.
+const OPS = {
+  OP10: { seq: '10', name: 'Blank', wc: 'PR-02 press', cycle: '0.42 min/pc' },
+  OP20: { seq: '20', name: 'Pierce', wc: 'PR-03 press', cycle: '0.31 min/pc' },
+  OP30: { seq: '30', name: 'Deburr', wc: 'DB-01 bench', cycle: '0.55 min/pc' },
+  OP40: { seq: '40', name: 'Wash', wc: 'WS-01 washer', cycle: '0.18 min/pc' },
+  OP50: { seq: '50', name: 'CNC bore', wc: 'CNC-04', cycle: '1.24 min/pc' },
+  OP60: { seq: '60', name: 'Induction harden', wc: 'IH-02 (decommissioned)', cycle: '0.62 min/pc' },
+  OP70: { seq: '70', name: 'Final inspect', wc: 'QC-01', cycle: '0.40 min/pc' },
+  OP80: { seq: '80', name: 'Despatch pack', wc: 'PK-01', cycle: '0.22 min/pc' }
+};
+const PIN_FIRST = 'OP10', PIN_LAST = 'OP80';
+const NO_SUB = {
+  OP70: 'Final inspection is not subcontracted \u2014 Meera Nair (quality manager) holds the QC-01 gate.',
+  OP20: 'The PR-03 pierce die may not leave PL-04 \u2014 tool room, Priya Iyer.'
+};
+const NO_IN = { OP60: 'No in-house induction hardening at PL-04 since IH-02 was decommissioned.' };
+const SUB = { OP60: { vendor: 'Nashik Forge & Machine Works', rate: 18.5, qty: 13000 } };
+const INR = n => '\u20b9' + Number(n).toLocaleString('en-IN');
+const M = () => window.MeridianDesignSystem_962c43 || {};
+const nameOf = id => 'op ' + OPS[id].seq + ' ' + OPS[id].name;
+
+class Component extends DCLogic {
+  state = {
+    order: ['OP10', 'OP20', 'OP30', 'OP40', 'OP50', 'OP70', 'OP80'],  // committed sequence, by identity
+    sub: ['OP60'],                       // membership of the other collection
+    rev: 7,                              // sequence revision the local order was read at
+    grab: null,                          // mirrored from SortableCollection, for the inspector only
+    inflight: null,                      // { id, req, kind, to, target }
+    failure: null,
+    unknown: null,
+    withdrawn: null,
+    announcement: '',
+    moves: 0
+  };
+  req = 0;
+  lastMove = null;
+
+  policy(n, fb) { return this.props[n] || fb; }
+
+  // Declared legality (§04), handed to the component as a rule over the order
+  // that would result. A refusal is the REASON, not a false.
+  legalOrder(arr) {
+    if (arr.includes(PIN_FIRST) && arr[0] !== PIN_FIRST) return 'Op 10 Blank is the first operation on the raw blank \u2014 it stays at position 1.';
+    if (arr.includes(PIN_LAST) && arr[arr.length - 1] !== PIN_LAST) return 'Op 80 Despatch pack is pinned last \u2014 nothing runs after pack.';
+    const a = arr.indexOf('OP20'), b = arr.indexOf('OP50');
+    if (a > -1 && b > -1 && b < a) return 'Op 50 CNC bore is pinned to fixture FX-2210, which requires op 20 Pierce complete.';
+    return null;
+  }
+  proposedArray(id, to) { const a = this.state.order.filter(x => x !== id); a.splice(to, 0, id); return a; }
+
+  transfer = (id, target) => {
+    if (this.state.inflight) { this.setState({ announcement: nameOf(this.state.inflight.id) + ' is still being written. One write at a time.' }); return; }
+    const why = target === 'sub' ? NO_SUB[id] : NO_IN[id];
+    if (why) { this.setState({ announcement: nameOf(id) + ' cannot move to ' + (target === 'sub' ? 'subcontract' : 'in-house') + '. ' + why }); return; }
+    this.commit({ kind: 'transfer', id, target, originIndex: target === 'sub' ? this.state.order.indexOf(id) : this.state.sub.indexOf(id) });
+  };
+
+  commit(move) {
+    const req = ++this.req;
+    this.lastMove = move;
+    this.setState({
+      // The grab is over the moment a write starts — clear the mirror here too,
+      // so the in-hand banner can never outlive the gesture that caused it.
+      grab: null,
+      inflight: Object.assign({ req }, move), failure: null, unknown: null,
+      announcement: move.kind === 'reorder'
+        ? 'Writing ' + nameOf(move.id) + ' to position ' + (move.to + 1) + '\u2026'
+        : 'Writing ' + nameOf(move.id) + ' to ' + (move.target === 'sub' ? 'subcontract' : 'in-house') + '\u2026'
+    });
+    // REPLACE: stands in for the sequence write —
+    //   PATCH /api/process-plans/BRK-4820-A/routing { id, fromIndex, toIndex, baseRevision }
+    // The move is sent, never the whole array (§20). Canonical order is written
+    // only from its success.
+    setTimeout(() => {
+      if (req !== this.req) return;                                  // superseded
+      if (!(this.state.order.includes(move.id) || this.state.sub.includes(move.id))) { this.setState({ inflight: null }); return; }
+      if (this.props.unknownOutcome) {
+        this.setState({ inflight: null, unknown: { move }, announcement: nameOf(move.id) + ': the MES routing call timed out. It is not known whether the sequence was accepted.' });
+        return;
+      }
+      if (this.props.mesRefuses) { this.refuse(move); return; }
+      this.apply(move);
+    }, this.props.latency ?? 900);
+  }
+
+  apply(move) {
+    const s = this.state;
+    if (move.kind === 'reorder') {
+      const arr = this.proposedArray(move.id, move.to), i = arr.indexOf(move.id);
+      const nb = this.policy('announcementScope', 'position-and-neighbours') === 'position-and-neighbours'
+        ? ' \u2014' + (i > 0 ? ' after ' + nameOf(arr[i - 1]) : ' at the front') + (i < arr.length - 1 ? ', before ' + nameOf(arr[i + 1]) : '') : '';
+      this.setState(p => ({
+        order: arr, rev: p.rev + 1, inflight: null, moves: p.moves + 1,
+        announcement: nameOf(move.id) + ' is now ' + (i + 1) + ' of ' + arr.length + nb + '. Released to MES at ' + this.clock() + ' (IST).'
+      }));
+      return;
+    }
+    const toSub = move.target === 'sub';
+    const order = toSub ? s.order.filter(x => x !== move.id) : s.order.concat([move.id]);
+    const sub = toSub ? s.sub.concat([move.id]) : s.sub.filter(x => x !== move.id);
+    const fixed = this.legalOrder(order) ? this.repin(order) : order;   // both sides, one write (§06)
+    this.setState(p => ({
+      order: fixed, sub, rev: p.rev + 1, inflight: null, moves: p.moves + 1,
+      announcement: nameOf(move.id) + ' moved to ' + (toSub ? 'Subcontract \u00b7 ' + SUB[move.id].vendor : 'in-house at PL-04') + ' \u2014 ' + sub.length + ' subcontracted, ' + fixed.length + ' in-house.'
+    }));
+  }
+  repin(order) { const a = order.filter(x => x !== PIN_LAST); if (order.includes(PIN_LAST)) a.push(PIN_LAST); return a; }
+
+  refuse(move) {
+    const s = this.state;
+    const perItem = move.kind === 'transfer' && this.policy('transferAtomicity', 'all-or-nothing') === 'per-item';
+    const why = move.kind === 'reorder'
+      ? 'MES refused the sequence \u2014 the routing lock for BRK-4820-A is held by Anjali Deshmukh (planning), 00:38 old.'
+      : 'The subcontract routing write was refused \u2014 the vendor scheduling agreement with ' + (SUB[move.id] ? SUB[move.id].vendor : 'the vendor') + ' has no open line for this operation.';
+    let order = s.order, sub = s.sub, extra = '';
+    if (perItem) {
+      // per-item: the source side was already written and only the destination
+      // failed. Visibly wrong, and exactly what all-or-nothing prevents.
+      order = move.target === 'sub' ? s.order.filter(x => x !== move.id) : s.order;
+      sub = move.target === 'in' ? s.sub.filter(x => x !== move.id) : s.sub;
+      extra = ' Under transferAtomicity: per-item the source side was already written, so the operation is now in neither routing.';
+    } else if (this.policy('rollbackTarget', 'origin-index') === 'service-order') {
+      order = this.repin(['OP10', 'OP20', 'OP40', 'OP30', 'OP50', 'OP70', 'OP80'].filter(x => s.order.includes(x)));
+      extra = ' The canonical sequence was re-read and had also changed: Anjali Deshmukh moved op 40 Wash ahead of op 30 Deburr at 06:04 (IST).';
+    }
+    this.setState({
+      inflight: null, order, sub,
+      failure: { id: move.id, why: why + extra, move },
+      announcement: nameOf(move.id) + ' was NOT moved. ' + this.sequenceSentence(order) + extra
+    });
+  }
+
+  sequenceSentence(order) { return 'The routing still runs ' + (order || this.state.order).map(id => OPS[id].seq).join(' \u00b7 ') + '.'; }
+  clock() { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+
+  retry = () => {
+    const f = this.state.failure; if (!f) return;
+    const m = f.move;
+    if (m.kind === 'reorder' && this.legalOrder(this.proposedArray(m.id, m.to))) {
+      this.setState({ failure: null, announcement: 'That move is no longer legal: ' + this.legalOrder(this.proposedArray(m.id, m.to)) });
+      return;
+    }
+    this.setState({ failure: null }, () => this.commit(m));
+  };
+  reread = () => { const u = this.state.unknown; if (!u) return; this.setState({ unknown: null }, () => this.apply(u.move)); };
+  dismiss = () => this.setState({ withdrawn: null });
+
+  componentDidUpdate(prev) {
+    // Harness: another planner resequences the routing underneath a grab.
+    if (this.props.othersResequence && !prev.othersResequence) {
+      const order = this.repin(['OP10', 'OP20', 'OP40', 'OP30', 'OP50', 'OP70', 'OP80'].filter(x => this.state.order.includes(x)));
+      this.setState(p => ({
+        order, rev: p.rev + 1,
+        announcement: 'Anjali Deshmukh moved op 40 Wash ahead of op 30 Deburr (revision ' + (p.rev + 1) + '). A live grab keeps its identity and re-derives its origin index.'
+      }));
+    }
+    // Harness: an operation is withdrawn from the routing while it is in hand.
+    if (this.props.withdrawOp && !prev.withdrawOp) {
+      const id = 'OP40';
+      if (!this.state.order.includes(id)) { this.setState({ announcement: 'Op 40 Wash is already out of the routing.' }); return; }
+      this.req++;
+      this.setState({
+        order: this.state.order.filter(x => x !== id), inflight: null,
+        withdrawn: { id, why: 'Removed from the process plan by Vikram Bhosale \u2014 WS-01 washer under shutdown, parts go out unwashed against deviation DV-1184.' },
+        announcement: nameOf(id) + ' was withdrawn from the routing. A grab holding it ends, and nothing was requested.'
+      });
+    }
+  }
+
+  componentDidMount() { this.setState({ announcement: 'Seven operations in-house, one subcontracted. Grab an operation by its handle, or use Earlier and Later.' }); }
+
+  renderVals() {
+    const s = this.state, C = M(), f = s.inflight;
+    const optimistic = this.policy('commitTiming', 'pending') === 'optimistic';
+    const btn = (p, label) => C.Button ? React.createElement(C.Button, p, label) : null;
+
+    // Shown order: canonical, plus the in-flight move only under `optimistic`.
+    // The component is handed this and never reorders it.
+    let order = s.order, sub = s.sub;
+    if (f && optimistic) {
+      if (f.kind === 'reorder') order = this.proposedArray(f.id, f.to);
+      else if (f.target === 'sub') { order = s.order.filter(x => x !== f.id); sub = s.sub.concat([f.id]); }
+      else { order = s.order.concat([f.id]); sub = s.sub.filter(x => x !== f.id); }
+    }
+
+    const inRows = order.map((id) => {
+      const o = OPS[id];
+      const busy = !!(f && f.id === id);
+      const pinned = id === PIN_FIRST || id === PIN_LAST;
+      let badgeTone = 'neutral', badgeText = '';
+      if (busy) { badgeTone = 'accent'; badgeText = optimistic ? 'not confirmed' : 'writing'; }
+      else if (s.failure && s.failure.id === id) { badgeTone = 'critical'; badgeText = 'not moved'; }
+      else if (pinned) { badgeTone = 'neutral'; badgeText = 'pinned'; }
+      return {
+        id, seq: o.seq, name: 'Op ' + o.seq + ' ' + o.name,
+        meta: o.wc + ' \u00b7 ' + o.cycle,
+        busy, badgeTone, badgeText,
+        reason: NO_SUB[id] || '',
+        transferBusy: !!f || !!NO_SUB[id] || !!s.grab,
+        onTransfer: () => this.transfer(id, 'sub')
+      };
+    });
+
+    const subRows = sub.map(id => {
+      const o = OPS[id], c = SUB[id] || { vendor: 'Vendor', rate: 0, qty: 0 };
+      const busy = !!(f && f.id === id);
+      return {
+        id, seq: o.seq, name: 'Op ' + o.seq + ' ' + o.name,
+        meta: c.vendor + ' \u00b7 ' + INR(c.rate) + '/pc \u00b7 ' + INR(Math.round(c.rate * c.qty)) + ' per month',
+        busy, badgeTone: 'accent', badgeText: busy ? (optimistic ? 'not confirmed' : 'writing') : '',
+        reason: NO_IN[id] || '',
+        transferBusy: !!f || !!NO_IN[id],
+        onTransfer: () => this.transfer(id, 'in')
+      };
+    });
+
+    const pending = f && !optimistic;
+    return {
+      // --- what SortableCollection is given ---------------------------------
+      shownOrder: order,
+      itemName: nameOf,
+      canMoveItem: (id) => (id === PIN_FIRST ? 'Pinned first \u2014 the raw blank starts here.'
+        : id === PIN_LAST ? 'Pinned last \u2014 nothing runs after despatch pack.'
+          : f ? nameOf(f.id) + ' is being written to MES \u2014 one sequence write at a time.' : true),
+      // refuse-on-hover: the rule is handed to the component, which declines to
+      // show an insertion point. refuse-on-drop: every position accepts, and
+      // the refusal comes from here, at the drop (§05).
+      canDrop: (id, to, next) => (this.policy('dropLegality', 'refuse-on-hover') === 'refuse-on-drop' ? true : (this.legalOrder(next) || true)),
+      onMove: (id, from, to) => {
+        const why = this.legalOrder(this.proposedArray(id, to));
+        if (why) { this.setState({ announcement: nameOf(id) + ' was not moved. ' + why + ' It is still at position ' + (from + 1) + ' of ' + this.state.order.length + '.' }); return; }
+        this.commit({ kind: 'reorder', id, to, originIndex: from });
+      },
+      onGrabChange: (g) => this.setState({ grab: g }),
+      onAnnounce: (text) => this.setState({ announcement: text }),
+      announcementScope: this.policy('announcementScope', 'position-and-neighbours'),
+
+      inRows, subRows,
+      subEmpty: sub.length === 0,
+      grabbed: !!s.grab,
+      grabbedText: s.grab ? nameOf(s.grab.id) + ' is in hand from position ' + (s.grab.originIndex + 1) + ' of ' + order.length + ', proposed at ' + (s.grab.proposedIndex + 1) + ' \u2014 arrows move it, Space drops it, Escape leaves it where it was.' : '',
+
+      inHouseMeta: order.length + ' operations \u00b7 sequence revision ' + s.rev + ' \u00b7 ' + s.moves + ' moves this session',
+      subMeta: sub.length + ' of ' + (order.length + sub.length) + ' operations \u00b7 ' + INR(sub.reduce((t, id) => t + Math.round((SUB[id] || { rate: 0, qty: 0 }).rate * (SUB[id] || { qty: 0 }).qty), 0)) + ' per month',
+      subFooter: 'A transfer is one write over both routings: under transferAtomicity: all-or-nothing the operation is never in both and never in neither. Op 70 Final inspect and op 20 Pierce refuse the move by rule \u2014 which is why transfer stays a pattern and not part of the component.',
+      pendingLine: pending ? 'Proposed sequence, not yet accepted by MES: ' + (f.kind === 'reorder' ? this.proposedArray(f.id, f.to).map(id => OPS[id].seq).join(' \u00b7 ') : order.filter(x => x !== f.id).map(id => OPS[id].seq).join(' \u00b7 ')) + ' \u2014 the routing above is what the shop floor is working to.' : '',
+
+      notices: [
+        s.failure ? {
+          key: 'f', tone: 'danger', title: nameOf(s.failure.id) + ' was not moved',
+          body: s.failure.why + ' ' + this.sequenceSentence() + ' ' + (s.failure.move.kind === 'reorder' ? nameOf(s.failure.id) + ' is still at position ' + (s.order.indexOf(s.failure.id) + 1) + ' of ' + s.order.length + ' \u2014 the order was never written, so there is no rollback to compute.' : ''),
+          action: btn({ variant: 'secondary', size: 'sm', type: 'button', onClick: this.retry }, s.failure.move.kind === 'reorder' ? 'Retry moving ' + nameOf(s.failure.id) + ' to ' + (s.failure.move.to + 1) : 'Retry moving ' + nameOf(s.failure.id))
+        } : null,
+        s.unknown ? {
+          key: 'u', tone: 'warning', title: 'It is not known whether ' + nameOf(s.unknown.move.id) + ' was moved',
+          body: 'The MES routing call timed out. The sequence shown is the last one known to be committed \u2014 ' + this.sequenceSentence() + ' Re-read the canonical routing rather than sending the move again, which on a sequence write can apply it twice.',
+          action: btn({ variant: 'secondary', size: 'sm', type: 'button', onClick: this.reread }, 'Re-read the routing from MES')
+        } : null,
+        s.withdrawn ? {
+          key: 'w', tone: 'info', title: nameOf(s.withdrawn.id) + ' is no longer in the routing',
+          body: s.withdrawn.why + ' Any move it was part of was not requested and cannot be.',
+          action: btn({ variant: 'ghost', size: 'sm', type: 'button', onClick: this.dismiss }, 'Dismiss')
+        } : null
+      ].filter(Boolean),
+      hasNotices: !!(s.failure || s.unknown || s.withdrawn),
+      announcement: s.announcement,
+
+      stateRows: [
+        { k: 'this page', v: f ? 'writing' : (s.failure ? 'write failed' : (s.unknown ? 'outcome unknown' : 'at rest')) },
+        { k: 'component', v: s.grab ? 'grabbed \u00b7 proposing ' + (s.grab.proposedIndex + 1) : 'at rest' },
+        { k: 'grab', v: s.grab ? s.grab.id + ' \u00b7 origin ' + (s.grab.originIndex + 1) + ' \u00b7 proposed ' + (s.grab.proposedIndex + 1) : '\u2014' },
+        { k: 'commitTiming', v: optimistic ? 'optimistic \u00b7 marked unconfirmed' : 'pending \u00b7 committed order shown' },
+        { k: 'rollbackTarget', v: this.policy('rollbackTarget', 'origin-index') },
+        { k: 'dropLegality', v: this.policy('dropLegality', 'refuse-on-hover') === 'refuse-on-drop' ? 'refuse-on-drop \u00b7 canDrop always true; this page refuses at onMove' : 'refuse-on-hover \u00b7 canDrop carries the rule; no insertion point shown' },
+        { k: 'transferAtomicity', v: this.policy('transferAtomicity', 'all-or-nothing') },
+        { k: 'announcement', v: this.policy('announcementScope', 'position-and-neighbours') },
+        { k: 'request', v: '#' + this.req + (f ? ' \u00b7 in flight' : ' \u00b7 settled') },
+        { k: 'revision', v: 'rev ' + s.rev + ' \u00b7 ' + s.moves + ' committed moves' }
+      ],
+      committedText: JSON.stringify({ order: s.order, sub: s.sub, rev: s.rev }, null, 1),
+      grabText: JSON.stringify(s.grab ? { grab: s.grab, proposedOrder: this.proposedArray(s.grab.id, s.grab.proposedIndex), legality: this.legalOrder(this.proposedArray(s.grab.id, s.grab.proposedIndex)) || 'legal' } : (f ? { inflight: f } : { note: 'nothing in hand \u2014 grab an operation' }), null, 1)
+    };
+  }
+}
+
+</script>
+</body>
+</html>

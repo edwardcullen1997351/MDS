@@ -1,0 +1,365 @@
+<!-- @dsCard group="Specs · Core" viewport="1080x760" name="Tag" subtitle="Full specification — the user-derived token: purpose, anatomy, props, variants, keyboard, a11y, motion" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Tag — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:118px}
+.staterow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:10px 12px}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Tag, TagList, Badge, Button, IconButton, Input, Text, Icon } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Spec(){
+const [filters,setFilters] = React.useState(['site:tilburg','area:assembly','part:PN-7749','shift:nights','status:open']);
+const [facets,setFacets] = React.useState(new Set(['assembly']));
+const toggle = (id) => setFacets(s => { const n = new Set(s); n.has(id)?n.delete(id):n.add(id); return n; });
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Core · Component specification</span>
+    <h1>Tag</h1>
+    <p className="lede">A token whose text comes from the data or from the user — an applied filter, a facet, a part number, a label someone typed. Tag is the exact counterpart to <code>Badge</code>: Badge states a condition <em>the system</em> knows about, in a colour that carries meaning; Tag carries a value the system does not interpret. That is why Tag is monochrome, why its label is set in mono, and why it can be removed while a Badge never can.</p>
+    <div className="meta">
+      <span>components/core/Tag.jsx</span><span>window.MeridianDesignSystem_962c43.Tag</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 0 open items</span><span>since: 1.0.0 · hardened 1.7.0</span><span>23 tokens · 0 new layers</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Show a value the user put there, and let them take it away.">
+    <p>A tag makes a piece of state visible and reversible. Its whole job is to answer "what is currently applied?" and to let the answer be undone in one press. If the text is not derived from data or user input — if a designer chose the word from a fixed set — it is not a tag.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Show an applied filter or facet','Tag','This component.'],
+      ['Show a condition the system determined','Badge','"Running", "Down", "Overdue" are ours, and their colour means something. Tag has no tones.'],
+      ['Let the user pick values into a field','Combobox (multiple)','The tags inside the field are Tag; the picking is the Combobox\u2019s.'],
+      ['Label a count or a quantity','Badge','A number in a border is a badge, and mono tag text makes counts read as ids.'],
+      ['Offer an action','Button','A tag is a value that can be pressed to toggle, never a verb.'],
+      ['Navigate somewhere','Link','A tag that routes is a link wearing a border.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> for the filter bar above a table, selected facets in a search panel, multi-select values inside a <code>Combobox</code>, keywords on a record, ids pulled from a row.</li>
+      <li><strong>Use</strong> when the set is open-ended. Tag exists precisely because the system cannot enumerate its own content.</li>
+      <li><strong>Do not use</strong> to convey status, severity, or health — <code>Badge</code>, and only <code>Badge</code>, is allowed colour that means something.</li>
+      <li><strong>Do not use</strong> as a row of buttons in disguise. If pressing it <em>does</em> something rather than toggling whether it applies, it is a button.</li>
+    </ul>
+    <div className="demo col">
+      <div className="bar">
+        <Text size="xs" tone="tertiary" style={{fontFamily:'var(--font-mono)'}}>1,204 orders</Text>
+        <span style={{width:1,height:18,background:'var(--border-subtle)'}} />
+        <TagList>
+          {filters.map(f => <Tag key={f} label={f} onRemove={()=>setFilters(x=>x.filter(v=>v!==f))} />)}
+        </TagList>
+        {filters.length<5 && <Button variant="ghost" size="sm" onClick={()=>setFilters(['site:tilburg','area:assembly','part:PN-7749','shift:nights','status:open'])}>Reset</Button>}
+      </div>
+      <Text size="xs" tone="tertiary">Filters, removable. Compare: <Badge tone="success" dot>Running</Badge> — a condition, not a value.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Four parts, and only the first is required.">
+    <div className="demo">
+      <div style={{display:'flex',flexDirection:'column',gap:10,minWidth:280,flex:1}}>
+        {[['1','Label — the token text, mono by default, verbatim from the data. Truncates with an ellipsis at maxWidth; never rewrapped.'],
+          ['2','Container — 24px (md) or 20px (sm), --radius-sm, --tag-border hairline on --tag-background. Control-shaped, because it can be pressed and dismissed.'],
+          ['3','Icon (optional) — a leading glyph for the token\u2019s kind, --tag-icon. Never decoration.'],
+          ['4','Remove control (optional) — a 16px × at the trailing edge, --tag-remove-foreground, with its own hover tint. Right padding tightens by 4px so the × sits on the edge rather than floating inside it.'],
+          ['5','Focus ring — --tag-focus-ring, drawn as a box-shadow on the tag itself, never on the ×.']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:12,alignItems:'flex-start'}}>
+        <Tag label="site:tilburg" />
+        <Tag label="area:assembly" icon="factory" onRemove={()=>{}} />
+        <Tag label="Needs QA review" font="sans" onRemove={()=>{}} />
+      </div>
+    </div>
+    <p>The label is a single line by construction. A tag is a token, and a token that wraps to two lines has stopped being one thing the eye can count — cap it with <code>maxWidth</code> and let it truncate, or carry the full value in a tooltip.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Tag and TagList.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['label · children','ReactNode','—','The token text. Exact and verbatim.'],
+      ['icon','string','—','Leading Lucide 0.469.0 glyph, for the token\u2019s kind.'],
+      ['onRemove','(e) => void','—','Makes the tag removable: renders the ×, publishes aria-keyshortcuts="Delete", makes the tag focusable.'],
+      ['removeLabel','string','Remove <label>','Accessible name of the remove control. Set it when the label alone is not a sentence.'],
+      ['selected','boolean','false','Applied / active. A pressable tag always reports aria-pressed, true or false.'],
+      ['disabled','boolean','false','Locked filter — inherited from a saved view, enforced by permissions. Not a way to grey out clutter.'],
+      ['size','\u2018sm\u2019 | \u2018md\u2019','md','20px / 24px (§05).'],
+      ['font','\u2018mono\u2019 | \u2018sans\u2019','mono','mono for keys, ids and facets; sans for typed phrases.'],
+      ['maxWidth','number | string','—','Truncation ceiling. Pair with a title attribute so the full value stays reachable.'],
+      ['onClick','(e) => void','—','Present ⇒ pressable: the body becomes a real <button>.'],
+    ]}/>
+    <T cols={['TagList','Type','Default','Notes']} rows={[
+      ['children','ReactNode','—','Tags. Each gets data-tag-stop and a roving tabIndex.'],
+      ['limit','number','—','Render at most n, then an overflow button.'],
+      ['moreLabel','(hidden) => ReactNode','+n more','Custom overflow text.'],
+      ['onShowMore','(e, hidden) => void','expand in place','Handle the overflow press — a Popover, a filter panel. Omitted, the row expands itself and offers “show fewer”.'],
+      ['gap · align','number · \u2018start\u2019 | \u2018end\u2019','6 · start','Wrapped flex row.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Three behaviours, no tones — and the missing tones are the decision.">
+    <p>Tag has no <code>tone</code> prop and will not get one. A tag's text is user- or data-derived, so there is no colour the system could apply to it honestly: green on <code>part:PN-7749</code> asserts something about that part which nobody checked. Colour that means something lives in <code>Badge</code>. The only colour Tag has is <code>selected</code>, and that is legitimate because <em>the user</em> set it.</p>
+    <T cols={['Variant','Trigger','Element','Behaviour']} rows={[
+      ['Display','neither prop','<span>','Not focusable, not a tab stop, no hover. A value on the page.'],
+      ['Removable','onRemove','<span tabindex=0>','Focusable; the × is a real button; Delete/Backspace removes.'],
+      ['Pressable','onClick','<button>','Toggles whether the value applies. Always reports aria-pressed — true or false — so an off toggle is never mistaken for a command button. The × becomes pointer-only (§08).'],
+    ]}/>
+    <div className="demo">
+      <Row label="display"><Tag label="wo:88431" /><Tag label="PN-7749" icon="package" /></Row>
+      <Row label="removable">{filters.slice(0,2).map(f=><Tag key={f} label={f} onRemove={()=>{}} />)}</Row>
+      <Row label="pressable">
+        {[['assembly','Assembly'],['paint','Paint'],['packing','Packing']].map(([id,name])=>(
+          <Tag key={id} label={name} font="sans" selected={facets.has(id)} onClick={()=>toggle(id)} />
+        ))}
+      </Row>
+    </div>
+    <p>Pressable and removable together is legal — a facet you can toggle <em>and</em> drop — but it is the least common shape and the one place the keyboard model changes, so reach for it only when both actions are genuinely needed.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two, and the difference is the container it sits in.">
+    <T cols={['Size','Height (fine)','Height (coarse)','Label','Use']} rows={[
+      ['sm','20px','32px','--text-2xs','Inside table cells, inside 28px controls, inside a Combobox field.'],
+      ['md','24px','36px','--text-2xs','Default. Filter bars, record detail, cards, panels.'],
+    ]}/>
+    <div className="demo">
+      <Row label="sm"><Tag size="sm" label="site:tilburg" /><Tag size="sm" label="area:assembly" onRemove={()=>{}} /><Tag size="sm" label="Paint" font="sans" selected onClick={()=>{}} /></Row>
+      <Row label="md"><Tag label="site:tilburg" /><Tag label="area:assembly" onRemove={()=>{}} /><Tag label="Paint" font="sans" selected onClick={()=>{}} /></Row>
+    </div>
+    <p>The label size does not change between them — both are <code>--text-2xs</code>, because a token below that stops being readable at a glance and a tag is read at a glance or not at all. Only the box gets tighter. Both heights are token-driven (<code>--tag-height-sm</code> / <code>--tag-height-md</code>) and rise under a coarse pointer; see §11.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Hover only where pressing does something.">
+    <T cols={['State','Applies to','Treatment']} rows={[
+      ['Rest','all','--tag-background, --tag-border, --tag-foreground.'],
+      ['Hover','pressable only','--tag-background-hover and --tag-border-hover. A display or removable tag does not light up under the cursor — nothing would happen if it were clicked, and a hover state that promises otherwise is a lie.'],
+      ['Hover (×)','removable','--tag-remove-background-hover behind the glyph, --tag-remove-foreground-hover. Scoped to the × so the target is unambiguous.'],
+      ['Selected','pressable','--tag-background-selected, --tag-border-selected, --tag-foreground-selected. aria-pressed="true".'],
+      ['Selected + hover','pressable','--tag-background-selected-hover — one step up the action ramp, so hovering an applied facet does not read as un-applying it.'],
+      ['Focus','removable · pressable','--tag-focus-ring as box-shadow on the tag. Never removed, never replaced by an outline.'],
+      ['Disabled','all','--tag-background-disabled, --tag-foreground-disabled, --tag-border-disabled. aria-disabled; the × is inert. Never opacity on the whole tag — the text must stay legible.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="rest / hover"><Tag label="Paint" font="sans" onClick={()=>{}} /><Text size="xs" tone="tertiary">hover me</Text></Row>
+      <Row label="selected"><Tag label="Assembly" font="sans" selected onClick={()=>{}} /></Row>
+      <Row label="removable"><Tag label="shift:nights" onRemove={()=>{}} /><Text size="xs" tone="tertiary">tab to it, then <kbd>Delete</kbd></Text></Row>
+      <Row label="disabled"><Tag label="site:tilburg" disabled onRemove={()=>{}} /><Text size="xs" tone="tertiary">locked by the saved view</Text></Row>
+    </div>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="One tab stop per tag. Never two.">
+    <T cols={['Key','Where','Does']} rows={[
+      ['Tab','into a TagList','Lands on the first tag only. The rest are tabindex=-1 — twelve filters must not be twelve stops between the user and the next control.'],
+      ['← · →','within a TagList','Moves between tags and the overflow button, wrapping. Roving focus, the same model as a toolbar.'],
+      ['Enter · Space','pressable tag','Toggles it. Native <button> behaviour, not re-implemented.'],
+      ['Delete · Backspace','removable tag','Removes it. Published as aria-keyshortcuts="Delete", so the shortcut is announced rather than discovered.'],
+      ['Enter · Space','the × as a button','Removes it — this is the case where the tag body is not a button, so the × is a real one and takes its own focus.'],
+      ['Tab','a display tag','Skips it. It is a <span> with no tabindex, because there is nothing to operate.'],
+    ]}/>
+    <p>After a removal, focus is the caller's responsibility: a removed tag takes its DOM node with it, and the browser drops focus to <code>&lt;body&gt;</code>. Move focus to the next tag, or to the control that added them — see §14.</p>
+    <div className="demo col">
+      <Text size="xs" tone="tertiary">Tab in, then <kbd>←</kbd> <kbd>→</kbd> to travel, <kbd>Delete</kbd> to remove, <kbd>Enter</kbd> on the last two to toggle.</Text>
+      <TagList>
+        {filters.map(f => <Tag key={f} label={f} onRemove={()=>setFilters(x=>x.filter(v=>v!==f))} />)}
+        <Tag label="Assembly" font="sans" selected={facets.has('assembly')} onClick={()=>toggle('assembly')} />
+        <Tag label="Paint" font="sans" selected={facets.has('paint')} onClick={()=>toggle('paint')} />
+      </TagList>
+    </div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="Valid HTML first; the rest follows.">
+    <ul>
+      <li><strong>The element matches the behaviour.</strong> Display tag → <code>&lt;span&gt;</code>. Pressable tag → <code>&lt;button type="button"&gt;</code> with <code>aria-pressed</code>. Nothing is faked with <code>role</code> where a real element exists.</li>
+      <li><strong>A button never nests inside a button.</strong> When the body is pressable, the × becomes <code>role="presentation" aria-hidden</code> pointer-only decoration and keyboard removal moves to <kbd>Delete</kbd> on the tag. Nested interactive elements are invalid HTML and are read inconsistently by every screen reader that meets them.</li>
+      <li><strong>The remove control is named, not glyph-guessed.</strong> <code>Remove site:tilburg</code>, from <code>removeLabel</code> or the label itself. "×" alone announces as "times".</li>
+      <li><strong>Removal is announced as a shortcut,</strong> via <code>aria-keyshortcuts="Delete"</code>, because a keyboard-only user has no way to discover it from the visual ×.</li>
+      <li><strong>Selection is <code>aria-pressed</code>, not colour.</strong> A pressable tag reports <code>aria-pressed</code> in both directions — <code>false</code> is an attribute, not an omission, because a missing one announces as a plain button and leaves the off state carried by background tint alone.</li>
+      <li><strong>Disabled tags stay legible.</strong> <code>--tag-foreground-disabled</code> and a real background, never <code>opacity</code> on the element — a filter you cannot read is worse than one you cannot remove.</li>
+      <li><strong>Truncated labels keep their full value.</strong> Pass <code>title</code> alongside <code>maxWidth</code>; an ellipsis in the accessible name loses data the user typed.</li>
+      <li><strong>The overflow count is a button, not a label.</strong> "+3 more" is focusable and announced as a control, because it always leads somewhere — either <code>onShowMore</code> or an in-place expansion. It is the second tab stop in the list, reachable by →.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="Colour only. Nothing about a tag moves.">
+    <T cols={['Moment','Motion','Tokens']} rows={[
+      ['Hover · selected · focus','--transition-control: background, border, colour and box-shadow only.','--duration-fast · --ease-out'],
+      ['Appear','None. A tag added by the user appears where they put it, at full opacity.','—'],
+      ['Remove','None. The tag is gone the instant it is dismissed.','—'],
+      ['Reflow after removal','None. The row re-flows in one frame.','—'],
+      ['Reduced motion','Nothing to disable — --duration-* collapse to 1ms and the tag was never moving.','prefers-reduced-motion'],
+    ]}/>
+    <p>Tags are the one element on a filter bar that changes in bulk: a saved view swaps five at once. Animating their entry means five staggered slides every time a view loads, and animating their exit means the row re-flows <em>after</em> the user has already moved to the next filter. Both make a fast interaction feel slow. Removal is instant, and instant is the whole point — the user is dismissing something to get it out of the way.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="Verbatim, short, countable.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Use the data's own text.</strong> <code>site:tilburg</code>, <code>PN-7749</code>, <code>2026-08-31</code>.</li>
+        <li><strong>Keep the key</strong> in a facet filter — <code>area:assembly</code> is unambiguous where "Assembly" is not.</li>
+        <li><strong>mono for keys and ids</strong> (default); <code>font="sans"</code> for phrases a person typed.</li>
+        <li><strong>Two or three words</strong> at most. Past that, truncate at a <code>maxWidth</code> and keep the full value in <code>title</code>.</li>
+        <li><strong>Preserve the user's casing</strong> exactly. Their text is data.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>Sentences.</strong> "Only orders from the night shift" is a filter description, not a tag.</li>
+        <li><strong>Counts inside the label.</strong> "assembly (42)" mixes a value with a result — put the count next to the table.</li>
+        <li><strong>System words.</strong> "Overdue", "Failed", "Draft" are Badge's, in Badge's colours.</li>
+        <li><strong>Title Case a value the user typed lowercase.</strong> You are editing their data to look tidy.</li>
+        <li><strong>Icons as decoration.</strong> A glyph should say what <em>kind</em> of token this is, or be absent.</li>
+        <li><strong>An <em>x</em> character as the remove control.</strong> Use <code>onRemove</code>; the affordance carries a name and a hit area.</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Wrap, cap, and give the overflow somewhere to go.">
+    <ul>
+      <li><strong>Tags wrap, they never scroll horizontally.</strong> <code>TagList</code> is a wrapped flex row: a horizontally scrolling filter bar hides applied state off the right edge, which is exactly the state the user needs to see.</li>
+      <li><strong>Cap the row, don't shrink the tags.</strong> <code>limit</code> shows the first n and counts the rest; the tags themselves keep their size. Reducing tags to fit is how a filter bar becomes unreadable at 1280px.</li>
+      <li><strong>The overflow count is a real control.</strong> <code>limit</code> shows the first n and turns the remainder into a button: <code>onShowMore</code> if you want a Popover or a filter panel, otherwise it expands the row in place and offers "show fewer". There is no version of this that renders a dead count.</li>
+      <li><strong>Truncate long values, keep the key.</strong> With <code>maxWidth</code> the ellipsis lands in the value, not the key — <code>part:PN-77…</code> still says what kind of filter it is.</li>
+      <li><strong>Touch is handled in the token layer, not by a prop.</strong> Under <code>@media (pointer:coarse)</code> the height tokens rise to 32/36px and <code>--tag-remove-target</code> goes to 44px — the × glyph stays 16px and its target overflows the tag through negative margins, so a phone gets compliant targets with no layout change and no flag for a product to forget. Removable <code>sm</code> tags are now safe on touch.</li>
+      <li><strong>Inside a Combobox field</strong>, use <code>size="sm"</code> and let the field grow in height as tags wrap; the field's own <code>maxHeight</code> scrolls.</li>
+    </ul>
+    <div className="demo col">
+      <TagList limit={3} moreLabel={(n)=>`+${n} filters`}>
+        {filters.map(f => <Tag key={f} label={f} onRemove={()=>{}} />)}
+      </TagList>
+      <Text size="xs" tone="tertiary">The count is a button — press it. Heights and the × target rise automatically on a coarse pointer.</Text>
+      <Row label="truncated"><Tag maxWidth={150} title="part:PN-7749-ASSY-REV-C" label="part:PN-7749-ASSY-REV-C" onRemove={()=>{}} /></Row>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Mostly one: using a tag to say something the system knows.">
+    <div className="two">
+      <div className="pane dont"><h3>Tag ≠ Badge</h3><ul>
+        <li><strong>A coloured tag.</strong> There are no tones, because the system did not author the text and cannot vouch for a colour on it.</li>
+        <li><strong>Status as a tag.</strong> "Down" in a grey border loses the one thing that made it scannable across a hundred rows.</li>
+        <li><strong>Removable status.</strong> A user cannot dismiss a machine being down. If it has an ×, it is something they applied.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Also don't</h3><ul>
+        <li><strong>Tags as navigation.</strong> No <code>href</code>, no routing. A tag that navigates is a <code>Link</code>.</li>
+        <li><strong>Tags as a toolbar.</strong> Pressable means "this value applies", never "run this".</li>
+        <li><strong>Twenty tags in a bar.</strong> Past six or seven the user cannot read their own filter set — <code>limit</code>, and a summary.</li>
+        <li><strong>Hover states on display tags.</strong> Lights up, does nothing.</li>
+        <li><strong>An × on every tag in a read-only view.</strong> If the view cannot change the filters, do not draw the control.</li>
+        <li><strong>Rebuilding it as a Button with a border radius.</strong> The tag is not a small button; it is a value.</li>
+      </ul></div>
+    </div>
+    <p className="warn">The recurring request is a tone prop "just for coloured labels the user assigns". If the user assigns the colour it is data, and it belongs in a swatch beside the label — not in the system's semantic ramp, where green already means success everywhere else in the product.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="What hardened in 1.7.0.">
+    <ul>
+      <li><strong>The element is now conditional.</strong> Previously the body was always a <code>&lt;span&gt;</code> with a nested <code>&lt;button&gt;</code> for the ×; adding <code>onClick</code> produced a clickable span with a button inside it — invalid, unfocusable, and unannounced. The body is now a real <code>&lt;button&gt;</code> when pressable, and the × downgrades to pointer-only decoration in that case.</li>
+      <li><strong>Removable tags are focusable.</strong> They take <code>tabIndex=0</code> and <code>aria-keyshortcuts="Delete"</code>; <kbd>Delete</kbd>/<kbd>Backspace</kbd> is handled on the tag, so removal works in both element shapes.</li>
+      <li><strong>A focus ring was added</strong> (<code>--tag-focus-ring</code>) — the component had none, which was a 2.4.7 failure the moment it became interactive.</li>
+      <li><strong>Hover is gated on <code>pressable</code></strong>, not on the presence of any handler: a tag with only <code>onRemove</code> no longer tints under the cursor, because clicking its body does nothing.</li>
+      <li><strong>Right padding tightens by 4px</strong> when <code>onRemove</code> is set, so the × sits on the trailing edge instead of floating in whitespace, and the tag's overall width does not jump between removable and not.</li>
+      <li><strong><code>TagList</code> owns the roving tabindex</strong> — it stamps <code>data-tag-stop</code> and <code>tabIndex</code> onto its children and moves focus on ←/→ by querying the DOM, so it works with any children the product interleaves.</li>
+      <li><strong>18 tokens, no reference to <code>--badge-*</code>.</strong> The two components are deliberately different shapes (<code>--radius-sm</code> vs <code>--radius-xs</code>) and must never converge by sharing a variable.</li>
+      <li><strong>Label truncation is CSS,</strong> not JS measurement: <code>overflow</code>/<code>text-overflow</code> on the inner span with <code>minWidth: 0</code>, so it works inside any flex parent.</li>
+      <li><strong>Geometry moved into tokens</strong> so the coarse-pointer block in <code>tokens/components.css</code> can raise it — the component never reads a pointer type, and Tag is the only component in the system that needs that block, because every other control already clears 44px at <code>md</code>.</li>
+      <li><strong>The ×'s target and its glyph are decoupled:</strong> the button is <code>--tag-remove-target</code> square with a negative margin of <code>(target − 16px) / −2</code>, so it grows outside the tag rather than inside it. No reflow between pointer types, and the tag's width is identical on both.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--tag-radius','--tag-height-sm','--tag-height-md','--tag-padding-sm','--tag-padding-md','--tag-remove-target','--tag-background','--tag-background-hover','--tag-background-disabled','--tag-background-selected','--tag-background-selected-hover','--tag-foreground','--tag-foreground-selected','--tag-foreground-disabled','--tag-icon','--tag-border','--tag-border-hover','--tag-border-selected','--tag-border-disabled','--tag-remove-foreground','--tag-remove-foreground-hover','--tag-remove-background-hover','--tag-focus-ring'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Wiring it into a product.">
+    <pre>{`import { Tag, TagList } from '@meridian/core';
+
+// Filter bar. Move focus deliberately after a removal — the removed
+// node takes focus with it and the browser drops it on <body>.
+const barRef = React.useRef(null);
+function drop(id) {
+  const next = filters.filter(f => f.id !== id);
+  setFilters(next);
+  requestAnimationFrame(() => {
+    const stops = barRef.current?.querySelectorAll('[data-tag-stop]');
+    (stops?.[0] ?? addFilterButtonRef.current)?.focus();
+  });
+}
+
+<TagList ref={barRef} limit={6} moreLabel={n => \`+\${n} filters\`}>
+  {filters.map(f => (
+    <Tag key={f.id} label={f.token} title={f.token} maxWidth={180}
+         onRemove={() => drop(f.id)} />
+  ))}
+</TagList>
+
+// Overflow with a destination of your choosing.
+<TagList limit={6} moreLabel={n => \`+\${n} filters\`}
+         onShowMore={() => setFilterPanelOpen(true)} />
+
+// Facets — pressable, and the state is yours.
+{facets.map(f => (
+  <Tag key={f.id} label={f.name} font="sans"
+       selected={applied.has(f.id)} onClick={() => toggle(f.id)} />
+))}
+
+// Inside a multi-select field.
+<Tag size="sm" label={value} onRemove={() => unpick(value)} />`}</pre>
+    <ul>
+      <li><strong>Own the focus after removal.</strong> Nothing else can — only the caller knows whether the next tag, the add-filter button, or the table is the right landing place.</li>
+      <li><strong>Pass <code>title</code> whenever you pass <code>maxWidth</code>.</strong> Truncation without it silently destroys a value the user typed.</li>
+      <li><strong>Do not put <code>onClick</code> on a tag to make it removable.</strong> <code>onRemove</code> exists so the × gets a name, a hit area and a keyboard path; a whole-tag click handler that deletes is a trap for anyone who clicks to read.</li>
+      <li><strong>Key by id, not by label.</strong> Two tags can carry the same text from different facets, and React will collapse them.</li>
+      <li><strong><code>selected</code> is controlled.</strong> Tag holds no selection state — that lives with the filter model, which is the only thing that can also drive the table.</li>
+      <li><strong>Testing hooks:</strong> pressable tags are <code>[role="button"][aria-pressed]</code> with the label as accessible name; removable tags expose the × as <code>[aria-label^="Remove"]</code> when the body is not a button, and as <kbd>Delete</kbd> on the tag when it is. Assert both paths — they are different DOM.</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

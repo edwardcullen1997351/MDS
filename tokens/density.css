@@ -1,0 +1,63 @@
+/* ── DENSITY ───────────────────────────────────────────────────────────
+   Three modes on [data-density], scoped to any subtree. Density changes
+   geometry only — never type size, never colour, never radius — so a
+   screen reads identically at every setting and only the air changes.
+   Comfortable is the default and matches :root; a screen does not get to
+   be roomier because it feels empty. */
+:root,[data-density="comfortable"]{
+--control-h-sm:28px;
+--control-h-md:34px;
+--control-h-lg:40px;
+--row-h:44px;
+--header-h:36px;
+--cell-py:10px;
+--cell-px:var(--space-3);
+--density-gap:var(--space-4);
+--density-section:var(--space-6);
+--density-pad:var(--space-4);
+/* Badge geometry rides density: a status cell sits inside --row-h, so a
+   badge that stayed 22px would eventually be taller than the compact row
+   containing it. Type size never changes — --text-2xs / --text-xs at every
+   setting — only the box. */
+--badge-height-sm:18px;
+--badge-height-md:22px;
+--badge-padding-sm:6px;
+--badge-padding-md:8px;
+}
+/* Compact — 12+ rows above the fold on a 768px tablet. Pointer only:
+   28px controls are below the touch minimum, so a floor tablet must not
+   ship compact. */
+[data-density="compact"]{
+--control-h-sm:24px;
+--control-h-md:28px;
+--control-h-lg:34px;
+--row-h:36px;
+--header-h:30px;
+--cell-py:6px;
+--cell-px:var(--space-2);
+--density-gap:var(--space-2);
+--density-section:var(--space-4);
+--density-pad:var(--space-3);
+--badge-height-sm:16px;
+--badge-height-md:20px;
+--badge-padding-sm:5px;
+--badge-padding-md:7px;
+}
+/* Expanded — gloved hands, wall displays, and any surface a supervisor
+   uses standing up. Every control clears the 44px touch minimum. */
+[data-density="expanded"]{
+--control-h-sm:34px;
+--control-h-md:44px;
+--control-h-lg:52px;
+--row-h:56px;
+--header-h:44px;
+--cell-py:16px;
+--cell-px:var(--space-4);
+--density-gap:var(--space-5);
+--density-section:var(--space-8);
+--density-pad:var(--space-6);
+--badge-height-sm:22px;
+--badge-height-md:26px;
+--badge-padding-sm:7px;
+--badge-padding-md:10px;
+}

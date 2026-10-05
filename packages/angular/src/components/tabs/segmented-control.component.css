@@ -1,0 +1,118 @@
+/* ==========================================================================
+   Angular SegmentedControl Component
+   Token-pinned contrast with zero raw hex
+   ========================================================================== */
+
+.ds-segmented-control {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  background-color: var(--ds-semantic-color-surface-subtle, #f1f5f9);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #cbd5e1);
+  border-radius: var(--ds-global-radius-md, 8px);
+  user-select: none;
+  box-sizing: border-box;
+  gap: 2px;
+  max-width: 100%;
+}
+
+.ds-segmented-control--full-width {
+  display: flex;
+  width: 100%;
+}
+
+.ds-segmented-control--full-width .ds-segmented-control__segment {
+  flex: 1 1 0%;
+}
+
+.ds-segmented-control--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Size Variants */
+.ds-segmented-control--sm {
+  height: 32px;
+}
+
+.ds-segmented-control--sm .ds-segmented-control__segment {
+  padding: 0 var(--ds-global-space-3, 12px);
+  font-size: var(--ds-global-font-size-xs, 12px);
+  line-height: 26px;
+  height: 26px;
+}
+
+.ds-segmented-control--md {
+  height: 36px;
+}
+
+.ds-segmented-control--md .ds-segmented-control__segment {
+  padding: 0 var(--ds-global-space-4, 16px);
+  font-size: var(--ds-global-font-size-sm, 13px);
+  line-height: 30px;
+  height: 30px;
+}
+
+/* Individual Segment Button */
+.ds-segmented-control__segment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-global-space-2, 6px);
+  border: none;
+  background: transparent;
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+  font-family: inherit;
+  font-weight: var(--ds-global-font-weight-semibold, 600);
+  border-radius: calc(var(--ds-global-radius-md, 8px) - 2px);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color var(--ds-motion-duration-fast, 120ms) ease,
+              color var(--ds-motion-duration-fast, 120ms) ease,
+              box-shadow var(--ds-motion-duration-fast, 120ms) ease;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.ds-segmented-control__segment:hover:not(:disabled):not(.ds-segmented-control__segment--selected) {
+  background-color: var(--ds-semantic-color-surface-hover, #e2e8f0);
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+}
+
+.ds-segmented-control__segment--selected,
+.ds-segmented-control__segment--selected:hover,
+.ds-segmented-control__segment--selected:focus {
+  background-color: var(--ds-semantic-color-action-primary-default, #2563eb) !important;
+  color: var(--ds-semantic-color-text-inverse, #ffffff) !important;
+  font-weight: var(--ds-global-font-weight-semibold, 600);
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.35);
+}
+
+.ds-segmented-control__segment:focus-visible {
+  outline: 2px solid var(--ds-semantic-color-focus-ring, #3b82f6);
+  outline-offset: 1px;
+  z-index: 1;
+}
+
+.ds-segmented-control__segment--disabled {
+  color: var(--ds-semantic-color-text-disabled, #94a3b8);
+  cursor: not-allowed;
+}
+
+.ds-segmented-control__icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.1em;
+}
+
+.ds-segmented-control__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  font-size: 10px;
+  border-radius: var(--ds-global-radius-full, 9999px);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  color: var(--ds-semantic-color-action-primary-default, #2563eb);
+}

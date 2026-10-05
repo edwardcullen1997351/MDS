@@ -1,0 +1,69 @@
+.ds-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-2, 8px);
+  font-family: var(--font-family-sans, system-ui, sans-serif);
+  font-size: var(--font-size-sm, 14px);
+  line-height: var(--line-height-normal, 1.5);
+}
+
+.ds-breadcrumb-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-2, 8px);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ds-breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2, 8px);
+}
+
+.ds-breadcrumb-link {
+  color: var(--color-neutral-600, #4B5563);
+  text-decoration: none;
+  transition: color var(--duration-fast, 150ms) ease;
+  cursor: pointer;
+}
+
+.ds-breadcrumb-link:hover {
+  color: var(--color-neutral-900, #111827);
+  text-decoration: underline;
+}
+
+.ds-breadcrumb-link:focus-visible {
+  outline: 2px solid var(--color-brand-500, #3B82F6);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs, 2px);
+}
+
+.ds-breadcrumb-page {
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-neutral-900, #111827);
+}
+
+.ds-breadcrumb-separator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-neutral-400, #9CA3AF);
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 var(--spacing-1, 4px);
+  margin: 0 var(--spacing-1, 2px);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.ds-breadcrumb-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-neutral-500, #6B7280);
+  padding: 0 var(--spacing-1, 4px);
+}

@@ -1,0 +1,219 @@
+.ds-sankey-diagram {
+  position: relative;
+  box-sizing: border-box;
+  font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  color: var(--text-primary, #0f172a);
+  background: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  padding: 1rem;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 100%;
+  user-select: none;
+}
+
+.ds-sankey-diagram:focus-visible {
+  box-shadow: 0 0 0 2px var(--action-solid, #2563eb);
+}
+
+.ds-sankey-diagram__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.ds-sankey-diagram__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary, #0f172a);
+  letter-spacing: -0.01em;
+}
+
+.ds-sankey-diagram__subtitle {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #64748b);
+  margin: 0.125rem 0 0 0;
+}
+
+.ds-sankey-diagram__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.ds-sankey-diagram__search {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6875rem;
+  border-radius: var(--radius-sm, 4px);
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  background: var(--surface-card, #ffffff);
+  color: var(--text-primary, #0f172a);
+  outline: none;
+  width: 130px;
+}
+
+.ds-sankey-diagram__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm, 4px);
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  background: var(--surface-card, #ffffff);
+  color: var(--text-primary, #0f172a);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.ds-sankey-diagram__btn:hover {
+  background: var(--surface-sunken, #f1f5f9);
+}
+
+.ds-sankey-diagram__btn--primary {
+  background: var(--action-primary-default, #2563eb);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.ds-sankey-diagram__btn--primary:hover {
+  background: var(--action-primary-hover, #1d4ed8);
+}
+
+.ds-sankey-diagram__kbd {
+  font-size: 0.5625rem;
+  background: var(--surface-sunken, #f1f5f9);
+  padding: 1px 3px;
+  border-radius: 3px;
+  border: 1px solid var(--border-subtle, #cbd5e1);
+}
+
+.ds-sankey-diagram__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--surface-sunken, #f8fafc);
+  border: 1px dashed var(--border-subtle, #cbd5e1);
+  border-radius: var(--radius-md, 8px);
+  color: var(--text-muted, #64748b);
+  font-size: 0.8125rem;
+}
+
+.ds-sankey-diagram__svg {
+  display: block;
+  background: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-md, 6px);
+  overflow: hidden;
+}
+
+.ds-sankey-diagram__node {
+  cursor: pointer;
+}
+
+.ds-sankey-diagram__ribbon {
+  cursor: pointer;
+  transition: opacity 0.2s ease, stroke-width 0.2s ease;
+}
+
+.ds-sankey-diagram__tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--surface-floating, #0f172a);
+  color: var(--text-inverse, #f8fafc);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm, 6px);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0,0,0,0.3));
+  z-index: 60;
+  max-width: 240px;
+  border: 1px solid var(--border-subtle, rgba(255,255,255,0.1));
+}
+
+/* Modal Dialog */
+.ds-sankey-diagram__modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+}
+
+.ds-sankey-diagram__modal {
+  background: var(--surface-card, #ffffff);
+  color: var(--text-primary, #0f172a);
+  border-radius: var(--radius-lg, 8px);
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0,0,0,0.2));
+  width: 100%;
+  maxWidth: 680px;
+  maxHeight: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ds-sankey-diagram__modal-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ds-sankey-diagram__modal-close {
+  background: none;
+  border: none;
+  font-size: 1.125rem;
+  cursor: pointer;
+  color: var(--text-muted, #64748b);
+  padding: 0.25rem 0.5rem;
+}
+
+.ds-sankey-diagram__modal-body {
+  padding: 1rem 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.ds-sankey-diagram__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+.ds-sankey-diagram__table th,
+.ds-sankey-diagram__table td {
+  padding: 0.5rem 0.625rem;
+  border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+}
+
+.ds-sankey-diagram__table th {
+  background: var(--surface-sunken, #f8fafc);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-subtle, #cbd5e1);
+}
+
+.ds-sankey-diagram__modal-footer {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--border-subtle, #e2e8f0);
+  display: flex;
+  justify-content: flex-end;
+  background: var(--surface-sunken, #f8fafc);
+}

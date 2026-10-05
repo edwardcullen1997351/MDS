@@ -1,0 +1,266 @@
+.ds-pie-chart {
+  position: relative;
+  box-sizing: border-box;
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  color: var(--text-primary, #0f172a);
+  background: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  padding: 1rem 1.25rem;
+  outline: none;
+  display: block;
+  max-width: 100%;
+}
+
+.ds-pie-chart:focus-visible {
+  box-shadow: 0 0 0 2px var(--action-solid, #0284c7);
+}
+
+.ds-pie-chart__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.ds-pie-chart__title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary, #0f172a);
+}
+
+.ds-pie-chart__subtitle {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #64748b);
+  margin: 0.1875rem 0 0 0;
+}
+
+.ds-pie-chart__table-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  border: 1px solid var(--border-strong, #cbd5e1);
+  border-radius: var(--radius-sm, 4px);
+  background: var(--surface-card, #ffffff);
+  color: var(--text-primary, #334155);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ds-pie-chart__table-btn--active {
+  background: var(--action-solid, #0284c7);
+  color: #ffffff;
+  border-color: var(--action-solid, #0284c7);
+}
+
+.ds-pie-chart__svg {
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.ds-pie-chart__slice {
+  cursor: pointer;
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease;
+}
+
+.ds-pie-chart__label {
+  font-size: 0.6875rem;
+  paint-order: stroke fill;
+  stroke: var(--surface-card, #ffffff);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.ds-pie-chart__center-val {
+  font-size: 1rem;
+  font-weight: 700;
+  fill: var(--text-primary, #0f172a);
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-pie-chart__center-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  fill: var(--text-secondary, #64748b);
+}
+
+.ds-pie-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.875rem;
+  margin-top: 0.625rem;
+  justify-content: center;
+}
+
+.ds-pie-chart__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  transition: opacity 0.15s ease;
+}
+
+.ds-pie-chart__legend-item--dimmed {
+  opacity: 0.35;
+}
+
+.ds-pie-chart__legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.ds-pie-chart__legend-label {
+  color: var(--text-primary, #0f172a);
+  font-weight: 500;
+}
+
+.ds-pie-chart__legend-pct {
+  color: var(--text-secondary, #64748b);
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-pie-chart__tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--surface-floating, #0f172a);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-xl, 0 10px 25px rgba(0, 0, 0, 0.3));
+  border-radius: var(--radius-sm, 6px);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  z-index: 100;
+  max-width: 180px;
+}
+
+.ds-pie-chart__tooltip-title {
+  font-weight: 700;
+  font-size: 0.75rem;
+  margin-bottom: 0.125rem;
+}
+
+.ds-pie-chart__tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.625rem;
+}
+
+/* Modal Styles */
+.ds-pie-chart__modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(2px);
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.ds-pie-chart__modal-dialog {
+  background: var(--surface-card, #ffffff);
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.2));
+  width: 100%;
+  max-width: 580px;
+  max-height: 90%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ds-pie-chart__modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+}
+
+.ds-pie-chart__modal-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+}
+
+.ds-pie-chart__modal-subtitle {
+  font-size: 0.6875rem;
+  color: var(--text-secondary, #64748b);
+}
+
+.ds-pie-chart__modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-secondary, #64748b);
+}
+
+.ds-pie-chart__modal-body {
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.ds-pie-chart__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  text-align: left;
+}
+
+.ds-pie-chart__table th {
+  background: var(--surface-sunken, #f8fafc);
+  border-bottom: 2px solid var(--border-subtle, #e2e8f0);
+  padding: 0.5rem 0.625rem;
+  color: var(--text-secondary, #475569);
+  font-weight: 600;
+}
+
+.ds-pie-chart__table td {
+  padding: 0.5rem 0.625rem;
+  border-bottom: 1px solid var(--border-subtle, #f1f5f9);
+}
+
+.ds-pie-chart__modal-footer {
+  padding: 0.625rem 1rem;
+  background: var(--surface-sunken, #f8fafc);
+  border-top: 1px solid var(--border-subtle, #e2e8f0);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ds-pie-chart__modal-btn {
+  padding: 0.3125rem 0.75rem;
+  background: var(--action-solid, #0284c7);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

@@ -1,0 +1,89 @@
+/* ==========================================================================
+   CommandToolbarGroup Component (§05 Actions & Toolbar)
+   Unified ribbon for steppers, view switchers, and action filters
+   ========================================================================== */
+
+.ds-command-toolbar {
+  container-type: inline-size;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-global-space-3, 12px);
+  padding: var(--ds-global-space-2, 8px) var(--ds-global-space-3, 12px);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  border-radius: var(--ds-global-radius-md, 8px);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.ds-command-toolbar--compact {
+  padding: 4px 8px;
+  min-height: 40px;
+}
+
+.ds-command-toolbar--default {
+  padding: 6px 12px;
+  min-height: 48px;
+}
+
+/* Sections */
+.ds-command-toolbar__section {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-global-space-3, 12px);
+  flex-wrap: wrap;
+}
+
+.ds-command-toolbar__section--primary {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ds-command-toolbar__section--actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-global-space-3, 12px);
+  flex-shrink: 0;
+}
+
+.ds-command-toolbar__filters {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-global-space-2, 8px);
+}
+
+.ds-command-toolbar__buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-global-space-2, 8px);
+}
+
+/* Integrated Dividers between control groups */
+.ds-command-toolbar__divider {
+  width: 1px;
+  height: 20px;
+  background: var(--ds-semantic-color-border-subtle, #cbd5e1);
+  flex-shrink: 0;
+}
+
+/* Container Queries for responsive reflow */
+@container (max-width: 720px) {
+  .ds-command-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--ds-global-space-2, 8px);
+  }
+
+  .ds-command-toolbar__section {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .ds-command-toolbar__divider {
+    display: none;
+  }
+}

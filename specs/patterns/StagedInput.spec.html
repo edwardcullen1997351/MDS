@@ -1,0 +1,290 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Staged input" subtitle="Full specification — one input task, ordered stages, one value model · manufacturing ERP reference" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Staged input — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.mf{display:flex;flex-direction:column;gap:4px}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mi{height:28px;border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);display:flex;align-items:center;padding:0 8px;font-size:11px;color:var(--text-primary)}
+.mi.bad{border-color:var(--status-critical-solid)}
+.mi.off{background:var(--surface-sunken);color:var(--text-disabled)}
+.mi.focus{border-color:var(--action-solid);box-shadow:0 0 0 2px var(--status-info-soft)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.me{font-size:10px;color:var(--text-critical)}
+.mn{font-size:10px;color:var(--text-secondary)}
+.mb{align-self:flex-start;height:28px;padding:0 12px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:11px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.mb.off{background:var(--surface-sunken);color:var(--text-disabled)}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-critical-soft);color:var(--text-critical)}
+.mok{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-success-soft);color:var(--text-success)}
+.mrail{display:flex;gap:5px;flex-wrap:wrap}
+.mrail span{font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:999px;border:var(--border-hairline);color:var(--text-secondary)}
+.mrail span.on{background:var(--surface-card);color:var(--text-primary)}
+.mrail span.bad{border-color:var(--status-critical-solid);color:var(--text-critical)}
+.mtrack{height:4px;border-radius:999px;background:var(--surface-sunken);overflow:hidden}
+.mtrack i{display:block;height:100%;background:var(--action-solid)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Staged input</h1>
+  <p class="lede">Breaking one larger input task into ordered stages — with a gate that judges only the stage being left, backward movement that commits nothing, one value model that survives every transition, and a single explicit completion at the end.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: Fieldset, Field, Button</span><span>Reference implementation: <a href="staged-input-reference.card.html">card</a> · <a href="../../templates/staged-input/StagedInput.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — raising a purchase requisition</span><span>Sections included: 12 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>Some input tasks are too large to answer in one pass, and their parts are not independent: a purchase requisition needs a charge and a date before a line item means anything, and needs the line value before it knows whether it needs an approver. The pattern owns the ordering itself — which stage is current, what it takes to leave it, what movement backwards means, what happens to values as the user passes through, and the one act at the end that commits the whole set.</p>
+    <p><strong>Use it when</strong> stage boundaries change validation, progression, or the preservation of state — not when they merely group fields on screen.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>A task whose later questions depend on earlier answers.</li><li>A task long enough that a single failed submission would waste real work.</li><li>Deliberate progression where the user should confirm one part before being asked the next.</li><li>A task where whether a whole group of questions applies is itself decided by an earlier answer.</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>Sections for tidiness.</strong> Fields grouped under headings on one page, all validated together at one submit, is <a href="ValidatedSubmission.spec.html">validated submission</a> with layout.</li><li><strong>One value governing another.</strong> A single dependent input inside a stage is <a href="ConditionalInput.spec.html">conditional input</a>; this pattern only owns dependencies that make a whole <em>stage</em> apply or not.</li><li><strong>Navigation between independent screens.</strong> Tabs or routes over unrelated tasks have no gate, no shared value model, and no final commit.</li><li><strong>A wizard over three fields.</strong> If the task fits on one screen, staging it adds ceremony and removes the user's overview.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">Stage group</td><td><code>Fieldset</code></td><td>Required, one per stage. Names the stage as a set and carries the stage-level gate message — the error that says the stage cannot be left yet, distinct from any field's own error.</td></tr>
+      <tr><td class="k">Value capture</td><td><code>Field</code> + <code>Input</code>, <code>Textarea</code>, <code>Select</code>, <code>Checkbox</code>, <code>CheckboxGroup</code>, <code>Radio</code>, <code>RadioGroup</code>, <code>Switch</code>, <code>Combobox</code>, <code>Autocomplete</code>, <code>MultiCombobox</code>, <code>DatePicker</code>, <code>TimeField</code></td><td>Required. Each value belongs to exactly one stage. A value that two stages both need is a modelling error, not a shared field.</td></tr>
+      <tr><td class="k">Movement</td><td><code>Button</code></td><td>Required. Forward, backward, cancel and the final action are separate controls with separate labels; the final action is never the same button as forward (§14).</td></tr>
+      <tr><td class="k">Stage identification</td><td><code>Heading</code>, <code>Text</code></td><td>Optional but expected. The current stage is named where the input is, not only in the progress indicator.</td></tr>
+      <tr><td class="k">Progression</td><td><code>Progress</code>, or a stage rail</td><td>Optional. Must report position in the <em>applicable</em> stage set and must not report completion (§14). A rail that also moves the user is a movement control and obeys the backward rules of §04.</td></tr>
+      <tr><td class="k">Outcome</td><td><code>Alert</code></td><td>Required once completion can fail. Carries the failure, its attribution, and the route back to the stage that can fix it (§10).</td></tr>
+    </tbody></table>
+    <p>The relationship the pattern owns: an ordered list of stages, exactly one of them current, a gate on each forward transition, and one value model that no transition may rebuild. Stages are presentation; the value model is the truth.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>Entry.</strong> The user enters at the first applicable stage — or, where a draft is resumed, at the first stage that is not complete. Applicability of every stage is evaluated before the first render.</li>
+      <li><strong>Completion of the current stage.</strong> The user supplies whatever this stage asks. Nothing outside the current stage is judged.</li>
+      <li><strong>Forward attempt.</strong> The user asks to advance. The gate evaluates the current stage only.</li>
+      <li><strong>Gate.</strong> If the stage is blocking-invalid, movement is refused, the problems are shown against their fields, the stage says why it cannot be left, and focus moves to the first blocking value. The user stays where they are.</li>
+      <li><strong>Advance.</strong> Otherwise the next <em>applicable</em> stage becomes current — recomputed from current values, since a value just entered may have changed which stages apply.</li>
+      <li><strong>Backward movement.</strong> Where permitted, the user returns to an earlier stage without validation and without commitment. Values are unchanged by the movement itself.</li>
+      <li><strong>Final stage.</strong> Cross-stage rules — the ones no single stage could evaluate — are reported here, each attributed to the stage that can fix it.</li>
+      <li><strong>Completion.</strong> One explicit final action commits the whole staged set. It is single-shot: while it is in flight, a second activation does nothing.</li>
+      <li><strong>Failure.</strong> Completion may fail without any stage being wrong. Every stage survives; where the failure is attributable to input, the user is offered the stage that owns it.</li>
+      <li><strong>Cancellation.</strong> Exit obeys the declared preservation policy (§05), and the user is told which policy applied before it applies.</li>
+    </ol>
+    <p>The order matters in one place: re-evaluate stage applicability, <em>then</em> choose the next stage. Advancing by index into a stale stage list is how users land on a stage that no longer applies.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Exactly one stage is current.</strong> Not zero — there is no between-stages state the user can be parked in — and not two, which is a page with headings pretending to be a flow.</li>
+      <li><strong>Forward movement is gated by the current stage alone.</strong> A later stage's emptiness is not a reason to refuse the transition out of this one; the user has not been asked yet.</li>
+      <li><strong>Backward movement implies no commitment</strong> and performs no validation. Going back is not an assertion that the stage being left is finished, so it must never be blocked by that stage's errors — the user may go back <em>because</em> the current stage cannot be completed as it stands.</li>
+      <li><strong>Entered values survive every transition.</strong> Leaving a stage, returning to it, and passing over it again all leave its values exactly as the user typed them, including values a stage's own controls have unmounted.</li>
+      <li><strong>Only an actual dependency invalidates a later value.</strong> Changing an earlier answer invalidates a later one when the later one was derived from or constrained by it — and nothing else. Wholesale clearing of everything downstream of an edit teaches users not to correct their mistakes.</li>
+      <li><strong>Stage applicability is a rule over values.</strong> A stage that applies only above a threshold stops being a stage below it: it leaves the progression, its values leave the payload, and neither is discarded. Applicability is never derived from what has been rendered or from how far the user got.</li>
+      <li><strong>Nothing commits before the final action.</strong> No stage transition writes to a system of record, and no stage transition is irreversible on the user's behalf. If a stage genuinely must commit as it is left, that is a sequence of separate submissions, not one staged input.</li>
+      <li><strong>Completion is single-shot,</strong> guarded at the state transition rather than by a disabled button, and operates on the whole coherent value set as it stands at activation.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="mrail"><span>01 Charge</span><span class="on">02 Line item</span><span>03 Sourcing</span><span>04 Review</span></div><div class="mf"><span class="ml">Part number</span><div class="mi bad"></div><span class="me">Enter the part number you are requisitioning.</span></div><div style="display:flex;gap:6px"><div class="mb" style="background:var(--surface-sunken);color:var(--text-primary)">Back</div><div class="mb">Continue to Sourcing</div></div></div><p class="why">The gate holds the user on stage 2 and names the value that blocks it. Back stays available — the reason to go back may be that stage 1 was wrong.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="mrail"><span>01 Charge</span><span class="on">02 Line item</span><span>03 Sourcing</span><span>04 Review</span></div><div class="ma">Supplier and Receiving point are required.</div><div style="display:flex;gap:6px"><div class="mb off">Back</div><div class="mb off">Continue</div></div></div><p class="why">Stage 2 refuses to be left because stage 3 is empty, and Back is disabled by errors. The user is asked for answers they have not been shown and cannot retreat from them.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+  <div class="body">
+    <p>Four choices belong to the application of the pattern rather than to any component. Each is declared once for the whole task and changes the behavioral contract, so none may be left implicit.</p>
+    <table><thead><tr><th>Property</th><th>Options</th><th>What it decides</th></tr></thead><tbody>
+      <tr><td class="k">backtracking</td><td><code>free</code> · <code>one-step</code></td><td>Whether the user may jump directly to any earlier stage or only step back one at a time. <code>free</code> unless an earlier stage's values are genuinely expensive to re-derive. Neither option ever validates on the way back.</td></tr>
+      <tr><td class="k">gating</td><td><code>blocking</code> · <code>advisory</code></td><td>Whether stage-local problems refuse forward movement or merely mark the stage and let the user proceed. <code>advisory</code> is legitimate only when the final stage reports every outstanding problem and routes back to it; without that, advisory gating is a flow with no gate at all.</td></tr>
+      <tr><td class="k">preservation</td><td><code>draft</code> · <code>session</code> · <code>none</code></td><td>How long entered values outlive the interaction — persisted for return, held for the session, or discarded on exit. This is what "come back to it later" means, and the user is told which applies (§14).</td></tr>
+      <tr><td class="k">cancelPolicy</td><td><code>keep-draft</code> · <code>discard</code></td><td>What cancellation does to the value set. <code>discard</code> requires the label to say so before it happens; an unlabelled discard is data loss the user authorised without knowing.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <p>Two state models, kept separate: one per stage, and one for the task as a whole. A stage's state is not the aggregate of its fields' states, and the task's state is not the aggregate of its stages'.</p>
+    <table><thead><tr><th>Stage state</th><th>What is true</th><th>Blocks forward movement</th></tr></thead><tbody>
+      <tr><td class="k">not applicable</td><td>A stage-level condition over current values is false. Out of the progression and out of the payload, its values held but inert.</td><td>Never — it is not in the sequence</td></tr>
+      <tr><td class="k">not started</td><td>Applicable, never current, nothing entered. Not invalid: the user has not been asked.</td><td>Never</td></tr>
+      <tr><td class="k">active</td><td>Current. Exactly one stage holds this at a time.</td><td>—</td></tr>
+      <tr><td class="k">active · invalid</td><td>Current, and a stage-local rule is unsatisfied and has been surfaced.</td><td>Yes, under <code>blocking</code> gating</td></tr>
+      <tr><td class="k">complete</td><td>Every stage-local rule is satisfied. Says nothing about cross-stage rules, which no single stage can decide.</td><td>No</td></tr>
+    </tbody></table>
+    <table><thead><tr><th>Task state</th><th>What is true</th></tr></thead><tbody>
+      <tr><td class="k">not started</td><td>Entered nothing. Distinct from "on the first stage with values" — it is what a cancel policy of <code>discard</code> returns to.</td></tr>
+      <tr><td class="k">in progress</td><td>Some stage is current. The only state in which values change.</td></tr>
+      <tr><td class="k">completion pending</td><td>The final action is in flight. No stage is editable, movement is suspended, and a second activation is refused.</td></tr>
+      <tr><td class="k">completion failed</td><td>The operation failed. Every stage's values are intact, the failure is attributed, and the task is back in progress the moment the user moves or edits.</td></tr>
+      <tr><td class="k">completed</td><td>The operation succeeded. The staged set is now a record: stages are readable and no longer editable.</td></tr>
+    </tbody></table>
+    <p class="warn"><strong>Stage state and field state are separate stores.</strong> A stage is not "done" because its inputs were mounted, and a field does not become empty because its stage is not on screen. Collapsing the two produces the classic staged-input failure: a stage that reports complete while holding the values of a stage the user never reached.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§09</span><h2>Validation</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Every rule is classified before it is written:</strong> stage-local — decidable from the values of one stage — or cross-stage, needing values from two. The classification decides where the rule runs, when it may fire, and which stage it is reported on.</li>
+      <li><strong>Stage-local rules gate that stage's forward transition.</strong> They fire on the attempt to leave, and on the field once the user has touched it; never on a field the user has not reached.</li>
+      <li><strong>Cross-stage rules may not gate a stage that cannot see them.</strong> A lead-time rule needing the supplier cannot block the stage that holds the date, because at that point the supplier is unknown. They are evaluated at the final stage and reported there.</li>
+      <li><strong>A cross-stage problem names the stage that can fix it</strong> and offers movement to it. A problem the user cannot navigate to is a dead end with a message attached.</li>
+      <li><strong>Changing an earlier answer re-evaluates every rule that reads it</strong> — including rules on stages already marked complete. A stage's completeness is a conclusion, not a receipt; it is re-derived, never remembered.</li>
+      <li><strong>Invalidation is surgical.</strong> When an earlier change makes a later value wrong, that value is marked and the user told what to check. Values with no dependency on the change are untouched, and a marked value is never silently cleared.</li>
+      <li><strong>Leaving a stage validates nothing else.</strong> The final action revalidates the whole set — nothing is trusted because it passed a gate earlier.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="mrail"><span class="on">01 Charge</span><span>02 Line item</span><span>03 Sourcing</span><span>04 Review</span></div><div class="mf"><span class="ml">Needed on line by</span><div class="mi">2026-09-14</div><span class="mh">Supplier lead time is checked on the last stage, once a supplier is chosen.</span></div><div class="mb">Continue to Line item</div></div><p class="why">The date passes its stage-local rule and the stage is left. The lead-time rule needs stage 3, says so, and waits.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="mrail"><span class="on">01 Charge</span><span>02 Line item</span><span>03 Sourcing</span><span>04 Review</span></div><div class="mf"><span class="ml">Needed on line by</span><div class="mi bad">2026-09-14</div><span class="me">Too early for the supplier's lead time.</span></div><div class="mb off">Continue</div></div><p class="why">Stage 1 is gated on a supplier the user is asked for on stage 3. The error is unresolvable at the point it is raised, so the flow is unfinishable.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Error handling</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Failure of the final operation destroys nothing.</strong> Every stage keeps every value, the stage the user was on stays current, and no stage reverts to not-started. The work of a long task must never be the price of one timeout.</li>
+      <li><strong>Failure is attributed or it is not.</strong> Where the operation names input as the cause, the pattern resolves that to a stage and a field, marks it, and offers movement to that stage. Where it does not, the failure is reported at the final stage and no stage is marked — inventing a culprit sends the user to edit a value that was never wrong.</li>
+      <li><strong>Operational failure is never worded as invalid input</strong> (§09 versus §10). "Purchasing did not answer" and "that part is not in the item master" are different events with different remedies, and the second is the only one that returns the user to a stage.</li>
+      <li><strong>Retry re-reads the current value set,</strong> including anything corrected since the failure. A retry that replays the snapshot captured at the first attempt silently discards the fix the user just made.</li>
+      <li><strong>An unknown outcome is stated as unknown.</strong> Where the operation may or may not have completed, the pattern says so, says how to check, and warns that a blind retry may duplicate — it never presents an unconfirmed outcome as either success or failure.</li>
+      <li><strong>Interruption is not failure.</strong> Navigating away, a reload, or a dropped session is governed by the <code>preservation</code> policy (§05); a resumed task re-evaluates applicability and re-derives every stage's state rather than restoring stale stage flags.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma"><strong>Part BRK-4820-A is not in the item master.</strong><br>Every stage was kept. Go back to Line item, correct the part number, and release again.</div><div class="mrail"><span>01 Charge</span><span class="bad">02 Line item</span><span>03 Sourcing</span><span class="on">04 Review</span></div></div><p class="why">The failure is attributed to the stage that owns the value, the stage is marked, and the route back is offered. Nothing else is disturbed.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma">Something went wrong. Please start again.</div><div class="mrail"><span class="on">01 Charge</span><span>02 Line item</span><span>03 Sourcing</span><span>04 Review</span></div></div><p class="why">Four stages of work discarded by a failure the user did not cause, with no attribution and nothing to correct. The next attempt is a re-type, not a retry.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The current stage is programmatically identifiable,</strong> not merely styled. Position in the applicable sequence, the stage's name, and its state are available to assistive technology — a rail that carries movement marks its current item as such.</li>
+      <li><strong>Focus moves once per stage change, predictably,</strong> to the new stage's heading or its first control. Never left on the button that was pressed — which is now labelled for a different transition — and never dropped to the document.</li>
+      <li><strong>A refused forward movement moves focus to the first blocking value,</strong> because the refusal is the answer to the user's action and the field is where the answer must be acted on. The other problems stay reported; only focus is prioritised.</li>
+      <li><strong>The change of stage is announced,</strong> once, politely, naming the stage and the position. The announcement says what is now being asked, not what the interface did.</li>
+      <li><strong>Validation is associated with the stage and the fields needing attention</strong> — the gate message on the stage group, each problem on its own field. A stage-level message that lists field names instead of pointing at the fields leaves a screen-reader user counting.</li>
+      <li><strong>Progress is meaningful or absent.</strong> A determinate indicator reports position in the applicable stage set; it may not animate as reassurance, may not report 100% before completion succeeds, and may never be the only statement of where the user is.</li>
+      <li><strong>Completion pending is announced and bounded.</strong> The wait is stated, movement is visibly suspended, and the announcement does not claim the task is done.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Every stage heading names the task of that stage</strong> in the domain's words — "Sourcing &amp; delivery", not "Step 3". The number is position; the heading is what the user is being asked.</li>
+      <li><strong>Forward, backward, cancel and final actions are lexically distinct.</strong> "Continue to Sourcing" and "Release requisition" cannot be the same word: the user must be able to tell the transition that costs nothing from the one that commits.</li>
+      <li><strong>The final action names the commitment,</strong> and says on the final stage that nothing has been sent yet. A "Submit" whose consequence is unstated is activated by users who thought they were still drafting.</li>
+      <li><strong>Progress wording never implies completion before commitment succeeds.</strong> "Reviewing stage 4 of 4 — not yet released", not "Complete". A bar at 100% beside an uncommitted task is a false receipt.</li>
+      <li><strong>Cancellation states its policy in its label</strong> — "Save draft and leave" or "Cancel and discard" — because the two are the same gesture with opposite outcomes.</li>
+      <li><strong>A gate message says what to do, not that a rule exists.</strong> "This stage cannot be left yet. 2 values below need attention" beats "Invalid stage".</li>
+      <li><strong>Where a stage applies conditionally, the condition is stated in the stage itself</strong> — "applies because the line comes to ₹2,50,000, at or over the ₹2,00,000 threshold" — so a user who sees a stage appear, or who never sees it, can account for it either way.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="mtrack"><i style="width:75%"></i></div><span class="mh">Reviewing stage 4 of 4 — not yet released</span><div style="display:flex;gap:6px"><div class="mb" style="background:var(--surface-sunken);color:var(--text-primary)">Save draft and leave</div><div class="mb">Release requisition</div></div></div><p class="why">Position without a claim of completion, and two actions whose consequences are readable without pressing either.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="mtrack"><i style="width:100%"></i></div><span class="mh">Complete</span><div style="display:flex;gap:6px"><div class="mb" style="background:var(--surface-sunken);color:var(--text-primary)">Cancel</div><div class="mb">Next</div></div></div><p class="why">"Complete" before anything was sent, and "Next" as the label on the irreversible act. Both mis-state what the button does.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+      <tr><td class="k">Earlier change invalidates a later value</td><td>Only the dependent value is marked, with a statement of what to check. Independent later values are untouched, and nothing already entered is cleared to force a re-answer.</td></tr>
+      <tr><td class="k">Earlier change makes a later stage inapplicable</td><td>The stage leaves the sequence and its values leave the payload without being discarded. If it was the current stage, the next applicable stage becomes current and the reason is announced.</td></tr>
+      <tr><td class="k">Earlier change makes a new stage applicable</td><td>The stage enters the sequence at its defined position, the progression re-reports its length, and the user is told a stage now applies rather than discovering it at the end.</td></tr>
+      <tr><td class="k">Jump to a completed stage, then forward again</td><td>Stage states are re-derived from current values on arrival. A stage passed earlier may now be invalid, and must present as invalid rather than as previously approved.</td></tr>
+      <tr><td class="k">Final stage valid, operation fails</td><td>Task state is <code>completion failed</code>, every stage keeps its values, and the user stays on the final stage unless the failure is attributed to an earlier one.</td></tr>
+      <tr><td class="k">Double activation of the final action</td><td>The second activation is refused at the state transition. One operation, one attempt in flight, regardless of how the control was activated.</td></tr>
+      <tr><td class="k">Interruption and return</td><td>Under <code>draft</code> or <code>session</code> preservation the value model is restored, applicability re-evaluated, stage states re-derived, and the user placed on the first incomplete stage. Restored stage flags are never trusted.</td></tr>
+      <tr><td class="k">Deep link into a later stage</td><td>Permitted only if every stage before it is complete under current values; otherwise the user lands on the first incomplete stage and is told why.</td></tr>
+      <tr><td class="k">All applicable stages already complete on entry</td><td>Entry is at the final stage. The task is still not complete: it has been reviewed, not committed.</td></tr>
+      <tr><td class="k">Cross-stage rule broken by a backward edit</td><td>Reported when the user next reaches the final stage, on the stage that can fix it — not raised as an error on the stage they are currently editing.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>One value model for the whole task, held above every stage.</strong> Values keyed by field, never nested per stage and never held inside the stage's components — a value that lives where the inputs live is a value the next transition deletes.</li>
+      <li><strong>Stage state is derived, not stored.</strong> Keep the current stage id, which stages have been gated, and which fields have been touched; derive applicability, validity and completeness from values on every render. Stored "stepComplete" flags are the source of stages that report complete after their values were edited away.</li>
+      <li><strong>Applicability is one pure function of the value model,</strong> returning the applicable stage list in order. Movement resolves against that list — never against a fixed index into the full list, which is how a user lands on a stage that no longer applies.</li>
+      <li><strong>Rules carry their classification and their owning stage</strong> as data: stage-local rules keyed by field, cross-stage rules each naming the stage that can fix them. Then the gate, the final-stage report and the failure attribution all read one table.</li>
+      <li><strong>Transitions render, they do not reconstruct.</strong> If a stage's fields are unmounted between visits, they must remount from the value model; nothing may re-initialise from defaults on mount.</li>
+      <li><strong>Guard completion at the state transition,</strong> not on the button. Enter <code>pending</code> or return; disabling the control is presentation and loses to a keyboard repeat or a double tap.</li>
+      <li><strong>Sequence on a forward attempt:</strong> evaluate the current stage → refuse and focus the first problem, or re-evaluate applicability → choose the next applicable stage → render → announce → move focus. Announcing before applicability settles names a stage the user is not going to.</li>
+      <li><strong>Keep the failure's field mark separate from validation state.</strong> An attributed operational failure marks a field that passed every rule; storing it as a validation error means the mark disappears the moment the field is re-derived as valid.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted"><strong>Omitted sections and why.</strong>
+§06 Variants — free versus one-step backtracking, blocking versus advisory gating, and the preservation policies are declared configuration within one contract (§05); a flow whose stages route to different destinations is branching navigation, not a second form of this pattern.
+§07 Sizes — no coordinated sizing exists at the pattern level.
+§11 Input &amp; interaction modalities — movement is ordinary buttons; the cross-component responsibility the pattern adds is focus placement on stage change, stated in §12 as a focus contract rather than a modality one.
+§13 Motion — a stage transition may be animated for continuity, but no motion carries pattern-owned meaning, and a transition must never delay the announcement or the focus move of §12.
+§15 Responsive — the stages, their order and their gates do not change with available space; only the layout inside a stage and the presentation of the progression do.
+§16 Internationalization — ordering follows the document's reading direction and locale-sensitive parsing belongs to the capturing controls; the pattern adds no direction-sensitive interaction beyond that.
+§17 Performance — only the final operation waits, and its waiting contract — pending announced, movement suspended, single-shot — is stated in §04, §08 and §12; a stage that waits on a remote check inherits <a href="ValidatedSubmission.spec.html">validated submission</a> §17.
+§19 Anti-patterns — the refusals in §01, the gating and commitment rules in §04, and the unresolvable-error rule in §09 cover the recurring misuses.
+§21 Developer notes — the contract in §04, §05, §08 and §20 is the whole contract; there is no separate API surface.</p>
+</div></body></html>

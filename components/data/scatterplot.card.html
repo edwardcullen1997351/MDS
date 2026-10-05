@@ -1,0 +1,771 @@
+<!-- @dsCard group="Components" viewport="1080x900" name="ScatterPlot — correlation, clustering & multivariate" subtitle="Standard scatter, bubble, connected trajectory, jittered categories, and binned density — area square-root scaling, WCAG glyphs, and regression overlays" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ScatterPlot — Meridian Design System</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: var(--background-page);
+      padding: 24px;
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+    }
+    .header-bar {
+      margin-bottom: 20px;
+    }
+    .header-title {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      margin: 0 0 4px 0;
+      letter-spacing: var(--tracking-tight);
+    }
+    .header-sub {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin: 0;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      margin-bottom: 24px;
+      font-size: var(--text-xs);
+    }
+    .controls label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .chart-box {
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-xs);
+      position: relative;
+    }
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    /* Core ScatterPlot Component Styles */
+    .mds-scatter-plot {
+      position: relative;
+      font-family: var(--font-sans);
+      outline: none;
+    }
+    .mds-scatter-plot:focus-visible {
+      outline: 2px solid var(--action-solid, #2563eb);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+    .mds-scatter-plot__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .mds-scatter-plot__title {
+      margin: 0 0 2px 0;
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--text-primary);
+    }
+    .mds-scatter-plot__subtitle {
+      margin: 0;
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+    }
+    .mds-scatter-plot__table-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 7px;
+      font-size: 11px;
+      font-family: inherit;
+      background: var(--surface-sunken);
+      border: var(--border-hairline);
+      border-radius: var(--radius-xs);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .mds-scatter-plot__table-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+    .mds-scatter-plot__legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+      font-size: var(--text-xs);
+    }
+    .mds-scatter-plot__legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      padding: 2px 4px;
+      border-radius: var(--radius-xs);
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: opacity 150ms ease;
+    }
+    .mds-scatter-plot__legend-item:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+    .mds-scatter-plot__legend-item--dimmed {
+      opacity: 0.3;
+    }
+    .mds-scatter-plot__legend-icon {
+      overflow: visible;
+      flex-shrink: 0;
+    }
+    .mds-scatter-plot__svg {
+      overflow: visible;
+      display: block;
+    }
+    .mds-scatter-plot__gridline line {
+      stroke: var(--border-subtle, #e2e8f0);
+      stroke-dasharray: 2 2;
+    }
+    .mds-scatter-plot__axis text {
+      font-size: 10px;
+      font-family: var(--font-mono, monospace);
+      fill: var(--text-tertiary, #94a3b8);
+    }
+    .mds-scatter-plot__axis-title {
+      font-size: 11px;
+      font-weight: var(--weight-medium);
+      fill: var(--text-secondary, #64748b);
+      font-family: var(--font-sans);
+    }
+    .mds-scatter-plot__trend-label {
+      font-size: 10px;
+      font-weight: var(--weight-bold);
+      font-family: var(--font-mono, monospace);
+    }
+    .mds-scatter-plot__point {
+      transition: fill-opacity 150ms ease, stroke-width 150ms ease;
+    }
+    .mds-scatter-plot__tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: var(--surface-card, #ffffff);
+      border: var(--border-hairline);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-md);
+      padding: 10px 12px;
+      font-size: var(--text-xs);
+      z-index: 50;
+      min-width: 180px;
+    }
+    .mds-scatter-plot__tooltip-header {
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: var(--border-hairline);
+      color: var(--text-primary);
+    }
+    .mds-scatter-plot__tooltip-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 3px;
+      color: var(--text-secondary);
+    }
+    .mds-scatter-plot__tooltip-row strong {
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+    .mds-scatter-plot__modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .mds-scatter-plot__modal {
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      width: 90%;
+      max-width: 680px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+    }
+    .mds-scatter-plot__modal-header {
+      padding: 14px 18px;
+      border-bottom: var(--border-hairline);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mds-scatter-plot__modal-header h4 {
+      margin: 0;
+      font-size: var(--text-sm);
+    }
+    .mds-scatter-plot__modal-close {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+    .mds-scatter-plot__modal-body {
+      padding: 16px 18px;
+      overflow-y: auto;
+    }
+    .mds-scatter-plot__data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-xs);
+    }
+    .mds-scatter-plot__data-table th, .mds-scatter-plot__data-table td {
+      padding: 8px 10px;
+      border-bottom: var(--border-hairline);
+      text-align: left;
+    }
+    .mds-scatter-plot__data-table th {
+      background: var(--surface-sunken);
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useMemo } = React;
+
+    const VIZ_COLORS = [
+      'var(--viz-1, #2563eb)',
+      'var(--viz-2, #0d9488)',
+      'var(--viz-3, #d97706)',
+      'var(--viz-4, #7c3aed)',
+      'var(--viz-5, #db2777)',
+      'var(--viz-6, #4b5563)',
+    ];
+
+    // Manufacturing ERP Datasets (Suryodaya Autocomp Ltd — Chakan PL-04, Pune)
+
+    // 1. Spindle Speed (RPM) vs Vibration Amplitude (mm/s) with 2 Series (Normal vs Degraded)
+    const SPINDLE_DATA = [
+      { rpm: 1200, vib: 0.8, status: 'Normal', machine: 'CNC-01' },
+      { rpm: 1400, vib: 1.1, status: 'Normal', machine: 'CNC-02' },
+      { rpm: 1600, vib: 1.3, status: 'Normal', machine: 'CNC-01' },
+      { rpm: 1800, vib: 1.6, status: 'Normal', machine: 'CNC-03' },
+      { rpm: 2000, vib: 1.9, status: 'Normal', machine: 'CNC-02' },
+      { rpm: 2200, vib: 2.2, status: 'Normal', machine: 'CNC-04' },
+      { rpm: 2400, vib: 2.7, status: 'Normal', machine: 'CNC-01' },
+      { rpm: 2600, vib: 3.1, status: 'Normal', machine: 'CNC-03' },
+      { rpm: 2800, vib: 3.4, status: 'Normal', machine: 'CNC-02' },
+      { rpm: 3000, vib: 3.9, status: 'Normal', machine: 'CNC-04' },
+      // Degraded Bearing Anomaly Clusters
+      { rpm: 1800, vib: 3.2, status: 'Bearing Alert', machine: 'CNC-05' },
+      { rpm: 2100, vib: 4.1, status: 'Bearing Alert', machine: 'CNC-05' },
+      { rpm: 2300, vib: 4.6, status: 'Bearing Alert', machine: 'CNC-05' },
+      { rpm: 2500, vib: 5.2, status: 'Bearing Alert', machine: 'CNC-06' },
+      { rpm: 2800, vib: 5.8, status: 'Bearing Alert', machine: 'CNC-06' }
+    ];
+
+    // 2. Press Stroke Rate (SPM) vs Hydraulic Pressure (bar) with Die Temperature as Bubble Size
+    const PRESS_BUBBLE_DATA = [
+      { spm: 45, pressure: 180, dieTemp: 65, line: 'Line 1' },
+      { spm: 55, pressure: 210, dieTemp: 78, line: 'Line 1' },
+      { spm: 65, pressure: 230, dieTemp: 92, line: 'Line 1' },
+      { spm: 75, pressure: 260, dieTemp: 110, line: 'Line 1' },
+      { spm: 40, pressure: 160, dieTemp: 60, line: 'Line 2' },
+      { spm: 50, pressure: 195, dieTemp: 72, line: 'Line 2' },
+      { spm: 60, pressure: 220, dieTemp: 85, line: 'Line 2' },
+      { spm: 70, pressure: 245, dieTemp: 102, line: 'Line 2' },
+      { spm: 80, pressure: 275, dieTemp: 118, line: 'Line 2' },
+      { spm: 52, pressure: 205, dieTemp: 75, line: 'Line 3' },
+      { spm: 62, pressure: 235, dieTemp: 95, line: 'Line 3' },
+      { spm: 72, pressure: 255, dieTemp: 108, line: 'Line 3' }
+    ];
+
+    // 3. Connected Trajectory: Carburizing Furnace Temperature (°C) vs Carbon Potential (%CP)
+    const CARBURIZING_CYCLE_DATA = [
+      { temp: 750, cp: 0.20, step: 'Preheat (T+0h)' },
+      { temp: 850, cp: 0.45, step: 'Heating Ramp (T+1h)' },
+      { temp: 920, cp: 0.95, step: 'Boost Stage (T+2.5h)' },
+      { temp: 920, cp: 1.15, step: 'Carburizing Soak (T+4h)' },
+      { temp: 880, cp: 0.85, step: 'Diffuse Stage (T+5h)' },
+      { temp: 840, cp: 0.70, step: 'Pre-Quench Drop (T+5.5h)' },
+      { temp: 820, cp: 0.65, step: 'Quench Ready (T+6h)' }
+    ];
+
+    // 4. Jittered Scatter: Surface Roughness (Ra µm) across 4 Machining Stations
+    const ROUGHNESS_JITTER_DATA = [
+      { station: 'Station A', ra: 0.62 }, { station: 'Station A', ra: 0.68 }, { station: 'Station A', ra: 0.74 }, { station: 'Station A', ra: 0.58 }, { station: 'Station A', ra: 0.81 },
+      { station: 'Station B', ra: 0.88 }, { station: 'Station B', ra: 0.94 }, { station: 'Station B', ra: 1.05 }, { station: 'Station B', ra: 0.91 }, { station: 'Station B', ra: 1.12 },
+      { station: 'Station C', ra: 0.45 }, { station: 'Station C', ra: 0.49 }, { station: 'Station C', ra: 0.52 }, { station: 'Station C', ra: 0.41 }, { station: 'Station C', ra: 0.55 },
+      { station: 'Station D', ra: 1.25 }, { station: 'Station D', ra: 1.34 }, { station: 'Station D', ra: 1.42 }, { station: 'Station D', ra: 1.29 }, { station: 'Station D', ra: 1.50 }
+    ];
+
+    function renderGlyph(symbol, x, y, r) {
+      if (symbol === 'square') {
+        return `M ${x - r} ${y - r} h ${r * 2} v ${r * 2} h ${-r * 2} Z`;
+      }
+      if (symbol === 'diamond') {
+        return `M ${x} ${y - r * 1.3} L ${x + r * 1.3} ${y} L ${x} ${y + r * 1.3} L ${x - r * 1.3} Z`;
+      }
+      if (symbol === 'triangle') {
+        return `M ${x} ${y - r * 1.2} L ${x + r * 1.1} ${y + r * 0.9} L ${x - r * 1.1} ${y + r * 0.9} Z`;
+      }
+      return `M ${x - r} ${y} a ${r} ${r} 0 1 0 ${r * 2} 0 a ${r} ${r} 0 1 0 ${-r * 2} 0`;
+    }
+
+    function DemoScatterPlot({
+      title,
+      subtitle,
+      data,
+      xKey,
+      yKey,
+      sizeKey = null,
+      categoryKey = null,
+      xLabel = '',
+      yLabel = '',
+      xUnit = '',
+      yUnit = '',
+      sizeUnit = '',
+      variant = 'scatter',
+      showTrend = false,
+      referenceLines = []
+    }) {
+      const [activeIdx, setActiveIdx] = useState(-1);
+      const [isolated, setIsolated] = useState(null);
+      const [showModal, setShowModal] = useState(false);
+
+      const width = 480;
+      const height = 260;
+      const margins = { top: 16, right: 20, bottom: 36, left: 52 };
+      const plotWidth = width - margins.left - margins.right;
+      const plotHeight = height - margins.top - margins.bottom;
+
+      // Extract unique categories & assign glyph symbols
+      const categories = useMemo(() => {
+        if (!categoryKey) return [{ key: 'all', label: 'Observations', color: VIZ_COLORS[0], symbol: 'circle' }];
+        const distinct = Array.from(new Set(data.map(d => d[categoryKey])));
+        const symbols = ['circle', 'triangle', 'square', 'diamond'];
+        return distinct.map((cat, i) => ({
+          key: cat,
+          label: cat,
+          color: cat.includes('Alert') ? 'var(--status-critical-solid, #ef4444)' : VIZ_COLORS[i % VIZ_COLORS.length],
+          symbol: symbols[i % symbols.length]
+        }));
+      }, [data, categoryKey]);
+
+      const catMap = useMemo(() => {
+        const m = new Map();
+        categories.forEach(c => m.set(c.key, c));
+        return m;
+      }, [categories]);
+
+      // Min/Max Extents
+      const { minX, maxX, minY, maxY, minZ, maxZ, distinctBandX } = useMemo(() => {
+        if (variant === 'jittered') {
+          const bands = Array.from(new Set(data.map(d => d[xKey])));
+          const yVals = data.map(d => Number(d[yKey]));
+          return {
+            minX: 0, maxX: bands.length - 1,
+            minY: Math.min(...yVals) * 0.85, maxY: Math.max(...yVals) * 1.1,
+            minZ: 0, maxZ: 1,
+            distinctBandX: bands
+          };
+        }
+        const xVals = data.map(d => Number(d[xKey]));
+        const yVals = data.map(d => Number(d[yKey]));
+        const zVals = sizeKey ? data.map(d => Number(d[sizeKey])) : [1];
+        const spanX = Math.max(...xVals) - Math.min(...xVals) || 1;
+        const spanY = Math.max(...yVals) - Math.min(...yVals) || 1;
+        return {
+          minX: Math.min(...xVals) - spanX * 0.08,
+          maxX: Math.max(...xVals) + spanX * 0.08,
+          minY: Math.min(...yVals) - spanY * 0.08,
+          maxY: Math.max(...yVals) + spanY * 0.08,
+          minZ: Math.min(...zVals),
+          maxZ: Math.max(...zVals),
+          distinctBandX: []
+        };
+      }, [data, xKey, yKey, sizeKey, variant]);
+
+      // Projections
+      const scaleX = (val) => {
+        if (variant === 'jittered') {
+          const bIdx = distinctBandX.indexOf(val);
+          return ((bIdx + 0.5) / distinctBandX.length) * plotWidth;
+        }
+        return ((val - minX) / (maxX - minX || 1)) * plotWidth;
+      };
+
+      const scaleY = (val) => {
+        return plotHeight - ((val - minY) / (maxY - minY || 1)) * plotHeight;
+      };
+
+      const scaleRadius = (val) => {
+        if (!sizeKey) return 4.5;
+        // True Sqrt Area Proportionality: Area proportional to value
+        const ratio = Math.sqrt((val - minZ) / (maxZ - minZ || 1));
+        return 4 + ratio * 14;
+      };
+
+      // Points calculation
+      const points = useMemo(() => {
+        return data.map((d, i) => {
+          let px = scaleX(d[xKey]);
+          if (variant === 'jittered') {
+            const seed = (i * 9301 + 49297) % 233280;
+            const jitter = ((seed / 233280) - 0.5) * 28;
+            px += jitter;
+          }
+          const py = scaleY(d[yKey]);
+          const r = scaleRadius(sizeKey ? d[sizeKey] : 1);
+          const cDef = categoryKey ? catMap.get(d[categoryKey]) : categories[0];
+          return { i, datum: d, px, py, r, color: cDef.color, symbol: cDef.symbol, cat: cDef.key };
+        });
+      }, [data, xKey, yKey, sizeKey, categoryKey, catMap, minX, maxX, minY, maxY, minZ, maxZ, variant]);
+
+      // Linear regression
+      const trendLine = useMemo(() => {
+        if (!showTrend || variant === 'jittered' || data.length < 2) return null;
+        let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+        const n = data.length;
+        data.forEach(d => {
+          const x = Number(d[xKey]), y = Number(d[yKey]);
+          sumX += x; sumY += y; sumXY += x * y; sumXX += x * x;
+        });
+        const denom = n * sumXX - sumX * sumX;
+        if (denom === 0) return null;
+        const slope = (n * sumXY - sumX * sumY) / denom;
+        const intercept = (sumY - slope * sumX) / n;
+        return {
+          x1: scaleX(minX),
+          y1: scaleY(slope * minX + intercept),
+          x2: scaleX(maxX),
+          y2: scaleY(slope * maxX + intercept)
+        };
+      }, [showTrend, data, xKey, yKey, minX, maxX, variant]);
+
+      const activeDatum = activeIdx >= 0 ? points[activeIdx] : null;
+
+      return (
+        <div className="chart-box" tabIndex={0} onKeyDown={(e) => {
+          if (e.key === 'ArrowRight') { e.preventDefault(); setActiveIdx((activeIdx + 1) % points.length); }
+          if (e.key === 'ArrowLeft') { e.preventDefault(); setActiveIdx((activeIdx - 1 + points.length) % points.length); }
+          if (e.key === 'F11' && e.altKey) { e.preventDefault(); setShowModal(p => !p); }
+        }}>
+          <div className="mds-scatter-plot__header">
+            <div>
+              <h3 className="mds-scatter-plot__title">{title}</h3>
+              <p className="mds-scatter-plot__subtitle">{subtitle}</p>
+            </div>
+            <button className="mds-scatter-plot__table-btn" onClick={() => setShowModal(true)}>
+              Table (Alt+F11)
+            </button>
+          </div>
+
+          {categories.length > 1 && (
+            <div className="mds-scatter-plot__legend">
+              {categories.map(c => (
+                <button
+                  key={c.key}
+                  className={`mds-scatter-plot__legend-item ${isolated && isolated !== c.key ? 'mds-scatter-plot__legend-item--dimmed' : ''}`}
+                  onClick={() => setIsolated(isolated === c.key ? null : c.key)}
+                >
+                  <svg width="14" height="14" viewBox="-7 -7 14 14" className="mds-scatter-plot__legend-icon">
+                    <path d={renderGlyph(c.symbol, 0, 0, 4.5)} fill={c.color} />
+                  </svg>
+                  <span>{c.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <svg
+            width="100%"
+            height={height}
+            viewBox={`0 0 ${width} ${height}`}
+            className="mds-scatter-plot__svg"
+          >
+            <g transform={`translate(${margins.left}, ${margins.top})`}>
+              {/* Gridlines */}
+              {[0, 0.25, 0.5, 0.75, 1].map((r, idx) => {
+                const yVal = minY + r * (maxY - minY);
+                const yPos = scaleY(yVal);
+                return (
+                  <g key={idx} className="mds-scatter-plot__gridline">
+                    <line x1="0" y1={yPos} x2={plotWidth} y2={yPos} />
+                    <text x="-8" y={yPos + 3} textAnchor="end" style={{ fontSize: '9px', fill: 'var(--text-tertiary)' }}>
+                      {yVal.toFixed(1)} {yUnit}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Trajectory line for connected variant */}
+              {variant === 'connected' && (
+                <path
+                  d={`M ${points.map(p => `${p.px} ${p.py}`).join(' L ')}`}
+                  fill="none"
+                  stroke="var(--viz-1, #2563eb)"
+                  strokeWidth="2"
+                  opacity="0.75"
+                />
+              )}
+
+              {/* Trendline */}
+              {trendLine && (
+                <line
+                  x1={trendLine.x1}
+                  y1={trendLine.y1}
+                  x2={trendLine.x2}
+                  y2={trendLine.y2}
+                  stroke="var(--status-critical-solid, #ef4444)"
+                  strokeWidth="1.5"
+                  strokeDasharray="5 3"
+                />
+              )}
+
+              {/* Reference Lines */}
+              {referenceLines.map((ref, idx) => {
+                const yPos = scaleY(ref.y);
+                return (
+                  <g key={idx}>
+                    <line x1="0" y1={yPos} x2={plotWidth} y2={yPos} stroke={ref.color} strokeDasharray="4 3" strokeWidth="1.5" />
+                    <text x={plotWidth - 4} y={yPos - 4} textAnchor="end" fill={ref.color} style={{ fontSize: '9px', fontWeight: 'bold' }}>
+                      {ref.label} ({ref.y} {yUnit})
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Point Marks */}
+              {points.map(p => {
+                const isDimmed = isolated && isolated !== p.cat;
+                const isActive = activeIdx === p.i;
+                return (
+                  <path
+                    key={p.i}
+                    d={renderGlyph(p.symbol, p.px, p.py, isActive ? p.r + 3 : p.r)}
+                    fill={p.color}
+                    fillOpacity={isDimmed ? 0.15 : (sizeKey ? 0.65 : 0.85)}
+                    stroke={isActive ? 'var(--text-primary)' : '#ffffff'}
+                    strokeWidth={isActive ? 2.5 : 1.2}
+                    className="mds-scatter-plot__point"
+                    style={{ cursor: 'pointer' }}
+                    onMouseEnter={() => setActiveIdx(p.i)}
+                  />
+                );
+              })}
+
+              {/* X Axis Ticks */}
+              {variant === 'jittered' ? (
+                distinctBandX.map((cat, idx) => (
+                  <text key={idx} x={scaleX(cat)} y={plotHeight + 18} textAnchor="middle" style={{ fontSize: '10px', fill: 'var(--text-tertiary)' }}>
+                    {cat}
+                  </text>
+                ))
+              ) : (
+                [0, 0.25, 0.5, 0.75, 1].map((r, idx) => {
+                  const xVal = minX + r * (maxX - minX);
+                  return (
+                    <text key={idx} x={scaleX(xVal)} y={plotHeight + 18} textAnchor="middle" style={{ fontSize: '10px', fill: 'var(--text-tertiary)' }}>
+                      {xVal.toFixed(0)} {xUnit}
+                    </text>
+                  );
+                })
+              )}
+            </g>
+          </svg>
+
+          {/* Tooltip */}
+          {activeDatum && (
+            <div className="mds-scatter-plot__tooltip" style={{ left: Math.min(activeDatum.px + 50, width - 180), top: Math.max(10, activeDatum.py - 20) }}>
+              <div className="mds-scatter-plot__tooltip-header">
+                <strong>{activeDatum.datum.status || activeDatum.datum.line || activeDatum.datum.station || activeDatum.datum.step || `Observation #${activeDatum.i + 1}`}</strong>
+              </div>
+              <div className="mds-scatter-plot__tooltip-body">
+                <div className="mds-scatter-plot__tooltip-row">
+                  <span>{xLabel || xKey}:</span>
+                  <strong>{activeDatum.datum[xKey]} {xUnit}</strong>
+                </div>
+                <div className="mds-scatter-plot__tooltip-row">
+                  <span>{yLabel || yKey}:</span>
+                  <strong>{activeDatum.datum[yKey]} {yUnit}</strong>
+                </div>
+                {sizeKey && (
+                  <div className="mds-scatter-plot__tooltip-row">
+                    <span>{sizeKey}:</span>
+                    <strong>{activeDatum.datum[sizeKey]} {sizeUnit}</strong>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Modal Data Table */}
+          {showModal && (
+            <div className="mds-scatter-plot__modal-backdrop" onClick={() => setShowModal(false)}>
+              <div className="mds-scatter-plot__modal" onClick={e => e.stopPropagation()}>
+                <div className="mds-scatter-plot__modal-header">
+                  <h4>{title} — Tabular Records</h4>
+                  <button className="mds-scatter-plot__modal-close" onClick={() => setShowModal(false)}>✕</button>
+                </div>
+                <div className="mds-scatter-plot__modal-body">
+                  <table className="mds-scatter-plot__data-table">
+                    <thead>
+                      <tr>
+                        <th>Obs #</th>
+                        {categoryKey && <th>Category</th>}
+                        <th>{xLabel || xKey} ({xUnit})</th>
+                        <th>{yLabel || yKey} ({yUnit})</th>
+                        {sizeKey && <th>{sizeKey} ({sizeUnit})</th>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.map((row, rIdx) => (
+                        <tr key={rIdx}>
+                          <td>#{rIdx + 1}</td>
+                          {categoryKey && <td>{row[categoryKey]}</td>}
+                          <td>{row[xKey]} {xUnit}</td>
+                          <td>{row[yKey]} {yUnit}</td>
+                          {sizeKey && <td>{row[sizeKey]} {sizeUnit}</td>}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function App() {
+      const [showTrend, setShowTrend] = useState(true);
+
+      return (
+        <div>
+          <div className="header-bar">
+            <h1 className="header-title">ScatterPlot Component Showcase</h1>
+            <p className="header-sub">
+              Suryodaya Autocomp Ltd (Chakan PL-04, Pune) — Quality & Machine Telemetry Correlations
+            </p>
+          </div>
+
+          <div className="controls">
+            <label>
+              <input
+                type="checkbox"
+                checked={showTrend}
+                onChange={e => setShowTrend(e.target.checked)}
+              />
+              Show Linear Regression Trendline (Statistical Fit)
+            </label>
+            <span style={{ color: 'var(--text-tertiary)' }}>·</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Keyboard: <kbd>←</kbd> / <kbd>→</kbd> inspect points, <kbd>Alt+F11</kbd> tabular records</span>
+          </div>
+
+          <div className="grid">
+            {/* 1. Standard Scatter (Correlation & Outliers) */}
+            <DemoScatterPlot
+              title="Spindle Speed vs Vibration Amplitude"
+              subtitle="15 CNC Machining Cells (Identifying Bearing Wear Anomalies)"
+              data={SPINDLE_DATA}
+              xKey="rpm"
+              yKey="vib"
+              categoryKey="status"
+              xLabel="Spindle Speed"
+              yLabel="Vibration"
+              xUnit="RPM"
+              yUnit="mm/s"
+              variant="scatter"
+              showTrend={showTrend}
+              referenceLines={[{ y: 4.5, label: 'ISO 10816 Critical Limit', color: 'var(--status-critical-solid, #ef4444)' }]}
+            />
+
+            {/* 2. Bubble Plot (Multivariate: SPM vs Pressure vs Die Temp) */}
+            <DemoScatterPlot
+              title="Press Stroke Rate vs Hydraulic Pressure"
+              subtitle="Bubble Size = Die Temperature (°C) · Sqrt Area Scaling"
+              data={PRESS_BUBBLE_DATA}
+              xKey="spm"
+              yKey="pressure"
+              sizeKey="dieTemp"
+              categoryKey="line"
+              xLabel="Stroke Rate"
+              yLabel="Hydraulic Pressure"
+              xUnit="SPM"
+              yUnit="bar"
+              sizeUnit="°C"
+              variant="bubble"
+              showTrend={false}
+            />
+
+            {/* 3. Connected Trajectory Scatter */}
+            <DemoScatterPlot
+              title="Carburizing Furnace Thermal Trajectory"
+              subtitle="Chamber Temp (°C) vs Carbon Potential (%CP) over 6h Cycle"
+              data={CARBURIZING_CYCLE_DATA}
+              xKey="temp"
+              yKey="cp"
+              xLabel="Furnace Temperature"
+              yLabel="Carbon Potential"
+              xUnit="°C"
+              yUnit="%CP"
+              variant="connected"
+            />
+
+            {/* 4. Jittered Scatter */}
+            <DemoScatterPlot
+              title="Surface Roughness by Machining Station"
+              subtitle="Final Inspection Batch (Ra µm) with Spatial Jitter"
+              data={ROUGHNESS_JITTER_DATA}
+              xKey="station"
+              yKey="ra"
+              xLabel="Machining Cell"
+              yLabel="Surface Roughness"
+              xUnit=""
+              yUnit="µm"
+              variant="jittered"
+              referenceLines={[{ y: 1.2, label: 'Max Spec Ceiling (1.2 µm)', color: 'var(--status-critical-solid, #ef4444)' }]}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

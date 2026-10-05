@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Network Diagram · 14-Section Specification Standard</title>
+  <link rel="stylesheet" href="../../tokens/tokens.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+    }
+    body {
+      margin: 0;
+      padding: 40px 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .spec-container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .spec-header {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 24px;
+      margin-bottom: 36px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #a7f3d0;
+      margin-top: 8px;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      color: #0f172a;
+    }
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+    p, li {
+      font-size: 14px;
+      color: #334155;
+    }
+    ul, ol {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      background: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 12px;
+      margin-bottom: 24px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: #eff6ff;
+      padding: 14px 18px;
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+      font-size: 13px;
+      color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="spec-container">
+    <header class="spec-header">
+      <div class="badge">Meridian Design System · Data Visualization Specification</div>
+      <h1>Network Diagram Component Specification</h1>
+      <div style="font-size: 14px; color: var(--text-muted);">
+        Standard Specification Document for Relational Graphs, Connectivity & Topology Clusters
+      </div>
+      <div class="status-tag">
+        <span>●</span> status: frozen 9 Sep 2026 · 0 open items
+      </div>
+    </header>
+
+    <!-- SECTION 01: PURPOSE -->
+    <section>
+      <h2>§01 Purpose & Relational Topology Intent</h2>
+      <p>
+        The <code>NetworkDiagram</code> component visualizes arbitrary relational structures, connectivity patterns, clusters, and central hubs where relationships cannot be simplified to strict single-parent trees or sequential stages. It optimizes for structural discovery, community detection, and topological relationship exploration.
+      </p>
+      <ul>
+        <li><strong>Primary analytical questions:</strong> <em>"Which nodes act as central hubs?", "What clusters or communication meshes exist?", "Which entities are directly/indirectly connected to a selected node?"</em></li>
+        <li><strong>Contextual enterprise scenario:</strong> Industrial IoT sensor mesh connectivity, Tier-1 automotive supply chain networks, and cross-functional maintenance dependencies at <strong>Suryodaya Autocomp Ltd (Chakan plant PL-04, Pune)</strong>.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 02: DATA MODEL -->
+    <section>
+      <h2>§02 Data Model & Graph Topology</h2>
+      <p>
+        Data is structured as a general graph $G = (V, E)$ consisting of entity vertices (nodes) and relational edges (links):
+      </p>
+      <pre><code>interface NetworkNode {
+  id: string;              // Unique node ID
+  label: string;           // Display name (e.g. "MES Gateway")
+  category?: string;       // Categorical clustering group
+  size?: number;           // Degree weight or relative importance
+}
+
+interface NetworkLink {
+  source: string;          // Source node ID
+  target: string;          // Target node ID
+  weight?: number;         // Edge strength / bandwidth (> 0)
+  directed?: boolean;      // True for directed arrows
+  label?: string;          // Relationship description
+}</code></pre>
+    </section>
+
+    <!-- SECTION 03: VISUAL ENCODING -->
+    <section>
+      <h2>§03 Visual Encoding & Network Anatomy</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Visual Channel</th>
+            <th>Data Attribute</th>
+            <th>Design & Scaling Rule</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Node Position (X, Y)</strong></td>
+            <td>Topological Closeness</td>
+            <td>Positions computed via deterministic force-directed physics (repulsion + attraction) or circular ring. Fully draggable & stretchable.</td>
+          </tr>
+          <tr>
+            <td><strong>Node Size (Radius)</strong></td>
+            <td>Importance / Degree Centrality</td>
+            <td>Radius scales from 8px to 26px based on node degree and weight.</td>
+          </tr>
+          <tr>
+            <td><strong>Edge Stroke Width</strong></td>
+            <td>Relational Weight / Traffic</td>
+            <td>Scales from 1px to 6px proportional to <code>sqrt(weight)</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Arrowheads</strong></td>
+            <td>Directional Relationship</td>
+            <td>SVG marker arrowheads placed at target node boundary.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SECTION 04: COMPONENT COMPOSITION -->
+    <section>
+      <h2>§04 Component Composition & Layer Stacking</h2>
+      <ol>
+        <li><code>Layer 0 (Canvas)</code>: SVG background viewport with pan & zoom transform matrix and arrowhead marker definitions.</li>
+        <li><code>Layer 10 (Relational Edges)</code>: Connecting straight/curved link lines with weight-proportional strokes.</li>
+        <li><code>Layer 20 (Node Marks)</code>: Primary circular surfaces with category color fills and white border strokes.</li>
+        <li><code>Layer 25 (Geometric Symbols)</code>: Inner geometric shape glyphs (circle, square, diamond, triangle) for WCAG 1.4.1 non-color differentiation.</li>
+        <li><code>Layer 30 (Node Typography)</code>: Text labels with background stroke halos.</li>
+        <li><code>Layer 50 (Inspection Overlays)</code>: Floating tooltip portal and accessible relationship table modal (<kbd>Alt+F11</kbd>).</li>
+      </ol>
+    </section>
+
+    <!-- SECTION 05: PROPERTIES & PROPS -->
+    <section>
+      <h2>§05 Properties, Props & Configuration</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>nodes</code></td>
+            <td><code>NetworkNode[]</code></td>
+            <td><strong>Required</strong></td>
+            <td>Array of graph vertices with unique IDs and labels.</td>
+          </tr>
+          <tr>
+            <td><code>links</code></td>
+            <td><code>NetworkLink[]</code></td>
+            <td><strong>Required</strong></td>
+            <td>Array of relational edges between nodes.</td>
+          </tr>
+          <tr>
+            <td><code>draggableNodes</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Allows users to click and drag individual nodes to stretch and de-clutter clusters.</td>
+          </tr>
+          <tr>
+            <td><code>initialSpread</code></td>
+            <td><code>number</code></td>
+            <td><code>1.0</code></td>
+            <td>Global spacing/repulsion multiplier (0.6x - 2.2x) to untangle dense networks.</td>
+          </tr>
+          <tr>
+            <td><code>layout</code></td>
+            <td><code>'force' | 'circular'</code></td>
+            <td><code>'force'</code></td>
+            <td>Graph layout algorithm.</td>
+          </tr>
+          <tr>
+            <td><code>directed</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Renders directional arrowhead markers on edges.</td>
+          </tr>
+          <tr>
+            <td><code>searchable</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Includes search filter input to quickly find and highlight nodes.</td>
+          </tr>
+          <tr>
+            <td><code>zoomable</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Enables viewport pan and zoom controls.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SECTION 06: STATES & INTERACTIONS -->
+    <section>
+      <h2>§06 States & Interactions (De-Cluttering & Stretching)</h2>
+      <div class="callout">
+        <strong>Dense Network De-Cluttering Mechanisms:</strong><br>
+        1. <strong>Interactive Node Stretching:</strong> Users can click and drag any node to manual coordinates. Connected edges stretch dynamically without restarting chaotic simulation.<br>
+        2. <strong>Dynamic Stretch/Spread Slider:</strong> Adjusts the global spring distance ($d \times \text{multiplier}$) and Coulomb repulsion ($k_r \times \text{multiplier}^2$) from 0.6x to 2.2x.<br>
+        3. <strong>1-Hop Neighborhood Isolation:</strong> Dims unrelated topology to 15% opacity on hover/selection.
+      </div>
+    </section>
+
+    <!-- SECTION 07: LAYOUT ALGORITHMS & GEOMETRY -->
+    <section>
+      <h2>§07 Layout Algorithms & Geometry</h2>
+      <p>
+        The force layout runs 120 deterministic iterations using simulated annealing cooling:
+      </p>
+      <pre><code>// 1. Coulomb Repulsion (Scales with Spread Multiplier)
+F_repulsion(u, v) = (k_repulsion * spread^2) / dist(u, v)^2
+
+// 2. Hooke Spring Attraction (Rest length scales with Spread Multiplier)
+F_attraction(u, v) = (dist(u, v) - (restLength * spread)) * k_spring * sqrt(weight)
+
+// 3. Simulated Annealing Cooling
+Temperature(t + 1) = Temperature(t) * 0.96</code></pre>
+    </section>
+
+    <!-- SECTION 08: LABELING & DENSITY RULES -->
+    <section>
+      <h2>§08 Labeling, Collision & Density Rules</h2>
+      <p>
+        Labels are rendered beneath each node with a high-contrast 3px white stroke halo (<code>paint-order: stroke</code>) to maintain legibility over crossing edges.
+      </p>
+    </section>
+
+    <!-- SECTION 09: RESPONSIVE BEHAVIOR -->
+    <section>
+      <h2>§09 Responsive & Viewport Scaling</h2>
+      <ul>
+        <li><strong>Pan & Zoom Viewport:</strong> Allows free exploration of dense clusters without spatial clipping.</li>
+        <li><strong>Density Decimation:</strong> Low-weight edges (&lt; 0.5) can be filtered on small screens.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 10: ACCESSIBILITY -->
+    <section>
+      <h2>§10 Accessibility & Dual-Encoding (WCAG 2.2 AA / AAA)</h2>
+      <ul>
+        <li><strong>WCAG 1.4.1 (Non-Color Differentiation):</strong> Dual-encoded with unique geometric symbols (circle, square, diamond, triangle) and category colors.</li>
+        <li><strong>Searchable Navigation:</strong> Real-time search filter eliminates spatial traversal barriers for screen reader users.</li>
+        <li><strong>Non-Spatial Modal Alternative:</strong> <kbd>Alt+F11</kbd> accessible adjacency table listing degree and neighbor connections.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 11: COLOR PALETTES & THEMES -->
+    <section>
+      <h2>§11 Color Palettes, Tokens & Themes</h2>
+      <p>
+        Adheres to Meridian tokens: <code>--viz-1</code> through <code>--viz-6</code>, <code>--surface-card</code>, <code>--border-subtle</code>, and <code>--action-solid</code>.
+      </p>
+    </section>
+
+    <!-- SECTION 12: MOTION & TRANSITIONS -->
+    <section>
+      <h2>§12 Motion & Transitions</h2>
+      <p>
+        Edge opacity and node selection rings transition at <code>150ms ease</code>. The force simulation settles deterministically on mount without continuous layout jitter.
+      </p>
+    </section>
+
+    <!-- SECTION 13: ANTI-PATTERNS -->
+    <section>
+      <h2>§13 Anti-Patterns & Error Handling</h2>
+      <ul>
+        <li>❌ <strong>Do NOT use for hierarchical taxonomies:</strong> Use <code>TreeDiagram</code> for single-parent trees.</li>
+        <li>❌ <strong>Do NOT use for quantitative flow splits:</strong> Use <code>SankeyDiagram</code> when volume conservation is key.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 14: DEVELOPER NOTES -->
+    <section>
+      <h2>§14 Developer Notes & Sample Code</h2>
+      <pre><code>import React from 'react';
+import { NetworkDiagram } from '@meridian/design-system';
+
+const meshData = {
+  nodes: [
+    { id: 'gw', label: 'MES Gateway', category: 'Gateway' },
+    { id: 'plc-1', label: 'Press Line PLC', category: 'PLC' },
+    { id: 'sens-1', label: 'Vibration Sensor', category: 'Sensor' }
+  ],
+  links: [
+    { source: 'gw', target: 'plc-1', weight: 5 },
+    { source: 'plc-1', target: 'sens-1', weight: 3 }
+  ]
+};
+
+export function MeshView() {
+  return (
+    &lt;NetworkDiagram
+      nodes={meshData.nodes}
+      links={meshData.links}
+      layout="force"
+      directed={true}
+      draggableNodes={true}
+      initialSpread={1.2}
+      title="Shop-Floor IoT Mesh"
+      width={760}
+      height={440}
+    /&gt;
+  );
+}</code></pre>
+    </section>
+  </div>
+
+</body>
+</html>
+`;
+
+fs.writeFileSync(path.join(brainDir, 'NetworkDiagram.spec.raw.html'), specHtml, 'utf8');
+console.log('NetworkDiagram.spec.raw.html written.');

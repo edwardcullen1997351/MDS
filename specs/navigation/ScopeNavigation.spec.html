@@ -1,0 +1,470 @@
+<!-- @dsCard group="Specs · Navigation" viewport="1120x760" name="Scope Navigation" subtitle="Contextual Scope Navigation System — organizational plant/tenant switching, route compatibility preservation, and context re-hydration" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Scope Navigation — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:68ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:74ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:76ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-direction:column;gap:16px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:120px;padding-top:6px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+
+/* Mock Scope Styles */
+.mock-scope-trigger{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);cursor:pointer;transition:all 0.15s ease;text-align:left;min-width:280px}
+.mock-scope-trigger:hover{border-color:var(--border-focus);background:var(--surface-sunken)}
+.mock-scope-avatar{width:28px;height:28px;border-radius:var(--radius-xs);background:var(--action-solid);color:#ffffff;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--text-xs);font-weight:var(--weight-bold);flex-shrink:0}
+.mock-scope-popover{position:absolute;top:calc(100% + 6px);left:0;width:340px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-md);z-index:100;padding:8px;display:flex;flex-direction:column;gap:6px}
+.mock-scope-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--radius-sm);border:none;background:transparent;cursor:pointer;text-align:left;width:100%;transition:background 0.12s ease}
+.mock-scope-item:hover:not(:disabled){background:var(--surface-sunken)}
+.mock-scope-item.selected{background:var(--status-info-soft)}
+.mock-scope-item:disabled{opacity:0.45;cursor:not-allowed}
+
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Button, IconButton, Badge, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section id={`sec-${n}`}>
+    <div className="sec-head">
+      <span className="num">§{n}</span>
+      <h2>{title}</h2>
+      {note && <div className="sec-note">{note}</div>}
+    </div>
+    <div className="body">{children}</div>
+  </section>
+);
+
+const PLANT_SCOPES = [
+  { id: 'PL-04', name: 'Chakan Plant (PL-04)', region: 'Western Region · Pune', type: 'Heavy Press & CNC Shop', env: 'PROD', gst: '27AABCS1429B1Z8', accessible: true },
+  { id: 'PL-01', name: 'Bhosari Plant (PL-01)', region: 'Western Region · Pune', type: 'Tool Room & Heat Treatment', env: 'PROD', gst: '27AABCS1429B1Z2', accessible: true },
+  { id: 'PL-02', name: 'Manesar Plant (PL-02)', region: 'Northern Region · NCR', type: 'Robotic Weld & Stamping', env: 'PROD', gst: '06AABCS1429B1ZX', accessible: true },
+  { id: 'PL-03', name: 'Oragadam Plant (PL-03)', region: 'Southern Region · Chennai', type: 'Casting & Engine Block', env: 'PROD', gst: '33AABCS1429B1ZQ', accessible: false, lockReason: 'Requires South Region Security Clearance' },
+  { id: 'PL-04-SIM', name: 'Chakan Sandbox Simulation', region: 'Staging & Training', type: 'Operator Training Digital Twin', env: 'SANDBOX', gst: 'TEST-ENVIRONMENT', accessible: true }
+];
+
+function InteractiveScopeDemo() {
+  const [currentScopeId, setCurrentScopeId] = React.useState('PL-04');
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [variant, setVariant] = React.useState('standard-dropdown'); // standard-dropdown | hierarchical-grouped | banner-mode
+  const containerRef = React.useRef(null);
+
+  const activeScope = PLANT_SCOPES.find(s => s.id === currentScopeId) || PLANT_SCOPES[0];
+
+  const filteredScopes = PLANT_SCOPES.filter(s =>
+    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.region.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSelectScope = (scope) => {
+    if (!scope.accessible) return;
+    setCurrentScopeId(scope.id);
+    setIsOpen(false);
+    setSearchQuery('');
+  };
+
+  return (
+    <div className="demo">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px',borderBottom:'var(--border-hairline)',paddingBottom:'12px'}}>
+        <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
+          <span className="eyebrow">Interactive Rig</span>
+          <Badge tone={activeScope.env === 'SANDBOX' ? 'warning' : 'info'}>{activeScope.env}</Badge>
+          <span style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+            Active Scope: <strong>{activeScope.id}</strong> ({activeScope.name})
+          </span>
+        </div>
+        <div style={{display:'flex',gap:'4px'}}>
+          {['standard-dropdown', 'hierarchical-grouped', 'banner-mode'].map(v => (
+            <button
+              key={v}
+              onClick={() => setVariant(v)}
+              style={{
+                padding:'4px 8px',
+                borderRadius:'var(--radius-xs)',
+                border:'var(--border-hairline)',
+                background: variant === v ? 'var(--action-solid)' : 'var(--surface-card)',
+                color: variant === v ? '#fff' : 'var(--text-secondary)',
+                fontFamily:'var(--font-mono)',
+                fontSize:'var(--text-2xs)',
+                cursor:'pointer'
+              }}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Scope Banner Mode Display */}
+      {variant === 'banner-mode' && (
+        <div style={{background: activeScope.env === 'SANDBOX' ? 'var(--status-warning-soft)' : 'var(--status-info-soft)',border:'1px solid var(--border-subtle)',padding:'8px 14px',borderRadius:'var(--radius-md)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+            <span style={{fontFamily:'var(--font-mono)',fontWeight:'var(--weight-bold)',fontSize:'var(--text-xs)'}}>
+              OPERATIONAL CONTEXT: {activeScope.name}
+            </span>
+            <span style={{fontSize:'var(--text-2xs)',color:'var(--text-secondary)'}}>
+              GST: {activeScope.gst} · {activeScope.type}
+            </span>
+          </div>
+          <Button variant="ghost" onClick={() => setIsOpen(!isOpen)}>Switch Plant Scope ▾</Button>
+        </div>
+      )}
+
+      {/* Scope Trigger & Popover Picker Container */}
+      <div style={{position:'relative',display:'inline-block'}} ref={containerRef}>
+        <button
+          type="button"
+          className="mock-scope-trigger"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-haspopup="dialog"
+          aria-expanded={isOpen}
+          aria-label={`Current plant scope: ${activeScope.name}. Click to change organizational scope.`}
+        >
+          <div className="mock-scope-avatar">
+            {activeScope.id.slice(0, 2)}
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:'2px',flex:1}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <span style={{fontSize:'var(--text-xs)',fontWeight:'var(--weight-semibold)',color:'var(--text-primary)'}}>
+                {activeScope.name}
+              </span>
+              <span style={{fontFamily:'var(--font-mono)',fontSize:'10px',color:'var(--text-tertiary)'}}>
+                {activeScope.id}
+              </span>
+            </div>
+            <span style={{fontSize:'11px',color:'var(--text-tertiary)'}}>
+              {activeScope.region}
+            </span>
+          </div>
+          <span style={{color:'var(--text-tertiary)',fontSize:'10px'}}>▾</span>
+        </button>
+
+        {isOpen && (
+          <div className="mock-scope-popover" role="dialog" aria-label="Select Plant Scope">
+            <input
+              type="text"
+              placeholder="Search plant or division..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              autoFocus
+              style={{
+                padding:'6px 10px',
+                borderRadius:'var(--radius-xs)',
+                border:'var(--border-hairline)',
+                background:'var(--background-page)',
+                fontFamily:'var(--font-sans)',
+                fontSize:'var(--text-xs)',
+                color:'var(--text-primary)',
+                outline:'none'
+              }}
+            />
+
+            <div style={{display:'flex',flexDirection:'column',gap:'2px',maxHeight:'240px',overflowY:'auto'}}>
+              {filteredScopes.map((scope) => {
+                const isSelected = scope.id === currentScopeId;
+                return (
+                  <button
+                    key={scope.id}
+                    type="button"
+                    disabled={!scope.accessible}
+                    onClick={() => handleSelectScope(scope)}
+                    className={`mock-scope-item ${isSelected ? 'selected' : ''}`}
+                    aria-selected={isSelected}
+                  >
+                    <div style={{display:'flex',flexDirection:'column',gap:'2px'}}>
+                      <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                        <span style={{fontSize:'var(--text-xs)',fontWeight: isSelected ? 'var(--weight-semibold)' : 'var(--weight-medium)',color: isSelected ? 'var(--action-solid)' : 'var(--text-primary)'}}>
+                          {scope.name}
+                        </span>
+                        {scope.env === 'SANDBOX' && <Badge tone="warning">SANDBOX</Badge>}
+                      </div>
+                      <span style={{fontSize:'10px',color:'var(--text-tertiary)'}}>
+                        {scope.region} · {scope.type}
+                      </span>
+                      {!scope.accessible && (
+                        <span style={{fontSize:'10px',color:'var(--status-critical-solid)'}}>
+                          🔒 {scope.lockReason}
+                        </span>
+                      )}
+                    </div>
+                    {isSelected && <span style={{color:'var(--action-solid)',fontWeight:'bold',fontSize:'var(--text-sm)'}}>✓</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Application Context Re-hydration Simulation */}
+      <div style={{background:'var(--surface-sunken)',padding:'16px',borderRadius:'var(--radius-md)',display:'flex',flexDirection:'column',gap:'8px'}}>
+        <div style={{fontSize:'var(--text-2xs)',fontFamily:'var(--font-mono)',color:'var(--text-tertiary)',textTransform:'uppercase',letterSpacing:'var(--tracking-caps)'}}>
+          Downstream Navigation & ERP Context Interpretation
+        </div>
+        <div style={{fontSize:'var(--text-sm)',color:'var(--text-secondary)'}}>
+          Active Plant Ledger: <strong>Suryodaya Autocomp Ltd · {activeScope.name}</strong> (GSTIN: <code className="mono">{activeScope.gst}</code>). Changing scope automatically updates local plant work orders, inventory bin locations, vendor ledger mappings, and machine telemetry streams.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div className="page">
+      <div className="masthead">
+        <div className="eyebrow">Meridian Design System · Navigation Architecture · System 11 of 11</div>
+        <h1>Scope Navigation</h1>
+        <p className="lede">
+          Changes the active organizational, plant, tenant, or environment scope in which the surrounding application navigation, authorization permissions, and content are interpreted. Standardizes scope persistence, default resolution, destination preservation, and search picker interactions.
+        </p>
+        <div className="meta">
+          <span>SPEC: MDS-NAV-SCOPE-11</span>
+          <span>STATUS: FROZEN (0 OPEN ITEMS)</span>
+          <span>CATEGORY: NAV-SYSTEM</span>
+          <span>W3C: ARIA-HASPOPUP="DIALOG" / SELECTION PATTERN</span>
+          <span>ENTERPRISE: CHAKAN PL-04</span>
+        </div>
+      </div>
+
+      {/* §01 Purpose & Intent */}
+      <Sec n="01" title="Purpose & Intent" note="Why Scope Navigation exists and its architectural boundaries.">
+        <p>
+          <strong>Scope Navigation</strong> changes the top-level organizational or contextual boundary in which an entire enterprise application operates. When switching from one plant facility (e.g. <em>Chakan PL-04</em>) to another (e.g. <em>Bhosari PL-01</em>), the entire tree of available local routes, inventory datasets, machine logs, and user roles re-hydrates against the newly selected scope without navigating away from the user's workflow when route parity exists.
+        </p>
+        <ul>
+          <li><strong>Contextual Scope Interpretation:</strong> Re-anchors global and local navigation landmarks to the selected organizational tenant.</li>
+          <li><strong>Route Preservation vs Graceful Reset:</strong> Preserves equivalent active sub-routes where compatible (e.g. <code>/orders/live</code> remains active), or falls back to the new scope's default dashboard when the route does not exist.</li>
+          <li><strong>Permission & Lockout Clarity:</strong> Clearly indicates scopes that are restricted, read-only, or locked due to regional security boundaries.</li>
+          <li><strong>Environment Demarcation:</strong> Visually differentiates production facilities from staging sandboxes and digital twins.</li>
+        </ul>
+      </Sec>
+
+      {/* §02 Anatomy & Composition */}
+      <Sec n="02" title="Anatomy & Composition" note="Required trigger, popover picker, and metadata components.">
+        <table>
+          <thead>
+            <tr><th>Element</th><th>Requirement</th><th>Semantics / Role</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td className="k">ScopePicker (Trigger)</td><td>Required</td><td><code>&lt;button aria-haspopup="dialog"&gt;</code></td><td>Header button displaying the currently active scope avatar, name, and ID.</td></tr>
+            <tr><td className="k">Scope Popover Surface</td><td>Required</td><td><code>&lt;div role="dialog"&gt;</code></td><td>Transient floating surface displaying searchable/grouped available scopes.</td></tr>
+            <tr><td className="k">Search / Filter Input</td><td>Optional</td><td><code>&lt;input type="search"&gt;</code></td><td>Typeahead search field filtering large plant/tenant lists.</td></tr>
+            <tr><td className="k">Scope Option Item</td><td>Required</td><td><code>&lt;button aria-selected="..."&gt;</code></td><td>Individual selectable scope row with title, code, region, and GSTIN.</td></tr>
+            <tr><td className="k">Environment Badge</td><td>Optional</td><td><code>&lt;Badge tone="..."&gt;</code></td><td>Badge tag demarcating <code>PROD</code>, <code>SANDBOX</code>, or <code>STAGING</code>.</td></tr>
+          </tbody>
+        </table>
+      </Sec>
+
+      {/* §03 Properties & Design Tokens */}
+      <Sec n="03" title="Properties & Design Tokens" note="MDS design token bindings for colors, borders, and popover elevations.">
+        <div className="tokenlist">
+          <div><code>--surface-card</code>: Trigger & popover surface background</div>
+          <div><code>--surface-sunken</code>: Scope item hover highlight</div>
+          <div><code>--status-info-soft</code>: Selected active scope row tint</div>
+          <div><code>--action-solid</code>: Active scope avatar and checkmark</div>
+          <div><code>--border-hairline</code>: Popover perimeter boundary stroke</div>
+          <div><code>--shadow-md</code>: Floating scope popover elevation</div>
+          <div><code>--font-mono</code>: Plant codes (PL-04) and GSTIN identifiers</div>
+        </div>
+      </Sec>
+
+      {/* §04 Variants */}
+      <Sec n="04" title="Variants" note="Supported presentation models.">
+        <table>
+          <thead>
+            <tr><th>Variant Key</th><th>Presentation</th><th>Use Case</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="k">standard-dropdown</td>
+              <td>Header trigger with avatar, plant name, and popover list with search.</td>
+              <td>Standard multi-plant ERP navbar, cloud portal, supplier hub.</td>
+            </tr>
+            <tr>
+              <td className="k">hierarchical-grouped</td>
+              <td>Grouped by geographical region (Western, Northern, Southern).</td>
+              <td>National enterprise deployments with multi-state manufacturing hubs.</td>
+            </tr>
+            <tr>
+              <td className="k">banner-mode</td>
+              <td>Full-width prominent banner strip with scope switcher.</td>
+              <td>Digital twin sandboxes, operator training simulators, high-stakes environments.</td>
+            </tr>
+          </tbody>
+        </table>
+      </Sec>
+
+      {/* §05 Sizes & Density */}
+      <Sec n="05" title="Sizes & Density" note="Trigger dimensions across header layouts.">
+        <table>
+          <thead>
+            <tr><th>Size</th><th>Trigger Padding</th><th>Avatar Size</th><th>Font Scale</th></tr>
+          </thead>
+          <tbody>
+            <tr><td className="k">sm</td><td>4px 8px</td><td>22×22px</td><td>11px</td></tr>
+            <tr><td className="k">md (default)</td><td>8px 12px</td><td>28×28px</td><td>12px / 13px</td></tr>
+            <tr><td className="k">lg</td><td>12px 16px</td><td>36×36px</td><td>14px / 15px</td></tr>
+          </tbody>
+        </table>
+      </Sec>
+
+      {/* §06 States & Interactions */}
+      <Sec n="06" title="States & Interactions" note="Trigger and item state progression.">
+        <div className="demo">
+          <div className="staterow">
+            <span className="lbl">Closed:</span>
+            <span style={{color:'var(--text-secondary)'}}>Standard header button displaying current active scope name and avatar.</span>
+          </div>
+          <div className="staterow">
+            <span className="lbl">Open:</span>
+            <span style={{color:'var(--text-primary)',fontWeight:'var(--weight-semibold)'}}>Popover visible, search focused, <code>aria-expanded="true"</code>.</span>
+          </div>
+          <div className="staterow">
+            <span className="lbl">Selected / Current:</span>
+            <span style={{color:'var(--action-solid)'}}>Checkmark (✓) indicator, <code>aria-selected="true"</code>, soft highlight fill.</span>
+          </div>
+          <div className="staterow">
+            <span className="lbl">Unavailable / Locked:</span>
+            <span style={{color:'var(--text-tertiary)'}}>Opacity 0.45, lock icon (🔒), <code>aria-disabled="true"</code> with reason text.</span>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §07 Keyboard Navigation */}
+      <Sec n="07" title="Keyboard Navigation" note="W3C APG popover keyboard interaction model.">
+        <ul>
+          <li><kbd>Enter</kbd> / <kbd>Space</kbd> / <kbd>ArrowDown</kbd>: Open scope popover and focus search input.</li>
+          <li><kbd>ArrowUp</kbd> / <kbd>ArrowDown</kbd>: Navigate through available scope items in the popover list.</li>
+          <li><kbd>Enter</kbd>: Select highlighted scope and trigger application context re-hydration.</li>
+          <li><kbd>Escape</kbd>: Close popover and return focus to the trigger button without changing scope.</li>
+        </ul>
+      </Sec>
+
+      {/* §08 Accessibility & Screen Readers */}
+      <Sec n="08" title="Accessibility & Screen Readers" note="WCAG 2.2 AA/AAA compliance.">
+        <ul>
+          <li><strong>Trigger Purpose:</strong> The trigger button must state both its purpose and active value via <code>aria-label="Current plant scope: Chakan Plant (PL-04). Click to change scope"</code>.</li>
+          <li><strong>Popover Semantics:</strong> Use <code>aria-haspopup="dialog"</code> and <code>aria-expanded</code> on trigger; dialog contains labeled search input and scope list.</li>
+          <li><strong>Current Selection:</strong> Actively selected scope row carries <code>aria-selected="true"</code>.</li>
+          <li><strong>Non-Visual Scope Identity:</strong> Scope identity must not rely solely on avatar color; full textual name and facility code are always exposed.</li>
+        </ul>
+      </Sec>
+
+      {/* §09 Motion & Transitions */}
+      <Sec n="09" title="Motion & Transitions" note="Popover enter and dismiss animations.">
+        <p>
+          Popover surface animates in with <code>120ms cubic-bezier(0,0,0.2,1)</code> opacity and <code>translateY(4px)</code> shift. Reduced motion mode collapses opacity and transform transitions to 0ms.
+        </p>
+      </Sec>
+
+      {/* §10 Content Rules & Internationalization */}
+      <Sec n="10" title="Content Rules & Internationalization" note="Standard conventions for plant names and multi-state operations.">
+        <ul>
+          <li><strong>Stable Scope Keys:</strong> Scopes use deterministic immutable IDs (e.g. <code>PL-04</code>, <code>PL-01</code>) regardless of display name changes.</li>
+          <li><strong>Disambiguation:</strong> Always append city/region or GSTIN if plant facility names are similar (e.g. <em>Pune Chakan</em> vs <em>Pune Bhosari</em>).</li>
+        </ul>
+      </Sec>
+
+      {/* §11 Responsive Design & Touch */}
+      <Sec n="11" title="Responsive Design & Touch" note="Adaptation for mobile navigation bars and handheld scanners.">
+        <p>
+          On narrow screens (&lt; 768px), the trigger condenses to the avatar + chevron, opening a full-width bottom sheet picker with touch targets meeting the 48×48px requirement.
+        </p>
+      </Sec>
+
+      {/* §12 Anti-patterns & Usage Boundaries */}
+      <Sec n="12" title="Anti-patterns & Boundaries" note="Where NOT to use Scope Navigation.">
+        <div className="two">
+          <div className="pane do">
+            <h3>Do</h3>
+            <ul>
+              <li>Use for high-level organizational switching (Plants, Tenants, Workspaces, Environments).</li>
+              <li>Re-hydrate downstream navigation landmarks and datasets upon scope change.</li>
+              <li>Preserve active sub-routes whenever compatible in the new scope.</li>
+            </ul>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <ul>
+              <li>Do NOT use for local table filtering or column sorting (use <strong>Data Filters</strong>).</li>
+              <li>Do NOT use for form field selection or generic dropdown inputs.</li>
+              <li>Do NOT silently discard unsaved user form edits on scope switch without a confirmation prompt.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §13 Implementation Details */}
+      <Sec n="13" title="Implementation Details" note="Interactive Reference Rig with Live Scope Switcher.">
+        <InteractiveScopeDemo />
+      </Sec>
+
+      {/* §14 Developer Notes */}
+      <Sec n="14" title="Developer Notes" note="API contracts and props specification.">
+        <pre>{`interface ScopeItem {
+  id: string;
+  name: string;
+  region?: string;
+  type?: string;
+  env?: 'PROD' | 'SANDBOX' | 'STAGING';
+  gst?: string;
+  avatarText?: string;
+  accessible?: boolean;
+  lockReason?: string;
+  metadata?: Record<string, any>;
+}
+
+interface ScopeNavigationProps {
+  scopes: ScopeItem[];
+  currentScopeId: string;
+  onScopeChange: (newScopeId: string, scope: ScopeItem) => void;
+  variant?: 'standard-dropdown' | 'hierarchical-grouped' | 'banner-mode';
+  size?: 'sm' | 'md' | 'lg';
+  showSearch?: boolean;
+  preserveRoute?: boolean;
+  ariaLabel?: string;
+  className?: string;
+}`}</pre>
+      </Sec>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script></body></html>

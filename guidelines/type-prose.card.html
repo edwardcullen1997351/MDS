@@ -1,0 +1,13 @@
+<!-- @dsCard group="Type" viewport="760x300" name="Paragraph spacing & measure" subtitle="Gaps are space steps, not ems — prose keeps the 4px grid" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="../styles.css"><style>body{margin:0;padding:18px 20px;background:var(--surface-card);color:var(--text-primary)}.mono{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);letter-spacing:0}.cap{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold)}.r{display:flex}.c{display:flex;flex-direction:column}.g{display:grid;grid-template-columns:1fr 220px;gap:24px}.m{position:relative;border-left:var(--border-dashed);border-right:var(--border-dashed);padding:0 10px}.li{display:grid;grid-template-columns:120px 1fr;gap:8px;padding:3px 0;border-bottom:var(--border-hairline-subtle);font-size:var(--text-xs)}</style></head><body><div class="g"><div class="m" style="max-width:var(--measure-prose)">
+<p style="font-size:var(--text-base)">Downtime on Line 3 is attributed to the Station that stopped first, not to the Line total. A Blocked Station means the downstream is full; a Starved Station means the upstream is empty.</p>
+<p style="font-size:var(--text-base)">Unqualified "downtime" only appears in a total that shows the planned and unplanned split alongside it.</p>
+<div class="mono" style="margin-top:8px">--paragraph-gap 16px · --measure-prose 68ch</div></div>
+<div class="c" style="gap:2px"><div class="cap" style="margin-bottom:6px">Tokens</div>
+<div class="li"><div class="mono">paragraph-gap</div><div>16px · body</div></div>
+<div class="li"><div class="mono">…-gap-tight</div><div>8px · hints, lists</div></div>
+<div class="li"><div class="mono">…-gap-loose</div><div>24px · docs</div></div>
+<div class="li"><div class="mono">measure-prose</div><div>68ch</div></div>
+<div class="li"><div class="mono">measure-narrow</div><div>46ch · empty states</div></div>
+<div class="li"><div class="mono">measure-hint</div><div>52ch · field hints</div></div>
+<div style="font-size:var(--text-2xs);color:var(--text-tertiary);margin-top:8px;line-height:1.4">Past ~70 characters the eye loses the line return. Measure is capped in ch so it holds at any zoom.</div></div></div></body></html>

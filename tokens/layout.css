@@ -1,0 +1,61 @@
+:root{
+/* ── BREAKPOINTS ───────────────────────────────────────────────────────
+   Four tiers, min-width only. Mobile is the implicit base — there is no
+   max-width query in the system, so a style is never undone by a later one.
+   These are custom properties for documentation; @media needs the literal. */
+--bp-mobile:0px; /* @kind spacing */      /* 0–599    floor phone, single column          */
+--bp-tablet:600px; /* @kind spacing */    /* 600–1023 floor tablet, THE primary surface   */
+--bp-desktop:1024px; /* @kind spacing */  /* 1024–1599 supervisor desk                    */
+--bp-ultrawide:1600px; /* @kind spacing *//* 1600+    wall display, control room          */
+
+/* ── GRID ──────────────────────────────────────────────────────────────
+   Columns change at every tier; the gutter only changes twice. Content
+   stays capped and centred — an ultrawide display gets more margin, not
+   longer lines. */
+--grid-columns:4; /* @kind other */
+--grid-gutter:var(--space-3);
+--grid-margin:var(--space-4);
+
+/* ── CONTAINERS ────────────────────────────────────────────────────────*/
+--container-sm:640px;   /* sign-in, single-form pages          */
+--container-md:900px;   /* prose, docs, settings               */
+--container-lg:1240px;  /* DEFAULT app content — --content-max */
+--container-xl:1440px;  /* wide table-only screens             */
+--container-full:100%; /* @kind other */  /* full-bleed charts and floor views    */
+
+/* ── Z-INDEX ───────────────────────────────────────────────────────────
+   One ladder. A component never invents a value. */
+--z-base:0; /* @kind other */
+--z-sticky:100; /* @kind other */
+--z-sidebar:200; /* @kind other */
+--z-dropdown:300; /* @kind other */
+--z-overlay:400; /* @kind other */
+--z-drawer:500; /* @kind other */
+--z-dialog:600; /* @kind other */
+/* Above --z-dialog on purpose: a popover is opened from content, and content
+   includes the inside of a dialog. The ladder’s 100-wide gaps exist for
+   exactly this kind of insertion. */
+--z-popover:650; /* @kind other */
+/* Below --z-toast: a page-scope snackbar and the toast viewport can be on
+   screen together, and the toast is the one that must stay legible. */
+--z-snackbar:690; /* @kind other */
+--z-toast:700; /* @kind other */
+--z-tooltip:800; /* @kind other */
+
+/* Layer geometry lived here and was read by nothing: --drawer-w,
+   --dialog-w-sm/md/lg, --dialog-offset-top, --toast-w and --toast-inset were
+   all duplicates of component tokens (--dialog-width-*, --dialog-inset-block,
+   --toast-width, --toast-viewport-inset) that the components actually read.
+   Six dead tokens, retired at 1.19.0 when Drawer went looking for --drawer-w
+   and found nothing consuming it — and the reason they survived the 1.14.2
+   dead-token sweep is that the sweep covered the 384 COMPONENT tokens, and
+   these sat one tier up. Layer geometry belongs to the component that draws
+   the layer; this file keeps the z-ladder, the grid and the frame. */
+}
+@media (min-width:600px){:root{--grid-columns:8; /* @kind other */--grid-gutter:var(--space-4);--grid-margin:var(--space-6)}}
+@media (min-width:1024px){:root{--grid-columns:12; /* @kind other */--grid-gutter:var(--space-6);--grid-margin:var(--space-6)}}
+@media (min-width:1600px){:root{--grid-margin:var(--space-8)}}
+
+/* The one layout utility the system ships: the content frame. */
+.mer-container{width:100%;max-width:var(--content-max);margin-inline:auto;padding-inline:var(--grid-margin)}
+.mer-grid{display:grid;grid-template-columns:repeat(var(--grid-columns),minmax(0,1fr));gap:var(--grid-gutter)}

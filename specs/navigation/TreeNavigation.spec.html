@@ -1,0 +1,487 @@
+<!-- @dsCard group="Specs · Navigation" viewport="1120x760" name="Tree Navigation" subtitle="Recursive Hierarchy Navigation System — expandable branch traversal, treeitem semantics, and deep IA models" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Tree Navigation — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:68ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:74ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:76ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-direction:column;gap:16px}
+.demo-row{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:120px;padding-top:6px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.badge-tier{display:inline-block;padding:2px 8px;font-family:var(--font-mono);font-size:var(--text-2xs);letter-spacing:var(--tracking-caps);text-transform:uppercase;border-radius:var(--radius-full);background:var(--status-info-soft);color:var(--status-info-solid)}
+
+/* Tree mock styles */
+.mock-tree-shell{width:260px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:8px;display:flex;flex-direction:column;gap:2px;box-shadow:var(--shadow-xs);max-height:360px;overflow-y:auto}
+.mock-tree-node{display:flex;align-items:center;justify-content:space-between;padding:4px 6px;border-radius:var(--radius-xs);font-size:var(--text-xs);color:var(--text-secondary);cursor:pointer;user-select:none;text-decoration:none}
+.mock-tree-node:hover{background:var(--surface-sunken);color:var(--text-primary)}
+.mock-tree-node.active{background:var(--status-info-soft);color:var(--text-link);font-weight:var(--weight-medium)}
+.mock-tree-node.focus-ring{outline:2px solid var(--action-solid);outline-offset:1px}
+.mock-tree-chevron{width:16px;height:16px;display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);flex-shrink:0;cursor:pointer}
+.mock-tree-node.active .mock-tree-chevron{color:var(--action-solid)}
+.mock-tree-badge{font-size:9px;padding:1px 5px;border-radius:8px;background:var(--surface-sunken);font-family:var(--font-mono)}
+.mock-tree-node.active .mock-tree-badge{background:var(--action-solid);color:#fff}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Button, IconButton, Badge, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const PLANT_BOM_TREE = [
+  {
+    id: 'shop-02',
+    label: 'Press Shop (Shop 02)',
+    badge: '12',
+    children: [
+      {
+        id: 'line-03',
+        label: 'Tandem Press Line 03',
+        badge: '4',
+        children: [
+          {
+            id: 'st-01',
+            label: 'Station 01 (De-coiler & Feeder)',
+          },
+          {
+            id: 'st-04',
+            label: 'Station 04 (Deep Draw Press)',
+            badge: '2',
+            children: [
+              { id: 'die-set', label: 'Die Set DIE-BRK-4820-A' },
+              { id: 'ejector-block', label: 'Hydraulic Ejector Block B-12' },
+              { id: 'sensor-fl02', label: 'Lubricant Flow Sensor FL-02' }
+            ]
+          },
+          {
+            id: 'st-07',
+            label: 'Station 07 (Piercing & Flanging)',
+          }
+        ]
+      },
+      {
+        id: 'line-05',
+        label: 'Blanking Press Line 05',
+        children: [
+          { id: 'feeder-05', label: 'Coil Feeder C-05' },
+          { id: 'shear-blade', label: 'Rotary Shear Blades' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'shop-04',
+    label: 'Weld Shop & Assembly (Shop 04)',
+    children: [
+      { id: 'robot-cell-01', label: 'Robotic Spot Weld Cell 01' },
+      { id: 'fixture-table', label: 'Geo-Fixture Table GF-14' }
+    ]
+  }
+];
+
+function TreeSystemDemo(){
+  const [expanded, setExpanded] = React.useState({ 'shop-02': true, 'line-03': true, 'st-04': true });
+  const [activeId, setActiveId] = React.useState('die-set');
+
+  const toggleExpand = (id, e) => {
+    e.stopPropagation();
+    setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const renderTreeNodes = (nodes, level = 1) => {
+    return nodes.map(node => {
+      const hasChildren = node.children && node.children.length > 0;
+      const isExpanded = !!expanded[node.id];
+      const isActive = activeId === node.id;
+
+      return (
+        <div key={node.id} style={{display:'flex',flexDirection:'column'}}>
+          <div
+            role="treeitem"
+            aria-expanded={hasChildren ? isExpanded : undefined}
+            aria-selected={isActive}
+            aria-level={level}
+            tabIndex={isActive ? 0 : -1}
+            className={`mock-tree-node ${isActive ? 'active' : ''}`}
+            style={{ paddingLeft: (level - 1) * 14 + 6 }}
+            onClick={() => setActiveId(node.id)}
+          >
+            <div style={{display:'flex',alignItems:'center',gap:4,minWidth:0}}>
+              {hasChildren ? (
+                <span
+                  className="mock-tree-chevron"
+                  onClick={(e) => toggleExpand(node.id, e)}
+                  title={isExpanded ? 'Collapse' : 'Expand'}
+                >
+                  {isExpanded ? '▾' : '▸'}
+                </span>
+              ) : (
+                <span style={{width:16,height:16,display:'inline-block'}} />
+              )}
+              <span style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                {node.label}
+              </span>
+            </div>
+            {node.badge ? <span className="mock-tree-badge">{node.badge}</span> : null}
+          </div>
+
+          {hasChildren && isExpanded && (
+            <div role="group" style={{display:'flex',flexDirection:'column',gap:1}}>
+              {renderTreeNodes(node.children, level + 1)}
+            </div>
+          )}
+        </div>
+      );
+    });
+  };
+
+  return (
+    <div className="demo">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:10}}>
+        <Text size="xs" weight="medium">Interactive Demonstration — Recursive Plant BOM & Asset Tree</Text>
+        <div style={{display:'flex',gap:6}}>
+          <Button size="xs" variant="secondary" onClick={() => setExpanded({ 'shop-02': true, 'line-03': true, 'st-04': true, 'shop-04': true, 'line-05': true })}>Expand All</Button>
+          <Button size="xs" variant="secondary" onClick={() => setExpanded({})}>Collapse All</Button>
+        </div>
+      </div>
+
+      <div className="demo-row">
+        <nav aria-label="Plant Asset Hierarchy Tree Navigation" className="mock-tree-shell" role="tree">
+          {renderTreeNodes(PLANT_BOM_TREE)}
+        </nav>
+
+        <div style={{flex:1,minWidth:280,background:'var(--surface-sunken)',padding:18,borderRadius:'var(--radius-md)',border:'var(--border-hairline)'}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>
+            Selected Asset Entity
+          </Text>
+          <div style={{marginTop:8,fontFamily:'var(--font-mono)',fontSize:'var(--text-sm)',color:'var(--text-primary)'}}>
+            Asset ID: <strong>{activeId}</strong>
+          </div>
+          <p style={{marginTop:8,fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+            Tree Navigation allows operators to explore deep recursive engineering assemblies and equipment structures without losing parent-child containment context.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Spec(){
+  return (
+    <div className="page">
+      <div className="masthead">
+        <span className="eyebrow">Navigation System · System specification</span>
+        <h1>Tree Navigation</h1>
+        <p className="lede">Navigates a recursively nested hierarchy while allowing branches to be expanded and collapsed in place. It establishes hierarchical containment for deeply nested entities, engineering Bills of Material (BOM), and plant equipment structures.</p>
+        <div className="meta">
+          <span>specs/navigation/TreeNavigation.spec.html</span>
+          <span className="badge-tier">Tier: Recursive Tree Navigation</span>
+          <span style={{color:'var(--text-primary)'}}>status: frozen 8 Sep 2026 · 0 open items</span>
+          <span>setting: Suryodaya Autocomp Ltd (PL-04, Chakan)</span>
+        </div>
+      </div>
+
+      <Sec n="01" title="Purpose" note="Recursive hierarchical traversal and branch disclosure.">
+        <p>Tree Navigation provides structured wayfinding across deep, multi-level parent-child data structures (e.g. Plant Infrastructure $\to$ Shop Floor $\to$ Press Line $\to$ Workstation $\to$ Tooling Assembly $\to$ Component Sensor). It enables operators to collapse irrelevant branches and drill into specific sub-assemblies without leaving the active navigation canvas.</p>
+        <T cols={['You need to…','Use this system','Instead of…','Why']} rows={[
+          ['Navigate arbitrarily deep recursive hierarchies (3–7+ levels)','Tree Navigation','Local Navigation','Local navigation is strictly shallow (1–2 levels); tree navigation scales to recursive nesting.'],
+          ['Switch workspaces within an operational module','Local Navigation','Tree Navigation','Local navigation represents structured workspaces, not recursive asset trees.'],
+          ['Show the single ancestor lineage back to root','Breadcrumb','Tree Navigation','Breadcrumbs show a linear parent path; trees expose peer sibling branches and sub-trees simultaneously.'],
+          ['Switch views inside one selected record','Tabs','Tree Navigation','Tabs switch views in-place; trees represent spatial containment depth.']
+        ]} />
+        <div className="two" style={{marginTop:8}}>
+          <div className="pane do">
+            <h3>Do</h3>
+            <ul>
+              <li>Use Tree Navigation for multi-tier recursive asset registries, folder structures, and BOMs.</li>
+              <li>Separate branch expansion (<kbd>→</kbd>/<kbd>←</kbd>) from node destination selection (<kbd>Enter</kbd>).</li>
+              <li>Auto-expand the ancestor path when navigating directly to a deep child node.</li>
+            </ul>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <ul>
+              <li>Don't use Tree Navigation for flat or 2-level module navigation (use Local Nav).</li>
+              <li>Don't pack action command buttons (e.g. Delete, Edit) into treeitem nodes.</li>
+              <li>Don't force full page reloads when expanding or collapsing branches.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="02" title="Anatomy" note="Tree container, parent nodes, child groups, and expanders.">
+        <p>The Tree Navigation system consists of an enclosing labelled landmark, tree root container, recursive treeitem nodes, branch chevron expanders, child groups, and active location pills.</p>
+        <TreeSystemDemo />
+        <div style={{marginTop:12}}>
+          <T cols={['Structural Slot','Element','Role','Requirement']} rows={[
+            ['Tree Nav Landmark','<nav aria-label="...">','Encloses the tree region with an accessible landmark name.','Mandatory'],
+            ['Tree Root Container','<div> with role="tree"','Manages keyboard focus roving and ARIA tree semantics.','Mandatory'],
+            ['Tree Item Node','<div> with role="treeitem"','Selectable node with label, icon, level indent, and badge.','Mandatory'],
+            ['Expansion Control','<span> (Chevron button)','Expands/collapses branch (paired with aria-expanded="true|false").','Conditional (Parents)'],
+            ['Child Sub-Tree Group','<div> with role="group"','Container housing nested children of an expanded parent node.','Conditional (Parents)'],
+            ['Current Indicator','Visual pill / text tone','Highlights the active entity (paired with aria-current="page" or aria-selected="true").','Mandatory'],
+            ['Badge / Count','<Badge>','Displays count of active alerts or direct child assets.','Optional']
+          ]} />
+        </div>
+      </Sec>
+
+      <Sec n="03" title="Properties" note="Public API, data schema, and expansion contracts.">
+        <p>Configured via a recursive node tree, expanded IDs set, and router integration:</p>
+        <pre>{`interface TreeNode {
+  id: string;                     // Unique node / asset identifier
+  label: string;                  // Node title (noun, max 28 chars)
+  href?: string;                  // Destination URL
+  icon?: string;                  // Lucide icon name
+  badge?: string | number;        // Sub-asset count or active alerts
+  disabled?: boolean;             // Inactive node
+  disabledReason?: string;        // Tooltip explanation
+  children?: TreeNode[];          // Recursive child nodes array
+}
+
+interface TreeNavigationProps {
+  data: TreeNode[];               // Root nodes array
+  activeId: string;               // Currently active/selected node ID
+  expandedIds?: string[];         // Controlled expanded node IDs
+  onExpandedChange?: (ids: string[]) => void;
+  onSelectNode?: (node: TreeNode) => void; // Navigation trigger callback
+  LinkComponent?: React.ComponentType<any>;
+  label?: string;                 // Accessible landmark label (default: "Hierarchy Tree")
+  autoExpandActive?: boolean;     // Automatically expand ancestors of activeId (default: true)
+}`}</pre>
+        <div className="warn" style={{marginTop:8}}>
+          <p><strong>Refused Properties:</strong> No drag-and-drop reordering inside navigation trees (reordering is an editing pattern, not navigation); no embedded form controls inside tree items.</p>
+        </div>
+      </Sec>
+
+      <Sec n="04" title="Variants" note="Navigable group nodes vs Pure disclosure folders.">
+        <p>Tree Navigation supports two standardized structural interaction variants:</p>
+        <T cols={['Variant','Parent Node Behavior','Use Case']} rows={[
+          ['Navigable Groups (Default)','Clicking node label navigates to parent overview; clicking chevron expands branch.','Enterprise asset hierarchies and plant equipment trees.'],
+          ['Pure Disclosure Folders','Clicking anywhere on parent node toggles expand/collapse; only leaf nodes navigate.','Document registries and catalog category pickers.']
+        ]} />
+      </Sec>
+
+      <Sec n="05" title="Sizes" note="Indentation steps, row heights, and truncation rules.">
+        <p>Geometry calibrated for horizontal density and deep indent scaling:</p>
+        <T cols={['Metric','Token / Value','Application']} rows={[
+          ['Row Height (Compact)','28px / 30px (--control-h-sm)','Dense engineering asset registries and BOM trees.'],
+          ['Row Height (Comfortable)','34px / 36px (--control-h-md)','Standard operational plant tree views.'],
+          ['Indent Step per Level','14px / 16px (--space-3.5)','Visual offset increment per nesting level (`aria-level`).'],
+          ['Expander Chevron Size','16px × 16px','Clickable branch disclosure chevron.']
+        ]} />
+      </Sec>
+
+      <Sec n="06" title="States" note="Expansion, selection, keyboard focus, and loading.">
+        <p>States maintain strict visual and programmatic clarity:</p>
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          <Row label="Collapsed Parent">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>Right-pointing chevron (`▸`); aria-expanded="false".</span>
+          </Row>
+          <Row label="Expanded Parent">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-primary)',fontWeight:'var(--weight-medium)'}}>Down-pointing chevron (`▾`); aria-expanded="true"; child group visible.</span>
+          </Row>
+          <Row label="Hover">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-primary)',background:'var(--surface-sunken)',padding:'3px 8px',borderRadius:'var(--radius-xs)'}}>Background shifts to surface-sunken.</span>
+          </Row>
+          <Row label="Focus-Visible">
+            <span style={{fontSize:'var(--text-xs)',outline:'2px solid var(--action-solid)',outlineOffset:1,padding:'3px 8px',borderRadius:'var(--radius-xs)'}}>High-visibility blue outline around focused treeitem bounding box.</span>
+          </Row>
+          <Row label="Current (Active)">
+            <span style={{fontSize:'var(--text-xs)',background:'var(--status-info-soft)',color:'var(--text-link)',fontWeight:'var(--weight-medium)',padding:'3px 8px',borderRadius:'var(--radius-xs)'}}>Soft blue background pill with aria-selected="true" or aria-current="page".</span>
+          </Row>
+          <Row label="Loading / Async">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>Subtle inline spinner indicating child branch data fetch in progress.</span>
+          </Row>
+        </div>
+      </Sec>
+
+      <Sec n="07" title="Keyboard" note="W3C Treeview keyboard roving and branch control.">
+        <p>Implements the standard W3C APG Treeview keyboard pattern:</p>
+        <T cols={['Key / Shortcut','Action','Behavior']} rows={[
+          ['Arrow Up / Down','Roving Focus','Moves focus to the previous / next visible node in the tree.'],
+          ['Arrow Right','Expand / Descend','On collapsed parent: expands branch. On expanded parent: moves to first child.'],
+          ['Arrow Left','Collapse / Ascend','On expanded parent: collapses branch. On leaf or collapsed node: moves to parent node.'],
+          ['Enter / Space','Activate / Navigate','Navigates to the focused node destination or toggles branch expansion.'],
+          ['Home / End','Bounds Jump','Moves focus directly to the first / last visible node in the entire tree.'],
+          ['* (Asterisk)','Multi-Expand','Expands all sibling nodes at the current level.']
+        ]} />
+      </Sec>
+
+      <Sec n="08" title="Accessibility" note="ARIA roles, hierarchy levels, and screen reader announcements.">
+        <p>Accessibility requirements per W3C APG Treeview specifications:</p>
+        <ul>
+          <li><strong>Role Structure:</strong> Root has <code>role="tree"</code>; nodes have <code>role="treeitem"</code>; child containers have <code>role="group"</code>.</li>
+          <li><strong>Level & Set Position:</strong> Every item carries <code>aria-level="1..N"</code>, <code>aria-posinset="M"</code>, and <code>aria-setsize="Total"</code>.</li>
+          <li><strong>Expansion State:</strong> Parent nodes carry <code>aria-expanded="true|false"</code>.</li>
+          <li><strong>Roving Tabindex:</strong> The active/focused node has <code>tabindex="0"</code>; all other nodes have <code>tabindex="-1"</code> (single Tab stop).</li>
+        </ul>
+      </Sec>
+
+      <Sec n="09" title="Motion" note="Branch height disclosure and chevron rotation.">
+        <p>Subtle transitions that clearly communicate expansion without layout jitter:</p>
+        <T cols={['Transition','Property','Duration Token','Easing']} rows={[
+          ['Branch Height Reveal','opacity, transform','140ms (--duration-quick)','cubic-bezier(0.2, 0, 0, 1)'],
+          ['Chevron Rotation','transform (rotate)','120ms (--duration-instant)','ease-out'],
+          ['Reduced Motion Override','all transitions','0ms (Instant)','prefers-reduced-motion: reduce']
+        ]} />
+      </Sec>
+
+      <Sec n="10" title="Content Rules" note="Node taxonomy, technical IDs, and indentation.">
+        <p>Node labels combine clear nouns with standard plant identifiers:</p>
+        <T cols={['Correct Node Label','Incorrect Phrasing','Rationale']} rows={[
+          ['Station 04 (Deep Draw Press)','Go To Station 04 Deep Draw Machine','Nodes are entities, not action commands.'],
+          ['Die Set DIE-BRK-4820-A','Installed Tooling Block Die Set','Include specific part/asset codes for rapid identification.'],
+          ['Hydraulic Ejector Block B-12','View Ejector Sub-Assembly Schematics','Keep labels concise (1–4 words).']
+        ]} />
+        <ul style={{marginTop:8}}>
+          <li><strong>Label Length:</strong> 1–4 words, max 28 characters before truncation.</li>
+          <li><strong>Indentation:</strong> Hierarchy is strictly communicated via DOM structure and CSS padding, never literal space characters in text.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="11" title="Responsive" note="Drawer slide-over and narrow-screen adaptation.">
+        <p>On narrow viewports, the tree transitions to a full-height slide-over drawer:</p>
+        <T cols={['Viewport Width','Breakpoint','Presentation Form']} rows={[
+          ['Desktop (≥1024px)','Wide Screen','Persistent left tree panel (240px–280px) beside main asset detail canvas.'],
+          ['Tablet / Mobile (<1024px)','Narrow Screen','Off-canvas drawer triggered by "Asset Hierarchy" button; maintains full expansion state.']
+        ]} />
+      </Sec>
+
+      <Sec n="12" title="Anti-patterns" note="Common mistakes and misuses to avoid.">
+        <div className="two">
+          <div className="pane dont">
+            <h3>Anti-Patterns (Never Do)</h3>
+            <ul>
+              <li><strong>Flat List Overkill:</strong> Using a tree for 1–2 level navigation lists (use Local Nav).</li>
+              <li><strong>Action Button Clutter:</strong> Embedding Delete, Add, or Move buttons in tree rows.</li>
+              <li><strong>Lost Ancestor Context:</strong> Navigating to a deep child node with all ancestors collapsed.</li>
+              <li><strong>Multi-Tab Stop Trap:</strong> Giving every treeitem `tabindex="0"` (breaks keyboard flow).</li>
+            </ul>
+          </div>
+          <div className="pane do">
+            <h3>Standard Corrections</h3>
+            <ul>
+              <li>Reserve Tree Navigation strictly for recursive hierarchies ($\ge 3$ levels).</li>
+              <li>Place management action buttons in the selected asset's page header.</li>
+              <li>Automatically expand ancestor branches leading to the active route.</li>
+              <li>Use roving tabindex so the entire tree is a single Tab stop.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="13" title="Implementation Notes" note="Expansion independence, ancestor lookup, and tokens.">
+        <p>Implementation guidelines for high-performance recursive rendering:</p>
+        <ul>
+          <li><strong>State Separation:</strong> Model `expandedIds` (Set/Array of open branch IDs) independently from `activeId` (selected destination).</li>
+          <li><strong>Ancestor Path Resolution:</strong> Build a fast `idToParentMap` on tree load to auto-expand ancestor nodes in $O(\text{depth})$ time.</li>
+        </ul>
+        <div style={{marginTop:8}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>Tokens Consumed</Text>
+          <div className="tokenlist" style={{marginTop:6}}>
+            <code>--text-primary</code>
+            <code>--text-secondary</code>
+            <code>--text-tertiary</code>
+            <code>--text-link</code>
+            <code>--action-solid</code>
+            <code>--surface-card</code>
+            <code>--surface-sunken</code>
+            <code>--border-hairline</code>
+            <code>--border-subtle</code>
+            <code>--space-3</code>
+            <code>--space-3.5</code>
+            <code>--radius-xs</code>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="14" title="Developer Notes" note="Integration recipes, router binding, and test assertions.">
+        <p>Router integration and test assertions for consuming teams:</p>
+        <pre>{`// Example: Asset Tree Navigation with Router Synchronization
+import { TreeNavigation } from '@meridian/design-system';
+import { useNavigate, useParams } from 'react-router-dom';
+
+export function AssetHierarchyNav({ plantData }) {
+  const navigate = useNavigate();
+  const { assetId } = useParams();
+
+  const handleSelectNode = (node) => {
+    if (node.href) {
+      navigate(node.href);
+    } else {
+      navigate(\`/plant-04/assets/\${node.id}\`);
+    }
+  };
+
+  return (
+    <TreeNavigation
+      data={plantData}
+      activeId={assetId || 'line-03'}
+      onSelectNode={handleSelectNode}
+      autoExpandActive={true}
+      label="Plant Asset Hierarchy"
+    />
+  );
+}`}</pre>
+        <div style={{marginTop:12}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>Test Assertions</Text>
+          <ul>
+            <li>Assert that the root container has <code>role="tree"</code> and items have <code>role="treeitem"</code>.</li>
+            <li>Assert that parent nodes have <code>aria-expanded="true|false"</code> matching their visual state.</li>
+            <li>Assert that pressing <kbd>→</kbd> on a collapsed parent expands it, and pressing <kbd>←</kbd> collapses it.</li>
+          </ul>
+        </div>
+      </Sec>
+
+      <div style={{marginTop:36,paddingTop:12,borderTop:'var(--border-hairline)',fontFamily:'var(--font-mono)',fontSize:'var(--text-2xs)',color:'var(--text-tertiary)'}}>
+        Applies to: Recursive Tree Navigation System · Governance: <a href="../../guidelines/navigation-spec-standard.card.html">Navigation System specification standard</a> · Sections §01–§14 frozen · Sibling Systems: <a href="GlobalNavigation.spec.html">Global Navigation</a>, <a href="LocalNavigation.spec.html">Local Navigation</a>, <a href="BreadcrumbNavigation.spec.html">Breadcrumb Navigation</a>, <a href="TabNavigation.spec.html">Tab Navigation</a>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

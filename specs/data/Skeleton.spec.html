@@ -1,0 +1,350 @@
+<!-- @dsCard group="Specs · Data" viewport="1080x760" name="Skeleton" subtitle="Full specification — the placeholder shape: purpose, sizing by content, the one announcement, the sweep, when NOT to use it" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Skeleton — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:118px}
+.staterow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.mock{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Skeleton, Table, Card, Text, Heading, Button, Badge, Stack } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{flex:1,minWidth:0}}>{children}</div></div>;
+
+const COLS = [
+  {key:'order',header:'Order'},
+  {key:'line',header:'Line'},
+  {key:'qty',header:'Qty',align:'right'},
+];
+const ROWS = [
+  {order:'WO-4471',line:'Assembly 2',qty:'1,200'},
+  {order:'WO-4472',line:'Paint 1',qty:'340'},
+  {order:'WO-4473',line:'Packing 3',qty:'86'},
+];
+
+function Spec(){
+if (!Skeleton) return <div className="page"><div className="masthead"><span className="eyebrow">Data · Component specification</span><h1>Skeleton</h1><p className="lede">The design-system bundle has not been recompiled with <code>components/data/Skeleton.jsx</code> yet — reload once it has.</p></div></div>;
+const [loading,setLoading] = React.useState(true);
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Data · Component specification</span>
+    <h1>Skeleton</h1>
+    <p className="lede">A shape standing in for content that has not arrived. It is the quietest component in the system and the only one whose whole job is to be ignored: it says "a table is coming, roughly this shape" and nothing else — no message, no announcement, no state. It has no size scale, because it is sized by the content it replaces; it has no tones, because it carries no meaning; and it is <code>aria-hidden</code>, because forty announced placeholders is the failure mode this component was designed around.</p>
+    <div className="meta">
+      <span>components/data/Skeleton.jsx</span><span>window.MeridianDesignSystem_962c43.Skeleton</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items</span><span>since: 1.14.0 · hardened 1.18.0</span><span>5 tokens · 1 keyframe</span><span>first consumer: data/Table</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Hold the shape of content whose shape you already know.">
+    <p>A skeleton is a <em>promise about layout</em>. It is right when the product knows what is coming — a table of eight rows, a card with a title and two lines — and the wait is long enough to see but short enough to sit through. It is wrong whenever that promise cannot be kept: an unknown number of results, an unknown duration, or a wait that resolves before the eye settles.</p>
+    <T cols={['The wait is…','Use','Why']} rows={[
+      ['Under ~200ms','Nothing','The flash of placeholders is more disruptive than the wait. Render the old content, or nothing.'],
+      ['200ms–3s, shape known','Skeleton','This component. The layout does not move when the data lands.'],
+      ['Long, or of unknown duration','A progress bar, or a spinner with a line of text','A skeleton implies "nearly there, and it will look like this". Neither is true of a 40-second export.'],
+      ['A background job the user need not watch','Toast on completion','Placeholders occupy the screen for a wait nobody is waiting on.'],
+      ['The action is in a control','Button loading','The wait belongs to the button that started it, not to the region.'],
+      ['The data arrived and is empty','An empty state','Skeletons that never resolve are the most common cause of an apparently hung console (§12).'],
+      ['Shape unknown until it arrives','A spinner in the region','A skeleton that guesses wrong re-flows the page on arrival — the one thing it exists to prevent.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="loading"><div className="mock" style={{maxWidth:420}}><Skeleton width="40%" /><Skeleton lines={3} /></div></Row>
+      <Row label="loaded"><div className="mock" style={{maxWidth:420}}><Heading level={4} style={{margin:0}}>Line 2 · Assembly</Heading><Text size="xs" tone="secondary">Running at 96 % of takt. Last changeover 04:12, next planned stop 18:00. Two work orders queued behind the current run.</Text></div></Row>
+      <Row label="the point">The mock is the same height in both states, so nothing jumps when the data lands.</Row>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="One shape. There is genuinely nothing else.">
+    <div className="demo">
+      <div style={{display:'flex',flexDirection:'column',gap:10,minWidth:320,flex:1}}>
+        {[['1','The bar — a block span at --skeleton-background (--surface-sunken), --skeleton-radius (2px), and by default 1em tall: the line-box of the text it replaces, so a skeleton in a table cell sits where the value will.'],
+          ['2','The sweep — a transparent → --skeleton-sheen → transparent gradient at 200% width, translated across by one keyframe. Not a pulse.'],
+          ['3','The stack (lines > 1) — a flex column at --skeleton-line-gap, whose LAST line is 62% wide, because a paragraph\u2019s last line is short. Equal bars read as a chart.'],
+          ['4','aria-hidden — on every part, always, not optionally. The announcement belongs to the region (§08).']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:14,minWidth:240,flex:1}}>
+        <Skeleton />
+        <Skeleton width="120px" />
+        <Skeleton lines={3} />
+        <Skeleton height="72px" radius="var(--radius-md)" />
+      </div>
+    </div>
+    <p>There is no container, no wrapper component, no <code>SkeletonText</code> / <code>SkeletonCircle</code> / <code>SkeletonCard</code> family. A skeleton screen is built by putting these shapes inside the real layout — the card, the stack, the table cell — which is what keeps the placeholder and the content in agreement. A shape vocabulary would be a second, drifting copy of the layout.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Six, five of which are geometry.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['width','string','100%','Any CSS width. Fill the container, or match the value it replaces ("48px" for a right-aligned quantity).'],
+      ['height','string','1em','The line-box of the text it stands in for. Set it explicitly for non-text shapes — a chart well, a thumbnail. Floors at --skeleton-min-height.'],
+      ['lines','number','1','More than one renders a stack with a short last line. Fewer than one warns.'],
+      ['radius','string','--skeleton-radius','Match the shape being replaced: --radius-md for a card-sized well, --radius-full for a status dot.'],
+      ['animate','boolean','true','false is a static block. Reduced motion stops the sweep regardless (§09).'],
+      ['style','CSSProperties','—','Lands on the OUTER element only — the single bar, or the stack wrapper. Never on the individual lines of a stack (§13).'],
+    ]}/>
+    <p>Everything else — <code>className</code>, <code>data-*</code>, <code>title</code> — is spread onto the same outer element. There is deliberately no <code>tone</code>, no <code>variant</code>, no <code>size</code> and no <code>loading</code> prop: a skeleton has one appearance, and whether it renders at all is the region's decision, not its own.</p>
+    <div className="demo col">
+      <Row label="width"><div style={{display:'flex',gap:10,alignItems:'center'}}><Skeleton width="48px" /><Skeleton width="120px" /><Skeleton width="30%" /></div></Row>
+      <Row label="height + radius"><div style={{display:'flex',gap:10,alignItems:'center'}}><Skeleton width="34px" height="34px" radius="var(--radius-full)" /><Skeleton width="180px" height="34px" radius="var(--radius-sm)" /></div></Row>
+      <Row label="animate={false}"><Skeleton width="200px" animate={false} /></Row>
+    </div>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="None — and that is the design decision, not an omission.">
+    <p>There is one appearance and one behaviour. The two variant ladders this component is usually given were both considered and refused:</p>
+    <T cols={['Rejected','Instead','Why']} rows={[
+      ['text / circle / rect / avatar shapes','width + height + radius','Four names for three CSS properties. "Circle" is height = width + --radius-full, and the system has no avatar, so a shape vocabulary would be inventing content types the product does not have.'],
+      ['A pulse variant','The one sweep','Forty pulsing blocks in a table is forty things blinking, and a plant console already has real alarms that blink. One low-contrast pass reads as "working" without competing with them.'],
+      ['Composed presets (SkeletonTable, SkeletonCard)','Put skeletons in the real layout','A preset is a second copy of the layout, and it drifts. Table renders its own placeholder rows for exactly the case where the layout is not the caller\u2019s to build.'],
+      ['A tone / on-dark variant','--surface-sunken and --surface-raised','Both retarget in the dark scope already, so the sweep composes on either theme with no prop.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="a “circle”"><div style={{display:'flex',gap:10,alignItems:'center'}}><Skeleton width="20px" height="20px" radius="var(--radius-full)" /><Text size="xs" tone="tertiary">width = height + radius full. No variant needed.</Text></div></Row>
+    </div>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="No size scale. The content is the scale.">
+    <p>A skeleton is measured by what it replaces, which is why <code>height</code> defaults to <code>1em</code> and inherits the font size of the context it sits in: the same component renders 13px tall in a table cell and 24px tall in a page title, with no prop. That is also the whole reason it needs no density block — it rides <code>[data-density]</code> through the type and row geometry around it.</p>
+    <T cols={['Standing in for','Geometry','Note']} rows={[
+      ['A table cell value','default (1em), width 70%','What Table renders. Right-aligned numeric columns get width 48px and margin-left auto.'],
+      ['A page or card title','width 30–40%, default height in the heading\u2019s own font size','Nest it where the heading goes and it inherits the size.'],
+      ['A paragraph','lines={3}','The short last line is what makes it read as prose.'],
+      ['A metric or KPI','width 80px, height 28px','A big number is a shape, not a line of text.'],
+      ['A chart well','width 100%, height the chart\u2019s own height, radius --radius-md','One block, never bars — a fake chart is content, not furniture (§12).'],
+      ['A status dot','width/height 8px, radius --radius-full','Only where a dot is genuinely coming.'],
+    ]}/>
+    <p><code>--skeleton-min-height</code> (8px) is the floor under the <code>1em</code> default: at <code>--text-2xs</code> inside a compact row, one em of a scaled-down font rounds to something that reads as a border rather than a placeholder.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="It has none. Its region has three.">
+    <p>The component is stateless: it does not hover, focus, select or disable, it holds no timer, and it does not know whether the fetch succeeded. Every state in a loading pattern belongs to the region that owns the fetch, and getting that split wrong is what produces a console that appears hung.</p>
+    <T cols={['Region state','What renders','Announcement']} rows={[
+      ['Loading','Skeletons inside the real layout; the region carries aria-busy="true".','One, from the region — never one per placeholder.'],
+      ['Loaded','The content, in the same geometry.','The region drops aria-busy; the content is read on demand.'],
+      ['Loaded and empty','An empty state — a 16–22px glyph in --text-tertiary above one sentence.','The empty state\u2019s own text. Skeletons must NOT persist here.'],
+      ['Failed','An Alert in the region, with a retry.','Alert §08. A skeleton left behind after a failure is an infinite wait.'],
+    ]}/>
+    <div className="demo col">
+      <div style={{display:'flex',gap:12,alignItems:'center'}}>
+        <Button size="sm" variant="secondary" onClick={()=>setLoading(!loading)}>{loading ? 'Land the data' : 'Reload'}</Button>
+        <Text size="xs" tone="tertiary">{loading ? 'aria-busy="true" on the table region' : 'aria-busy removed'}</Text>
+      </div>
+      <Card padding="none">
+        <Table caption="Work orders" columns={COLS} rows={ROWS} loading={loading} loadingRows={3} />
+      </Card>
+      <Text size="xs" tone="tertiary">The rows keep their real height while loading, so the table does not resize when the data lands.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Not applicable, and the reason is the design.">
+    <p>A skeleton is not focusable, not tabbable, has no role and answers no key. It is furniture: a placeholder that could be focused would put a tab stop into a region whose content does not exist yet, and then move that stop as the real content arrives — the keyboard order would change under the user's hands.</p>
+    <ul>
+      <li><strong>Focus must be preserved across the load,</strong> and that is the region's job. If the user's focus was on a control the load replaces, restore it to the nearest stable element rather than letting the browser drop it to the document top.</li>
+      <li><strong>Never move focus to a skeleton to signal loading.</strong> Say it once through <code>aria-busy</code> on the region (§08) and leave the focus where the user put it.</li>
+      <li><strong>Tab order is unchanged while loading,</strong> because placeholders are <code>aria-hidden</code> and inert; the surrounding controls (filters, pagination) stay reachable and should be <em>disabled</em> if acting on them mid-load would race.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="One announcement per region — the whole contract.">
+    <ul>
+      <li><strong>Every part is <code>aria-hidden="true"</code>,</strong> not optionally. Forty placeholders in a table are forty meaningless nodes, and screen readers announce them as blank items — the single loudest accessibility failure in this pattern.</li>
+      <li><strong>The region carries <code>aria-busy="true"</code></strong> while loading and drops it when the content lands. That is the announcement. <code>Table</code> does this on its scroll region; a hand-built region must do it too.</li>
+      <li><strong>One message, if any words are needed.</strong> A <code>role="status"</code> line saying "Loading work orders" is legitimate <em>once per region</em>; it is not legitimate per row, and it should not repeat as pages load.</li>
+      <li><strong>Never <code>role="alert"</code>.</strong> Loading is not an error, and assertive interruption for a normal wait is exactly the noise the live-region rules exist to prevent (the same reasoning as <code>Alert</code> §08).</li>
+      <li><strong>Contrast does not apply</strong> — the bars carry no text and no meaning, so they are decorative under 1.4.3. They must still be <em>visible</em>: at <code>--surface-sunken</code> on a card they read as furniture, not as content.</li>
+      <li><strong>Forced colours are handled explicitly</strong> via <code>[data-skeleton]</code> in <code>base.css</code>: the fill resolves to <code>Canvas</code> and background images are dropped, so an unstyled placeholder disappears entirely and a loading table reads as an empty one. The shape is outlined against <code>CanvasText</code> instead — the same defect, hook and fix as Badge's dot in 1.8.1.</li>
+      <li><strong>Reduced motion stops the sweep</strong> (§09) and the resting fill still says "not data" — which is the reason the fill is a sunken surface and not a mid-grey that could pass for content.</li>
+      <li><strong>Do not put text inside a skeleton.</strong> Anything worth announcing is content and belongs outside the <code>aria-hidden</code> subtree.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="One pass, one keyframe, and it stops dead.">
+    <T cols={['Property','Value','Why']} rows={[
+      ['Animation','--anim-skeleton-sweep: mer-skeleton-sweep 1.4s var(--ease-in-out) infinite','The one animated background in the system. 1.4s reads as a single pass across a 40-row table rather than a flicker.'],
+      ['What moves','background-position on a 200%-wide gradient','Compositor-friendly, no layout, and the bar itself never moves — a placeholder that moves is a page that looks broken.'],
+      ['Direction','Left to right, once per cycle, no reverse','A ping-pong sweep draws the eye back to the middle of a region the user is trying to look past.'],
+      ['Not used','A pulse (opacity), a shimmer per row with staggered delays','Forty blinking blocks, in a console whose real alarms blink.'],
+      ['Reduced motion','Stopped: the global rule sets animation-duration 1ms and iteration-count 1, so the sweep completes instantly and the bar sits still.','A static sunken bar still reads as "not data" — which is what makes stopping it survivable.'],
+      ['animate={false}','Same static bar, by choice','For a print view, a screenshot, or a region already animating something else.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="sweeping"><Skeleton width="60%" /></Row>
+      <Row label="static"><Skeleton width="60%" animate={false} /></Row>
+    </div>
+    <p className="warn">The sweep is also the system's one documented case of a token that was <strong>two names for one value</strong>: <code>--skeleton-sheen</code> originally pointed at <code>--surface-hover</code>, which in the light scope is the same <code>--grey-100</code> as <code>--surface-sunken</code> — a #edeff3 sheen over a #edeff3 fill, i.e. an animation that ran and changed nothing, invisible in review and shipped. It now targets <code>--surface-raised</code>, and any future retarget must be checked in <em>both</em> scopes: equal values fail silently and look like a static block.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="It holds no content. The rules are about honesty.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Match the real geometry</strong> — the same number of rows, the same column widths, the same card height. The layout must not move on arrival.</li>
+        <li><strong>Vary the widths</strong> the way real text varies: a 40% title, full-width body, a short last line.</li>
+        <li><strong>Use the typical count,</strong> not the maximum: eight rows where eight is normal, never twenty to fill the viewport.</li>
+        <li><strong>Keep real chrome real.</strong> Headers, filters and the paginator render as themselves; only the values are placeholders.</li>
+        <li><strong>Resolve into something,</strong> always — content, an empty state or an error.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>Fake data.</strong> Never grey lorem text, never plausible numbers, never a fake chart shape (§12).</li>
+        <li><strong>Put "Loading…" inside one.</strong> It is <code>aria-hidden</code>, so the words are announced to nobody; the region says it once.</li>
+        <li><strong>Skeleton the whole page</strong> when only one panel is fetching. A full-page wireframe is indistinguishable from a broken render.</li>
+        <li><strong>Skeleton a header you already have.</strong> Titles, labels and column headers are known — render them.</li>
+        <li><strong>Equal bars in a stack.</strong> Text does not look like that; it reads as a chart.</li>
+        <li><strong>Use one as an empty state or a disabled state.</strong> Both mean "nothing is coming".</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="It is a percentage in someone else's box.">
+    <ul>
+      <li><strong>Default <code>width: 100%</code>,</strong> so a skeleton reflows with its container and needs no breakpoints of its own. Prefer percentages to pixel widths for anything standing in for text.</li>
+      <li><strong>Pixel widths only where the content is fixed</strong> — a right-aligned quantity, a status dot, a thumbnail.</li>
+      <li><strong>Height rides the type,</strong> so <code>1em</code> is already density- and breakpoint-correct; at <code>compact</code> a cell skeleton shrinks with the row.</li>
+      <li><strong>Count with the layout.</strong> A table showing eight rows on desktop and four on a tablet should place four placeholders there — a fixed count taller than the viewport is a scrollbar with nothing to scroll.</li>
+      <li><strong>Do not skeleton off-screen content.</strong> Below the fold, render nothing: the user has not asked for it yet, and the sweep costs frames on a shop-floor tablet.</li>
+      <li><strong>Cap the animated count.</strong> Past a few dozen bars the sweep is measurable on low-end hardware — <code>animate={false}</code> below the first screenful, or fewer rows.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{maxWidth:280}}><div className="mock"><Skeleton width="50%" /><Skeleton lines={2} /><div style={{display:'flex',gap:8}}><Skeleton width="64px" height="24px" radius="var(--radius-sm)" /><Skeleton width="64px" height="24px" radius="var(--radius-sm)" /></div></div></div>
+      <Text size="xs" tone="tertiary">280px: percentages reflow, the two fixed 64px buttons do not.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="The dangerous ones are all about a promise not kept.">
+    <div className="two">
+      <div className="pane dont"><h3>Dishonest</h3><ul>
+        <li><strong>A fake chart.</strong> Placeholder bars at plausible heights are <em>data</em> — an operator will read the trend before the real numbers land. One flat well instead.</li>
+        <li><strong>Grey lorem text.</strong> A skeleton stands in for content; it never impersonates it.</li>
+        <li><strong>A shape that does not match what arrives.</strong> Three placeholder rows for a ten-row table re-flows the page on arrival, which is the one thing this component exists to prevent.</li>
+        <li><strong>A skeleton that never resolves.</strong> The most common cause of an apparently hung console: an error path that returns without clearing the loading flag. Always resolve to content, empty or Alert.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Misapplied</h3><ul>
+        <li><strong>On a sub-200ms load.</strong> The flash is worse than the wait.</li>
+        <li><strong>For an unknown duration.</strong> That is a progress bar or a spinner with a line of text.</li>
+        <li><strong>Inside a Button.</strong> Buttons have their own loading state; a placeholder in a control implies the control is coming.</li>
+        <li><strong>As an image placeholder in the final UI.</strong> A permanently missing image is an empty state, not a load.</li>
+        <li><strong>Announced.</strong> Removing <code>aria-hidden</code>, or giving each bar a label. §08.</li>
+        <li><strong>Pulsing, staggered, or rainbow.</strong> §09 — it is furniture.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The whole-page skeleton is the pattern to argue against hardest.</strong> A wireframe of the entire console — sidebar, topbar, cards, table all in grey — is visually identical to a stylesheet that failed to load, and it delays every real element for the slowest fetch on the page. Skeleton the region that is actually waiting; render the frame, the navigation and the headings immediately, because they are known before any request is made.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="Three defects on the freeze, all from one shortcut.">
+    <ul>
+      <li><strong>Deferred at 1.8.1, shipped at 1.14.0 — deliberately in that order.</strong> The bar for a system component is two unrelated consumers and no composition from what exists; at 1.8.1 a skeleton was one box on <code>--surface-sunken</code> and the honest answer was a <code>Box</code>. The evidence arrived when <code>Table</code> needed loading rows and two other specs (<code>Badge</code> §06, <code>Pagination</code> §06/§09) had already deferred to "a skeleton in the cell" for a component that did not exist.</li>
+      <li><strong><code>{'{...rest}'}</code> never reached the single-line path.</strong> It was spread on the stack wrapper only, so on the common path — one bar, which is what <code>Table</code> renders in every cell — a caller's <code>className</code>, <code>data-*</code> and <code>title</code> were silently dropped. Silently is the operative word: nothing throws, the bar still paints, and the missing hook is only noticed by whoever tries to query it in a test.</li>
+      <li><strong><code>style</code> was applied to every line of a stack.</strong> A margin passed to <code>lines={3}</code> was applied three times, and a <code>width</code> in <code>style</code> overrode the deliberately short last line, turning prose back into a chart. Both paths now agree: <code>style</code> and the rest props land on the <em>outer</em> element — the single bar, or the wrapper — and never on the lines inside a stack.</li>
+      <li><strong>Forced colours erased it completely.</strong> The fill resolves to <code>Canvas</code> and <code>background-image</code> is dropped in forced-colours mode, so every placeholder vanished and a loading table rendered as a blank grid. Fixed in <code>base.css</code> against the existing <code>[data-skeleton]</code> hook by outlining the shape against <code>CanvasText</code> rather than filling it — a filled <code>GrayText</code> block would be a solid slab where text is coming. This is the same defect class as Badge's disappearing dot (1.8.1), found the same way: by opening the component in the mode nobody tests.</li>
+      <li><strong>Two literals moved into tokens</strong> (freeze criterion 3): the <code>1.4s</code> sweep is now <code>--anim-skeleton-sweep</code>, alongside <code>--anim-spin</code> and <code>--anim-indeterminate</code>, so the one number a product might re-time is reachable; and the <code>minHeight: 8</code> floor is <code>--skeleton-min-height</code>. The stack gap is <code>--skeleton-line-gap</code> rather than a bare <code>--space-2</code>, so line rhythm can be tuned without touching the space scale.</li>
+      <li><strong>The sheen bug is the cautionary tale.</strong> <code>--skeleton-sheen</code> pointed at <code>--surface-hover</code>, which in the light scope is the same <code>--grey-100</code> as <code>--surface-sunken</code> — an animation that ran and changed nothing. Two names for one value, invisible in review, and the reason the token now carries a comment demanding both scopes be checked on any retarget.</li>
+      <li><strong>One warning:</strong> <code>lines &lt; 1</code>. There is nothing else to warn about — every other prop is a CSS value, and a wrong one is visible.</li>
+      <li><strong>The last line is 62%,</strong> not a random width per render. A random ragged edge changes between renders, which makes a re-render look like new data.</li>
+      <li><strong>Table owns its own placeholders</strong> rather than exposing a slot: the row height, the column alignment and the checkbox gutter all have to match the real row, and only Table knows them. That is the exception to §02's "no presets" rule, and it is deliberate.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--skeleton-background','--skeleton-sheen','--skeleton-radius','--skeleton-min-height','--skeleton-line-gap','--anim-skeleton-sweep','@keyframes mer-skeleton-sweep'].map(t=><span key={t}>{t}</span>)}
+    </div>
+    <p><strong>Closed in 1.19.0 — <code>tokens.json</code> regenerated.</strong> The mirror now holds both <code>--skeleton-*</code> tokens along with every other component shipped since 1.5.0. The staleness was not a missed build step: the generator’s component allow-list had not been updated since 1.5.0 and its <code>kebab()</code> inverse was wrong for adjacent capitals, so the build aborted on unresolved references. Both are fixed in <code>tools/token-tools.mjs</code>.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Wiring it into a region.">
+    <pre>{`import { Skeleton } from '@meridian/data';
+
+// The region owns the state, the announcement and the resolution.
+function OrdersPanel() {
+  const { data, error, loading } = useOrders();
+
+  if (error) return <Alert tone="danger" title="Could not load work orders" …/>;
+
+  return (
+    <Card title="Work orders" padding="none">
+      {/* Table renders its own placeholder rows and sets aria-busy. */}
+      <Table caption="Work orders" columns={COLS} rows={data ?? []}
+             loading={loading} loadingRows={8} />
+      {/* Data arrived and is empty is NOT a loading state. EmptyState shipped 1.20.0. */}
+      {!loading && data?.length === 0 && <EmptyState … />}
+    </Card>
+  );
+}
+
+// A hand-built region: aria-busy here, aria-hidden placeholders inside.
+<section aria-busy={loading || undefined}>
+  {loading ? (
+    <>
+      <Skeleton width="40%" />
+      <Skeleton lines={3} />
+    </>
+  ) : (
+    <>
+      <Heading level={3}>{run.line}</Heading>
+      <Text>{run.summary}</Text>
+    </>
+  )}
+</section>
+
+// Don't flash on a fast load: only show placeholders after ~200ms.
+const show = useDelayedFlag(loading, 200);`}</pre>
+    <ul>
+      <li><strong>Gate on a delay, not on <code>loading</code> alone.</strong> A 120ms fetch should render nothing; a flash of placeholders reads as a glitch. Once shown, keep them for a minimum beat (~300ms) so they do not flicker out mid-sweep.</li>
+      <li><strong>Put <code>aria-busy</code> on the region,</strong> and remove it when the content lands — including on the error path.</li>
+      <li><strong>Keep the placeholder count near the real count,</strong> and reuse the page size you are about to fetch.</li>
+      <li><strong>Do not skeleton a refresh of data already on screen.</strong> Replacing a table the user is reading with grey bars loses their place; dim the region or show a top progress line instead.</li>
+      <li><strong>Do not animate hundreds.</strong> <code>animate={false}</code> below the fold; the sweep is cheap but not free on a shop-floor tablet.</li>
+      <li><strong>Testing hooks:</strong> placeholders are <code>aria-hidden</code>, so query them by attribute — <code>container.querySelectorAll('[data-skeleton]')</code> — and assert the region's <code>aria-busy</code>. Never assert on role or accessible name: by design, they have neither.</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

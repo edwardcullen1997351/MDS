@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Parallel Coordinates · 14-Section Specification Standard</title>
+  <link rel="stylesheet" href="../../tokens/tokens.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+    }
+    body {
+      margin: 0;
+      padding: 40px 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .spec-container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .spec-header {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 24px;
+      margin-bottom: 36px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #a7f3d0;
+      margin-top: 8px;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      color: #0f172a;
+    }
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+    p, li {
+      font-size: 14px;
+      color: #334155;
+    }
+    ul, ol {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      background: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="spec-container">
+    <header class="spec-header">
+      <div class="badge">Data Visualization Standard · Component 15 of 15</div>
+      <h1>Parallel Coordinates Specification Standard</h1>
+      <div class="status-tag">
+        <span>✓</span> status: frozen 9 Sep 2026 · 0 open items
+      </div>
+    </header>
+
+    <!-- 1. Purpose & Analytical Intent -->
+    <section>
+      <h2>1. Purpose & Analytical Intent</h2>
+      <p>
+        The <code>ParallelCoordinates</code> component visualizes high-dimensional datasets by projecting $N$ quantitative or ordered variables onto parallel vertical axes. Each observation record is rendered as a continuous polyline intersecting each axis at its dimensional value. It is reserved for genuinely high-dimensional comparison where simpler small multiples or scatter plots are insufficient:
+      </p>
+      <ul>
+        <li><strong>Cluster Identification:</strong> Detect bundles of similar polylines reflecting shared operating regimes or quality classes.</li>
+        <li><strong>Trade-Off & Pareto Frontier Analysis:</strong> Identify inverse relationships between adjacent dimensions (e.g. higher tonnage vs increased defect PPM).</li>
+        <li><strong>Multidimensional Outlier Detection:</strong> Spot isolated polylines that deviate across multiple sensor channels simultaneously.</li>
+      </ul>
+    </section>
+
+    <!-- 2. Anatomy & Hierarchy -->
+    <section>
+      <h2>2. Anatomy & Hierarchy</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Element</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>Parallel Dimension Axes</code></td>
+            <td>Linear Axes</td>
+            <td>Equally-spaced vertical lines representing individual quantitative variables with tick marks, labels, and units.</td>
+          </tr>
+          <tr>
+            <td><code>Observation Polylines</code></td>
+            <td>Visual Mark</td>
+            <td>Continuous straight or smooth cubic spline lines crossing each axis at the record's coordinates.</td>
+          </tr>
+          <tr>
+            <td><code>Axis Reordering Controls</code></td>
+            <td>Interactive Control</td>
+            <td>Left/Right nudge buttons and drag handles allowing analysts to place correlated dimensions side-by-side.</td>
+          </tr>
+          <tr>
+            <td><code>1D Range Brushes</code></td>
+            <td>Filtering Layer</td>
+            <td>Bounding range intervals on individual axes to isolate subset records meeting multi-criteria conditions.</td>
+          </tr>
+          <tr>
+            <td><code>Active Crosshairs</code></td>
+            <td>Inspection Indicator</td>
+            <td>Circles and numeric callouts placed at exact intersection points of the hovered polyline across all axes.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 3. Data Model & Input Contract -->
+    <section>
+      <h2>3. Data Model & Input Contract</h2>
+      <pre><code>export interface ParallelDimension {
+  key: string;
+  label: string;
+  unit?: string;
+  min?: number;
+  max?: number;
+  inverted?: boolean;
+  isCategorical?: boolean;
+  categories?: string[];
+}
+
+export interface ParallelCoordinatesProps {
+  data: Record<string, any>[];
+  dimensions: ParallelDimension[];
+  variant?: 'standard' | 'normalized' | 'spline' | 'brushed';
+  width?: number;
+  height?: number;
+  title?: string;
+  subtitle?: string;
+  colorKey?: string; // Key used to color polylines
+  idKey?: string;
+  labelKey?: string;
+  smooth?: boolean;
+  normalized?: boolean;
+  showBrushControls?: boolean;
+  showControls?: boolean;
+  showSearch?: boolean;
+}</code></pre>
+    </section>
+
+    <!-- 4. Visual Encoding & Aesthetics -->
+    <section>
+      <h2>4. Visual Encoding & Aesthetics</h2>
+      <ul>
+        <li><strong>Cluster Palettes:</strong> Sky Blue (<code>#0284c7</code>), Emerald Green (<code>#16a34a</code>), Amber Warning (<code>#d97706</code>), Purple (<code>#7c3aed</code>), Ruby Critical (<code>#dc2626</code>).</li>
+        <li><strong>Polyline State Styling:</strong>
+          <ul>
+            <li><em>Active / Hovered:</em> 3px solid high-contrast line with $100\%$ opacity and dropshadow filter.</li>
+            <li><em>Filtered / Background:</em> 1px Slate-200 line (<code>#e2e8f0</code>) at $35\%$ opacity to maintain context without visual clutter.</li>
+            <li><em>Unselected:</em> 1.5px colored line at $70\%$ opacity.</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 5. Included Variants -->
+    <section>
+      <h2>5. Included Variants</h2>
+      <ul>
+        <li><code>standard</code>: Raw dimensional axes preserving physical engineering units (tons, bar, °C, MPa).</li>
+        <li><code>normalized</code>: $0\% - 100\%$ min-max normalized scales across all axes for uniform slope comparison.</li>
+        <li><code>spline</code>: Smooth cubic bezier curves connecting axes to reduce visual fatigue in dense datasets.</li>
+        <li><code>brushed</code>: Interactive 1D range brushing to dynamically filter records across multiple dimensions.</li>
+      </ul>
+    </section>
+
+    <!-- 6. Primitive & Core Component Composition -->
+    <section>
+      <h2>6. Primitive & Core Component Composition</h2>
+      <ul>
+        <li><strong>Primitives:</strong> <code>Box</code>, <code>Text</code>, <code>Heading</code>, <code>Surface</code>, <code>Container</code>.</li>
+        <li><strong>Core Components:</strong> <code>Tooltip</code> (record multi-attribute inspection), <code>Skeleton</code> (loading placeholder), <code>EmptyState</code> (zero brush matches).</li>
+        <li><strong>Composite Components:</strong> <code>Toolbar</code> (normalization toggle, spline toggle, brush modal trigger, table modal button).</li>
+      </ul>
+    </section>
+
+    <!-- 7. Visualization-Native Elements & Engine Math -->
+    <section>
+      <h2>7. Visualization-Native Elements & Engine Math</h2>
+      <p>
+        The component incorporates Section 20 math from <code>viz-core.js</code>:
+      </p>
+      <ul>
+        <li><strong>Dimension Normalization:</strong> Maps raw values $v$ to $[0, 1]$ interval:
+          <pre><code>norm = (v - domain.min) / (domain.max - domain.min);
+if (domain.inverted) norm = 1 - norm;</code></pre>
+        </li>
+        <li><strong>Smooth Cubic Spline Math:</strong> Connects adjacent axes using horizontal tangent control points:
+          <pre><code>cx1 = p0.x + (p1.x - p0.x) * 0.4;
+cy1 = p0.y;
+cx2 = p1.x - (p1.x - p0.x) * 0.4;
+cy2 = p1.y;
+path += ` C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p1.x} ${p1.y}`;</code></pre>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 8. Interactive Behaviors & Gestures -->
+    <section>
+      <h2>8. Interactive Behaviors & Gestures</h2>
+      <ul>
+        <li><strong>Axis Reordering:</strong> Clicking ◀ / ▶ buttons reorders adjacent axes to explore pairwise dimensional correlations.</li>
+        <li><strong>Multidimensional Range Filtering:</strong> Setting min/max bounds instantly isolates passing polylines and mutes non-passing polylines.</li>
+        <li><strong>Simultaneous Coordinate Inspection:</strong> Hovering any polyline illuminates active coordinate chips on all vertical axes simultaneously.</li>
+      </ul>
+    </section>
+
+    <!-- 9. Layout Templates & Responsiveness -->
+    <section>
+      <h2>9. Layout Templates & Responsiveness</h2>
+      <ul>
+        <li><strong>Split View:</strong> Top parallel coordinate plot paired with bottom inspection table.</li>
+        <li><strong>Controlled Scrolling:</strong> For displays with $>8$ dimensions, horizontal SVG scroll preserves minimum 80px inter-axis spacing.</li>
+      </ul>
+    </section>
+
+    <!-- 10. Accessibility (WCAG 2.2 AA & Section 508) -->
+    <section>
+      <h2>10. Accessibility (WCAG 2.2 AA & Section 508)</h2>
+      <ul>
+        <li><strong>Non-Drag Range Controls:</strong> Accessible numeric input fields allow full keyboard filtering without requiring mouse drag gestures.</li>
+        <li><strong>Accessible Data Table (<kbd>Alt+F11</kbd>):</strong> Full accessible table modal detailing all record dimensions, active brush filters, and clusters for screen readers.</li>
+        <li><strong>Focus Highlights:</strong> High-contrast stroke halos ensure selected records remain legible to low-vision operators.</li>
+      </ul>
+    </section>
+
+    <!-- 11. State Matrix & Edge Cases -->
+    <section>
+      <h2>11. State Matrix & Edge Cases</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>Component Behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Missing Dimension Value ($null / NaN$)</td>
+            <td>Interpolates to midpoint or bridges across adjacent dimensions without breaking path continuity.</td>
+          </tr>
+          <tr>
+            <td>Zero Variance Axis ($Min = Max$)</td>
+            <td>Adds nominal $\pm 5\%$ span buffer to prevent division by zero in coordinate scaling.</td>
+          </tr>
+          <tr>
+            <td>Zero Passing Records (Over-filtered)</td>
+            <td>Renders empty state overlay prompting operator to reset brush filters.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 12. Performance & Rendering Budgets -->
+    <section>
+      <h2>12. Performance & Rendering Budgets</h2>
+      <ul>
+        <li><strong>Render Budget:</strong> Pure SVG path rendering handles 250+ simultaneous polylines at 60fps.</li>
+        <li><strong>Bundle Budget:</strong> Zero heavy external mapping or charting libraries; pure React + SVG under 20KB.</li>
+      </ul>
+    </section>
+
+    <!-- 13. Manufacturing Domain Implementation -->
+    <section>
+      <h2>13. Manufacturing Domain Implementation (Suryodaya Autocomp Ltd)</h2>
+      <ul>
+        <li><strong>Entity:</strong> Suryodaya Autocomp Ltd (Chakan Plant PL-04, Pune).</li>
+        <li><strong>Die Casting Telemetry:</strong> Tonnage ($\text{T}$), Die Temp ($^\circ\text{C}$), Pressure ($\text{bar}$), Cycle Time ($\text{s}$), Defect PPM.</li>
+        <li><strong>Steel Metallurgy:</strong> Tensile ($\text{MPa}$), Yield ($\text{MPa}$), Elongation ($\%$), Hardness ($\text{HRB}$), Carbon Eq ($\%$), Roughness ($Ra\ \mu\text{m}$).</li>
+        <li><strong>Number Formatting:</strong> Strict `en-IN` numbering.</li>
+      </ul>
+    </section>
+
+    <!-- 14. Verification & Validation Checklist -->
+    <section>
+      <h2>14. Verification & Validation Checklist</h2>
+      <ul>
+        <li>[x] All 4 variants (standard, normalized, spline, brushed) active.</li>
+        <li>[x] Dynamic axis reordering verified with pairwise coordinate updates.</li>
+        <li>[x] Non-drag accessible brush controls active.</li>
+        <li>[x] Accessible table modal bound to <kbd>Alt+F11</kbd>.</li>
+        <li>[x] Zero open items · Status frozen 9 Sep 2026.</li>
+      </ul>
+    </section>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+:root{
+/* ── BORDER WIDTHS ─────────────────────────────────────────────────────
+   The border IS the elevation system, so width carries meaning: 1px is
+   structure, 1.5px is emphasis (checked, current, selected edge), 2px is
+   a focus border or an active tab underline. 3px exists for the left rule
+   on a code block quote and nothing else. */
+--border-width-0:0px; /* @kind spacing */
+--border-width:1px;
+--border-width-strong:1.5px;
+--border-width-emphasis:2px;
+--border-width-rule:3px;
+
+/* Composites — one declaration for the hairline used on ~90% of surfaces. */
+--border-hairline:var(--border-width) solid var(--border-default); /* @kind other */
+--border-hairline-subtle:var(--border-width) solid var(--border-subtle); /* @kind other */
+--border-hairline-strong:var(--border-width) solid var(--border-strong); /* @kind other */
+--border-focus-ring:var(--border-width-emphasis) solid var(--border-focus); /* @kind other */
+
+/* Dashed is permitted for exactly two things: a drop target and an
+   empty-slot placeholder. Never for decoration, never on a card. */
+--border-dashed:var(--border-width) dashed var(--border-strong); /* @kind other */
+
+/* Divider inset — table and list rules run edge to edge; card section
+   rules inset by the card padding. */
+--divider-inset:var(--space-4);
+}

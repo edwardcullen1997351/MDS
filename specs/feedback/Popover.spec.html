@@ -1,0 +1,455 @@
+<!-- @dsCard group="Specs · Feedback" viewport="1080x760" name="Popover" subtitle="Full specification — the anchoring primitive: purpose, anatomy, props, focus, a11y, motion" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Popover — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo.tall{min-height:200px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:7px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.filterbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;background:var(--background-page);border:var(--border-hairline);border-radius:var(--radius-sm)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Popover, Dialog, Tooltip, Button, IconButton, Badge, Field, Input, Select, Checkbox, Switch, Combobox, Stack, Divider, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const FilterPanel = () => (
+  <div style={{display:'flex',flexDirection:'column',gap:12}}>
+    <Field label="Area"><Select options={['assembly','fabrication','finishing','packaging']} placeholder="All areas" /></Field>
+    <Field label="Shift"><Select options={['Days','Swing','Nights']} placeholder="All shifts" /></Field>
+    <Checkbox label="Only lines with open faults" />
+    <div style={{display:'flex',justifyContent:'flex-end',gap:8,paddingTop:2}}>
+      <Button variant="ghost" size="sm">Reset</Button>
+      <Button size="sm">Apply</Button>
+    </div>
+  </div>
+);
+const Columns = () => (
+  <div style={{display:'flex',flexDirection:'column'}}>
+    {['Line','Area','Shift','Output','Scrap %','Downtime','Owner'].map((c,i)=>(
+      <label key={c} style={{display:'flex',alignItems:'center',gap:8,padding:'6px 12px',fontSize:'var(--text-xs)',cursor:'pointer'}}>
+        <input type="checkbox" defaultChecked={i<5} style={{margin:0}} />{c}
+      </label>
+    ))}
+  </div>
+);
+
+function Spec(){
+const [ctl,setCtl] = React.useState(false);
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Feedback · Component specification</span>
+    <h1>Popover</h1>
+    <p className="lede">A non-modal panel anchored to a trigger — and the primitive the last two components asked for by name. <code>Combobox</code> (1.3.0) worked out how to position a surface that no container can clip; <code>Autocomplete</code> (1.4.0) copied it and paid for two defects proving the height must be <em>measured</em>, not predicted. That code is now <code>useAnchor</code>, and all four anchored surfaces in the system — this, both lists, and <code>Tooltip</code> — position through it. Popover is the engine's own component: a panel that takes focus, holds interactive content, and dismisses without ever blocking the page.</p>
+    <div className="meta">
+      <span>components/feedback/Popover.jsx</span><span>components/core/anchor.js</span><span>window.MeridianDesignSystem_962c43.Popover</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 2 open items</span><span>since: 1.5.0</span><span>6 new tokens · 1 new layer</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Content on demand, without blocking the page.">
+    <p>A popover holds controls or detail that would crowd the page if it were always visible, and that the user should be able to abandon by looking away. It occupies the gap between a tooltip (a label, no interaction) and a dialog (a decision, everything blocked): <strong>interactive, dismissible, non-blocking</strong>. In a console at this density it is mostly filters, column pickers and detail peeks.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Offer controls from a button','Popover','This component.'],
+      ['Force a decision before continuing','Dialog','Modal, scrim, focus trapped. A popover can be dismissed by a stray click — never put a destructive confirm in one.'],
+      ['Label a control on hover','Tooltip','No interaction, no focus, pointer-transparent.'],
+      ['Pick one value from a long list','Combobox','A field, not a panel — it just happens to use the same engine.'],
+      ['Offer a list of commands','Menu','Not in this system yet. Build it on Popover with padded={false} (§14).'],
+      ['Show a message the user did not ask for','Toast','A popover is always anchored to something the user just pressed.'],
+      ['Hold a form of more than ~6 fields','Dialog, or a page','A 320px panel that scrolls is a page in the wrong container.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> for filters, column and density pickers, a row's detail peek, a short form (rename, assign, add a note).</li>
+      <li><strong>Use</strong> when losing the panel costs nothing. Anything typed in it must survive dismissal, or it belongs in a <code>Dialog</code>.</li>
+      <li><strong>Do not use</strong> for confirmations, especially destructive ones — Escape and an outside click both dismiss, and neither is an answer.</li>
+      <li><strong>Do not use</strong> for anything the user did not just click. An unanchored floating panel is a <code>Toast</code> or a <code>Dialog</code>.</li>
+      <li><strong>Do not nest</strong> popovers. A panel opened from a panel cannot be dismissed predictably — the outer one's focus-out closes both.</li>
+    </ul>
+    <div className="demo tall">
+      <Popover trigger={<Button variant="secondary" iconRight="chevron-down">Filters</Button>} title="Filters"><FilterPanel /></Popover>
+      <Popover trigger={<Button variant="ghost" iconLeft="columns">Columns</Button>} title="Visible columns" padded={false} width="sm"><Columns /></Popover>
+      <Tooltip content="Tooltips share the engine" side="top"><Button variant="ghost" iconLeft="info">Tooltip</Button></Tooltip>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A trigger, a panel, and an engine you cannot see.">
+    <div className="demo tall">
+      <Popover trigger={<Button variant="secondary" iconRight="chevron-down">Assign owner</Button>} title="Assign owner">
+        <div style={{display:'flex',flexDirection:'column',gap:10}}>
+          <Field label="Owner"><Combobox options={['Platform','Payments','Growth','Identity','Search','Billing','Tooling','Maintenance','Quality','Logistics','Planning','Safety','Training','Finance','Facilities','Reliability']} placeholder="Search teams" /></Field>
+          <Field label="Note"><Input placeholder="Why the change?" /></Field>
+          <div style={{display:'flex',justifyContent:'flex-end',gap:8}}><Button size="sm">Assign</Button></div>
+        </div>
+      </Popover>
+      <span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)',maxWidth:'34ch'}}>A Combobox inside a Popover: two anchored surfaces, two layers, one engine. The list opens above the panel because <code>--z-dropdown</code> is read from the ladder, not invented.</span>
+    </div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Trigger</strong> — whatever you pass, wrapped in an inline-flex span that is the measurement anchor. The element is cloned to receive <code>aria-haspopup="dialog"</code> and <code>aria-expanded</code>, so a <code>Button</code> announces the panel without the consumer wiring anything.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Panel</strong> — <code>--popover-*</code>: <code>--surface-overlay</code>, <code>--radius-md</code>, <code>--elevation-3</code>. One step lighter than <code>Dialog</code>'s <code>--elevation-4</code> and 2 px tighter, because it is attached to a trigger rather than floating over a scrim.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Header</strong> — optional <code>title</code> in <code>--popover-title-text</code> (uppercase-weight label scale, not a heading ramp) with a <code>--popover-divider</code> hairline and a close button. The title is also the panel's accessible name.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Body</strong> — 12 px padding, or none with <code>padded={'{false}'}</code> for content that owns its own edges: lists, tables, menus.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>No arrow.</strong> An arrow has to be re-positioned on every flip and shift, and it lies as soon as the panel is clamped away from its trigger. Nothing else in this system draws one — not the Combobox list, not the Tooltip — and 4 px of offset under <code>elevation-3</code> already reads as attached.</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>The engine</strong> (<code>anchor.js</code>) — invisible, and the actual substance of this release: <code>position: fixed</code> so no ancestor clips it, flip-once-and-hold, shift into the viewport, height capped to the room available, and one rAF loop that <em>measures</em> the rendered panel (§13).</span></div>
+      <div className="callout"><span className="cnum">7</span><span><strong>Layer</strong> — <code>--z-popover</code> (650), a new rung above <code>--z-dialog</code>: a popover is opened from content, and content includes the inside of a dialog.</span></div>
+    </div>
+    <T cols={['Region','Value','Token']} rows={[
+      ['Offset from trigger','4 px','offset prop'],
+      ['Panel radius','6 px','--popover-radius'],
+      ['Panel shadow','elevation-3','--popover-shadow'],
+      ['Panel background','surface-overlay','--popover-background'],
+      ['Header padding','10 / 12 px','literal'],
+      ['Body padding','12 px, or 0','padded prop'],
+      ['Viewport gutter','8 px on every edge','anchor.js MARGIN'],
+      ['Minimum room','96 px before it re-flips','anchor.js MIN_ROOM'],
+      ['Layer','650','--z-popover'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Twelve props — the engine's knobs, and the panel's.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['trigger',<span className="t">ReactNode</span>,'—','Cloned to receive aria-haspopup and aria-expanded when it is an element.'],
+      ['title',<span className="t">ReactNode</span>,'—','Header, close button, and the accessible name. Omit only with aria-label.'],
+      ['open',<span className="t">boolean</span>,'—','Controlled. Omit for uncontrolled — the trigger toggles it.'],
+      ['onOpenChange',<span className="t">(open: boolean) => void</span>,'—','Fires from the trigger, Escape, outside pointer-down, and focus leaving.'],
+      ['onClose',<span className="t">() => void</span>,'—','Also fires on close, for consumers that only care about dismissal.'],
+      ['side',<span className="t">'top'|'bottom'|'left'|'right'</span>,<span className="t">'bottom'</span>,'A preference. The engine flips it when the room is not there.'],
+      ['align',<span className="t">'start'|'center'|'end'</span>,<span className="t">'start'</span>,'Along the trigger\u2019s edge. Shifts to stay in the viewport.'],
+      ['offset',<span className="t">number</span>,<span className="t">4</span>,'Gap in px. 8 for anything that should read as detached.'],
+      ['width',<span className="t">'sm'|'md'|'lg'|number</span>,<span className="t">'md'</span>,'240 / 320 / 400, or an explicit px number (§05).'],
+      ['matchTriggerWidth',<span className="t">boolean</span>,<span className="t">false</span>,'Take the trigger\u2019s width — for panels that belong to a field.'],
+      ['padded',<span className="t">boolean</span>,<span className="t">true</span>,'false for edge-to-edge content: lists, tables, menus.'],
+      ['style',<span className="t">CSSProperties</span>,'—','On the panel. Position and size are the engine\u2019s — do not override them.'],
+    ]}/>
+    <p><strong>No <code>arrow</code>.</strong> See §02. It is the prop most often asked for and the one that would make the flip and shift logic dishonest.</p>
+    <p><strong>No <code>modal</code>.</strong> A popover with a scrim and a focus trap <em>is</em> a <code>Dialog</code>; a flag that turns one into the other guarantees the wrong one ships. The dismissal contract also inverts — a modal must not close on an outside click.</p>
+    <p><strong>No <code>trigger="hover"</code>.</strong> Hover-opening a panel that takes focus is a trap for keyboard and touch users alike, and a panel that does <em>not</em> take focus but holds controls is unreachable. Hover is <code>Tooltip</code>'s job, exclusively.</p>
+    <p><strong>No <code>closeOnSelect</code>.</strong> Only the consumer knows whether picking a column should dismiss the panel (it should not) or picking a command should (it should). Call <code>onOpenChange(false)</code>.</p>
+    <p><strong>No <code>portal</code> prop.</strong> There is no portal: the panel stays in the React tree beside its trigger and is <code>position: fixed</code>, which is what keeps outside-click and focus-out a <code>contains()</code> check (§13).</p>
+    <p><strong>The engine is not exported.</strong> <code>useAnchor</code> is internal — a hook cannot reach the window namespace, and more importantly a product that needs raw anchoring almost always needs one of the four components that already wrap it. If a fifth surface is needed, it belongs in this system, not in a consumer.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="No variant prop. One panel, four sides, three alignments.">
+    <T cols={['Variant','Shape','Note']} rows={[
+      ['Titled panel','title + close button','The default. Named, dismissible, obvious.'],
+      ['Bare panel','aria-label, no title','For a detail peek where a heading is noise. Still needs a name.'],
+      ['Edge-to-edge','padded={false}','Lists, checkbox columns, tables. Content owns its padding.'],
+      ['Field-anchored','matchTriggerWidth','Reads as an extension of the control, like a Combobox list.'],
+      ['Side-anchored','side="right" align="start"','Detail beside a table row. Flips to the left near the viewport edge.'],
+    ]}/>
+    <div className="demo col tall">
+      <Row label="sides">
+        <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+          {['top','bottom','left','right'].map(s=>(
+            <Popover key={s} side={s} align="center" width="sm" trigger={<Button variant="secondary" size="sm">{s}</Button>} title={`Anchored ${s}`}>
+              <p style={{margin:0,fontSize:'var(--text-xs)'}}>Preferred side <code>{s}</code>. Flips when the room is not there.</p>
+            </Popover>
+          ))}
+        </div>
+      </Row>
+      <Row label="alignments">
+        <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+          {['start','center','end'].map(a=>(
+            <Popover key={a} align={a} width="sm" trigger={<Button variant="ghost" size="sm">{a}</Button>} title={`Align ${a}`}>
+              <p style={{margin:0,fontSize:'var(--text-xs)'}}>Aligned to the trigger's <code>{a}</code> edge, shifted if the viewport demands it.</p>
+            </Popover>
+          ))}
+        </div>
+      </Row>
+      <Row label="edge-to-edge"><Popover padded={false} width="sm" trigger={<Button variant="ghost" size="sm" iconLeft="columns">Columns</Button>} title="Visible columns"><Columns /></Popover></Row>
+      <Row label="controlled">
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <Popover open={ctl} onOpenChange={setCtl} trigger={<Button variant="secondary" size="sm">Controlled</Button>} title="Controlled panel">
+            <p style={{margin:0,fontSize:'var(--text-xs)'}}>State lives in the page. Every dismissal path reports through <code>onOpenChange</code>.</p>
+          </Popover>
+          <Badge tone={ctl?'success':'neutral'}>{ctl?'open':'closed'}</Badge>
+          <Button variant="ghost" size="sm" onClick={()=>setCtl(o=>!o)}>Toggle from outside</Button>
+        </div>
+      </Row>
+    </div>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Width is yours. Height is the engine's.">
+    <T cols={['width','px','Use']} rows={[
+      ['sm','240','A list, a single field, a short message.'],
+      ['md','320','Default. Two or three fields with actions.'],
+      ['lg','400','A small form, or content with a table.'],
+      ['number','as given','Detail peeks that must match a column or a card.'],
+      ['matchTriggerWidth','the trigger\u2019s','Field-anchored panels.'],
+    ]}/>
+    <div className="demo col tall">
+      <Row label="sm · md · lg">
+        <div style={{display:'flex',gap:10}}>
+          {['sm','md','lg'].map(w=>(
+            <Popover key={w} width={w} trigger={<Button variant="secondary" size="sm">{w}</Button>} title={`Width ${w}`}>
+              <p style={{margin:0,fontSize:'var(--text-xs)'}}>Panels are sized by content class, not by content length — three widths, chosen deliberately.</p>
+            </Popover>
+          ))}
+        </div>
+      </Row>
+    </div>
+    <p><strong>There is no height prop.</strong> The panel is as tall as its content until the viewport says otherwise, at which point the engine caps it to the room available and it scrolls. This is the same rule the Combobox list follows with a 264 px cap and the Autocomplete list follows with none: <em>content decides, the viewport overrules</em>.</p>
+    <p><strong>Width does not scale with density.</strong> A 320 px panel holds the same fields at compact and expanded; only the fields inside change height. Making the panel narrower under compact density would reflow every form in it.</p>
+    <p><strong>Nothing wider than <code>lg</code>.</strong> Past 400 px a panel stops reading as attached to its trigger and starts reading as a badly-placed dialog — which is the signal to make it one.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Trigger, panel, and the four ways out.">
+    <T cols={['State','Chrome','Notes']} rows={[
+      ['Trigger, closed','The trigger\u2019s own rest state','aria-expanded="false".'],
+      ['Trigger, open','The trigger\u2019s own pressed/active state','aria-expanded="true". The trigger does not gain a popover-specific style — it is still a Button.'],
+      ['Panel, open','elevation-3, focus moved inside','The first focusable child, or the element marked data-autofocus, or the panel itself.'],
+      ['Panel, flipped','Same panel, other side','No animation, no arrow to correct — a flip is invisible except for position (§09).'],
+      ['Panel, clamped','maxHeight set, content scrolls','Only when the viewport leaves no room.'],
+      ['Dismissing','Panel removed, focus returned to the trigger','Escape, outside pointer-down, tabbing out, or the close button.'],
+    ]}/>
+    <T cols={['Dismissal','Trigger','Focus goes to']} rows={[
+      ['Escape',<span>Anywhere inside the panel</span>,'The trigger. Explicit, because the keyboard user cannot see where focus went otherwise.'],
+      ['Outside pointer-down','A click anywhere else on the page','Wherever the click landed. Stealing focus back would fight the user.'],
+      ['Tab out','Focus leaving the last control in the panel','Onward, in document order — the panel simply closes behind it.'],
+      ['Close button','The X in the header','The trigger.'],
+      ['Trigger again','Pressing the trigger while open','The trigger.'],
+    ]}/>
+    <div className="demo tall">
+      <Popover trigger={<Button variant="secondary">Open, then press Escape</Button>} title="Dismissal">
+        <div style={{display:'flex',flexDirection:'column',gap:8}}>
+          <p style={{margin:0,fontSize:'var(--text-xs)'}}>Focus is in here. <kbd>Esc</kbd> returns it to the trigger; <kbd>Tab</kbd> past the last control closes the panel and moves on.</p>
+          <Field label="Note"><Input placeholder="Try tabbing out" /></Field>
+        </div>
+      </Popover>
+    </div>
+    <p className="warn"><strong>The contract: a popover is never load-bearing.</strong> Four of the five dismissal paths are things a user can do by accident — a stray click, a Tab, an Escape aimed at something else. Anything that must not be lost belongs in a <code>Dialog</code>, whose scrim and focus trap exist precisely to make dismissal deliberate. If you find yourself wanting to suppress outside-click here, you are building the wrong component.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="A panel that takes focus, and gives it back.">
+    <T cols={['Key','On the trigger','Inside the panel']} rows={[
+      [<kbd>Enter</kbd>,'Opens, and focus moves into the panel.','Whatever the focused control does.'],
+      [<kbd>Space</kbd>,'Opens (the trigger is a button).','Whatever the focused control does.'],
+      [<kbd>Tab</kbd>,'Moves on without opening.','Through the panel\u2019s controls; past the last one, the panel closes and focus continues in document order.'],
+      [<kbd>Shift+Tab</kbd>,'—','Backwards; out of the first control closes the panel and returns to the trigger naturally.'],
+      [<kbd>Esc</kbd>,'Nothing.','Closes and returns focus to the trigger. Scoped, so a Dialog behind it stays open.'],
+      [<kbd>↓</kbd>,'Nothing. This is not a menu — an arrow key must not open a panel that takes focus.','Whatever the focused control does.'],
+    ]}/>
+    <ul>
+      <li><strong>Focus moves in, and that is the difference from <code>Combobox</code>.</strong> There, focus must stay in the input or the user cannot keep typing; here the panel <em>is</em> the content, so leaving focus on the trigger would put the next Tab behind the panel — the classic broken popover.</li>
+      <li><strong>Focus is not trapped.</strong> Tabbing out closes the panel, in document order. Trapping without a scrim strands a keyboard user in a panel the pointer can click straight out of, and the two dismissal models then disagree.</li>
+      <li><strong>Escape returns focus explicitly.</strong> The other paths do not: an outside click has already told us where the user wants to be.</li>
+      <li><strong>The panel is focused if it holds nothing focusable</strong> — <code>tabIndex={'{-1}'}</code> on the panel — so a detail peek is still reachable and announced rather than opening into nowhere.</li>
+      <li><strong><code>data-autofocus</code></strong> on a child overrides the first-focusable rule, for panels whose first control is not the one you want (a search field below a toolbar, say).</li>
+      <li><strong>No arrow-key navigation.</strong> If the panel's content is a list of commands, that list owns its own arrow handling — which is exactly what a future <code>Menu</code> built on this will do (§14).</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="Non-modal dialog semantics, honestly implemented.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Role & name','role="dialog" on the panel, named by title via aria-labelledby, or aria-label. Warns when unnamed — a surface that takes focus must say what it is.'],
+      ['Trigger relationship','aria-haspopup="dialog" and aria-expanded on the cloned trigger, so its state is announced before it is pressed.'],
+      ['Non-modal, and honest about it','No aria-modal. The rest of the page remains in the accessibility tree and remains operable, which is true — a scrim-less panel that claimed aria-modal would lie to a screen reader about what is reachable.'],
+      ['Focus movement (2.4.3)','Focus moves to the first focusable child (or the panel), and returns to the trigger on Escape and on the close button. Order is never broken: tabbing out continues in document order because the panel sits beside its trigger in the DOM.'],
+      ['Escape (2.1.2)','Closes the panel and only the panel — the handler stops propagation, so a Dialog behind it survives.'],
+      ['Contrast (1.4.11)','--popover-border is --border-default against --surface-overlay, plus elevation-3 to separate it from the page.'],
+      ['Target size (2.5.8)','The close button is an sm IconButton at 28px; the trigger is whatever you passed.'],
+      ['Reduced motion','Nothing animates (§09), so there is nothing to reduce.'],
+      ['Mobile & touch','No hover path at all, so nothing here is unreachable by touch. The panel flips and clamps rather than running off-screen (§11).'],
+      ['Layering','--z-popover (650) sits above --z-dialog (600) so a panel opened from inside a dialog is visible and focusable; toasts (700) and tooltips (800) still win.'],
+    ]}/>
+    <div className="demo tall" style={{position:'relative',minHeight:280,padding:0,overflow:'hidden'}}>
+      <Dialog open title="Reassign line L-07" description="A Popover opened from inside a Dialog." footer={<><Button variant="ghost" size="sm">Cancel</Button><Button size="sm">Save</Button></>}>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <Popover trigger={<Button variant="secondary" size="sm" iconRight="chevron-down">Pick a shift</Button>} title="Shift">
+            <p style={{margin:0,fontSize:'var(--text-xs)'}}>Visible because <code>--z-popover</code> (650) is above <code>--z-dialog</code> (600). Escape closes this panel and leaves the dialog open.</p>
+          </Popover>
+          <span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>Escape closes the panel, not the dialog.</span>
+        </div>
+      </Dialog>
+    </div>
+    <p className="warn"><strong>The two things that regress here.</strong> Focus return, and Escape scoping. Both are invisible in a pointer test and both break a keyboard user completely: a panel that drops focus to <code>&lt;body&gt;</code> on close sends the next Tab to the top of the page, and an unscoped Escape closes the dialog behind the panel along with it. Any change to the open/dismiss path needs a keyboard-only pass — the same standing rule <code>Combobox</code> carries for its listbox ARIA.</p>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="None. Deliberately.">
+    <T cols={['Change','Duration','Easing','Property']} rows={[
+      ['Panel open / close','—','—','never'],
+      ['Flip to the other side','—','—','never'],
+      ['Reposition while scrolling','—','—','per frame, untransitioned'],
+      ['Trigger state','140 ms','--ease-out','the trigger\u2019s own transition'],
+    ]}/>
+    <ul>
+      <li><strong>Nothing animates, consistent with every other anchored surface</strong> — the Combobox list, the Autocomplete list and the Tooltip all appear instantly. A popover is a response to a press, and a 120 ms fade is 120 ms of doubt about whether the press landed.</li>
+      <li><strong>Repositioning must never be transitioned.</strong> The engine can update the panel's coordinates on any frame; a transition on <code>top</code>/<code>left</code> would turn a scroll into a rubber-banding panel chasing its trigger.</li>
+      <li><strong>A flip is instant and unmarked.</strong> With no arrow to re-point, moving from below the trigger to above it is a position change and nothing else — which is part of why there is no arrow.</li>
+      <li><strong>The one exception worth allowing later</strong> would be a 90 ms opacity fade on <em>close</em>, which is invisible to the eye but keeps a dismissed panel from vanishing mid-click. Not shipped: it needs an exit-animation lifecycle this component does not have.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="A panel is not a page.">
+    <T cols={['Slot','Job','Write','Not']} rows={[
+      ['Trigger','The noun, or the verb + noun','Filters · Columns · Assign owner','Options · More · Click here'],
+      ['Title','The same noun as the trigger','Filters','Filter this table · Filter options'],
+      ['Body','One task','Two or three fields, then the action','A settings page'],
+      ['Primary action','The verb','Apply · Assign · Save','OK · Submit · Done'],
+      ['Secondary action','The escape that is not dismissal','Reset','Cancel — dismissal is already free (§06)'],
+      ['Bare panel name','What the peek is about','aria-label="Line L-07 detail"','aria-label="Popover"'],
+    ]}/>
+    <ul>
+      <li><strong>The title repeats the trigger's word.</strong> A trigger reading “Filters” and a panel titled “Refine results” makes the user check they pressed the right thing.</li>
+      <li><strong>“Cancel” is usually wrong in a popover.</strong> Escape, an outside click and Tab already cancel; a Cancel button implies the other paths might commit something. <code>Reset</code> — which changes values without closing — is the button that earns its place.</li>
+      <li><strong>One task per panel.</strong> If it needs a scrollbar at <code>lg</code>, it is a <code>Dialog</code> or a page. The panel scrolling because the <em>viewport</em> is short is fine; scrolling because the content is long is a design error.</li>
+      <li><strong>Never put the only copy of anything in here.</strong> Same rule as §06, stated as content: text a user typed into a popover must survive dismissal, or the panel is the wrong container.</li>
+      <li><strong>Name a bare panel after its subject</strong>, not its shape. The name is the only thing a screen-reader user gets when focus lands inside.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Flip, shift, clamp — in that order.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','A 320px panel is nearly the full viewport. It shifts to keep an 8px gutter and clamps to the room available; if the trigger is near the bottom it flips above. Consider a Dialog instead below 600px — a full-width panel anchored to nothing in particular is a dialog with extra steps.'],
+      ['tablet ≥ 600','As authored. side and align are honoured whenever the room exists.'],
+      ['desktop ≥ 1024','As authored.'],
+      ['ultrawide ≥ 1600','Unchanged — the panel is anchored, so it follows its trigger rather than the page width.'],
+    ]}/>
+    <p><strong>The engine's three moves, in order:</strong> <em>flip</em> the side if the preferred one cannot hold the panel (decided once, at open, then held — re-deciding it per frame made a Combobox list jump 161 px against 90 px of scroll); <em>shift</em> along the other axis to keep an 8 px viewport gutter; <em>clamp</em> the height to the room that actually exists, so a panel near the bottom of a short viewport scrolls rather than running off-screen.</p>
+    <Row label="clipped">
+      <div style={{width:300,height:80,overflow:'hidden',background:'var(--surface-card)',border:'var(--border-hairline)',borderRadius:'var(--radius-md)',padding:14,display:'flex',alignItems:'center'}}>
+        <Popover width="sm" trigger={<Button variant="secondary" size="sm">Inside overflow:hidden</Button>} title="Not clipped">
+          <p style={{margin:0,fontSize:'var(--text-xs)'}}>A fixed descendant is not clipped by an ancestor's <code>overflow: hidden</code>. This is the whole reason the engine exists.</p>
+        </Popover>
+      </div>
+      <span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)',maxWidth:'32ch'}}>An 80 px box with <code>overflow: hidden</code>. The panel opens past the container edge.</span>
+    </Row>
+    <p className="warn"><strong>The residual caveat, unchanged since 1.3.0:</strong> an ancestor with <code>transform</code>, <code>filter</code>, <code>perspective</code> or <code>contain</code> becomes the containing block for fixed descendants, so the panel would be positioned against that element rather than the viewport. Animated or transformed panels remain out of scope for every surface using this engine.</p>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Anchor it to something the user just pressed.</li>
+        <li>Name it — <code>title</code> or <code>aria-label</code>.</li>
+        <li>Keep it to one task.</li>
+        <li>Let every dismissal path be free.</li>
+        <li>Use <code>padded={'{false}'}</code> for lists.</li>
+        <li>Reach for <code>Dialog</code> when it must not be lost.</li>
+        <li>Test it with the keyboard only.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>Put a destructive confirm in one.</li>
+        <li>Open it on hover.</li>
+        <li>Trap focus in it.</li>
+        <li>Nest one inside another.</li>
+        <li>Animate its position.</li>
+        <li>Add an arrow.</li>
+        <li>Override its <code>top</code>/<code>left</code> via <code>style</code>.</li>
+        <li>Put one inside a transformed panel.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this component invites.</strong> Using it as a cheap dialog. It looks like a saving — no scrim, no modal, less ceremony — and then a user clicks the page while a rename is half-typed, or presses Escape out of habit, and the work is gone with no undo and no warning. The tell is simple: <strong>if losing the panel loses data, it is a <code>Dialog</code>.</strong> The second failure is quieter — a popover whose trigger is inside a scrolling panel, tested only while the page is still, where the panel silently detaches from its trigger. The engine handles it; hand-rolled anchoring is what does not, which is why there is now exactly one implementation.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="The engine, and what four reviews taught it.">
+    <ul>
+      <li><strong>Two files.</strong> <code>anchor.js</code> holds <code>useAnchor(anchorRef, floatRef, opts)</code> and <code>anchorStyle(pos, z)</code>; <code>Popover.jsx</code> holds the panel, the focus contract and the dismissal paths. The hook is internal — a lowercase export cannot reach the window namespace, which is correct: consumers should be reaching for one of the four components that wrap it.</li>
+      <li><strong>Four surfaces, one engine.</strong> <code>Combobox</code> (<code>matchWidth</code>, <code>max: 264</code>), <code>Autocomplete</code> (<code>matchWidth</code>, no cap), <code>Tooltip</code> (<code>align: 'center'</code>, <code>clampHeight: false</code>) and this. Both lists lost ~60 lines each; <code>Tooltip</code> gained flipping and clip-immunity it never had, since it had been positioned <code>absolute</code> inside a <code>relative</code> span and was cut in half by any clipped toolbar.</li>
+      <li><strong><code>fixed</code>, not <code>absolute</code>.</strong> A fixed descendant is not clipped by an ancestor's <code>overflow: hidden</code>, so an anchored surface works in a table cell or a scrolling panel with no portal and no dependency. The surface stays beside its trigger in the React tree, which is what keeps outside-pointerdown and focus-out a <code>contains()</code> check.</li>
+      <li><strong>One loop, and it measures.</strong> The anchor's rect and the surface's rendered size are read from the DOM on animation frames, plus <code>scroll</code> in the capture phase and <code>resize</code>. Position goes through React state behind a change key — it moves rarely and a missed frame is invisible. <strong>Height does not:</strong> it is written straight onto the surface as <code>max-height</code>, every frame, ungated. Three cached-height implementations failed before this one — row constants (wrong for a row with a description), a value computed in the keystroke handler (a render behind), and a value in React state behind the change key (wrong for as long as the query stood, whenever the key was missed). A style write cannot be a render behind anything.</li>
+      <li><strong>The height is measured on the element that receives it.</strong> The engine sums the surface's <em>children</em> — never clamped, so a capped box cannot feed its own height back into the measurement — and adds the surface's own chrome (<code>offsetHeight − clientHeight</code>), because <code>max-height</code> under <code>box-sizing: border-box</code> has to cover the 1px border. Sizing a bordered surface from its content's <code>scrollHeight</code> made every list that should exactly fit scroll by exactly 2px: a defect invisible in a screenshot and obvious in a probe, found on this component's review and fixed for all four surfaces at once — which is the argument for the extraction in one line.</li>
+      <li><strong>Flip once, then hold.</strong> The side is decided on the first measurement of each open surface and kept, re-flipping only when the chosen side drops under 96 px of room. Re-deciding it per frame made a list jump from above its field to below it mid-scroll — measured at 161 px of travel against 90 px of scroll.</li>
+      <li><strong>Shift is a clamp, not a strategy.</strong> Along the cross axis the surface is clamped into the viewport with an 8 px gutter. No “auto” placement, no candidate scoring: with four sides, three alignments and a flip, a surface that cannot fit is a surface that is too big.</li>
+      <li><strong>Focus is moved on an animation frame</strong>, not synchronously in the effect — the panel is not laid out yet on the frame it mounts, and focusing it before position lands scrolled the page in Safari.</li>
+      <li><strong>Dismissal is three listeners</strong>, each with a reason: <code>pointerdown</code> on the document (not <code>click</code>: a drag that starts inside and ends outside fires no click), <code>keydown</code> for Escape with <code>stopPropagation</code> so a dialog behind survives, and <code>focusout</code> on the panel with a <code>relatedTarget</code> check so tabbing out closes but clicking inside does not.</li>
+      <li><strong>The trigger is cloned, not wrapped in a button.</strong> Wrapping would nest interactive elements; cloning adds <code>aria-haspopup</code> and <code>aria-expanded</code> to whatever was passed and leaves its own behaviour intact. Non-element triggers (a bare string) are rendered as-is, and the wrapper span carries the click.</li>
+      <li><strong>New rung on the ladder: <code>--z-popover</code> (650).</strong> Above <code>--z-dialog</code> (600), because a popover is opened from content and content includes the inside of a dialog. The 100-wide gaps in <code>layout.css</code> exist for exactly this insertion — the alternative, reusing <code>--z-dropdown</code> (300), would have hidden the panel behind any dialog, which is the bug the 1.3.0 audit caught in <code>Dialog</code> and <code>Tooltip</code>.</li>
+      <li><strong>6 new tokens</strong>, one step lighter than <code>Dialog</code>'s: <code>elevation-3</code> and <code>--radius-md</code> rather than <code>elevation-4</code> and <code>--radius-lg</code>. Its own family, not a reuse of <code>--dialog-*</code> or <code>--combobox-list-*</code>: a component token may never reference another component's.</li>
+      <li><strong>Tokens consumed:</strong></li>
+    </ul>
+    <div className="tokenlist">
+      <span>--popover-background</span><span>--popover-border</span><span>--popover-radius</span><span>--popover-shadow</span><span>--popover-title-text</span><span>--popover-divider</span><span>--z-popover (new)</span><span>--surface-overlay</span><span>--border-default · subtle</span><span>--elevation-3</span><span>--text-xs · 2xs</span><span>--tracking-label</span><span>--border-width</span>
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, what this closes.">
+    <pre>{`import { Popover, Button, Field, Select } from '@meridian/ds';
+
+// uncontrolled — the trigger owns the state
+<Popover trigger={<Button variant="secondary" iconRight="chevron-down">Filters</Button>}
+         title="Filters">
+  <Field label="Area"><Select options={areas} placeholder="All areas" /></Field>
+</Popover>
+
+// controlled — close it yourself when an action commits
+const [open, setOpen] = React.useState(false);
+
+<Popover open={open} onOpenChange={setOpen} title="Assign owner" width="lg">
+  <AssignForm onDone={() => setOpen(false)} />
+</Popover>
+
+// edge-to-edge list, anchored beside a table row
+<Popover side="right" align="start" padded={false} width={280}
+         aria-label={\`Line \${line.id} detail\`}
+         trigger={<IconButton icon="more-horizontal" label={\`Line \${line.id} actions\`} />}>
+  <RowDetail line={line} />
+</Popover>`}</pre>
+    <ul>
+      <li><strong>Close it yourself when an action commits.</strong> There is no <code>closeOnSelect</code>: a column toggle should leave the panel open, an Apply should close it, and only you know which this is.</li>
+      <li><strong>Anything typed in a popover must survive dismissal.</strong> Lift the draft into page state, or use a <code>Dialog</code>. This is the one rule that decides most misuse.</li>
+      <li><strong>Do not override position through <code>style</code>.</strong> <code>top</code>, <code>left</code>, <code>bottom</code>, <code>width</code> and <code>maxHeight</code> are written every frame the engine re-measures; your value will be overwritten or will fight it. Use <code>side</code>, <code>align</code>, <code>offset</code> and <code>width</code>.</li>
+      <li><strong>Building a Menu?</strong> <code>padded={'{false}'}</code>, a <code>role="menu"</code> child that owns arrow-key navigation and typeahead, and <code>onOpenChange(false)</code> on activation. That composition is the intended path, and it is what should become <code>Menu</code> — not a new anchoring implementation.</li>
+      <li><strong>Testing.</strong> <code>getByRole('dialog', {'{ name: /filters/i }'})</code>; assert the trigger's <code>aria-expanded</code> flips. The regression tests that matter: (1) focus is inside the panel after open and back on the trigger after Escape; (2) Escape inside a popover inside a <code>Dialog</code> leaves the dialog open; (3) tabbing past the last control closes the panel and does not return focus to the trigger; (4) a <code>pointerdown</code> inside the panel that ends outside does not dismiss; (5) with the trigger inside a scrolling container, scrolling keeps the panel attached — the test the hand-rolled versions never had.</li>
+      <li><strong>Lint.</strong> Flag a <code>Popover</code> with neither <code>title</code> nor <code>aria-label</code>; a <code>Popover</code> containing a <code>variant="danger"</code> Button (a destructive confirm belongs in a <code>Dialog</code>); <code>style</code> containing <code>top</code>/<code>left</code>/<code>position</code>; and a <code>Popover</code> rendered inside another <code>Popover</code>.</li>
+      <li><strong>Frozen 4 Sep 2026.</strong> API closed: <code>trigger</code>, <code>title</code>, <code>open</code>, <code>onOpenChange</code>, <code>onClose</code>, <code>side</code>, <code>align</code>, <code>offset</code>, <code>width</code>, <code>matchTriggerWidth</code>, <code>padded</code>, <code>style</code>. Focus and dismissal are hand-written and can regress — any change there needs a keyboard-only pass.</li>
+      <li><strong>Closed — the shared anchoring primitive.</strong> Open since 1.3.0, listed as overdue in 1.4.0, and the reason this component was next. Four surfaces now share one implementation; a fifth needs no new positioning code.</li>
+      <li><strong>Closed — <code>Tooltip</code>'s clip-immunity.</strong> It had been the promised side-effect of the extraction and cost one import: tooltips in table cells and dense toolbars are no longer cut off, and they flip when there is no room above.</li>
+      <li><strong>Closed — <code>Menu</code> shipped.</strong> The composition above works today but every consumer would re-invent arrow keys, typeahead and roving <code>tabindex</code>. It is the next component, and it needs no new anchoring. Arrow keys, typeahead and roving tabindex live there, on this same anchoring engine.</li>
+      <li><strong>Open — exit animation.</strong> A 90 ms fade on close (§09) needs an unmount lifecycle this component does not have. Worth it only if a real user need appears; four instant surfaces are consistent as they are.</li>
+      <li><strong>Open — transformed ancestors.</strong> Still out of scope for every anchored surface (§11). The fix is the CSS Anchor Positioning API, which is not yet broadly available; when it is, it replaces the whole loop in <code>anchor.js</code> and every surface benefits at once.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

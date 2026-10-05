@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="./ds-base.js"></script>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:18px;font-family:var(--font-sans);color:var(--text-primary)">
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(216px,1fr));gap:14px 16px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Work centre" hint="Machine rate and capability follow the centre" error="{{ f.errWc }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ f.workCentres }}" value="{{ f.wc }}" onChange="{{ f.onWc }}" size="sm" disabled="{{ f.busy }}" data-fld="wc" hint-size="100%,28px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Setup time" hint="5 to 240 whole minutes" error="{{ f.errSetup }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ f.setup }}" onChange="{{ f.onSetup }}" size="sm" mono="{{ true }}" inputMode="numeric" suffix="min" disabled="{{ f.busy }}" data-fld="setup" hint-size="100%,28px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Cycle time" hint="Per piece, whole seconds" error="{{ f.errCycle }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ f.cycle }}" onChange="{{ f.onCycle }}" size="sm" mono="{{ true }}" inputMode="numeric" suffix="sec/pc" disabled="{{ f.busy }}" data-fld="cycle" hint-size="100%,28px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Operators" hint="Manning at this operation" error="{{ f.errOperators }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ f.operatorOptions }}" value="{{ f.operators }}" onChange="{{ f.onOperators }}" size="sm" disabled="{{ f.busy }}" data-fld="operators" hint-size="100%,28px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Inspection frequency" hint="{{ f.inspHint }}" error="{{ f.errInsp }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ f.insp }}" onChange="{{ f.onInsp }}" size="sm" mono="{{ true }}" inputMode="numeric" suffix="pcs" disabled="{{ f.busy }}" data-fld="insp" hint-size="100%,28px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Scrap allowance" hint="0 to 5 per cent, one decimal" error="{{ f.errScrap }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ f.scrap }}" onChange="{{ f.onScrap }}" size="sm" mono="{{ true }}" inputMode="decimal" suffix="%" disabled="{{ f.busy }}" data-fld="scrap" hint-size="100%,28px"></x-import>
+</x-import>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-md)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Switch" label="First piece approved by quality before the run" description="Quality signs the first piece off at this operation before the balance is machined." checked="{{ f.fpa }}" onChange="{{ f.onFpa }}" size="md" disabled="{{ f.busy }}" data-fld="fpa" hint-size="100%,44px"></x-import>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-critical);line-height:1.5;text-wrap:pretty">{{ f.errFpa }}</p>
+</div>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Change note" hint="Recorded against the routing revision this commit creates. At least 15 characters." error="{{ f.errNote }}" hint-size="100%,132px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Textarea" value="{{ f.note }}" onChange="{{ f.onNote }}" rows="{{ 3 }}" size="sm" resize="vertical" placeholder="Why this operation is changing, and who asked for it." disabled="{{ f.busy }}" data-fld="note" hint-size="100%,72px"></x-import>
+</x-import>
+
+<div style="display:flex;flex-direction:column;gap:9px;padding:13px 15px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Effect on the standard lot of 480 pieces</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px 18px">
+<div style="display:flex;flex-direction:column;gap:2px">
+<span style="font-size:var(--text-2xs);color:var(--text-tertiary);font-family:var(--font-mono)">routing revision {{ f.baseRev }} holds</span>
+<span style="font-size:var(--text-sm);font-family:var(--font-mono);color:var(--text-primary)">{{ f.committedEffect }}</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<span style="font-size:var(--text-2xs);color:var(--text-tertiary);font-family:var(--font-mono)">this draft would make it</span>
+<span style="font-size:var(--text-sm);font-family:var(--font-mono);color:var(--text-primary)">{{ f.draftEffect }}</span>
+</div>
+</div>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary);line-height:1.55;text-wrap:pretty">{{ f.dirtySentence }}</p>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:640,&quot;height&quot;:760},&quot;f&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object&quot;}}"></script>
+</body>
+</html>

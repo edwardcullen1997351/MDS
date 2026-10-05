@@ -1,0 +1,400 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="Slider" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Slider — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+td.num,th.num{text-align:right;font-family:var(--font-mono)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:5px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.rows{display:flex;flex-direction:column;gap:14px}
+.grey{filter:grayscale(1)}
+.w280{width:280px}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Slider, Input, Field, Progress, Select, Badge, Button } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows,numCols=[]}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i} className={numCols.includes(i)?'num':''}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={(j===0?'k ':'')+(numCols.includes(j)?'num':'')}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Threshold(){
+  const [t,setT] = React.useState(65);
+  return (
+    <div className="w280">
+      <Slider label="Fault threshold" unit="%" min={0} max={100} step={5} value={t}
+        onChange={(e) => setT(Number(e.target.value))}
+        marks={[{value:0,label:'0'},{value:50,label:'50'},{value:100,label:'100'}]} />
+    </div>
+  );
+}
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>Slider</h1>
+    <p className="lede">A value on a bounded range, chosen by where it sits between two known limits. That is the whole justification: a slider is worth its width only when the operator is judging a position — high, low, about two thirds — and it is the wrong control the moment the exact figure is what matters, because a 4 px track cannot state a number. It always carries a readout for that reason.</p>
+    <div className="meta">
+      <span>components/forms/Slider.jsx</span><span>window.MeridianDesignSystem_962c43.Slider</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 2 open items</span><span>since: 1.23.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Position, not precision. And never a report.">
+    <p>Use a Slider where both limits are known, the range is meaningful in itself, and an approximate answer is a real answer: a fault threshold between 0 and 100 %, a sample window between 30 s and 10 min, a sensitivity. The operator sets it by feel and confirms it against the readout — the track does the judging, the number does the stating.</p>
+    <p><strong>The confusion worth designing against is <code>Progress</code>.</strong> A filled bar with a percentage looks identical either way, and the two are opposites: a progress fill is <em>the system reporting</em> and cannot be touched; a slider fill is <em>a value the operator owns</em>. Hence the token rule — a Slider may not borrow <code>--progress-*</code>, and a Progress may not accept a pointer.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Set a value between two known limits','Slider','This component.'],
+      ['Enter an exact figure','Input','A cycle target of 587 s is typed, not dragged. Any value the operator would read off a work order is an Input.'],
+      ['Report work in flight','Progress','Opposite direction: the system is telling, not asking. Progress §07.'],
+      ['Show a level (OEE, utilisation)','A chart, or role="meter"','Read-only quantities are not inputs. A slider a user cannot move is the worst of both.'],
+      ['Pick one of a few named options','Select, RadioGroup','Low/Medium/High is three options, not a range — a 3-step slider hides two of them behind a drag.'],
+      ['Turn something on or off','Switch','Two states are not a range.'],
+      ['Set a bounded value that must be exact AND compared','Input + Slider on one Field','Legal, and often right: type it or drag it, one value, one readout.'],
+    ]}/>
+    <div className="demo">
+      <Threshold />
+      <div className="w280" style={{paddingTop:22}}><Progress label="Exporting 4,120 rows" value={65} /></div>
+      <p style={{maxWidth:'26ch',fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>Same geometry, same 65. The left one is a question; the right one is an answer. Nothing but position on the page distinguishes them, which is why the semantics are separated in tokens.</p>
+    </div>
+    <ul>
+      <li><strong>Do not use</strong> for money, counts, durations entered from a document, or anything with more than about 20 meaningful stops. Dragging to “$1,240” is a game, not an input.</li>
+      <li><strong>Do not use</strong> as a read-only display. A slider with <code>value</code> and no <code>onChange</code> warns, because the thumb cannot move.</li>
+      <li><strong>Do not use</strong> in a table row. The target is 200 px wide and 28 px tall in a cell that is neither.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Track, fill, thumb, readout — and the readout is not optional furniture.">
+    <div className="demo"><Threshold /></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Track</strong> — 4 px at md, full width of its container, <code>--slider-track</code> on <code>--slider-radius</code>. Chart weight deliberately: this control sits beside charts and should not out-weigh them.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Fill</strong> — min to the thumb centre, <code>--slider-fill</code> (action blue). The fill says which side of the value you are on; it is the only reason the track has two colours.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Thumb</strong> — 16 px circle, <code>--slider-thumb</code>, <code>--slider-thumb-shadow</code>, and a 1 px <code>--slider-thumb-border</code> hairline. On a 4 px track there is no fill big enough to carry a boundary, so the <em>thumb's</em> hairline is what identifies the control under 1.4.11 — the Switch knob rule (§08).</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Label</strong> — 13 px, a real <code>&lt;label for&gt;</code> above the track on the left. Above, not beside: a slider needs its full row of width, and a 90 px label eats half of a 200 px range.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Readout</strong> — 12 px mono, <code>tabular-nums</code>, right-aligned on the label row. Tabular so the number does not shuffle while dragging. <code>aria-hidden</code>, because the same string is on the input as <code>aria-valuetext</code> (§08).</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>Ticks and mark labels</strong> — 1 px <code>--slider-tick</code> lines on the track, optional 11 px mono labels beneath. Endpoints are the usual pair; they are the only thing that states the range.</span></div>
+      <div className="callout"><span className="cnum">7</span><span><strong>Target</strong> — the whole row is <code>--control-h-sm</code> tall and the transparent input fills it, so the grab area is 28 px, not 4.</span></div>
+      <div className="callout"><span className="cnum">8</span><span><strong>Hidden native input</strong> — <code>&lt;input type="range"&gt;</code> at <code>opacity: 0</code> over the painted track. It supplies the role, the value announcements, every key in §07, pointer dragging and the form value.</span></div>
+    </div>
+    <T cols={['Region','Value (md)','Token']} rows={[
+      ['Track height','4 px','--slider-track-height-md'],
+      ['Thumb','16 px','--slider-thumb-size-md · --slider-thumb-shadow'],
+      ['Thumb hairline','1 px','--slider-thumb-border'],
+      ['Row height (target)','28 comfortable / 24 compact / 34 expanded','--control-h-sm'],
+      ['Label → track gap','4 px','--space-1'],
+      ['Readout','12 px mono, tabular','--slider-value-text · --numeric-figures'],
+      ['Tick label','11 px mono','--slider-tick-label'],
+      ['Focus','3 px ring on the thumb','--input-focus-ring'],
+      ['Minimum usable width','200 px','—'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Eleven props, and three refusals that matter more.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['label',<span className="t">ReactNode</span>,'—','The quantity being set. Real <label for>. Warns if absent with no aria-label.'],
+      ['value',<span className="t">number</span>,'—','Controlled. Warns if passed without onChange — the thumb then cannot move.'],
+      ['defaultValue',<span className="t">number</span>,<span className="t">min</span>,'Uncontrolled seed.'],
+      ['min / max',<span className="t">number</span>,<span className="t">0 / 100</span>,'Both limits must be real and knowable. If either is open-ended, this is an Input.'],
+      ['step',<span className="t">number</span>,<span className="t">1</span>,'The smallest step the operator can act on — not the smallest the data has (§10).'],
+      ['unit',<span className="t">string</span>,'—','Appended to the readout after a thin space: 68 %, 240 s.'],
+      ['format',<span className="t">(v) => string</span>,'—','Full control of the readout; also becomes aria-valuetext. Use for derived units (300 → "5 min").'],
+      ['showValue',<span className="t">boolean</span>,<span className="t">true</span>,'Hide only when the value is printed elsewhere on the same row.'],
+      ['marks',<span className="t">Array&lt;number | {'{value,label}'}&gt;</span>,'—','Ticks, with optional labels. Endpoints are the usual pair.'],
+      ['size',<span className="t">'sm' | 'md'</span>,<span className="t">'md'</span>,'§05.'],
+      ['disabled',<span className="t">boolean</span>,<span className="t">false</span>,'Genuinely unavailable — not read-only status.'],
+      ['onChange',<span className="t">(e) => void</span>,'—','Fires per step during a drag. Read Number(e.target.value) (§14).'],
+      ['style',<span className="t">CSSProperties</span>,'—','Layout only, on the outer wrapper. Width belongs here.'],
+      ['…rest',<span className="t">InputHTMLAttributes</span>,'—','name, form, aria-*, data-*.'],
+    ]}/>
+    <p><strong>No <code>range</code> / two-thumb variant.</strong> Two thumbs need two accessible names, a minimum-distance rule, a crossing rule, and an answer to which thumb a track click moves — four decisions the shape hides. A band between two numbers is two <code>Input</code>s in one <code>Fieldset</code>, where both ends can be typed and validated against each other. Reopened only by a product that filters a chart by a live band, where dragging the band <em>is</em> the reading (§14).</p>
+    <p><strong>No <code>orientation="vertical"</code>.</strong> A console page has horizontal room and vertical scarcity, a vertical slider inverts the arrow keys, and the readout has nowhere to sit.</p>
+    <p><strong>No tone, and no <code>invalid</code>.</strong> A value bounded by <code>min</code>/<code>max</code> cannot be out of range — that is what the bounds are for — so there is no error state to paint. A red slider would colour a <em>value</em>, and the only thing tone could mean here is “this number is bad”, which is a message beside the control, not a repaint of it.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="No variant prop. Three placements.">
+    <T cols={['Placement','Shape','Note']} rows={[
+      ['Settings row','label + readout above, marks below','The default. Full width of the panel column, endpoints labelled.'],
+      ['Paired with an Input','Slider + Input in one Field','One value, two ways in: drag to judge, type to be exact. The Input is authoritative on submit.'],
+      ['Toolbar / chart header','size="sm", showValue={false}, aria-label','Beside a chart, where the value is already printed on the axis or the header.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="settings"><Threshold /></Row>
+      <Row label="with input"><Paired /></Row>
+      <Row label="toolbar">
+        <span style={{display:'inline-flex',alignItems:'center',gap:12,padding:'6px 12px',border:'var(--border-hairline)',borderRadius:'var(--radius-sm)'}}>
+          <span style={{fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>Smoothing</span>
+          <span style={{width:120}}><Slider size="sm" aria-label="Chart smoothing" showValue={false} defaultValue={40} /></span>
+        </span>
+      </Row>
+    </div>
+    <p><strong>In the toolbar placement the visible word is not a <code>&lt;label&gt;</code></strong>, so pass <code>aria-label</code> with the same words. And do not hide the readout unless the number is genuinely visible elsewhere — a slider with no number is a control nobody can report over the phone.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two, and no lg.">
+    <T cols={['size','Track','Thumb','Use']} rows={[
+      ['sm','3 px','14 px','Toolbars, chart headers, panel strips — beside 12 px text.'],
+      ['md','4 px','16 px','Default. Settings panels and forms.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="sm"><span className="w280"><Slider size="sm" label="Sensitivity" unit="%" defaultValue={30} /></span></Row>
+      <Row label="md"><span className="w280"><Slider size="md" label="Sensitivity" unit="%" defaultValue={30} /></span></Row>
+    </div>
+    <p><strong>There is no <code>lg</code>.</strong> Past 4 px the track reads as a chart series and invites comparison with the data beside it — the same reason <code>Progress</code> refused an <code>lg</code> bar. Touch headroom comes from density instead: the row grows to 34 px under <code>expanded</code> while the track stays 4 px.</p>
+    <T cols={['Density','Row (target)','Track']} numCols={[1,2]} rows={[
+      ['compact','24 px','unchanged'],
+      ['comfortable','28 px','unchanged'],
+      ['expanded','34 px','unchanged'],
+    ]}/>
+    <p><strong>Width is the caller's.</strong> Nothing in the component sets one — put it on <code>style</code> or let the container do it. Below about 200 px a 0–100 range gives less than 2 px per step and the drag stops being a judgement (§11).</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Six. The fill and the thumb hairline carry them.">
+    <T cols={['State','Treatment','Notes']} rows={[
+      ['Rest','--slider-fill, thumb hairline --slider-thumb-border (4.74:1)','The hairline is the control boundary; the white thumb on the grey track is 1.60:1 without it.'],
+      ['Hover','fill --slider-fill-hover, hairline --slider-thumb-border-hover (7.78:1)','Hovering anywhere on the row, not just the 16 px thumb — the whole row is the target.'],
+      ['Dragging / key held','hairline --slider-thumb-border-active (action)','The thumb takes the action colour on its border while the value is changing. No growth, no scale (§09).'],
+      ['Focus visible','3 px --input-focus-ring on the thumb','Replaces the thumb shadow rather than stacking with it. :focus-visible-gated.'],
+      ['Disabled','--slider-track-disabled, fill --slider-fill-disabled, thumb --slider-thumb-disabled, no shadow','Position is still the state cue, so the thumb stays visible at 2.27:1 — the Switch 1.2.0 lesson applied at birth.'],
+      ['Read-only','does not exist','A range that cannot be dragged is text. Print the number.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="rest / hover"><span className="w280"><Slider label="Fault threshold" unit="%" defaultValue={65} /></span></Row>
+      <Row label="disabled"><span className="w280"><Slider label="Fault threshold" unit="%" defaultValue={65} disabled /></span></Row>
+      <Row label="greyscale"><span className="grey w280"><Slider label="Fault threshold" unit="%" defaultValue={65} /></span></Row>
+    </div>
+    <p className="warn"><strong>Never a disabled slider as a gauge.</strong> Greying it out says “you may not set this”, not “this is the current level”. If the number is read-only, print it — a <code>Badge</code>, a metric, a chart — and if the reason for the lock matters, say it beside the control, because a disabled input cannot be focused and its reason is never announced.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="All native, because the control is a real range input.">
+    <T cols={['Key','Behaviour','Note']} rows={[
+      ['Tab / Shift-Tab','Focuses. One tab stop.','The thumb is not separately focusable — there is only one.'],
+      ['← / →','∓ one step','The primary interaction for a keyboard user. Announced each time.'],
+      ['↑ / ↓','∓ one step','Same as ← / →. Both pairs work, per the native range.'],
+      ['Page Up / Page Down','∓ a larger jump (browser-computed, ~10 % of the range)','Not configurable, and deliberately not re-implemented — the native size matches the platform.'],
+      ['Home / End','min / max','The fastest way to either limit, and the reason marks label the endpoints.'],
+      ['Click on the track','Jumps to that position and starts a drag','Native. A track click is a coarse set, then the arrows refine it.'],
+      ['Click on the label','Focuses the slider','Real <label for>. It does not change the value.'],
+      ['Typing a number','Nothing','If operators want to type the figure, pair an Input (§04).'],
+    ]}/>
+    <ul>
+      <li><strong>Every key fires <code>onChange</code>, per step.</strong> Holding ← for a second sends dozens of events — debounce the write, never the state (§14).</li>
+      <li><strong>Do not intercept the arrows</strong> to add a modifier for fine steps. If the operator needs two granularities, the step is wrong or the control is an Input.</li>
+      <li><strong>The focus ring is the whole story in a toolbar slider</strong> with no visible label and no readout. Never suppress it.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="A native range, one name, one value string.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Role & name','<input type="range"> — role="slider" with aria-valuemin/max/now maintained by the browser. Named by a real <label for>; warns when unnamed.'],
+      ['Value announcement (4.1.2)','aria-valuetext carries the FORMATTED string, so the control announces "68 percent" or "5 min" rather than a bare 68 — which is the whole point of a unit. The visible readout is aria-hidden so the number is not announced twice.'],
+      ['Control boundary (1.4.11)','A 4px track has no room for a boundary, so the thumb hairline is load-bearing: --border-control at 4.74:1 on a card, 6.96:1 in dark. Hover 7.78:1. The fill against the track is 3.9:1, which carries the state cue independently.'],
+      ['Two cues, not one','Thumb POSITION plus fill extent. In greyscale the position still reads (§06) — the same test as Switch.'],
+      ['Disabled legibility','The thumb keeps its position and takes --slider-thumb-disabled (2.27:1 on the disabled track). Legal under the disabled exemption either way; invisible would mean the value has to be read from where the fill stops.'],
+      ['Target size (2.5.8)','The transparent input fills the whole row — --control-h-sm, i.e. 28 / 24 / 34 px. The 4px track alone would fail, and the 16px thumb alone would too.'],
+      ['Focus (2.4.7)','3px --input-focus-ring on the thumb, :focus-visible-gated.'],
+      ['On input (3.2.2)','Dragging may redraw data; it must not navigate, open a dialog, or move focus. A slider that submits on release is a 3.2.2 failure.'],
+      ['Status vs control','A slider is an input. A read-only level is a chart or role="meter", never a disabled slider (§06).'],
+      ['Reduced motion','Nothing to suppress: the thumb tracks the pointer 1:1 and the only transitions are colour (§09).'],
+    ]}/>
+    <div className="demo col">
+      <Row label="wrong"><span style={{display:'inline-flex',alignItems:'center',gap:12}}><span className="w280"><Slider aria-label="Line 3 OEE" defaultValue={82} unit="%" disabled /></span><span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>a disabled slider used as a gauge</span></span></Row>
+      <Row label="right"><span style={{display:'inline-flex',alignItems:'baseline',gap:12}}><span style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-2xl)'}}>82 %</span><Badge tone="success">On target</Badge><span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>a level, stated as a level</span></span></Row>
+    </div>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="The thumb never animates its position. That is the rule.">
+    <T cols={['Change','Duration','Easing','Property']} rows={[
+      ['Thumb position','0','—','never transitioned — it tracks the pointer and the keypress exactly'],
+      ['Fill extent','instant (--transition-tint on colour only)','--ease-out','width is not animated; the system never animates width'],
+      ['Fill colour (hover)','140 ms','--ease-out','background-color'],
+      ['Thumb hairline','140 ms','--ease-out','border-color'],
+      ['Focus ring','140 ms','--ease-out','box-shadow'],
+      ['Thumb size','—','—','never — no growth on hover, no scale on grab'],
+    ]}/>
+    <ul>
+      <li><strong>A slider is the one control where movement is not motion design.</strong> The thumb <em>is</em> the pointer's position; easing it introduces lag between the finger and the value, and on a keypress it makes a single step look like a slide.</li>
+      <li><strong>No thumb growth on grab.</strong> A thumb that swells under the finger moves its own centre relative to the track and makes the fine adjustment harder, right when it is being made. The state is carried by the hairline colour instead (§06).</li>
+      <li><strong>Nothing here needs a reduced-motion rule</strong>, which is the correct outcome for an input: the only animated properties are colour and shadow, exactly as <code>motion.css</code> allows.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="Name the quantity. Let the readout say the number.">
+    <T cols={['Slot','Job','Write','Not']} rows={[
+      ['Label','The quantity being set','Fault threshold','Set fault threshold · Drag to set threshold · Threshold?'],
+      ['Unit','The unit, after a thin space','%, s, min, °C','Percent · seconds · pct'],
+      ['format','A derived unit the raw value hides','300 → 5 min','300s · 5m'],
+      ['Marks','The limits, and any meaningful stop','0 · 50 · 100','every tenth value'],
+      ['Toolbar aria-label','The words the row would have shown','Chart smoothing','Smoothing level control'],
+    ]}/>
+    <ul>
+      <li><strong>Never “Set …” or “Adjust …”.</strong> The control is the setting; the label names what is set — the same rule as Switch's “Enable …”.</li>
+      <li><strong>Never repeat the unit in the label</strong> when the readout carries it. “Fault threshold (%)” with “68 %” beside it says % twice.</li>
+      <li><strong>Choose the step an operator can act on.</strong> A threshold in 5 % steps is 21 stops and reads cleanly; in 1 % steps it is 101 stops of false precision, and the readout starts changing faster than anyone can aim.</li>
+      <li><strong>Label the endpoints, not every tick.</strong> Marks are there to state the range; a labelled tick every 10 units becomes a ruler nobody reads.</li>
+      <li><strong>Numbers follow the house rule</strong> — unit, thin space, grouped thousands: <code>68 %</code>, <code>240 s</code>, <code>1,200 rpm</code>.</li>
+      <li><strong>If the range needs an explanation, that is a <code>Field</code> hint</strong>, not a longer label. “Holds the line when scrap passes this share of output.”</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Width is the only responsive question, and it has a floor.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','Full width of the column, expanded density (34 px row). One slider per row. Keep the readout — on touch, the thumb is under a finger and the number above it is the only feedback.'],
+      ['tablet ≥ 600','As authored. A settings panel column is usually 280–360 px, which is comfortable for a 0–100 range.'],
+      ['desktop ≥ 1024','As authored. Pair with an Input where the exact figure gets quoted (§04).'],
+      ['ultrawide ≥ 1600','Cap the row inside --measure-narrow. A 900 px slider gives 9 px per percent and separates the label from the thumb it names.'],
+    ]}/>
+    <div className="demo col" style={{maxWidth:300}}>
+      <Slider label="Fault threshold" unit="%" step={5} defaultValue={65} marks={[{value:0,label:'0'},{value:100,label:'100'}]} />
+      <Slider label="Sample window" min={30} max={600} step={30} defaultValue={300} format={(v) => `${v/60}\u2009min`} marks={[{value:30,label:'30 s'},{value:600,label:'10 min'}]} />
+    </div>
+    <ul>
+      <li><strong>200 px is the floor.</strong> Below it, per-step travel drops under 2 px and the control becomes a lottery — use an <code>Input</code> or a <code>Select</code> of named stops instead.</li>
+      <li><strong>Do not shrink the range to fit.</strong> Narrowing a 0–100 slider does not make it a 0–10 slider; it makes the same 101 stops harder to hit.</li>
+      <li><strong>Mark labels are mono and can collide.</strong> On narrow columns, label the endpoints only — the component positions them inside the ends, but it will not de-clutter a crowded set for you.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Use it where position is the judgement.</li>
+        <li>Keep the readout, with a unit.</li>
+        <li>Label the endpoints with marks.</li>
+        <li>Pick a step an operator can aim at.</li>
+        <li>Pair an <code>Input</code> when the figure gets quoted.</li>
+        <li>Debounce the write, not the state.</li>
+        <li><code>aria-label</code> for a toolbar slider.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>A slider for money, counts or typed figures.</li>
+        <li>A disabled slider as a gauge.</li>
+        <li>A slider with no number anywhere.</li>
+        <li><code>--progress-*</code> tokens on a slider.</li>
+        <li>Two thumbs, or a vertical track.</li>
+        <li>A thumb that grows when grabbed.</li>
+        <li>A slider in a table cell.</li>
+        <li>A write on every drag event.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this component invites.</strong> A slider used to <em>display</em> a level — utilisation, OEE, capacity — because the fill looks like the right picture. It is an input: it takes a tab stop, announces itself as a slider, invites a drag, and either does nothing or, worse, quietly writes a number that was meant to be a reading. Ask the Progress question in reverse: <em>is the operator setting this, or is the system reporting it?</em> If it is reported, it is a chart, a metric or a <code>Progress</code> — never this.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="What ships, and why the native input is underneath.">
+    <ul>
+      <li><strong>A real <code>&lt;input type="range"&gt;</code> at <code>opacity: 0</code>, stretched over the painted track.</strong> It supplies <code>role="slider"</code>, <code>aria-valuemin/max/now</code>, every key in §07, pointer dragging with capture, and the form value. Restyling the native track instead would mean vendor pseudo-elements (<code>::-webkit-slider-thumb</code>), which cannot be expressed in this system's inline-style components at all.</li>
+      <li><strong>The transparent input is also the target.</strong> It fills the full <code>--control-h-sm</code> row, so the grab area is the row, not the 4 px track — and the painted thumb carries <code>pointer-events: none</code> so it can never intercept the drag it represents.</li>
+      <li><strong>Position is computed in <code>calc()</code> against the thumb token</strong> — <code>left: calc(P% - r * var(--slider-thumb-size-md))</code> — so the thumb travels edge to edge without overhanging either end, and re-scaling the thumb token re-scales the maths. The fill runs to the thumb's <em>centre</em>: <code>calc(P% + (0.5 − r) * thumb)</code>.</li>
+      <li><strong>Geometry is in tokens, not JSX.</strong> Track heights and thumb sizes are <code>--slider-track-height-*</code> and <code>--slider-thumb-size-*</code>; the component only names them.</li>
+      <li><strong>Controlled only when <code>value</code> <em>and</em> <code>onChange</code> are both present.</strong> Otherwise the component holds its own state so an uncontrolled slider still moves — and <code>value</code> alone warns, because a frozen thumb looks like a bug in the product, not a missing prop.</li>
+      <li><strong>The readout is <code>aria-hidden</code> and mirrored into <code>aria-valuetext</code></strong>, so the formatted string is announced once, with its unit.</li>
+      <li><strong>Two console warnings:</strong> no accessible name, and <code>value</code> without <code>onChange</code>. Rendering is unaffected.</li>
+      <li><strong>Deliberately absent:</strong> two thumbs, vertical orientation, tone, <code>invalid</code>, <code>lg</code>, a tooltip bubble over the thumb (the readout is always visible, so a bubble would be the second copy of the same number, positioned under the user's own finger).</li>
+      <li><strong>21 new <code>--slider-*</code> tokens, no new semantics and no new keyframes.</strong> The fill is <code>--action-solid</code>, the thumb reuses <code>--surface-knob</code> and <code>--border-control</code>: a slider and a switch are the same object — a knob on a track — and must not drift into two vocabularies.</li>
+      <li><strong>Tokens consumed:</strong></li>
+    </ul>
+    <div className="tokenlist">
+      <span>--slider-track</span><span>--slider-track-disabled</span><span>--slider-fill</span><span>--slider-fill-hover</span><span>--slider-fill-disabled</span><span>--slider-thumb</span><span>--slider-thumb-disabled</span><span>--slider-thumb-border</span><span>--slider-thumb-border-hover</span><span>--slider-thumb-border-active</span><span>--slider-thumb-border-disabled</span><span>--slider-thumb-shadow</span><span>--slider-tick</span><span>--slider-tick-label</span><span>--slider-label-text</span><span>--slider-value-text</span><span>--slider-radius</span><span>--slider-track-height-sm · -md</span><span>--slider-thumb-size-sm · -md</span><span>--input-focus-ring (borrowed)</span><span>--control-h-sm (target)</span><span>--numeric-figures</span><span>--space-1 · --space-3</span><span>--text-sm · --text-xs · --text-2xs</span><span>--transition-control · --transition-tint</span>
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { Slider, Input, Field } from '@meridian/ds';
+
+// onChange fires PER STEP during a drag — state is cheap, the write is not
+const [threshold, setThreshold] = React.useState(settings.faultThreshold);
+const commit = React.useMemo(() => debounce(api.setFaultThreshold, 400), []);
+
+<Slider label="Fault threshold" unit="%" min={0} max={100} step={5}
+  value={threshold}
+  onChange={(e) => { const v = Number(e.target.value); setThreshold(v); commit(v); }}
+  marks={[{ value: 0, label: '0' }, { value: 50, label: '50' }, { value: 100, label: '100' }]} />
+
+// derived unit: the value is seconds, the operator thinks in minutes
+<Slider label="Sample window" min={30} max={600} step={30}
+  format={(v) => \`\${v / 60}\\u2009min\`} defaultValue={300} />
+
+// paired with the exact figure — one value, two ways in
+<Field label="Cycle target" hint="Between 120 and 900 s.">
+  <Slider aria-label="Cycle target" min={120} max={900} step={10} showValue={false}
+    value={target} onChange={(e) => setTarget(Number(e.target.value))} />
+  <Input value={target} suffix="s" mono
+    onChange={(e) => setTarget(Number(e.target.value))} />
+</Field>`}</pre>
+    <ul>
+      <li><strong><code>e.target.value</code> is a string.</strong> Always <code>Number(...)</code> it — a slider wired straight into state is the fastest way to get <code>"65"</code> into an API payload.</li>
+      <li><strong>Debounce the write, never the state.</strong> The thumb must track the pointer on every event; the network call should not. 300–500 ms trailing, or commit on <code>onPointerUp</code>/<code>onBlur</code> if the endpoint is expensive.</li>
+      <li><strong>Never submit or navigate on release</strong> (3.2.2). Redrawing a chart as the value changes is expected; changing context is not.</li>
+      <li><strong>Testing.</strong> <code>getByRole('slider', {'{ name: /fault threshold/i }'})</code>. Assert <code>aria-valuetext</code> carries the formatted string with its unit (not a bare number), that <code>ArrowRight</code> moves by exactly one <code>step</code>, that <code>End</code> reaches <code>max</code>, that a value outside <code>[min, max]</code> is clamped rather than painted off the track, and that the disabled thumb still renders at its position.</li>
+      <li><strong>Lint.</strong> Flag <code>--progress-*</code> inside <code>Slider</code> and any <code>--slider-*</code> inside <code>Progress</code>; a <code>Slider</code> with <code>showValue={'{false}'}</code> and no sibling readout; a <code>disabled</code> <code>Slider</code> with no <code>onChange</code> anywhere on the surface (a gauge in disguise); a label starting with “Set ”/“Adjust ”; a <code>Slider</code> inside a <code>Table</code> cell.</li>
+      <li><strong>Frozen 5 Sep 2026.</strong> API closed: <code>label</code>, <code>value</code>, <code>defaultValue</code>, <code>min</code>, <code>max</code>, <code>step</code>, <code>unit</code>, <code>format</code>, <code>showValue</code>, <code>marks</code>, <code>size</code>, <code>disabled</code>, <code>onChange</code>, <code>style</code>, plus native input attributes.</li>
+      <li><strong>Open — a two-thumb range.</strong> Reopened by a product that filters a chart by a live band, where dragging both ends <em>is</em> the reading. It needs four answers first: two names, a minimum distance, a crossing rule, and which thumb a track click moves. Until then, two <code>Input</code>s in a <code>Fieldset</code> (§03).</li>
+      <li><strong>Open — no <code>SliderGroup</code>.</strong> Sliders on a settings panel are independent values under headings, which is a surface pattern; the <code>fieldset</code>/<code>legend</code> scaffolding only earns its place when several controls answer one question.</li>
+      <li><strong>Closed in 1.19.0 — <code>tokens.json</code> regenerated.</strong> still outstanding from the earlier freezes and now the 21 <code>--slider-*</code> tokens. Run <code>npm run build-tokens</code> before release. All 21 <code>--slider-*</code> tokens are in the mirror; the generator had two faults of its own (see readme 1.19.0).</li>
+    </ul>
+  </Sec>
+</div>);}
+
+function Paired(){
+  const [t,setT] = React.useState(420);
+  return (
+    <div style={{width:300}}>
+      <Field label="Cycle target" hint="Between 120 and 900 s.">
+        <div style={{display:'flex',flexDirection:'column',gap:8}}>
+          <Slider aria-label="Cycle target" min={120} max={900} step={10} showValue={false} value={t} onChange={(e)=>setT(Number(e.target.value))} />
+          <Input value={t} suffix="s" mono onChange={(e)=>setT(Number(e.target.value)||0)} style={{width:120}} />
+        </div>
+      </Field>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

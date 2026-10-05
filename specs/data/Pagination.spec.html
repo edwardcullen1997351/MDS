@@ -1,0 +1,361 @@
+<!-- @dsCard group="Specs · Data" viewport="1080x760" name="Pagination" subtitle="Full specification — page controls: purpose, anatomy, props, variants, keyboard, a11y" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Pagination — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:16px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:5px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.foot{border-top:var(--border-width) solid var(--border-subtle);padding-top:12px}
+.narrow{width:320px;max-width:100%;border:var(--border-hairline);border-radius:var(--radius-md);padding:12px;background:var(--surface-card)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Pagination, Table, Card, Button, Badge, Text, Select, Breadcrumb } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{flex:1,minWidth:260}}>{children}</div></div>;
+
+function Live({total=1204,initial=1,...props}){
+  const [page,setPage] = React.useState(initial);
+  const [size,setSize] = React.useState(25);
+  return <Pagination page={page} totalItems={total} pageSize={size} onPageChange={setPage}
+    onPageSizeChange={props.pageSizeOptions ? setSize : undefined} itemLabel="work orders" {...props} />;
+}
+
+function Spec(){
+const [cur,setCur] = React.useState(2);
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Data · Component specification</span>
+    <h1>Pagination</h1>
+    <p className="lede">The controls under a table, and the count that makes them legible. Pagination is the only component in this system whose real content is a <em>number the product must actually know</em> — which is why there are three variants rather than one, and why the component refuses to render page numbers it was not given a total for. "1–25 of 1,204" is the part operators read; the arrows are the part they press.</p>
+    <div className="meta">
+      <span>components/data/Pagination.jsx</span><span>window.MeridianDesignSystem_962c43.Pagination</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items</span><span>since: 1.7.0</span><span>tokens listed in §13 · 0 new layers</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Move through a long result set, and know where you are in it.">
+    <p>Use pagination when a result set is longer than one screenful, the order is stable, and the operator's task is to <strong>scan or find</strong> rather than to read everything. A plant console is mostly tables, and a table of 1,204 work orders needs three things: how many there are, which slice is showing, and one press to the next. That is the whole component.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Move through a long, ordered result set','Pagination','This component.'],
+      ['Show a live feed the user watches','Infinite scroll or a live table','Pages fight a list whose top keeps changing.'],
+      ['Show the 20 most relevant rows','A tighter query · filters','Pagination is not a substitute for a filter. Page 40 is never read.'],
+      ['Let the user work through everything, in order','Pagination','Pages give position, resumability and a linkable URL — a scroll gives none of the three.'],
+      ['Show a total without navigation','A count in the header','If there is only one page, render the summary and no controls.'],
+      ['Page a stream with no countable total','Pagination variant="cursor"','Keyset paging: arrows only, enabled by the API\u2019s cursors.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> under a <code>Table</code>, inside the table's own footer border, aligned to the table's edges.</li>
+      <li><strong>Use</strong> the summary alone when there is one page. Controls that can never do anything are noise the user has to check.</li>
+      <li><strong>Do not use</strong> when the count costs a second query the page does not otherwise need. Use <code>cursor</code> — an honest "1–50" beats a total that made the table slower.</li>
+      <li><strong>Do not use</strong> above the table as well as below it. One set of controls per result set.</li>
+    </ul>
+    <div className="demo col">
+      <div className="foot"><Live pageSizeOptions={[25,50,100]} /></div>
+      <Text size="xs" tone="tertiary">The default shape: summary at the left edge, per-page and controls at the right, on the table's footer rule.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A summary, a window of pages, two arrows.">
+    <div className="demo col">
+      <div className="foot"><Live initial={7} total={1204} pageSizeOptions={[25,50,100]} /></div>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        {[['1','Landmark — <nav aria-label="Pagination">. A named landmark, because a screen-reader user leaving a 25-row table wants to jump straight to it.'],
+          ['2','Summary — mono, tabular-nums, --pagination-summary-text: "1–25 of 1,204 work orders". The row\u2019s actual information.'],
+          ['3','Per-page Select — optional, sm, right-aligned with the controls. Its own accessible name ("work orders per page").'],
+          ['4','Previous / Next — chevron cells. Disabled at the ends, and that disabled state is how the list\u2019s edges are learned.'],
+          ['5','Page cell — 28px minimum, mono tabular figures so 9 and 10 occupy the same width and the row does not shift.'],
+          ['6','Current page — filled --pagination-page-background-current with aria-current="page". A state, not a destination.'],
+          ['7','Gap marker — "…" where pages were skipped. Text, aria-hidden, never a control (§13).']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+    </div>
+    <p>The window is fixed-width by construction: first page, last page, <code>siblingCount</code> either side of the current one, and gap markers filling the difference. Seven cells at <code>siblingCount=1</code>, whether the set has 12 pages or 12,000 — so the Next arrow stays under the same pixel from page 2 to page 481, and paging becomes one repeated press rather than a moving target.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Two ways to state the size of the set, and no third.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['page','number','1','1-based. Every label in this row is user-facing; a 0-based page would be a permanent off-by-one in the UI.'],
+      ['pageCount','number','—','Total pages. Give this or totalItems.'],
+      ['totalItems','number','—','Total rows. Derives pageCount with pageSize, and is what makes the "of 1,204" summary possible.'],
+      ['pageSize','number','25','Rows per page. Also drives the summary\u2019s range arithmetic.'],
+      ['onPageChange','(page) => void','—','Fires with the 1-based target page. The component never holds the page itself (§13).'],
+      ['pageSizeOptions · onPageSizeChange','number[] · (n) => void','—','Renders the per-page Select when both are present.'],
+      ['variant','\u2018numbered\u2019 | \u2018compact\u2019 | \u2018cursor\u2019','numbered','§04.'],
+      ['size','\u2018sm\u2019 | \u2018md\u2019','md','24px or 28px cells (§05).'],
+      ['siblingCount','number','1','Pages either side of the current one. 1 = seven cells; 2 = nine.'],
+      ['hasNext · hasPrev','boolean','—','Cursor variant only. The arrows\u2019 state comes from the API, not from arithmetic.'],
+      ['itemLabel','string','\u2018rows\u2019','Plural noun for the summary and the per-page label: "of 1,204 work orders".'],
+      ['showSummary','boolean','true','Off only when the count is already stated immediately above.'],
+      ['label','string','\u2018Pagination\u2019','Accessible name of the landmark.'],
+    ]}/>
+    <p>There is no <code>defaultPage</code>, no <code>onNextPage</code>/<code>onPrevPage</code> pair, and no <code>totalPagesUnknown</code> flag. One controlled <code>page</code> and one callback: the current page belongs to the URL, so a component that owned it would lose the operator's place on every refresh and make "send me that page" impossible.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Three data realities, not three styles.">
+    <div className="demo col">
+      <Row label="numbered"><div className="foot"><Live initial={4} /></div></Row>
+      <Row label="compact"><div className="foot"><Live initial={4} variant="compact" /></div></Row>
+      <Row label="cursor"><div className="foot"><Pagination variant="cursor" page={cur} pageSize={50} hasPrev={cur>1} hasNext={cur<9} onPageChange={setCur} itemLabel="events" /></div></Row>
+    </div>
+    <T cols={['Variant','Shows','Use when']} rows={[
+      ['numbered','Summary · per-page · page window · arrows.','The total is known and cheap. The default, and the only variant that lets an operator jump.'],
+      ['compact','Summary · "4 / 49" · arrows.','The count is known but the row is narrow — a card footer, a drawer, a phone. Same information, no jumping.'],
+      ['cursor','Range only ("51–100") · arrows.','No countable total: keyset paging, event streams, an audit log where COUNT(*) is the slowest query on the page.'],
+    ]}/>
+    <ul>
+      <li><strong>Pick by what the API can tell you</strong>, not by taste. Rendering <code>numbered</code> over an estimated total is the one thing this component will not help you do: it warns when neither <code>pageCount</code> nor <code>totalItems</code> is given rather than inventing a count.</li>
+      <li><strong><code>cursor</code> drops the "of N" from the summary</strong>, because there is no N. "51–100" with a working Next arrow is honest; "Page 3 of many" is not.</li>
+      <li><strong>No "load more" variant.</strong> A button that grows the list is a different interaction with different state — it belongs to the list, not to a paginator.</li>
+      <li><strong>No first/last jump buttons.</strong> The numbered window already exposes page 1 and page N as cells; adding <code>|◀ ◀ ▶ ▶|</code> gives four arrows whose difference nobody can name.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two, matched to the table above them.">
+    <T cols={['Size','Cell','Type','Icon','Use']} rows={[
+      ['sm','24px','--text-2xs','14px','Compact-density tables, drawer footers, card footers.'],
+      ['md','28px','--text-xs','16px','Default. Page-level tables at comfortable density.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="sm"><div className="foot"><Live initial={4} size="sm" pageSizeOptions={[25,50]} /></div></Row>
+      <Row label="md"><div className="foot"><Live initial={4} size="md" pageSizeOptions={[25,50]} /></div></Row>
+    </div>
+    <p>Match the table's density: an <code>sm</code> paginator under a compact table, <code>md</code> under a comfortable one. Neither reaches 44px, which is deliberate for a pointer console and a real problem on touch — on a phone the arrows should be the only controls and they should be given a full-width row of their own (§11). The page cells are square-ish rather than wide because tabular figures make one, two and three-digit numbers the same width, and a 3-digit page must not push the arrows.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Disabled arrows are information, not decoration.">
+    <T cols={['State','Applies to','Treatment']} rows={[
+      ['Rest','Page cell','--pagination-page-text, transparent background.'],
+      ['Hover','Page cell · arrow','--pagination-page-background-hover, text to --pagination-page-text-hover. --transition-control.'],
+      ['Current','Page cell','Filled --pagination-page-background-current, --pagination-page-text-current, aria-current="page". Not pressable — pressing the page you are on is a no-op the user has to test.'],
+      ['Focus','Any cell','--pagination-focus-ring, z-index 1 so the ring is not clipped by neighbours.'],
+      ['Disabled','Arrow','--pagination-arrow-text-disabled, aria-disabled, not focusable. Kept in place, never removed: a Next arrow that disappears on the last page makes the row reflow and hides the fact that you have reached the end.'],
+      ['Loading','—','Not a state of this component. The table shows the load; the paginator keeps its numbers so the operator can see where they are going (§09).'],
+      ['Single page','Controls','Both arrows disabled, one page cell current. Prefer rendering the summary alone.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="first page"><div className="foot"><Live initial={1} /></div></Row>
+      <Row label="middle"><div className="foot"><Live initial={25} /></div></Row>
+      <Row label="last page"><div className="foot"><Live initial={49} /></div></Row>
+      <Row label="one page"><div className="foot"><Live total={18} /></div></Row>
+      <Row label="empty set"><div className="foot"><Pagination page={1} totalItems={0} pageSize={25} onPageChange={()=>{}} itemLabel="work orders" /></div></Row>
+    </div>
+    <p>The empty case renders "0–0 of 0 work orders" with both arrows disabled rather than disappearing. A vanished paginator makes an empty table ambiguous — filtered to nothing, or still loading? The row that says zero answers it.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="A row of buttons. No cursor, no arrow-key capture.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab · ⇧Tab','Steps through the per-page Select, Previous, the page cells, Next — in visual order. Disabled arrows are skipped, the current page cell is a stop (it is still a button, just inert).'],
+      ['Enter · Space','Activates the focused cell. Native button behaviour.'],
+      ['← · →','Nothing — deliberately. The paginator does not capture arrow keys, because ← and → belong to the table and to text fields, and a row of six buttons is not a composite widget.'],
+      ['Home · End','Nothing. Page 1 and page N are cells in the window; the keyboard does not need a second way to reach them.'],
+      ['Per-page Select','Native select keyboard: arrows change the value, which fires onPageSizeChange (§14 — reset to page 1).'],
+    ]}/>
+    <p>Nine or ten tab stops under a table is the honest cost of numbered pagination, and the reason <code>compact</code> exists: three stops instead of ten, same information, for surfaces where the operator is not jumping. This is also why the landmark is named — a keyboard user can reach the whole row in one landmark jump rather than tabbing out of a 25-row table.</p>
+    <div className="demo col"><div className="foot"><Live initial={4} pageSizeOptions={[25,50,100]} /></div><Text size="xs" tone="tertiary">Tab in and press <kbd>Enter</kbd> on a cell. The current page is focusable but does nothing; the first-page arrow is skipped entirely.</Text></div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="A named landmark, real buttons, one aria-current.">
+    <ul>
+      <li><strong>Landmark.</strong> <code>&lt;nav aria-label="Pagination"&gt;</code>. Named because a page can carry two tables, and two unnamed navs are indistinguishable in a landmark list.</li>
+      <li><strong>Buttons, not links.</strong> Paging changes a query parameter, not a document — but if your product paginates by URL, wrap the cells in your router's links. Buttons are the default because most consoles page in place.</li>
+      <li><strong>Every cell has a real name.</strong> "Page 7", "Previous page", "Next page" — never the bare glyph, and never "…" as a label.</li>
+      <li><strong><code>aria-current="page"</code></strong> on the current cell only. Exactly one per paginator, and the filled chip agrees with it visually.</li>
+      <li><strong>Disabled arrows use <code>disabled</code> + <code>aria-disabled</code></strong> and stay in the DOM, so "you are at the start" is announced rather than inferred from a missing control.</li>
+      <li><strong>The gap marker is <code>aria-hidden</code>.</strong> It stands for pages, not for a control; a screen-reader user hears "Page 1, Page 6, Page 7, Page 8, Page 49" and the skipped range is implied by the numbers.</li>
+      <li><strong>The summary is plain text, in the landmark.</strong> Read on entry, so "1–25 of 1,204 work orders" arrives before the controls. It is not a live region — see §09.</li>
+      <li><strong>Tabular figures are an accessibility feature</strong> as much as a visual one: the cells do not move under a pointer or a magnifier when the page number gains a digit.</li>
+      <li><strong>Announce the new page from the table, not here.</strong> The table's own status ("Showing 26–50") is where a page change belongs; two live regions announcing one action talk over each other.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="None. The numbers must not move.">
+    <T cols={['Moment','Motion','Tokens']} rows={[
+      ['Hover · focus','Background and text colour.','--transition-control (--duration-fast)'],
+      ['Page change','None. The window re-renders in place; the arrows do not move.','—'],
+      ['Window shift','None. Cells are fixed-width, so the row does not animate as the window slides.','—'],
+      ['Loading a page','None here. The table above owns the loading treatment.','—'],
+      ['Reduced motion','Nothing left to reduce.','—'],
+    ]}/>
+    <p>Pagination is a control the operator presses repeatedly and quickly — five pages in three seconds is normal behaviour in a console. Any transition on the row means the Next arrow is mid-animation when the second press lands, and a sliding page window means the cell under the cursor changes number between presses. Both produce mis-presses that read as the product being wrong about which page you asked for.</p>
+    <p>The row also does not fade or dim while a page loads. Greying the controls under a loading table takes away the operator's ability to correct an accidental press, and returns nothing: the table is already telling them work is in flight.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="Numbers, formatted, with the noun they count.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Name the thing being counted:</strong> "of 1,204 work orders", not "of 1,204 items".</li>
+        <li><strong>Group thousands</strong> with the locale's separator, and use tabular figures. 1,204 — not 1204.</li>
+        <li><strong>State the range, not just the page:</strong> "26–50 of 1,204" tells an operator more than "Page 2 of 49".</li>
+        <li><strong>Say zero out loud:</strong> "0 of 0 work orders" beats an empty row.</li>
+        <li><strong>Keep page-size options small and round</strong> — 25 / 50 / 100. Three choices, all of which the query can serve quickly.</li>
+        <li><strong>Match the table's noun</strong> exactly: if the header says "Work orders", the summary says "work orders".</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>"Showing results 1 to 25 of 1204 results"</strong> — say it once, in nine characters plus the noun.</li>
+        <li><strong>Approximate totals</strong> — "about 1,200", "1,204+". Either you know the count or you use <code>cursor</code>.</li>
+        <li><strong>"Items"</strong>, "records", "entries" as the noun. The product knows what they are.</li>
+        <li><strong>A per-page option of 500</strong> or "All". Any option the query cannot serve in a second is a trap the operator will find once.</li>
+        <li><strong>Ordinals or words</strong> — "Second page", "Next 25". The row is numeric; keep it numeric.</li>
+        <li><strong>Text on the arrows</strong> in the compact variant. If there is room for "Previous", there is room for numbers.</li>
+      </ul></div>
+    </div>
+    <p>The summary is also the one place a filtered set must be explicit. "1–25 of 38 work orders (filtered from 1,204)" is worth the extra clause: an operator who forgot a filter is active reads the total, believes it, and reports the missing rows as data loss.</p>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Drop the numbers before you drop the count.">
+    <ul>
+      <li><strong>The row wraps at its own gap</strong> — summary on one line, controls on the next — rather than compressing the cells. Two short lines are readable; a squeezed row of nine cells is not.</li>
+      <li><strong>Below ~600px, switch to <code>compact</code>.</strong> The count and the arrows survive; the ability to jump to page 31 is what a phone gives up, and it is the least-used thing in the row.</li>
+      <li><strong>Below ~400px, give the arrows a full-width row</strong> of their own with a 44px height. This is the one place the component's own sizes are not enough, and the product should style the wrapper rather than expect an <code>lg</code>.</li>
+      <li><strong>Drop <code>pageSizeOptions</code> before anything else</strong> on narrow screens — page size is a preference, position is a necessity.</li>
+      <li><strong>Reduce <code>siblingCount</code> rather than letting cells shrink.</strong> Five cells at their real size beat nine at 20px.</li>
+      <li><strong>Keep the summary last to go.</strong> If only one thing fits, it is "1–25 of 1,204" — the arrows are guessable, the count is not.</li>
+    </ul>
+    <div className="demo col">
+      <div className="narrow"><div className="foot"><Live initial={4} variant="compact" size="sm" /></div></div>
+      <div className="narrow"><div className="foot"><Live initial={4} siblingCount={0} size="sm" showSummary={false} /></div></div>
+      <Text size="xs" tone="tertiary">320px: compact keeps the count and the arrows; <code>{'siblingCount={0}'}</code> keeps jumping to the ends at five cells.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Six, and the first is the one that ships.">
+    <div className="two">
+      <div className="pane dont"><h3>The one that ships</h3><ul>
+        <li><strong>Pagination as a substitute for filtering.</strong> Forty-nine pages of work orders means nobody will ever see page 12. If the operator's task is "find the one that is late", the answer is a filter, a sort and a search — the paginator is then a fallback, not the interface.</li>
+        <li><strong>Symptom to watch for:</strong> analytics where page 2 gets 4% of page 1's traffic and page 5 gets none. That is not a pagination problem; it is a query problem the pagination is hiding.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Also don't</h3><ul>
+        <li><strong>Invented totals.</strong> A count derived from "we fetched 200, assume more" is wrong on the last page, every time.</li>
+        <li><strong>Losing the page on refresh.</strong> The page belongs in the URL. An operator sending a colleague "the one on page 3" must be sending them page 3.</li>
+        <li><strong>Changing page size without resetting to page 1.</strong> Page 40 at 25 per page is page 10 at 100 — silently landing somewhere else is the most common bug in this component.</li>
+        <li><strong>Pagination on both sides of the table.</strong> Two paginators, two states to keep in sync, no benefit.</li>
+        <li><strong>Both pagination and infinite scroll</strong> on one list. The user cannot tell which one owns their position.</li>
+        <li><strong>Removing disabled arrows.</strong> The row reflows and the end of the list stops being visible.</li>
+      </ul></div>
+    </div>
+    <p className="warn">Page size deserves one more warning: it is a per-user preference that changes the cost of every query behind it. Persist it (per table, not globally), keep the options round and small, and never offer "All" on a table that can hold six figures of rows — someone will press it during a shift handover.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="What the code does, and why it does it that way.">
+    <ul>
+      <li><strong>Always controlled, always 1-based.</strong> One <code>page</code> prop and one <code>onPageChange</code>; the component holds no page state, so the URL, a saved view or a "jump to newest" button elsewhere can all drive it. 1-based because every string in the row is user-facing.</li>
+      <li><strong>The window is computed, not scrolled.</strong> <code>windowPages()</code> returns first, last, <code>siblingCount</code> neighbours and gap markers, and short sets (<code>pageCount &lt;= 2·siblings+5</code>) return every page with no markers — so the row is a fixed number of cells and never resizes as the user pages.</li>
+      <li><strong>Gap markers are text, not buttons.</strong> A "…" that opens a menu of thirty page numbers is a list nobody reads and a second keyboard scope to maintain; the pages it stands for are reachable by paging or by the end cells.</li>
+      <li><strong>Cells are mono with <code>font-variant-numeric: tabular-nums</code></strong> and a <code>min-width</code> equal to their height. Proportional figures make page 11 narrower than page 88, which moves every cell to its right — and the arrows with them.</li>
+      <li><strong><code>pageCount</code> is derived from <code>totalItems</code> and <code>pageSize</code></strong> when not given, with a floor of 1 so an empty set still renders one page rather than page "0 of 0" controls.</li>
+      <li><strong>Missing counts warn.</strong> Neither <code>pageCount</code> nor <code>totalItems</code>, and the variant is not <code>cursor</code>: the console says so and names the fix, rather than rendering a plausible-looking bar built on nothing.</li>
+      <li><strong><code>cursor</code> takes the arrows' state from the API.</strong> <code>hasNext</code>/<code>hasPrev</code> are booleans the caller gets from its cursors — the component does no arithmetic it cannot justify, and the summary drops the total it does not have.</li>
+      <li><strong>The per-page control is the system <code>Select</code></strong>, at <code>sm</code>, with its own <code>aria-label</code>. Not a bespoke dropdown: it is a value being chosen for a field, which is exactly Select's contract.</li>
+      <li><strong>Focus-visible is read before the ring is drawn</strong>, matching Tabs, Accordion and Breadcrumb — a mouse press pages without leaving a ring behind.</li>
+      <li><strong>Its own tokens (listed below), with no reference to <code>--button-*</code>.</strong> The cells resemble ghost buttons by intent; the current-page chip resolves to <code>--action-solid</code> through its own variable so a product can tone it down without touching every primary button.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--pagination-page-text','--pagination-page-text-hover','--pagination-page-text-current','--pagination-page-background-hover','--pagination-page-background-current','--pagination-page-radius','--pagination-arrow-text-disabled','--pagination-ellipsis-text','--pagination-summary-text','--pagination-focus-ring'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Wiring it into a product.">
+    <pre>{`import { Pagination } from '@meridian/data';
+
+// The page and size live in the URL, not in the component.
+const [params, setParams] = useSearchParams();
+const page = Number(params.get('page') ?? 1);
+const size = Number(params.get('size') ?? 25);
+
+const { rows, total } = useWorkOrders({ page, size, filters });
+
+<Card title="Work orders" padding="none">
+  <Table rows={rows} columns={columns} />
+  <div style={{ borderTop: '1px solid var(--border-subtle)', padding: 'var(--space-3) var(--space-4)' }}>
+    <Pagination
+      page={page}
+      totalItems={total}
+      pageSize={size}
+      itemLabel="work orders"
+      pageSizeOptions={[25, 50, 100]}
+      onPageChange={(p) => setParams({ ...current, page: String(p) })}
+      // Resetting to page 1 is the caller's job, and it is not optional.
+      onPageSizeChange={(n) => setParams({ ...current, size: String(n), page: '1' })}
+    />
+  </div>
+</Card>
+
+// Keyset paging: no total, arrows driven by the cursors the API returned.
+<Pagination
+  variant="cursor"
+  page={page}
+  pageSize={50}
+  itemLabel="events"
+  hasPrev={!!cursors.prev}
+  hasNext={!!cursors.next}
+  onPageChange={(p) => load(p > page ? cursors.next : cursors.prev)}
+/>`}</pre>
+    <ul>
+      <li><strong>Reset to page 1 when anything narrowing changes</strong> — page size, a filter, a search term, a sort that reorders the set. Staying on page 12 of a set that now has 3 pages is the second-most-common bug here, after not resetting on page size.</li>
+      <li><strong>Clamp <code>page</code> against the count you just fetched.</strong> If a colleague deletes rows while an operator sits on the last page, the next fetch returns nothing; land them on the new last page rather than an empty table.</li>
+      <li><strong>Keep the row inside the table's footer</strong> — same border, same horizontal padding as the cells. A paginator floating below a card reads as belonging to the page, not to the table.</li>
+      <li><strong>Persist page size per table.</strong> An operator who chose 100 for work orders did not choose it for the audit log.</li>
+      <li><strong>Announce the change from the table.</strong> The paginator is not a live region; the table's status line is (§08).</li>
+      <li><strong>Testing hooks:</strong> the landmark is <code>nav[aria-label="Pagination"]</code>, cells are buttons named "Page N", the current page is <code>[aria-current="page"]</code>, and arrows are "Previous page" / "Next page" with <code>disabled</code> at the ends. The container carries <code>[data-pagination="numbered|compact|cursor"]</code>.</li>
+    </ul>
+    <div className="demo col">
+      <div className="foot"><Live initial={12} total={4820} pageSizeOptions={[25,50,100]} /></div>
+      <Text size="xs" tone="tertiary">4,820 rows at 25 per page — 193 pages, still seven cells, Next in the same place it was on page 1.</Text>
+    </div>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

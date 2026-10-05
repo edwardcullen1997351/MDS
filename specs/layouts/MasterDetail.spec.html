@@ -1,0 +1,203 @@
+<!-- @dsCard group="Specs · Layouts" viewport="1080x760" name="Master-detail" subtitle="Full specification — a collection kept beside the one member being worked: the directional relationship the frame owns, the four states it holds, and what must survive the collapse to sequential views" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Master-detail — layout template specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+.mock{padding:14px;display:flex;gap:10px;background:var(--background-page);min-height:150px}
+.mock.stack{flex-direction:column}
+.col{display:flex;flex-direction:column;gap:7px;min-width:0}
+.ml{font-size:10px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+.bar{height:8px;border-radius:3px;background:var(--surface-sunken);border:var(--border-hairline)}
+.bar.h{height:14px;background:var(--surface-card)}
+.bar.on{background:var(--status-info-soft);border-color:var(--status-info-border)}
+.blk{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:8px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:96ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Layout template</span>
+  <h1>Master-detail</h1>
+  <p class="lede">Anjali Deshmukh has fourteen purchase-order lines past their promise date and works them one at a time: call the supplier, revise the promise, close a line short, move to the next. Every one of those is a piece of work on a single line, and every one of them is only sensible in the light of the other thirteen. This frame keeps the collection and the member being worked on screen together, so that inspecting one line is not a departure from the queue. The relationship is directional — the collection drives the detail, never the reverse — and that direction, not the side-by-side placement, is what makes this a distinct frame.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/layout-template-spec-standard.card.html">Layout template spec standard §01–§14</a></span><span>Regions: 5 (4 required, 1 conditional)</span><span>Reference implementation: <a href="master-detail-reference.card.html">card</a> · <a href="../../templates/master-detail/MasterDetail.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — delivery expediting, open PO lines at PL-04</span><span>Sections included: 9 of 14</span><span style="color:var(--text-primary)">status: frozen 8 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <p>Maintain collection context while inspecting or working with one selected member, so that a task performed member by member does not become a stream of transitions between a collection view and an item view. The frame is right when the work is <em>repetitive over a set</em>: the user will visit many members in one sitting, each visit is short relative to the cost of finding the next one, and the collection's ordering and refinement are part of how they decide what to do.</p>
+    <p><strong>The relationship is the frame.</strong> Two regions side by side is an arrangement; a first region whose selection determines what the second region shows is a contract. Everything this specification adds beyond §02 follows from that direction: what the detail region shows before anything is selected, what happens to it while a new member loads, and what happens to it when the selected member stops existing.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>A work queue processed member by member — overdue PO lines, nonconformances awaiting disposition, maintenance requests to triage.</li><li>A register browsed and read — the item master, the instrument register, a supplier list — where the next lookup usually follows from the last.</li><li>Any collection where refinement narrows the set and the narrowed set is itself information the user is reading.</li></ul></div>
+      <div class="pane dont"><h3>Not this layout</h3><ul><li><strong>Comparing two peer objects.</strong> Use <a href="SplitView.spec.html">split view</a>: both surfaces stand alone there, and neither is generated by selecting something in the other.</li><li><strong>Selection does not need a persistent adjacent surface.</strong> If the member is opened, worked and left, a <a href="CollectionWorkspace.spec.html">collection workspace</a> with full-page item views is simpler and gives the item all the width it needs.</li><li><strong>The member needs the whole page.</strong> A routing, a multi-tab record, a form of thirty fields does not belong in a pane beside a list — see §12.</li><li><strong>A narrow reference strip beside a dominant surface.</strong> That is <a href="Sidebar.spec.html">sidebar</a>; the strip is not driven by a selection.</li></ul></div>
+    </div>
+    <p><strong>Applicable interaction patterns.</strong> <em>Primary:</em> <a href="../patterns/SelectionDrivenDetail.spec.html">selection-driven detail</a> — the frame exists to host it, and the pattern owns selection identity, correspondence, staleness and the removed-selection rule. <em>Supported:</em> <a href="../patterns/SearchResults.spec.html">search results</a>, <a href="../patterns/CollectionRefinement.spec.html">collection refinement</a>, <a href="../patterns/BulkSelectionAction.spec.html">bulk selection and action</a>, <a href="../patterns/CollectionEditing.spec.html">collection editing</a>, <a href="../patterns/ExplicitSave.spec.html">explicit save</a>. Where bulk selection is also in play, the two selections are different things — a set marked for an action, and the one member the detail region describes — and the frame must not let one silently be read as the other.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <table><thead><tr><th>#</th><th>Region</th><th>Requirement</th><th>What it owns</th></tr></thead><tbody>
+      <tr><td class="k">1</td><td class="k">Screen frame</td><td>Required</td><td>The outer measure, the two-region structure, the region widths (§03), and the single collection both regions are about. Owns the <code>h1</code>. It is not a third region: anything belonging to neither the collection nor the selected member sits above them, briefly, or nowhere.</td></tr>
+      <tr><td class="k">2</td><td class="k">Collection region</td><td>Required</td><td>The collection surface and the controls that shape it — an optional search field, optional refinement controls, pagination where the set needs it. Owns its own scroll and its own position: which page, which sort, which refinement, where it is scrolled. Those are the things the frame promises to preserve (§11), so they must live here and nowhere else.</td></tr>
+      <tr><td class="k">3</td><td class="k">Detail region</td><td>Required</td><td>The selected member and nothing else: its heading and context, its content, its actions. Owns its own scroll. <strong>Its heading must name the selected member</strong> — the region is otherwise unidentifiable against a collection of similar-looking members, and a stale detail region becomes indistinguishable from a current one. Actions here act on the selected member only.</td></tr>
+      <tr><td class="k">4</td><td class="k">Boundary</td><td>Required</td><td>The visible separation between the two regions — a <code>Divider</code>, or a change of surface plus space. Required because a collection and a member's content abutting with nothing between them read as one continuous surface. A separation, not a control: nothing about it may suggest dragging (§13).</td></tr>
+      <tr><td class="k">5</td><td class="k">Return affordance</td><td>Conditional</td><td>Present only in the sequential form (§11), where the two regions become two views. It returns to the collection region with its position, refinement and selection intact. In the concurrent form it must not exist — there is nothing to return from, and a back control implies a departure that never happened.</td></tr>
+    </tbody></table>
+    <p><strong>The selection relationship is part of the anatomy, and it is one-directional.</strong> The collection determines what the detail region shows. The detail region may act on its member — including in ways that change the collection, such as removing the member from it — but it never determines <em>what the collection is</em>: it may not filter, re-sort or re-page the collection region. A frame in which each region reconfigures the other has no reading order and no defensible state model.</p>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — one direction, and a detail region that names its member</div><div class="mock"><div class="col" style="flex:0 0 42%"><span class="ml">2 · queue, position preserved</span><div class="blk"><div class="bar"></div><div class="bar on"></div><div class="bar"></div><div class="bar"></div></div></div><div class="col" style="flex:1"><span class="ml">3 · PO-24118/30 · BRK-4820-A</span><div class="blk"><div class="bar h"></div><div class="bar"></div><div class="bar" style="width:64%"></div></div></div></div><div class="why">The heading names the line, so the planner can tell at a glance which of fourteen near-identical rows the figures belong to. The queue keeps its sort and page while she works the line.</div></div>
+      <div class="no"><div class="cap">Don't — a detail region titled by its role</div><div class="mock"><div class="col" style="flex:0 0 42%"><span class="ml">2 · queue</span><div class="blk"><div class="bar"></div><div class="bar on"></div><div class="bar"></div></div></div><div class="col" style="flex:1"><span class="ml">3 · &ldquo;Line details&rdquo;</span><div class="blk" style="border-color:var(--status-critical-border)"><div class="bar h" style="width:52%"></div><div class="bar"></div><div class="bar" style="width:64%"></div></div></div></div><div class="why">"Line details" is true of every member. When a read is slow, or the row highlight is missed, nothing on screen says whether these are line 30's figures or line 40's — and both are Nashik Forge brackets ordered on the same PO.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Properties</h2><span class="sec-note">Conditional — included: four choices change the frame's own contract</span></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Values</th><th>Default</th><th>Effect</th></tr></thead><tbody>
+      <tr><td class="k">collectionWidth</td><td>proportional · fixed measure</td><td>proportional, minority share</td><td>A proportional collection grows with the screen and suits a wide collection surface with several columns. A fixed measure keeps the collection stable while the detail region takes every extra pixel, which suits a short identity list. Both are declared against the collection's own functional minimum (§11).</td></tr>
+      <tr><td class="k">detailWidth</td><td>proportional · fills remainder</td><td>fills remainder, majority share</td><td>The detail region normally takes the larger share, because the member's content is what the user is working on. A detail region narrower than the collection is legitimate only where members are genuinely small; below its functional minimum it is not a detail region, and §12 applies.</td></tr>
+      <tr><td class="k">initialSelection</td><td><code>none</code> · <code>first-item</code></td><td><code>none</code></td><td><code>none</code> opens with an empty detail region that says what selecting will do — honest, and it never asserts that an arbitrary member matters. <code>first-item</code> suits a queue that is always worked in order and saves a click every morning. It is a declared policy, not an implementation accident, and it must not fire a detail read the user did not ask for on an expensive record.</td></tr>
+      <tr><td class="k">selectionPersistence</td><td>preserved across collection operations · cleared on refinement</td><td>preserved</td><td>Preserved means a search, a filter, a sort or a page change leaves the selection and the detail region alone — even when the selected member is no longer on the visible page, in which case the collection region says so rather than the detail region going blank. Cleared is defensible only where a refinement genuinely changes the subject. Whichever is chosen is stated, because the two are indistinguishable until the user refines.</td></tr>
+    </tbody></table>
+    <p>Scroll ownership is a fifth, narrower choice: the collection region owning its scroll (the default, and what keeps pagination and the detail region reachable together) or the screen scrolling as one, which is acceptable only for short collections. What the collection surface <em>is</em> — table, list, tree, cards — is composition, not a property of this frame.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§06</span><h2>States</h2><span class="sec-note">Conditional — included: four states decide whether and how the detail region is populated</span></div>
+  <div class="body">
+    <p>These are layout-level states because the frame — not any component inside it — decides whether the detail region has anything to show. A region that is empty because nothing has been chosen is a fact about the relationship in §02, not about the components placed in region 3.</p>
+    <table><thead><tr><th>State</th><th>When</th><th>Contract</th></tr></thead><tbody>
+      <tr><td class="k">no selection</td><td>Nothing selected — on load under <code>initialSelection: none</code>, or after the selection is cleared</td><td>The detail region is present and says what a selection will put in it. It is not collapsed, and the collection is not widened to fill the space: a frame that changes shape on first selection makes the user's first click feel like navigation. This is the only state in which the detail region is legitimately empty.</td></tr>
+      <tr><td class="k">selected item</td><td>A member is selected and its content is available</td><td>The detail region describes that member, names it in its heading, and its actions act on it. The collection continues to show which member is selected, by a means that is not colour alone (§08).</td></tr>
+      <tr><td class="k">detail loading</td><td>A selection has been made and its content has not arrived</td><td>The frame keeps the collection fully interactive and the region in place, and shows either a placeholder in the detail region or the previous member's content <em>explicitly labelled as the previous member's</em>. Never unlabelled stale content, and never a whole-screen loading state: the collection did not change.</td></tr>
+      <tr><td class="k">selected item unavailable</td><td>The selected member is removed, closed, reassigned or otherwise leaves the collection — by the user's own action here or by someone else</td><td>The detail region says which member left and why, rather than going blank or silently showing the next one. Whether the selection then clears or moves to the nearest member is the <a href="../patterns/SelectionDrivenDetail.spec.html">selection-driven detail</a> pattern's declared policy; the frame's obligation is that the region is never a blank space the user has to interpret.</td></tr>
+    </tbody></table>
+    <p>That is the whole state model. A collection in its own empty, loading or error state is the collection component's business; a member's content failing to load is the pattern's. The four above are the frame's because each one answers the same layout question: <em>is there a member for region 3, and if not, what is region 3?</em></p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§07</span><h2>Keyboard</h2><span class="sec-note">Conditional — included: the frame owns focus at the boundary between the regions</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Focus does not follow selection.</strong> Changing the selected member must not move focus into the detail region — the user working down a queue would be thrown out of the collection on every step. The frame moves focus across the boundary only where the task requires it, and the sequential form (§11) is the one case where it does, because the collection is no longer on screen.</li>
+      <li><strong>Where the collection distinguishes moving the current item from activating it, the frame preserves that distinction.</strong> If the underlying collection component separates a focus cursor from an activated selection, the layout may not collapse the two by driving the detail region from cursor movement; if the component makes no such distinction, the frame introduces none.</li>
+      <li><strong>A deliberate way across is provided.</strong> The frame offers an explicit keyboard route from the collection region to the detail region for the current member — a jump control, a bypass link, or a documented shortcut — because the alternative is tabbing through every control in the collection region. It names the member it will take you to.</li>
+      <li><strong>Returning is symmetrical.</strong> From the detail region, and from the return affordance in the sequential form, focus lands on the control for the member that is still selected — not at the top of the collection, and not on the first row.</li>
+      <li><strong>The frame does not trap focus in either region.</strong> Neither region is modal; both are reachable in document order, in both responsive forms.</li>
+    </ul>
+    <div class="two">
+      <div class="pane do"><h3>Do</h3><ul><li>"Arrowing to the next overdue line updates the detail region; focus stays in the queue. <code>Jump to PO-24118/30</code> in the queue header moves focus to the detail region's heading."</li><li>"Returning from the sequential line view puts focus back on PO-24118/30's row control."</li></ul></div>
+      <div class="pane dont"><h3>Don't</h3><ul><li>"Users can Tab into the search field and arrow through the table." Owned by <code>SearchField</code> and <code>Table</code>; restating it creates a second source of truth.</li><li>"Selecting a line focuses the first field in the detail region." The planner loses her place in the queue on every one of fourteen lines.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>Accessibility</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Both regions are labelled, and each is named by its own heading.</strong> The collection region is named for the collection ("Expediting queue"); the detail region is named for the selected member. Two adjacent unnamed regions cannot be told apart by anyone not seeing the boundary, and the boundary is the only thing carrying the distinction visually.</li>
+      <li><strong>Selection is communicated independently of visual highlighting.</strong> The selected member's state is programmatically exposed on the member itself — a checked control, <code>aria-selected</code>, <code>aria-current</code>, whatever the collection component provides — so that a highlighted row is a reinforcement, never the only signal. This is the frame's obligation because the frame is what creates the relationship between highlight and detail region.</li>
+      <li><strong>Heading levels run down the document.</strong> The screen frame owns the <code>h1</code>; both regions start at <code>h2</code>. The detail region's heading is not a level higher because its content is the point.</li>
+      <li><strong>Detail updates do not steal focus</strong> (§07). Where the replacement is asynchronous and the user's attention is elsewhere, the arrival is communicated by a polite status message naming the member — enough to know the region is now describing something else, without moving anything.</li>
+      <li><strong>Reading order matches the relationship in both responsive forms:</strong> collection region, then detail region, in document order. In the sequential form the collection precedes the detail view, and the return affordance is the first thing in that view.</li>
+      <li><strong>Each region scrolls to its own focus.</strong> With per-region scroll (§03), focus entering a region must bring the focused control into view — two independently scrolled surfaces make a lost focus ring twice as easy.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§11</span><h2>Responsive</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Expanded.</strong> Collection and detail remain visible concurrently at the declared widths, each above its functional minimum.</li>
+      <li><strong>Each region declares a functional minimum</strong> — the measure below which the collection can no longer show enough of a member to choose between them, or the detail region can no longer show the member's content without horizontal scrolling. Both are stated numbers, and they are what trigger everything below.</li>
+      <li><strong>When both minimums cannot hold, the frame becomes sequential views:</strong> collection → detail → return to collection. Not two squeezed columns, and not a detail region so narrow that every value wraps to three lines.</li>
+      <li><strong>Returning preserves the collection's position, refinement and selection.</strong> Query, filters, sort, page, scroll offset and the selected member all come back as they were, and the still-selected member is still shown as selected. This is the clause that makes the sequential form the same layout rather than two screens: the conceptual relationship survives the spatial transformation.</li>
+      <li><strong>The detail view is a view, not a modal.</strong> It carries the member's heading and actions in full, and it is left by the return affordance — not by dismissing an overlay, which would put the frame's own state at the mercy of an escape key.</li>
+      <li><strong>Yielding order within the concurrent form:</strong> the collection region gives up width first — its refinement controls may stack and its non-identifying columns may drop — because the detail region holds the work. The detail region is never reduced below its minimum to keep the collection wide.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — two sequential views, position preserved</div><div class="mock stack"><span class="ml">&larr; back to the expediting queue · restores page 2, filter, scroll, selection</span><div class="blk"><div class="bar h" style="width:70%"></div><div class="bar"></div><div class="bar" style="width:58%"></div></div></div><div class="why">On the tablet Anjali carries to the stores gate, one line at full width is readable and the return puts her back at the same row in the same filtered page. Nothing about the relationship is lost — only the adjacency.</div></div>
+      <div class="no"><div class="cap">Don't — keep the split at any cost</div><div class="mock"><div class="col" style="flex:0 0 46%"><span class="ml">2 · below minimum</span><div class="blk" style="border-color:var(--status-critical-border)"><div class="bar" style="width:80%"></div><div class="bar on" style="width:64%"></div><div class="bar" style="width:72%"></div></div></div><div class="col" style="flex:1"><span class="ml">3 · below minimum</span><div class="blk" style="border-color:var(--status-critical-border)"><div class="bar h" style="width:90%"></div><div class="bar" style="width:52%"></div></div></div></div><div class="why">The queue can no longer show the part number and the promise date together, so the planner cannot tell the two Nashik bracket lines apart — and the detail region needs sideways scrolling to read a quantity. The shape is preserved and the frame's purpose is gone.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Anti-patterns</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Using the frame to compare two peer objects.</strong> Neither region is the other's peer here; use <a href="SplitView.spec.html">split view</a>, whose contract is mutual substance rather than selection.</li>
+      <li><strong>Using it when the selection needs no persistent adjacent surface.</strong> If the member is opened, worked and left, a <a href="CollectionWorkspace.spec.html">collection workspace</a> with full-page member views is the honest frame — and gives the member the width this one cannot.</li>
+      <li><strong>Forcing a narrow detail region on content that needs the page.</strong> A tabbed record, a long form or a wide table crammed into a pane beside a list is the most common failure of this frame; it produces two regions that both scroll sideways.</li>
+      <li><strong>A detail region that collapses or disappears when nothing is selected.</strong> The frame changes shape on the first click and the user reads selecting as navigating (§06).</li>
+      <li><strong>A detail region whose heading names its role rather than its member</strong> — "Details", "Selected item" — leaving a stale region indistinguishable from a current one.</li>
+      <li><strong>Losing the collection's position on return</strong> in the sequential form: back to page 1, unfiltered, unsorted, nothing selected. The relationship the frame exists for is broken by the one transition it was supposed to survive.</li>
+      <li><strong>Letting the detail region reconfigure the collection</strong> — filtering or re-sorting the collection region from inside the member's content — which reverses the direction in §02 and leaves no reading order.</li>
+      <li><strong>Conflating a bulk-selected set with the detail-driving selection</strong>, so that ticking rows for a bulk action also changes what the detail region describes, or the last tick silently becomes "the selected member".</li>
+      <li><strong>Moving focus into the detail region on every selection change</strong>, which makes keyboard use of a queue impossible (§07).</li>
+      <li><strong>Nesting a second master-detail inside the detail region.</strong> Two selection relationships on one screen, and no user can say which collection the inner detail belongs to.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§13</span><h2>Implementation notes</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Two tracks, one declaration.</strong> Build the frame with <code>Grid</code>/<code>GridItem</code> and compose the regions from <code>Stack</code>, <code>Surface</code>, <code>Box</code> and <code>Divider</code>. Each track is <code>minmax(&lt;functional minimum&gt;, &lt;share&gt;)</code> — the minimum in the track is §11's trigger written down; without it the frame squeezes instead of converting.</li>
+      <li><strong>Both tracks need <code>min-width: 0</code>.</strong> A wide collection table or a long unbroken value in the detail region will otherwise push its track past the declared share and take the space from its neighbour silently.</li>
+      <li><strong>Per-region scroll needs a bounded region.</strong> Give the collection region a maximum height and let its body flex, rather than nesting a scrolling region inside a page that also scrolls — and keep pagination outside the scrolled area so it does not have to be scrolled to.</li>
+      <li><strong>Selection state lives in the frame, keyed by member identity — never by row index or page position.</strong> That is what lets a sort, a filter or a page change leave the selection intact (§03), and it is why the frame can say "the selected line is not on this page" instead of losing it.</li>
+      <li><strong>Where the detail content is fetched, match every response to the request that asked for it</strong> and drop responses that are no longer current. Two members' content arriving out of order into one region is how a planner reads one PO line's open quantity as another's; the <a href="../patterns/SelectionDrivenDetail.spec.html">selection-driven detail</a> pattern specifies the contract.</li>
+      <li><strong>Collection operations and detail reads are independent boundaries.</strong> Refining the collection must not remount the detail region, and a detail read must not put the collection into a loading state — they are separate requests into separate regions, and coupling them makes every filter change flicker the member's content.</li>
+      <li><strong>The regions are siblings, not nested.</strong> Document order is collection then detail, in both responsive forms; never place the detail region inside the collection's subtree to achieve the visual.</li>
+      <li><strong>The frame owns which member is selected, the collection's position and, in the sequential form, which view is showing.</strong> Where selection is part of an address the user can share or return to, it belongs in the URL along with the refinement — but the frame must still work when it is not there, with the <code>initialSelection</code> policy of §03.</li>
+      <li><strong>The boundary is presentational.</strong> This system ships no splitter component; the region widths are declared properties, and nothing in the boundary may hint at dragging.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted">Omitted, with reasons — §04 Variants: one structural form; the region widths are properties (§03) and the sequential arrangement is a §11 consequence, not a standing choice. · §05 Sizes: the frame names no size or density classes — widths are declared per screen in §03 against the functional minimums of §11, and the placed components carry their own size scales. · §09 Motion: the frame owns no structural motion — no region collapses or expands, the detail region is replaced in place rather than animated in, and the sequential form's view change is navigation whose transition belongs to the product's routing. · §10 Content rules: the one content obligation this frame creates — the detail region's heading must name the selected member, not its role — is a region contract and is stated in §02 with its do/don't pair; nothing else about content is constrained by the frame. · §14 Developer notes: nothing technical remains once §13 is written; selection identity, the position it preserves, the address question and the two independent data boundaries are all stated there.</p>
+<p class="omitted">Applies to: this layout template · Section set and include/omit tests: <a href="../../guidelines/layout-template-spec-standard.card.html">layout template spec standard</a> · Register: <a href="layouts.card.html">layouts index</a></p>
+</div>
+</body></html>

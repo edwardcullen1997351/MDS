@@ -1,0 +1,256 @@
+<!-- @dsCard group="Specs · Data" viewport="1080x760" name="DescriptionList" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content, responsive, anti-patterns" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>DescriptionList — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:16px 18px}
+.demo.plain{background:transparent;border:none;box-shadow:none;padding:0}
+.grid2{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;align-items:start}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:104px;padding-top:4px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.grid2{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { DescriptionList, Card, Badge, Tag, Text, Table, EmptyState } = window.MeridianDesignSystem_962c43;
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{flex:1,minWidth:0}}>{children}</div></div>;
+const FIELDS = [
+  { term: 'Work order', value: 'WO-88431', mono: true },
+  { term: 'Line', value: 'Assembly 3' },
+  { term: 'Machine', value: 'PRS-4120', mono: true },
+  { term: 'State', value: <Badge tone="success" dot>Running</Badge> },
+  { term: 'Owners', value: ['Maya Osei','Tomas Lind'] },
+  { term: 'Quantity', value: '2,000 ea', mono: true },
+  { term: 'Closed', value: null },
+];
+
+const SAMPLE = "import { DescriptionList, Badge } from '@meridian/ds';\n\n<Card title=\"Work order\" headingLevel={2}>\n  <DescriptionList items={[\n    { term: 'Work order', value: wo.id, mono: true },\n    { term: 'Line',       value: wo.line },\n    { term: 'State',      value: <Badge tone={wo.tone} dot>{wo.state}</Badge> },\n    { term: 'Owners',     value: wo.owners },      /* several values, one term */\n    { term: 'Closed',     value: wo.closedAt },    /* null renders — */\n  ]} />\n</Card>\n\n// In a Drawer or any narrow panel\n<DescriptionList layout=\"stacked\" size=\"sm\" items={fields} />";
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Data · Component specification</span>
+    <h1>DescriptionList</h1>
+    <p className="lede">One record's fields, as a real <code>dl</code> of <code>dt</code>/<code>dd</code> pairs. It was asked for <strong>by name three times before it existed</strong> — <code>Table</code> §01, <code>Table</code> §12 and <code>List</code> §14 — which is the clearest signal the backlog produced: three specs sending work to a component nobody had built.</p>
+    <div className="meta">
+      <span>components/data/DescriptionList.jsx</span><span>window.MeridianDesignSystem_962c43.DescriptionList</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 1 open item</span><span>since: 1.22.2</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="One record. The plural is a Table.">
+    <p>Use a DescriptionList for the fields of a <em>single</em> record: a work order's header, a machine's identity, a line's configuration, the summary at the top of a detail drawer. Term on the left, value on the right, one term column width down the whole list.</p>
+    <p className="warn"><strong>Three specs asked for this by name, and the wording is worth keeping.</strong> <code>Table</code> §01: "show one record's fields → a definition list or Card. A two-column <em>table</em> of label/value is a layout, not data." <code>Table</code> §12: "a table for one record is a definition list wearing a table." <code>List</code> §14: "genuinely a different component — <code>dl/dt/dd</code>, a two-column grid that collapses to stacked pairs, and no leading slot, no actions, no dividers. It is not <code>List</code> with two slots renamed, which is exactly why it was not folded in." All three entries close here.</p>
+    <div className="demo plain grid2">
+      <Card title="Work order" headingLevel={2} padding="md"><DescriptionList items={FIELDS} /></Card>
+      <Card title="In a drawer" headingLevel={2} padding="md"><DescriptionList layout="stacked" size="sm" items={FIELDS.slice(0,5)} /></Card>
+    </div>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Show one record’s fields','DescriptionList','This component.'],
+      ['Show several records sharing those fields','Table','Once there are two records the fields become columns, and columns align.'],
+      ['Show records with unlike shapes','List','A run of records, each a line or three. A field is not a record.'],
+      ['Show a record that has no fields yet','EmptyState','An empty definition list renders nothing at all, and the component warns.'],
+      ['Show one number prominently','A stat tile','A single field with a large value is a display, not a list of two.'],
+      ['Let the user EDIT those fields','Field + Input, in a form','A dl is read-only. A definition list of inputs is a form wearing a dl.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Two columns, and one wrapper that has to be there.">
+    <div className="demo"><DescriptionList items={FIELDS.slice(0,5)} /></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Term</strong> (<code>dt</code>) — the label, <code>--description-list-term-text</code>, one size down from the value. Quiet on purpose: the reader scans the values and uses the terms to locate one.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Value</strong> (<code>dd</code>) — <code>--description-list-description-text</code>, the primary ink. <code>mono</code> for anything out of the data, with tabular figures so a column of numbers lines up.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>The term column</strong> — <code>--description-list-term-width</code>, <em>one width down the whole list</em>. That alignment is the component; without it this is two paragraphs per row.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>The pair wrapper</strong> — a <code>&lt;div&gt;</code> around each <code>dt</code>/<code>dd</code> group, at <code>display: contents</code>. HTML5 permits exactly this one element inside a <code>dl</code>, and it is what makes a CSS grid possible without breaking the pairing (§13).</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Continuation values</strong> — a term with several values stacks them in column two and leaves the term column empty rather than repeating the term.</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>The empty value</strong> — <code>emptyValue</code>, <code>—</code> by default, in <code>--description-list-empty-text</code>. Never a blank cell (§10).</span></div>
+    </div>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Six, and no children.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['items','DescriptionField[]','[]','{ term, value?, mono? }. Empty warns — that is an EmptyState.'],
+      ['layout','columns | stacked','columns','stacked puts the term above the value; for narrow panels and long values (§11).'],
+      ['size','sm | md','md','Row gap and type size.'],
+      ['emptyValue','ReactNode','—','What a field with no value renders. Never blank (§10).'],
+      ['divided','boolean','false','Hairlines between rows. Off by default: the alignment already groups them.'],
+      ['termWidth','string','180px','Override the term column. An absolute length, not a percentage (§11).'],
+    ]}/>
+    <p><strong>It takes <code>items</code> rather than children,</strong> unlike <code>List</code> and <code>Accordion</code>. The reason is the grid: a caller composing <code>&lt;dt&gt;</code> and <code>&lt;dd&gt;</code> by hand can put them in any order and can nest them in a wrapper that breaks <code>display: contents</code>, and the alignment this component exists for would be one stray element away from collapsing. <code>Menu</code> and <code>Tabs</code> take arrays for the same reason.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Two layouts and a rule, no decoration.">
+    <div className="demo plain grid2">
+      <Card title="columns" headingLevel={2} padding="md"><DescriptionList items={FIELDS.slice(0,4)} /></Card>
+      <Card title="stacked" headingLevel={2} padding="md"><DescriptionList layout="stacked" items={FIELDS.slice(0,4)} /></Card>
+    </div>
+    <div className="demo plain"><Card title="divided" headingLevel={2} padding="md"><DescriptionList divided items={FIELDS.slice(0,4)} /></Card></div>
+    <ul>
+      <li><strong><code>columns</code> is the default</strong> because the alignment is the whole value of the component: a reader locates "Machine" by position after the first two rows and stops reading the terms at all.</li>
+      <li><strong><code>stacked</code> is for narrow panels and long values.</strong> A 180px term column against a 120px value column is not an alignment, it is two truncated columns. Below roughly 360px, stack.</li>
+      <li><strong><code>divided</code> is off by default</strong> and should usually stay off — the term column already groups the rows, so rules add a second grouping mechanism to a component whose only job is the first one. Turn it on when values are multi-line and the pairs start to run together.</li>
+      <li><strong>There is no <code>inline</code> variant</strong> (term and value on one line, several pairs per row). It reads as a sentence of fragments, and the alignment that makes a definition list scannable is exactly what it discards.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two. There is no lg.">
+    <div className="demo plain">
+      <Row label="sm"><Card padding="md"><DescriptionList size="sm" items={FIELDS.slice(0,4)} /></Card></Row>
+      <Row label="md"><Card padding="md"><DescriptionList size="md" items={FIELDS.slice(0,4)} /></Card></Row>
+    </div>
+    <p><strong>Two rungs, because this is always inside something else.</strong> A definition list is a card body, a drawer section or a page header's detail block — never the page itself — so it is sized by the container: <code>sm</code> in a drawer or a dashboard tile, <code>md</code> in a card or a main column. An <code>lg</code> would only ever be used to make a record look important, which is a heading's job.</p>
+    <p><strong>The term column does not scale with the size.</strong> It is one token, so a <code>sm</code> list in a drawer and an <code>md</code> list in a card beside it keep their values on the same left edge — which is the point when both describe the same record.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="It is read-only. The states belong to the region.">
+    <T cols={['State','What renders','Note']} rows={[
+      ['Populated','The pairs.','The normal case.'],
+      ['A field with no value','emptyValue (—) in the quiet ink.','Never a blank cell (§10). The row stays, because the field still exists.'],
+      ['A field with several values','Stacked in column two; the term column stays empty.','Not the term repeated.'],
+      ['No fields at all','Nothing, and a console warning.','An empty dl is invisible. That case is an EmptyState.'],
+      ['Loading','Skeleton lines in the region.','Not this component. Skeleton §06.'],
+      ['Failed','An Alert with a retry.','Alert §08.'],
+      ['Hover / focus / selected / disabled','NOTHING.','A dl is read-only prose. Nothing in it responds, and a value that needs to be edited belongs in a Field.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="None, and nothing was refused to get there.">
+    <T cols={['Key','Does','Why']} rows={[
+      ['Tab','Skips the list entirely, unless a VALUE contains a link or a control the caller put there.','A dl has no interactive semantics. This is the one component in the system whose empty keyboard section required no refusal — there was never a plausible clickable row to reject.'],
+      ['—','No arrow navigation, no selection, no expansion.','It is prose in two columns.'],
+    ]}/>
+    <p>A value may legitimately contain a <code>Link</code> or a <code>Tag</code> with a remove button — a machine name linking to its page, an owner linking to a profile. Those carry their own focus and their own accessible names, exactly as they do inside a <code>List</code> row. What must not happen is a control in the <em>term</em>: a term is a label, and a clickable label is a promise about the value it names that the component cannot keep.</p>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="The dt/dd pairing IS the payload.">
+    <ul>
+      <li><strong>A real <code>&lt;dl&gt;</code> of <code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code>.</strong> A screen reader announces the term and then its value as a pair, so a non-visual reader gets the same structure a sighted reader gets from the alignment. Two <code>div</code>s with different colours give them two anonymous strings — which is what every hand-rolled label/value block in the console was doing before this shipped.</li>
+      <li><strong>The pair wrapper does not break it.</strong> A single <code>&lt;div&gt;</code> grouping a <code>dt</code> with its <code>dd</code>s is valid HTML5 inside a <code>dl</code> and is preserved in the accessibility tree; <code>display: contents</code> removes its box without removing the element (§13).</li>
+      <li><strong>Several values under one term stay bound to it.</strong> Each is its own <code>dd</code> following the same <code>dt</code>, which is how the spec expresses "this term has these values" — not one <code>dd</code> holding a comma-joined string, which announces as a single value that happens to contain commas.</li>
+      <li><strong>The empty value is announced.</strong> <code>—</code> reaches the reader as an em dash; a blank <code>dd</code> announces as nothing at all, leaving the term hanging and the reader unsure whether the value failed to load.</li>
+      <li><strong>Name the list through its container,</strong> not on the <code>dl</code>: it sits under a <code>Card</code> title or a drawer heading, and that heading is already the record's name. A <code>dl</code> with its own <code>aria-label</code> duplicating the heading above it announces the record twice.</li>
+      <li><strong>Contrast.</strong> Terms at <code>--text-tertiary</code> and the empty value at the same — 4.74:1 at the rendered 11–12px, which clears 4.5:1 but is the first pair to re-check if the palette moves. Values are <code>--text-primary</code>.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="None. Fourth empty table, same reason.">
+    <T cols={['Moment','Motion','Why']} rows={[
+      ['Values arriving','NONE.','Data never animates in — Table §06.'],
+      ['A value changing','NONE.','A field that flashes on every poll makes a static record look unstable.'],
+      ['Switching layout','NONE.','columns → stacked is a different layout, not a transition; animating a grid reflow mis-measures during a font swap.'],
+    ]}/>
+    <p><strong>Fourth component in the system with an empty motion table</strong>, after <code>EmptyState</code>, <code>Avatar</code> and <code>List</code>. The shared rule is stated in each: <em>a component that renders in bulk cannot afford motion</em> — and a definition list renders one row per field, on a page that may hold several lists.</p>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="Terms are nouns. Values are values.">
+    <T cols={['Do','Not','Why']} rows={[
+      ['Term: "Machine"','Term: "Machine:"','The layout is the separator. A colon plus a column is two separators.'],
+      ['Term: "Closed"','Term: "Date the order was closed"','A term is a label, one or two words. The long form belongs in a hint or the field’s own page.'],
+      ['Value: — for a field with no value','A blank cell','A blank reads as a rendering failure, and announces as nothing at all (§08).'],
+      ['One placeholder down the whole list','— on some rows, "N/A" on others, blank on a third','Table’s rule: pick one and never mix it in the same list.'],
+      ['mono on IDs, counts and timestamps','mono on everything','Mono is what says "this came out of the data". Applied to prose it says nothing.'],
+      ['Terms in the record’s own order','Terms alphabetised','A reader looks for the identifier first and the audit fields last. Alphabetical order serves nobody who knows the record.'],
+    ]}/>
+    <ul>
+      <li><strong>Sentence case for terms, no trailing punctuation.</strong> Same as every other label in the system.</li>
+      <li><strong>Keep the list under about ten pairs.</strong> Past that, group it into two lists under subheadings — a reader cannot hold fifteen field positions.</li>
+      <li><strong>Do not repeat the record's name as a term.</strong> If the Card title says "WO-88431", the list does not need a "Work order" row — though it often should keep it when the list is quoted out of context.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Four rules, and the term width is the one that bites.">
+    <ul>
+      <li><strong><code>termWidth</code> is an absolute length, never a percentage.</strong> A percentage term column shrinks with the container, so the same list in a card and in a drawer puts its values on two different left edges — and the alignment is the component. Absolute means the column is stable and the VALUE column absorbs the change.</li>
+      <li><strong>Stack below roughly 360px of container width.</strong> A 180px term column against a 120px value column is two truncated columns rather than an alignment. The component does not switch automatically — no component in the system uses a container query yet, the same gap <code>EmptyState</code> §11 and <code>List</code> §11 both log — so the caller passes <code>layout="stacked"</code>, and a Drawer should pass it as a matter of course.</li>
+      <li><strong><code>minmax(0, 1fr)</code> on the value column,</strong> so a long value wraps rather than pushing the grid wider than its container. <code>text-wrap: pretty</code> on both.</li>
+      <li><strong>Values wrap; terms wrap too.</strong> Neither truncates with an ellipsis: a truncated label names nothing, and a truncated value is worse than a taller row. This is the opposite of <code>List</code>, where the title truncates — because there the row height must stay predictable down forty rows, and here there are ten.</li>
+    </ul>
+    <div className="demo plain">
+      <div style={{width:300}}><Card padding="md"><DescriptionList layout="stacked" size="sm" items={[{term:'Machine',value:'PRS-4120',mono:true},{term:'Last downtime reason',value:'Hydraulic pressure below 4.0 bar on station 2, held automatically'}]} /></Card></div>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns" note="Six, and the first two are what this component replaces.">
+    <div className="two">
+      <div className="pane dont"><h3>Structure</h3><ul>
+        <li><strong>A two-column <code>Table</code> of label/value.</strong> <code>Table</code> §12's own words: "a definition list wearing a table". It brings a header row, sortable columns and a fixed row height to a record that has none of those.</li>
+        <li><strong>Two <code>div</code>s per row with different colours.</strong> No <code>dt</code>/<code>dd</code> pairing, so a screen reader gets anonymous strings. This is what the console did before 1.22.2.</li>
+        <li><strong>A <code>&lt;dl&gt;</code> with anything but <code>dt</code>, <code>dd</code> and a single grouping <code>div</code> inside it.</strong> A <code>section</code> or a <code>span</code> wrapper there is invalid and breaks the pairing.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Content &amp; use</h3><ul>
+        <li><strong>A blank cell for a missing value.</strong> Reads as broken, announces as nothing (§10).</li>
+        <li><strong>Inputs inside it.</strong> A definition list of form fields is a form wearing a <code>dl</code>. Use <code>Field</code>.</li>
+        <li><strong>Two records side by side in one list.</strong> Two records with the same fields are a <code>Table</code> with two rows, and it will read better.</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="Four decisions, and one of them is a specific HTML rule.">
+    <ul>
+      <li className="warn"><strong>The pair wrapper is a <code>&lt;div&gt;</code> at <code>display: contents</code>, and this is the component's one load-bearing trick.</strong> HTML5 permits a single <code>div</code> to group a <code>dt</code> with its <code>dd</code>s inside a <code>dl</code> — the only element allowed there — and <code>display: contents</code> removes its box so the <code>dt</code> and <code>dd</code> become direct grid items of the <code>dl</code>. Without the wrapper, a term with two values makes every later row land in the wrong column, because the grid places cells in source order and one extra <code>dd</code> shifts the whole remainder by one. Without <code>display: contents</code>, each pair becomes a single grid cell and there is no alignment at all.</li>
+      <li><strong>Continuation values get an explicit <code>grid-column-start: 2</code></strong> rather than relying on auto-placement, so the second and third value of a term sit under the first instead of drifting into the term column.</li>
+      <li><strong><code>items</code> rather than children</strong> (§03): hand-composed <code>dt</code>/<code>dd</code> could arrive in any order or inside a wrapper that breaks <code>display: contents</code>, and the alignment would be one stray element from collapsing.</li>
+      <li><strong>Two console warnings,</strong> both about a list that cannot be read: no items at all (an invisible component — that case is an <code>EmptyState</code>), and an item with no <code>term</code> (a value with no label is a string on a page).</li>
+    </ul>
+    <div className="tokenlist">
+      {['--description-list-term-width','--description-list-row-gap-sm','--description-list-row-gap-md','--description-list-column-gap','--description-list-term-text','--description-list-description-text','--description-list-divider','--description-list-empty-text'].map(t=><span key={t}>{t}</span>)}
+    </div>
+    <p><strong>Eight tokens, the smallest family of any component here,</strong> and its own rather than <code>List</code>'s because almost nothing is shared: no leading slot, no actions, no row hover, no marker. The term width is a token rather than a prop default because it is the one value a consumer will want to retarget globally — every list in a product should agree on it.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{SAMPLE}</pre>
+    <ul>
+      <li><strong>Testing.</strong> Assert the semantics first: the container is a <code>dl</code>, and <code>queryAllByRole('term')</code> / <code>('definition')</code> return matched counts — that pairing is the component's whole reason to exist. Then that a field with several values renders several <code>dd</code>s after ONE <code>dt</code>; that a <code>null</code> value renders the em dash rather than an empty node; and that <code>layout="stacked"</code> puts both in column one.</li>
+      <li><strong>Lint.</strong> Flag a two-column <code>Table</code> whose column count is 2 and whose first column holds static labels; an <code>Input</code>, <code>Select</code> or <code>Textarea</code> inside a <code>DescriptionList</code> value; a <code>value</code> that is a comma-joined string where an array belongs; and any element other than <code>dt</code>, <code>dd</code> or a grouping <code>div</code> as a child of a <code>dl</code>.</li>
+      <li><strong>Frozen 5 Sep 2026.</strong> API closed: <code>items</code>, <code>layout</code>, <code>size</code>, <code>emptyValue</code>, <code>divided</code>, <code>termWidth</code>, <code>style</code>, plus native <code>dl</code> attributes.</li>
+      <li><strong>Closes three entries.</strong> <code>Table</code> §01 and §12 and <code>List</code> §14 all requested a definition list by name; all three are answered here, and none of them was answered by growing an existing component — which is what each of them asked for.</li>
+      <li><strong>Open — <code>layout</code> should be automatic below ~360px.</strong> Identical to <code>EmptyState</code> §14 and <code>List</code> §11: the honest mechanism is a container query, no component in the system uses one, and adopting the first is a system-wide decision about a browser-support floor rather than a component decision. Three components now log it, which makes it a system item rather than three coincidences.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

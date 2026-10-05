@@ -1,0 +1,140 @@
+<!-- @dsCard group="Guidelines" viewport="1040x1400" name="Composition rules" subtitle="The master index of canonical component and layout assemblies — how containers, data surfaces, forms, and feedback compose into coherent enterprise product screens" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Universal Composition Rules</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:32px}
+.wrap{max-width:1040px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0;max-width:78ch;color:var(--text-secondary);text-wrap:pretty}
+.rules{margin:24px 0 16px;padding:20px 22px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:12px}
+.rules.why{border-left:2px solid var(--action-solid)}
+.rules h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+p{margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:82ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:32px 0 14px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec{display:grid;grid-template-columns:220px minmax(0,1fr);gap:28px;padding:22px 0;border-bottom:var(--border-hairline)}
+.sec:last-child{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:7px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.body{display:flex;flex-direction:column;gap:12px;min-width:0}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:normal;word-break:normal}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.vp .why2{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5}
+.mock{padding:14px;display:flex;flex-direction:column;gap:9px;background:var(--background-page)}
+.sig{margin-top:40px;padding-top:14px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:12px}.vp{grid-template-columns:1fr}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Guidelines · System Architecture</span>
+<h1>Universal Composition Rules</h1>
+<p class="lede">A design system that ships 78 flawless components and 7 layout templates will still produce mediocre product screens if the rules of assembly are unwritten. This document is the master composition contract of the Meridian Design System: the explicit rules governing container nesting, data surface framing, feedback boundaries, and state choreography.</p>
+
+<div class="rules why">
+  <h2>The Prime Directive of Composition</h2>
+  <p><strong>Never invent a container when the page, the frame, or the component already provides the boundary.</strong> In high-density industrial consoles, visual noise is cumulative: an unnecessary border, an extra wrapper div, or a misaligned card creates cognitive drag that degrades operator speed and situational awareness.</p>
+</div>
+
+<div class="groupline"><h2>1. Container & Surface Nesting</h2><span>Rules 01–03</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§01</span><h3>Card nesting law</h3></div>
+  <div class="body">
+    <p><strong>Never nest a Card inside another Card.</strong> Two hairlines one inside the other say "this is grouped" twice and create visual vibration.</p>
+    <ul>
+      <li><strong>To group within a Card:</strong> Use an internal hairline divider (<code>border-top: var(--border-hairline)</code>), a section heading, or a sunken well (<code>Surface tone="sunken"</code>).</li>
+      <li><strong>To present a collection of items:</strong> Use <code>List</code> or <code>Table</code> inside a single enclosing Card, never a stack of mini-cards.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — One Card with internal structure</div><div class="mock"><div style="border:var(--border-hairline);border-radius:var(--radius-md);background:var(--surface-card);padding:12px;display:flex;flex-direction:column;gap:8px"><span style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary)">CARD: WORK ORDER #8841</span><div style="background:var(--surface-sunken);padding:8px;border-radius:var(--radius-sm)"><span style="font-size:11px;color:var(--text-secondary)">Line 1 · Frame weld status</span></div></div></div><div class="why2">The Card establishes the unit of work; the sunken surface establishes sub-regions without competing borders.</div></div>
+      <div class="no"><div class="cap">Don't — Nested Cards</div><div class="mock"><div style="border:var(--border-hairline);border-radius:var(--radius-md);background:var(--surface-card);padding:12px"><div style="border:var(--border-hairline);border-radius:var(--radius-md);background:var(--surface-card);padding:8px"><span style="font-size:11px;color:var(--status-critical-solid)">Card inside Card</span></div></div></div><div class="why2">Border doubling creates visual stutter and wastes precious padding budget.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§02</span><h3>Table & Card union</h3></div>
+  <div class="body">
+    <p><strong>Tables live in <code>Card padding="none"</code> by canonical contract.</strong></p>
+    <ul>
+      <li><strong>Header:</strong> Card <code>title</code> and <code>subtitle</code> name the dataset. Card <code>actions</code> hold collection-level buttons.</li>
+      <li><strong>Body:</strong> The <code>Table</code> component is rendered with <code>padding="none"</code> so column rules meet the card hairline seamlessly.</li>
+      <li><strong>Footer:</strong> Card <code>footer</code> houses <code>Pagination</code>, with <code>footerAlign="end"</code> or <code>"between"</code> (showing status readout on the left and pagination controls on the right).</li>
+      <li><strong>Border collapsing:</strong> <code>base.css</code> automatically removes the bottom border on the last table row so it never doubles against the card footer.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§03</span><h3>DescriptionList framing</h3></div>
+  <div class="body">
+    <p>A <code>DescriptionList</code> represents one record's fields. It is framed according to the host layout:</p>
+    <ul>
+      <li><strong>In Master-Detail / SplitView detail panes:</strong> Rendered directly inside the detail <code>&lt;section&gt;</code> with <code>divided={true}</code>, no surrounding Card needed.</li>
+      <li><strong>In Dashboard modules:</strong> Hosted inside a <code>Card padding="md"</code> with <code>layout="rows"</code> or <code>layout="columns"</code>.</li>
+      <li><strong>In SingleColumn records:</strong> Placed in a <code>Surface</code> well to differentiate static record metadata from editable fields.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="groupline"><h2>2. Feedback & Structural States</h2><span>Rules 04–06</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§04</span><h3>Alert placement boundaries</h3></div>
+  <div class="body">
+    <table><thead><tr><th>Feedback Level</th><th>Component</th><th>Placement & Rule</th></tr></thead><tbody>
+      <tr><td class="k">System / Service Failure</td><td class="k">Alert (live="on", tone="danger")</td><td>Replaces the failing collection region (e.g. within a Card or Module). Never blank the entire screen if only one service failed.</td></tr>
+      <tr><td class="k">Validation Errors</td><td class="k">Field error message</td><td>Rendered directly under the invalid control. A summary Alert is permitted only at the top of the form for &gt;3 simultaneous errors.</td></tr>
+      <tr><td class="k">Background Operation</td><td class="k">Toast / Toaster</td><td>Floating toast in bottom-right viewport. For non-blocking success announcements (e.g. "Calibration booked").</td></tr>
+      <tr><td class="k">Destructive Gate</td><td class="k">Dialog</td><td>Modal dialog with explicit confirmation contract. Never used for passive notification.</td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§05</span><h3>State choreography in Collections</h3></div>
+  <div class="body">
+    <p>Every collection surface (in <code>CollectionWorkspace</code>, <code>Dashboard</code>, <code>MasterDetail</code>) supports five discrete states that replace distinct regions:</p>
+    <ul>
+      <li><strong>1. Loading State:</strong> <code>Skeleton</code> placeholder with lines matching the expected row count (8–10 lines). Skeletons replace the table body; controls and headers remain mounted.</li>
+      <li><strong>2. Collection-Level Failure:</strong> <code>Alert</code> with retry action replaces the collection surface; search and filter controls stay reachable so user input is not lost.</li>
+      <li><strong>3. Empty Register (First-run):</strong> <code>EmptyState variant="first-run"</code> replaces the empty table, offering primary action to create/import first record.</li>
+      <li><strong>4. No Matches (Refinement empty):</strong> <code>EmptyState variant="no-results"</code> with a secondary action to clear search/filters.</li>
+      <li><strong>5. Selection Active:</strong> Raises the bulk action region (Region 3) above the collection without displacing reading position.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="groupline"><h2>3. Layout Framework Alignment</h2><span>Rules 07–09</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§06</span><h3>Form sequence & width caps</h3></div>
+  <div class="body">
+    <p>Forms must follow <code>SingleColumn</code> measure caps to prevent ocular fatigue:</p>
+    <ul>
+      <li><strong>Form Container Width:</strong> <code>size="sm"</code> (640px) or <code>size="md"</code> (900px) maximum. Never use fluid full-width for forms.</li>
+      <li><strong>Two-column pairs:</strong> Permitted only for naturally paired inputs (e.g. Start Date + End Date, First Name + Last Name, Quantity + Unit).</li>
+      <li><strong>Action Region:</strong> Terminal (at sequence foot) by default; sticky anchored only for long workflows with &gt;12 fields.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sig">
+  <span>Meridian Design System · Master Composition Standard</span><br>
+  <span>Taxonomy: <a href="component-hierarchy.card.html">3-Tier Component Hierarchy</a> · Source files: <code>guidelines/*.card.html</code> · <code>specs/**/*.spec.html</code> · <code>templates/**/*.dc.html</code></span>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,270 @@
+<!-- @dsCard group="Governance" viewport="980x760" name="Interaction pattern spec standard" subtitle="The twenty-one sections an Interaction Pattern specification may contain — with the test for including or omitting each one" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Interaction Pattern specification standard</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:32px}
+.wrap{max-width:1000px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0;max-width:76ch;color:var(--text-secondary);text-wrap:pretty}
+.rules{margin:24px 0 12px;padding:20px 22px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:10px}
+.rules.ships{margin:12px 0 32px;border-left:2px solid var(--status-info-solid)}
+.rules h2{margin:0 0 2px;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+p{margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:80ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:30px 0 12px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding:20px 0;border-bottom:var(--border-hairline)}
+.sec:last-child{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:7px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.badge{align-self:flex-start;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);padding:2px 8px;border-radius:var(--radius-full);white-space:nowrap}
+.req{background:var(--status-success-soft);color:var(--text-success)}
+.cond{background:var(--surface-sunken);color:var(--text-secondary)}
+.body{display:flex;flex-direction:column;gap:10px;min-width:0}
+.test{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:baseline}
+.test .t{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+.test p{color:var(--text-secondary)}
+.never{color:var(--text-tertiary)}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:2px}
+.pair div{padding:12px 14px;background:var(--surface-sunken);border-radius:var(--radius-sm)}
+.pair h4{margin:0 0 4px;font-size:var(--text-xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-regular)}
+.sig{margin-top:36px;padding-top:12px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:12px}.test{grid-template-columns:1fr;gap:2px}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Governance · Authoring standard</span>
+<h1>Interaction Pattern specification standard</h1>
+<p class="lede">An Interaction Pattern is a standardized way of solving a recurring interaction problem using existing components. It is not a component: it has no public API, no rendered anatomy of its own, and nothing to install. Its specification documents the interaction contract the composition creates — sequencing, coordination, commit and cancel semantics, recovery — and nothing that its constituent components already own. This page fixes the sections such a specification may contain, their order and numbering, and the test for including or omitting each one.</p>
+
+<div class="rules">
+  <h2>How to apply it</h2>
+  <ul>
+    <li><strong>One section is unconditional; twenty are conditional.</strong> Purpose appears in every accepted pattern specification. The rest appear only when their include test is met. Most patterns land between six and eleven sections; a pattern needing all twenty-one is almost certainly two patterns.</li>
+    <li><strong>Numbers are stable identifiers, not positions.</strong> A section keeps its number from this list whether or not the sections before it are present, so a cross-reference such as <code>§10 Error handling</code> means the same thing in every pattern spec. Sections appear in ascending numeric order and are never renumbered.</li>
+    <li><strong>Omit rather than stub.</strong> An omitted section is absent — no heading, no "n/a", no restatement of a component contract. The recurring test behind all twenty conditionals is one question: <em>does the composition create this, or does it inherit it?</em> If it inherits, omit the section and let the reader go to the component spec.</li>
+    <li><strong>Pattern, not composite.</strong> If the answer is a fixed assembly of parts with a public API that should ship as one unit, it is a <a href="composite-spec-standard.card.html">Composite Component</a> and follows §01–§14 of that standard instead. Patterns describe how independent components are used together over time; composites describe a thing.</li>
+    <li><strong>Behavior over layout.</strong> A pattern spec that could be satisfied by a screenshot is under-specified. Describe what happens, in what order, under what conditions, and what is guaranteed to the user when something goes wrong.</li>
+    <li><strong>Borderline calls are logged, not silently resolved.</strong> If it is genuinely unclear whether a behavior is pattern-owned, include the section and say so in it. A named open question is a decision the system can make later; an omission is invisible.</li>
+  </ul>
+</div>
+
+<div class="rules ships">
+  <h2>What every pattern ships</h2>
+  <p>A pattern is not accepted on prose alone. Four artifacts, all four required:</p>
+  <ul>
+    <li><strong>1 · The specification.</strong> <code>specs/patterns/&lt;Pattern&gt;.spec.html</code> — the sections below, in order, with the omissions and their reasons stated at the foot. Its masthead links artifacts 2 and 3.</li>
+    <li><strong>2 · A reference implementation.</strong> <code>templates/&lt;pattern-slug&gt;/&lt;Pattern&gt;.dc.html</code>, named <code>Pattern · &lt;Label&gt;</code> — one working, interactive example built from this system's real components, <strong>set in a manufacturing ERP scenario</strong> — a work order release, a nonconformance disposition, a purchase requisition, a routing change — because a pattern demonstrated on a generic sign-up form is read as a form, while the same contract shown against shop-floor consequences is read as a rule. The plant is fixed for every pattern: <strong>Suryodaya Autocomp Ltd, Chakan plant (PL-04), Pune</strong> — rupees formatted <code>en-IN</code>, IST, <code>@suryodaya.co.in</code>, Indian names in plant roles and Indian suppliers, so a reader moving between patterns recognises the same works. Use plant-real nouns, quantities, and failure modes; never lorem-grade filler. Prose cannot demonstrate focus landing on the first problem, a commit refusing a second activation, or values surviving a failure; readers who cannot see the contract behave will reinvent it. Every pattern-owned state must be reachable in it, with tweaks to force the ones a happy path never reaches — pending, failure, partial outcome, unknown outcome. Expose the pattern's live state so the contract is inspectable rather than inferred. Consuming projects copy it as a starting point, so <strong>the demo apparatus must be separable</strong>: mark every explanatory note, state inspector and simulated-operation harness <code>data-harness="remove-on-copy"</code>, give them a dashed border so they read as scaffolding rather than design, group their tweaks under a section named as a harness, and comment the simulated request with what to replace it with. A reference implementation that cannot be stripped in one pass is a demo pretending to be a starting point, and teams will ship the scaffolding.</li>
+    <li><strong>3 · A reference card.</strong> <code>specs/patterns/&lt;slug&gt;-reference.card.html</code>, <code>@dsCard group="Specs · Patterns"</code> — frames the live implementation beside its spec in the Design System tab, with links to the spec and to the standalone file. This exists because artifact 2 alone is not discoverable: cards inside <code>templates/</code> are not compiled, and the template picker is a flat list. The card is where anyone browsing the system actually meets the pattern.</li>
+    <li><strong>4 · Do/don't visual pairs</strong> in the spec itself, placed inside the section whose rule they demonstrate — never collected into a gallery at the end, where they lose the rule they belong to. One pair per call that is routinely got wrong, each with a one-line statement of <em>why</em> beneath it. Two to five pairs is the working range: a pair for every rule is a spec nobody reads.</li>
+  </ul>
+  <p><strong>Freezing a pattern.</strong> A pattern spec carries a status stamp in its masthead — <code>status: frozen &lt;date&gt; · N open items</code> — the same convention component specs use. It may only read <code>0 open items</code> when all four artifacts exist, every §05 property it declares is reachable as a tweak in the reference implementation, and every pattern-owned state is reachable there. A declared policy with no way to see it behave is an open item, not a footnote.</p><p>A pattern with a specification and no reference implementation is a proposal, not a standard. Do not add it to the <a href="../specs/patterns/patterns.card.html">patterns index</a> until all four exist.</p>
+  <p><strong>How grouping is actually implemented.</strong> Template names land in one flat "Templates" group and <code>@template</code> has no <code>group</code> attribute, so the picker cannot separate pattern references from page templates. Grouping therefore happens in the card grid (artifact 3), where <code>@dsCard</code> groups are arbitrary. Two mechanisms, each doing what it can: the card groups the pattern properly under <code>Specs · Patterns</code>; the template name carries a <code>Pattern · </code> prefix so the flat picker still reads correctly. Without the prefix a team browsing templates cannot tell a page starting point from a contract demonstration, and will copy one expecting the other.</p>
+</div>
+
+<div class="groupline"><h2>Required</h2><span>Present in every accepted pattern specification</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§01</span><h3>Purpose</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the recurring interaction problem, the user goal it serves, when the pattern is appropriate, and — where the boundary is easily crossed — when it should not be used.</p>
+    <div class="test"><span class="t">Include</span><p>Always. Every accepted pattern requires an explicit reason for existing and an explicit scope.</p></div>
+    <div class="test"><span class="t">Omit</span><p class="never">Never.</p></div>
+  </div>
+</div>
+
+<div class="groupline"><h2>Conditional</h2><span>Included only when the composition creates the contract</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§02</span><h3>Anatomy</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines the components the pattern uses, which are required and which optional, the role each plays, and the relationships among them.</p>
+    <div class="test"><span class="t">Include</span><p>The pattern depends on a specific set of components in specific roles, or a relationship between them that a reader could otherwise get wrong.</p></div>
+    <div class="test"><span class="t">Omit</span><p>The pattern is component-agnostic, or its structure is fully implied by Flow. Never restate structural detail already documented by the components themselves.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§03</span><h3>Flow</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines sequencing: entry points, the interaction sequence, branching paths and decision logic, progression, completion, cancellation, interruption, and exit points.</p>
+    <div class="test"><span class="t">Include</span><p>The interaction has meaningful order — a user can be part-way through it, and where they can go next depends on where they are.</p></div>
+    <div class="test"><span class="t">Omit</span><p>The interaction is a single indivisible act with no intermediate state.</p></div>
+    <p><strong>Note, from practice.</strong> Branching is described inside Flow, as a decision tree where complexity warrants it. Do not create a separate Decision Tree section — a tree divorced from its entry and exit points reads as a diagram of nothing.</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§04</span><h3>Behavior</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines the behavioral contracts the composition owns: component coordination, trigger and response relationships, dependencies, selection-to-action relationships, disclosure, commit, cancel, dismissal, persistence, and synchronization.</p>
+    <div class="test"><span class="t">Include</span><p>One component's state or event changes another's behavior, or the pattern must guarantee what "confirmed", "dismissed", or "still there when I come back" mean.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Every behavior in play is owned by an individual component and nothing coordinates them.</p></div>
+    <p><strong>Note, from practice.</strong> This is the section most often omitted by mistake, and the one most often padded. Behavior earns its place when it describes what the composition owns; it becomes noise the moment it re-documents what <code>Select</code> or <code>Dialog</code> already guarantees.</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§05</span><h3>Properties</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines configurable behavior exposed at the pattern level — the choices an adopting team makes when applying the pattern, not props on a component.</p>
+    <div class="test"><span class="t">Include</span><p>The pattern has legitimate configuration whose options change its behavioral contract.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Configuration lives entirely on the constituent components. Do not duplicate their properties here.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§06</span><h3>Variants</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines genuinely different behavioral forms of the same pattern.</p>
+    <div class="test"><span class="t">Include</span><p>Two or more recurring forms solve the same interaction problem with materially different contracts, and both belong to this pattern rather than to separate patterns.</p></div>
+    <div class="test"><span class="t">Omit</span><p>The differences are cosmetic, product-specific implementations, minor configuration, or just different examples.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§07</span><h3>Sizes</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines sizing rules that exist at the interaction-pattern level.</p>
+    <div class="test"><span class="t">Include</span><p>The pattern imposes coordinated sizing across components that no single component can determine — rare.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Default. Component sizing specifications are sufficient; this section is expected to be unnecessary for most patterns.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§08</span><h3>States</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines pattern-level states: coordinated, dependent, persistent, and transient states, and the transitions between them.</p>
+    <div class="test"><span class="t">Include</span><p>The composition creates a state no component holds alone — a pending selection, a dirty draft, a partially satisfied precondition — or a transition with rules of its own.</p></div>
+    <div class="test"><span class="t">Omit</span><p>The section would be an aggregation of component states. A list of children's states is not a pattern state model.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§09</span><h3>Validation</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines validation conditions and timing, cross-component and dependent validation, submission constraints, validation messaging, and recovery. Validation concerns the correctness and acceptance of user input.</p>
+    <div class="test"><span class="t">Include</span><p>The pattern decides when input is checked, or whether one field's validity depends on another's value.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Each input validates independently under its component's own rules.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§10</span><h3>Error handling</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines failure conditions beyond input validation: operation and network failure, partial failure, retry, recovery, preservation of user input, restoration of state, failed asynchronous operations, and unavailable dependencies.</p>
+    <div class="test"><span class="t">Include</span><p>The interaction can fail for reasons outside the user's control, and the pattern must guarantee what survives the failure.</p></div>
+    <div class="test"><span class="t">Omit</span><p>The interaction is local and synchronous with no failure mode.</p></div>
+    <div class="pair">
+      <div><h4>§09 Validation</h4><p>Is this input acceptable? Owned by rules known before submission.</p></div>
+      <div><h4>§10 Error handling</h4><p>The input was fine and the operation failed anyway. Keep the two distinct; never merge them.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§11</span><h3>Input &amp; interaction modalities</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines requirements across keyboard, pointer, touch, stylus, and gesture input — including hover alternatives, modality-specific behavior, touch-target behavior, and haptics where applicable.</p>
+    <div class="test"><span class="t">Include</span><p>The composition introduces modality behavior no component owns: a hover-revealed step needing a touch equivalent, a gesture spanning several components, cross-component focus movement.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Modality behavior is entirely owned by the individual components.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§12</span><h3>Accessibility</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines semantic and accessible-naming relationships, focus management, focus order and restoration, announcements, status communication, and assistive-technology behavior created by the composition.</p>
+    <div class="test"><span class="t">Include</span><p>The composition creates a relationship or a focus responsibility that spans components — which is true of nearly every pattern that opens, closes, or replaces content.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Composition adds no accessibility contract. Document pattern-level accessibility only; do not repeat component-level specifications.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§13</span><h3>Motion</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines coordinated motion: transitions, choreography and sequence, easing, duration, enter and exit behavior, interruption, continuity, and reduced-motion behavior.</p>
+    <div class="test"><span class="t">Include</span><p>Motion carries meaning across components — a sequence, a spatial relationship, a continuity the user relies on to follow the interaction.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Motion is component-owned or decorative. Specify exact timings and easing values only where they are genuinely normative.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§14</span><h3>Content rules</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines constraints on labels, instructions, action language, status and validation and error messaging, content hierarchy, terminology, and content limits — where correct interaction depends on them.</p>
+    <div class="test"><span class="t">Include</span><p>The user cannot make the right decision unless the words follow a rule: an action label that must name its consequence, a message that must say what to do next.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Content is unconstrained. This section is not for general editorial guidance unrelated to the interaction.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§15</span><h3>Responsive</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines how interaction behavior changes with available space, viewport, device characteristics, presentation context, or input environment.</p>
+    <div class="test"><span class="t">Include</span><p>The interaction itself changes — a step becomes a screen, an inline affordance becomes a sheet, a simultaneous choice becomes a sequential one.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Only layout reflows. Ordinary reflow is not a responsive interaction contract.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§16</span><h3>Internationalization</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines behavior materially affected by RTL and bidirectional interfaces, direction-sensitive interaction, locale-sensitive input and formatting, text expansion, and date, time, and number conventions.</p>
+    <div class="test"><span class="t">Include</span><p>Direction or locale changes what the interaction means or how it is operated — directional progression, locale-parsed input, ordering that follows reading direction.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Nothing in the interaction is direction- or locale-sensitive. Document only the concerns relevant to this pattern.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§17</span><h3>Performance</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines behavior where timing and latency matter: time-to-feedback, debounce and throttle, loading thresholds, optimistic updates, blocking behavior, perceived latency, delayed operations, and behavior under slow responses.</p>
+    <div class="test"><span class="t">Include</span><p>The interaction waits on something, and how it waits is part of its correctness.</p></div>
+    <div class="test"><span class="t">Omit</span><p>The interaction is instantaneous. Do not prescribe arbitrary timing values without a behavioral reason.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§18</span><h3>Edge cases</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines behavior at boundary conditions: extreme data volumes and input, overflow and truncation, rapid repeated input, duplicate and concurrent actions, race conditions, interrupted interactions, stale or conflicting state, and boundary limits.</p>
+    <div class="test"><span class="t">Include</span><p>A boundary is reachable in real use and the correct behavior is not obvious — double submits, a back-navigation mid-flow, zero results, a value that changed underneath the user.</p></div>
+    <div class="test"><span class="t">Omit</span><p>No boundary materially affects the pattern. Do not manufacture hypothetical cases to fill the section.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§19</span><h3>Anti-patterns</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines incorrect applications, inappropriate combinations, misuse of the pattern, and situations where another interaction model should be preferred.</p>
+    <div class="test"><span class="t">Include</span><p>The misuse is recurring and consequential, and naming it prevents it.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Misuse is already clear from Purpose. This section must not restate Purpose in the negative.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§20</span><h3>Implementation notes</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines what preserving the interaction requires: state architecture, event sequencing, component orchestration, synchronization, asynchronous coordination, and implementation constraints.</p>
+    <div class="test"><span class="t">Include</span><p>A plausible implementation reading only the sections above would break the contract — state held at the wrong level, events fired in the wrong order, a race left open.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Correct implementation follows directly from Flow, Behavior, and the component contracts.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§21</span><h3>Developer notes</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines additional technical and integration contracts: APIs, data requirements, event hooks, integration contracts, analytics and telemetry hooks, and technical constraints not covered elsewhere.</p>
+    <div class="test"><span class="t">Include</span><p>Adopting teams need a technical contract beyond the interaction contract.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Nothing technical remains unsaid. Analytics and telemetry requirements live here, unless this system later owns analytics as an independent cross-product specification.</p></div>
+  </div>
+</div>
+
+<p class="sig">Applies to: Interaction Pattern specifications · Composite Components keep <a href="composite-spec-standard.card.html">their own section set</a> · Navigation Systems keep <a href="navigation-spec-standard.card.html">theirs</a> · Core Component specs keep <a href="core-spec-standard.card.html">theirs</a> · Sections are numbered §01–§21 and never renumbered · Written patterns: <a href="../specs/patterns/patterns.card.html">patterns index</a> · <a href="layout-template-spec-standard.card.html">Layout Templates</a> keep theirs</p>
+</div>
+</body></html>

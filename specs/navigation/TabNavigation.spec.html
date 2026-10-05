@@ -1,0 +1,420 @@
+<!-- @dsCard group="Specs · Navigation" viewport="1120x760" name="Tab Navigation" subtitle="L3 Peer View Navigation System — in-page view switching, tablist semantics, and route-backed panel contracts" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Tab Navigation — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:68ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:74ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:76ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-direction:column;gap:16px}
+.demo-row{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:120px;padding-top:6px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.badge-tier{display:inline-block;padding:2px 8px;font-family:var(--font-mono);font-size:var(--text-2xs);letter-spacing:var(--tracking-caps);text-transform:uppercase;border-radius:var(--radius-full);background:var(--status-info-soft);color:var(--status-info-solid)}
+.panelbox{border:var(--border-hairline);border-top:0;border-radius:0 0 var(--radius-md) var(--radius-md);padding:16px;background:var(--surface-card)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Tabs, TabPanel, Button, IconButton, Badge, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const MACHINE_TABS = [
+  { value: 'telemetry', label: 'Live Telemetry', icon: 'activity' },
+  { value: 'alarms', label: 'Alarms', icon: 'siren', count: 3 },
+  { value: 'downtime', label: 'Downtime Log', icon: 'timer-off', count: 1 },
+  { value: 'tooling', label: 'Tooling Setup', icon: 'wrench' },
+  { value: 'maintenance', label: 'Maintenance Plan', icon: 'calendar-clock', disabled: true }
+];
+
+function TabSystemDemo(){
+  const [activeTab, setActiveTab] = React.useState('telemetry');
+  const [variant, setVariant] = React.useState('underline');
+
+  return (
+    <div className="demo">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:10}}>
+        <Text size="xs" weight="medium">Interactive Demonstration — Press Unit 03 In-Page Peer Views</Text>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          <span style={{fontSize:'var(--text-2xs)',color:'var(--text-tertiary)',fontFamily:'var(--font-mono)'}}>Style Variant:</span>
+          <Button size="xs" variant={variant==='underline'?'primary':'secondary'} onClick={()=>setVariant('underline')}>Underline (Page)</Button>
+          <Button size="xs" variant={variant==='segmented'?'primary':'secondary'} onClick={()=>setVariant('segmented')}>Segmented (Pill)</Button>
+        </div>
+      </div>
+
+      <div style={{background:'var(--background-page)',padding:'16px',borderRadius:'var(--radius-md)',border:'var(--border-hairline)'}}>
+        <div style={{marginBottom:12,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <div>
+            <div style={{fontSize:'var(--text-xs)',fontFamily:'var(--font-mono)',color:'var(--text-tertiary)'}}>MACHINE #PR-03 · CHAKAN PLANT</div>
+            <h2 style={{margin:0,fontSize:'var(--text-base)',fontWeight:'var(--weight-semibold)'}}>400T Deep Draw Hydraulic Press (Line 03)</h2>
+          </div>
+          <Badge tone="success">Operational (Shift B)</Badge>
+        </div>
+
+        <Tabs
+          items={MACHINE_TABS}
+          value={activeTab}
+          onChange={setActiveTab}
+          variant={variant}
+          idBase="machine-press-03"
+          label="Press Unit 03 View Switcher"
+        />
+
+        <div className="panelbox">
+          {activeTab === 'telemetry' && (
+            <div>
+              <Text size="xs" weight="medium">Hydraulic Pressure & Stroke Rate (Live Stream)</Text>
+              <div style={{marginTop:8,fontFamily:'var(--font-mono)',fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+                Main Ram Pressure: <strong>320 bar</strong> · Cycle Time: <strong>4.2s</strong> · SPM: <strong>14.3</strong> · Hydraulic Oil Temp: <strong>46.2°C</strong>
+              </div>
+            </div>
+          )}
+          {activeTab === 'alarms' && (
+            <div>
+              <Text size="xs" weight="medium">Active Unacknowledged Alarms (3)</Text>
+              <div style={{marginTop:8,fontSize:'var(--text-xs)',color:'var(--text-critical)'}}>
+                [14:22 IST] ALM-308: Flange Lubrication Flow Low (Sensor FL-02)<br/>
+                [13:05 IST] ALM-291: Minor Die Alignment Drift (0.04mm)<br/>
+                [11:40 IST] ALM-240: Air Pressure Drop at Ejector Station
+              </div>
+            </div>
+          )}
+          {activeTab === 'downtime' && (
+            <div>
+              <Text size="xs" weight="medium">Shift Downtime Ledger (28 mins total)</Text>
+              <div style={{marginTop:8,fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+                12:15–12:43 IST: Die cleaning and scrap chute clearance (Operator: Sandeep Kulkarni).
+              </div>
+            </div>
+          )}
+          {activeTab === 'tooling' && (
+            <div>
+              <Text size="xs" weight="medium">Installed Tooling Block</Text>
+              <div style={{marginTop:8,fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+                Die Set: <strong>DIE-BRK-4820-A</strong> · Part: Rear Brake Backplate · Strokes on Die: 14,820 / 50,000.
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div style={{fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+        Tab Navigation replaces content in-place without altering the surrounding machine header context, preserving exact tab↔panel accessibility associations.
+      </div>
+    </div>
+  );
+}
+
+function Spec(){
+  return (
+    <div className="page">
+      <div className="masthead">
+        <span className="eyebrow">Navigation System · System specification</span>
+        <h1>Tab Navigation</h1>
+        <p className="lede">Switches among a small set of peer views or sections (2–6 views) that share a common surrounding context. It replaces content in place within the same subject without navigating away from the active screen or record.</p>
+        <div className="meta">
+          <span>specs/navigation/TabNavigation.spec.html</span>
+          <span className="badge-tier">Tier: L3 In-Page Navigation</span>
+          <span style={{color:'var(--text-primary)'}}>status: frozen 8 Sep 2026 · 0 open items</span>
+          <span>setting: Suryodaya Autocomp Ltd (PL-04, Chakan)</span>
+        </div>
+      </div>
+
+      <Sec n="01" title="Purpose" note="Peer view switching within a shared context.">
+        <p>Tab Navigation provides in-place switching among 2–6 sibling perspectives of a single entity or screen subject (e.g. a machine console's Telemetry, Alarms, Downtime, and Tooling). The subject stays pinned in the header; tabs replace the view canvas below. Tabs represent <em>places</em>, never transactional action commands.</p>
+        <T cols={['You need to…','Use this system','Instead of…','Why']} rows={[
+          ['Switch among 2–6 sibling views of one record','Tab Navigation','Global / Local Nav','Tabs maintain surrounding record context; Global/Local nav changes major application scope.'],
+          ['Toggle between Chart and Table representations','Segmented Tabs','Accordion / Dialog','Segmented tabs provide compact in-place representation toggling.'],
+          ['Shorten a long page with independent sections','Accordion','Tab Navigation','Accordions keep all section headers visible simultaneously; tabs replace content entirely.'],
+          ['Step sequentially through a multi-stage process','Process Stepper','Tab Navigation','Steppers enforce sequence and validation; tabs allow arbitrary peer switching.']
+        ]} />
+        <div className="two" style={{marginTop:8}}>
+          <div className="pane do">
+            <h3>Do</h3>
+            <ul>
+              <li>Use Tab Navigation for 2–6 peer views of the same subject.</li>
+              <li>Always have exactly one tab selected and active at all times.</li>
+              <li>Wire tabs and tabpanels using explicit <code>aria-controls</code> and <code>idBase</code>.</li>
+            </ul>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <ul>
+              <li>Don't use tabs for sequential process steps (e.g. Step 1 $\to$ Step 2 $\to$ Step 3).</li>
+              <li>Don't put action commands (e.g. "Save", "Export", "Delete") inside the tab bar.</li>
+              <li>Don't mix different levels of hierarchy inside one tablist.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="02" title="Anatomy" note="Tablist, tab elements, panels, and active indicators.">
+        <p>The Tab Navigation system consists of an enclosing tablist container, individual tab triggers, associated tabpanels, active indicators, and optional counter badges.</p>
+        <TabSystemDemo />
+        <div style={{marginTop:12}}>
+          <T cols={['Structural Slot','Element','Role','Requirement']} rows={[
+            ['Tablist Container','<div> with role="tablist"','Encloses the tab buttons and manages horizontal keyboard arrow roving.','Mandatory'],
+            ['Tab Trigger Element','<button> with role="tab"','Selectable tab button with label, optional icon, and count badge.','Mandatory'],
+            ['Active Indicator','Underline bar / Pill fill','Visually identifies the currently selected tab (with aria-selected="true").','Mandatory'],
+            ['Associated Tabpanel','<div> with role="tabpanel"','Container rendering the content associated with the active tab.','Mandatory'],
+            ['Counter Badge','<Badge> / <span>','Displays numeric count of open items (e.g. 3 active alarms).','Optional']
+          ]} />
+        </div>
+      </Sec>
+
+      <Sec n="03" title="Properties" note="Public API, activation modes, and router delegation.">
+        <p>The system is configured via an items array, selected value, activation mode, and panel linking:</p>
+        <pre>{`interface TabItem {
+  value: string;                  // Unique tab identifier
+  label: string;                  // Concise tab label (1–2 words)
+  icon?: string;                  // Semantic Lucide icon name
+  count?: number;                 // Numeric counter badge
+  disabled?: boolean;             // Inactive tab
+}
+
+interface TabNavigationProps {
+  items: Array<string | TabItem>; // Ordered set of peer tabs
+  value: string;                  // Controlled active tab value
+  onChange: (value: string) => void;
+  variant?: 'underline' | 'segmented'; // Underline (default page) or Segmented (pill)
+  size?: 'sm' | 'md';             // sm (32px) or md (36px/40px)
+  activation?: 'automatic' | 'manual'; // automatic (arrow selects) vs manual (Enter selects)
+  idBase?: string;                // Base ID linking tablist to tabpanels
+  label?: string;                 // Accessible label for role="tablist"
+  onNavigate?: (tab: TabItem) => void; // Route push delegate for route-backed tabs
+}`}</pre>
+        <div className="warn" style={{marginTop:8}}>
+          <p><strong>Refused Properties:</strong> No <code>closeable</code> prop (tabs in this system represent permanent views, not browser documents); no arbitrary action button injection into tablists; no empty / unselected state.</p>
+        </div>
+      </Sec>
+
+      <Sec n="04" title="Variants" note="Underline vs Segmented; Route-backed vs Local-view.">
+        <p>Tab Navigation supports two visual presentations and two architectural routing models:</p>
+        <T cols={['Variant / Model','Structure','Optimal Placement','Characteristics']} rows={[
+          ['Visual: Underline (`underline`)','Full-width bar with sliding blue active underline.','Page / Section Header','Primary in-page section switcher; default standard.'],
+          ['Visual: Segmented (`segmented`)','Encapsulated pill group on sunken background.','Local View / Filter Bar','Compact toggle (e.g. Chart vs Table vs Raw Telemetry).'],
+          ['Model: Local-View Tabs','State-driven in-memory view swap.','Modal / Card / Inspector','Switches component in-place without altering the browser URL.'],
+          ['Model: Route-Backed Tabs','URL query param or sub-path sync (e.g. ?tab=alarms).','Record / Workspace Pages','Enables deep-linking and bookmarking of specific tabs.']
+        ]} />
+      </Sec>
+
+      <Sec n="05" title="Sizes" note="Heights, typography, and density matrix.">
+        <p>Geometry aligns with standard control heights:</p>
+        <T cols={['Metric','Size sm','Size md (Default)','Application']} rows={[
+          ['Underline Bar Height','32px (--control-h-sm)','36px / 40px (--control-h-md)','Standard page section tab bar.'],
+          ['Segmented Pill Height','24px','28px / 32px','Compact local switcher within data cards.'],
+          ['Font Size','12px (var(--text-xs))','13px / 14px (var(--text-sm))','Tab label typography.'],
+          ['Icon Bounding Box','14px × 14px','16px × 16px','Leading tab icon.']
+        ]} />
+      </Sec>
+
+      <Sec n="06" title="States" note="Selection, hover, keyboard focus, and disabled states.">
+        <p>Focus and selection are always visually distinct:</p>
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          <Row label="Rest (Unselected)">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>Secondary text color without underline; aria-selected="false".</span>
+          </Row>
+          <Row label="Hover">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-primary)'}}>Text shifts to primary color.</span>
+          </Row>
+          <Row label="Focus-Visible">
+            <span style={{fontSize:'var(--text-xs)',outline:'2px solid var(--action-solid)',outlineOffset:2,padding:'2px 6px',borderRadius:'var(--radius-xs)'}}>High-visibility blue outline around focused tab button.</span>
+          </Row>
+          <Row label="Selected (Active)">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-link)',fontWeight:'var(--weight-medium)',borderBottom:'2px solid var(--action-solid)',paddingBottom:2}}>Active blue underline / pill fill with aria-selected="true".</span>
+          </Row>
+          <Row label="Disabled">
+            <span style={{fontSize:'var(--text-xs)',opacity:0.35,cursor:'not-allowed'}}>Muted tab button; skipped during keyboard navigation.</span>
+          </Row>
+        </div>
+      </Sec>
+
+      <Sec n="07" title="Keyboard" note="W3C Tablist keyboard interaction pattern.">
+        <p>Implements the standard W3C ARIA Tablist keyboard pattern:</p>
+        <T cols={['Key / Shortcut','Activation Mode','Behavior']} rows={[
+          ['Arrow Left / Right','Automatic (Default)','Moves focus and immediately activates the newly focused tab.'],
+          ['Arrow Left / Right','Manual','Moves focus to adjacent tab without activating; user presses Enter to select.'],
+          ['Enter / Space','Manual Activation','Selects the currently focused tab and displays its associated tabpanel.'],
+          ['Home / End','Both','Jumps focus directly to the first or last enabled tab in the tablist.']
+        ]} />
+      </Sec>
+
+      <Sec n="08" title="Accessibility" note="ARIA roles, ID associations, and panel relationships.">
+        <p>Accessibility requirements per W3C Tablist specifications:</p>
+        <ul>
+          <li><strong>Role Mappings:</strong> Container has <code>role="tablist"</code>; tab items have <code>role="tab"</code>; panels have <code>role="tabpanel"</code>.</li>
+          <li><strong>ID Association:</strong> Each tab has <code>aria-controls="[idBase]-panel-[value]"</code> and each panel has <code>aria-labelledby="[idBase]-tab-[value]"</code>.</li>
+          <li><strong>Selection Attribute:</strong> Selected tab carries <code>aria-selected="true"</code> with <code>tabindex="0"</code>; unselected tabs carry <code>aria-selected="false"</code> with <code>tabindex="-1"</code>.</li>
+          <li><strong>Single Tab Stop:</strong> The entire tablist represents a single Tab stop in sequential page keyboard navigation.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="09" title="Motion" note="Underline slide and panel opacity transitions.">
+        <p>Smooth transitions that reinforce spatial adjacency:</p>
+        <T cols={['Transition','Property','Duration Token','Easing']} rows={[
+          ['Underline Bar Slide','transform, width','150ms (--duration-quick)','cubic-bezier(0.2, 0, 0, 1)'],
+          ['Panel Content Crossfade','opacity','100ms (--duration-instant)','ease-out'],
+          ['Reduced Motion Override','all transitions','0ms (Instant)','prefers-reduced-motion: reduce']
+        ]} />
+      </Sec>
+
+      <Sec n="10" title="Content Rules" note="Peer terminology, label length, and badge counts.">
+        <p>Tab labels represent parallel categories of equal structural rank:</p>
+        <T cols={['Correct Tab Label (Peer Category)','Incorrect Phrasing (Action / Disparate)','Rationale']} rows={[
+          ['Live Telemetry','Stream Live Sensor Data','Tab labels are category names; avoid lengthy action commands.'],
+          ['Open Alarms','Resolve / Ack Alarms','The tab is the viewing space; actions live inside the panel.'],
+          ['Downtime Log','Downtime & Submit Shift Report','Do not bundle workflow actions into peer category labels.']
+        ]} />
+        <ul style={{marginTop:8}}>
+          <li><strong>Label Length:</strong> 1–2 words, maximum 18 characters per tab.</li>
+          <li><strong>Count Limit:</strong> Recommended 2–6 tabs per set. More than 6 tabs indicates an overloaded view requiring Local Navigation.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="11" title="Responsive" note="Horizontal scroll and overflow indicators.">
+        <p>On constrained viewports, tabs preserve peer hierarchy without wrapping:</p>
+        <T cols={['Viewport Width','Strategy','Behavior']} rows={[
+          ['Desktop (≥1024px)','Standard Tab Bar','Full horizontal tablist displaying all tabs simultaneously.'],
+          ['Tablet / Mobile (<1024px)','Horizontal Smooth Scroll','Scrollable tablist with touch swipe and subtle fade indicators.'],
+          ['Extreme Narrow (<360px)','Fitted Segmented / Compact','Full-width equal distribution or compact dropdown selector.']
+        ]} />
+      </Sec>
+
+      <Sec n="12" title="Anti-patterns" note="Common mistakes and misuses to avoid.">
+        <div className="two">
+          <div className="pane dont">
+            <h3>Anti-Patterns (Never Do)</h3>
+            <ul>
+              <li><strong>Process Step Wizard:</strong> Using tabs as sequential steps (Step 1 $\to$ Step 2).</li>
+              <li><strong>Action Command Tabs:</strong> Putting "Submit" or "Export" buttons in tablists.</li>
+              <li><strong>Hierarchical Mixing:</strong> Mixing parent domains and child views in one bar.</li>
+              <li><strong>Multi-Row Tab Wrapping:</strong> Stacking tabs in 2–3 rows.</li>
+            </ul>
+          </div>
+          <div className="pane do">
+            <h3>Standard Corrections</h3>
+            <ul>
+              <li>Use a Process Stepper for sequential gated workflows.</li>
+              <li>Place action buttons in the page header or card toolbar.</li>
+              <li>Use Global/Local nav for domains; reserve tabs strictly for in-page views.</li>
+              <li>Enable smooth horizontal scrolling rather than wrapping.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="13" title="Implementation Notes" note="Panel lifecycle, URL sync, and token inventory.">
+        <p>Implementation guidelines for engineering teams:</p>
+        <ul>
+          <li><strong>Panel Mounting Strategy:</strong> Inactive panels are typically unmounted to conserve memory in data-heavy enterprise dashboards. For stateful forms, preserve state or use <code>hidden</code> attribute.</li>
+          <li><strong>URL Sync:</strong> Route-backed tabs update query parameters (e.g. <code>?tab=alarms</code>) using <code>history.replaceState</code> to allow shareable deep links without polluting browser history.</li>
+        </ul>
+        <div style={{marginTop:8}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>Tokens Consumed</Text>
+          <div className="tokenlist" style={{marginTop:6}}>
+            <code>--text-primary</code>
+            <code>--text-secondary</code>
+            <code>--text-link</code>
+            <code>--action-solid</code>
+            <code>--surface-card</code>
+            <code>--surface-sunken</code>
+            <code>--border-hairline</code>
+            <code>--border-subtle</code>
+            <code>--control-h-md</code>
+            <code>--control-h-sm</code>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="14" title="Developer Notes" note="Integration recipes, URL binding, and test assertions.">
+        <p>Route synchronization recipe and test assertions:</p>
+        <pre>{`// Example: Route-Backed Tab Navigation with URL Search Params
+import { Tabs, TabPanel } from '@meridian/design-system';
+import { useSearchParams } from 'react-router-dom';
+
+export function MachineConsole() {
+  const [params, setParams] = useSearchParams();
+  const currentTab = params.get('tab') || 'telemetry';
+
+  const handleTabChange = (nextTab) => {
+    setParams({ tab: nextTab }, { replace: true });
+  };
+
+  return (
+    <div>
+      <Tabs
+        idBase="machine-pr03"
+        items={MACHINE_TABS}
+        value={currentTab}
+        onChange={handleTabChange}
+      />
+      <TabPanel idBase="machine-pr03" value="telemetry" activeValue={currentTab}>
+        <TelemetryView />
+      </TabPanel>
+      <TabPanel idBase="machine-pr03" value="alarms" activeValue={currentTab}>
+        <AlarmsView />
+      </TabPanel>
+    </div>
+  );
+}`}</pre>
+        <div style={{marginTop:12}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>Test Assertions</Text>
+          <ul>
+            <li>Assert that the selected tab has <code>aria-selected="true"</code> and <code>tabindex="0"</code>.</li>
+            <li>Assert that unselected tabs have <code>aria-selected="false"</code> and <code>tabindex="-1"</code>.</li>
+            <li>Assert that the active tab's <code>aria-controls</code> value matches the rendered tabpanel's <code>id</code>.</li>
+          </ul>
+        </div>
+      </Sec>
+
+      <div style={{marginTop:36,paddingTop:12,borderTop:'var(--border-hairline)',fontFamily:'var(--font-mono)',fontSize:'var(--text-2xs)',color:'var(--text-tertiary)'}}>
+        Applies to: L3 In-Page Tab Navigation System · Governance: <a href="../../guidelines/navigation-spec-standard.card.html">Navigation System specification standard</a> · Sections §01–§14 frozen · Sibling Systems: <a href="GlobalNavigation.spec.html">Global Navigation</a>, <a href="LocalNavigation.spec.html">Local Navigation</a>, <a href="BreadcrumbNavigation.spec.html">Breadcrumb Navigation</a>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

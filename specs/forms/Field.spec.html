@@ -1,0 +1,385 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="Field" subtitle="Full specification — the labelling contract nine controls read from: ids, describedby, errors" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Field — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section.sec{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section.sec:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:16px}
+.st{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+.st th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+.st td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+.st tr:last-child td{border-bottom:none}
+.st td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);display:block}
+.wide{max-width:420px}
+.form{display:grid;gap:16px;max-width:420px}
+@media (max-width:860px){section.sec{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Field, Fieldset, Input, Textarea, Select, Checkbox, CheckboxGroup, RadioGroup, Switch, Combobox, Button, Text, Alert, Card, Link } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section className="sec">
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table className="st"><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+
+function Spec(){
+  const [qty,setQty] = React.useState('42000');
+  const err = Number(qty) > 30000 ? 'Exceeds the line maximum by ' + (Number(qty)-30000).toLocaleString() + '.' : null;
+  const [submitted,setSubmitted] = React.useState(false);
+
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>Field</h1>
+    <p className="lede">The labelling contract every control in this system reads from. Field renders almost nothing — a label, a hint, an error — and owns almost everything that makes a form usable: the id, the label association, <code>aria-describedby</code>, <code>aria-invalid</code>, <code>aria-required</code>. Nine components consume it, which is the reason to be strict here: <strong>a defect in Field is a defect in every form in the product</strong>, and it arrives silently, because none of it is visible in a screenshot.</p>
+    <div className="meta">
+      <span>components/forms/Field.jsx</span><span>window.MeridianDesignSystem_962c43.Field · FieldContext</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · amended 6 Sep 2026 (claimGroup, additive) · 0 open items</span><span>since: 1.2.0</span><span>tokens listed in §13</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Wire the label and the description by structure, not by hand.">
+    <p>Wrap <strong>one</strong> control in a Field whenever it needs a visible label, helper copy, or an error — which is nearly always. The value is not the layout; it is that the association is made by <em>where the control sits</em> rather than by matching strings. A hand-wired form gets <code>htmlFor</code>/<code>id</code> and <code>aria-describedby</code> wrong eventually — usually the second time someone copies a block and forgets to change the id, at which point two controls share a label and neither is described.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Label one control, with a hint or an error','Field','This component.'],
+      ['Label a SET of controls','Fieldset','A <label for> points at exactly one control and cannot name a group. Fieldset is a real <fieldset>/<legend> (§04).'],
+      ['Label a checkbox or switch','Neither — the control\u2019s own label','A single Checkbox already renders its label beside the box. A Field around it produces two labels (§12).'],
+      ['Summarise several errors after a submit','Alert, live="on"','A form-level summary. Field errors stay on their fields as well — the summary is an addition, never a replacement.'],
+      ['Explain a whole form','Text above it','Not a hint on the first field.'],
+      ['Group fields into sections','A heading + Card','Field is one control\u2019s scaffolding, not a layout device.'],
+    ]}/>
+    <div className="demo col">
+      <div className="form">
+        <Field label="Work order" hint="Twelve characters, prefix WO." required>
+          <Input defaultValue="WO-88431" mono />
+        </Field>
+        <Field label="Target quantity" hint="Must be under 30,000." error={err} required>
+          <Input value={qty} onChange={(e)=>setQty(e.target.value)} align="right" />
+        </Field>
+        <Field label="Note" hint="Appears in the order's history.">
+          <Textarea rows={2} placeholder="Optional" />
+        </Field>
+      </div>
+      <Text size="xs" tone="tertiary">Type a quantity over 30,000. <strong>The hint stays.</strong> That is the whole argument of §08 — the rule is what makes the error actionable.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Label, control, hint, error — and two ids.">
+    <div className="demo col">
+      <div className="wide">
+        <Field label="Target quantity" hint="Must be under 30,000." error="Exceeds the line maximum by 12,000." required>
+          <Input defaultValue="42000" align="right" />
+        </Field>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        {[['1','Wrapper — a flex column with --field-gap. It has no border, no background and no padding: a Field is scaffolding, not a surface.'],
+          ['2','Label — a real <label htmlFor>, --text-xs medium in --field-label-text. It is the control\u2019s accessible name, and the component warns when it is missing (§08).'],
+          ['3','Required mark — an aria-hidden asterisk in --field-required-mark. The machine-readable half is aria-required on the control, published through context.'],
+          ['4','Control — any child. It reads id, describedBy, invalid and required from FieldContext and applies them itself.'],
+          ['5','Hint — id <field>-hint, --field-hint-text. Carries the RULE. It survives the error (§06).'],
+          ['6','Error — id <field>-err, --field-error-text with a circle-alert glyph. Carries what went WRONG. Its region is always mounted; only the content is conditional (§08).'],
+          ['7','describedBy — both ids when both exist, hint first, so the rule is read before the failure.']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+    </div>
+    <p><strong>Two ids, not one.</strong> The component previously used a single <code>&lt;id&gt;-msg</code> for whichever message was showing — which is precisely <em>why</em> only one could show: two nodes cannot share an id, and <code>aria-describedby</code> had no way to point at both. The single id was not a side effect of hiding the hint; it was the cause.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Six props. The context is the real API.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['label','ReactNode','—','The accessible name. Warns when absent (§08).'],
+      ['labelHidden','boolean','false','Keeps the name, hides the text — a table filter under its own column header.'],
+      ['hint','ReactNode','—','The rule. Stays visible when error is set (§06).'],
+      ['error','ReactNode','—','What went wrong. Sets the control\u2019s aria-invalid through context.'],
+      ['required','boolean','false','Asterisk on the label plus aria-required on the control.'],
+      ['htmlFor','string','generated','An explicit control id. Omit it; Field generates and wires one.'],
+    ]}/>
+    <p className="lede" style={{maxWidth:'72ch'}}>What Field publishes on <code>FieldContext</code> is the part that matters:</p>
+    <T cols={['Context key','Type','What the control does with it']} rows={[
+      ['id','string','Applies it as its own id, so the label points at it.'],
+      ['describedBy','string | undefined','Applies as aria-describedby. Space-separated when both hint and error exist.'],
+      ['invalid','boolean','Applies aria-invalid, and draws its danger border.'],
+      ['required','boolean','Applies aria-required.'],
+      ['labelId','string','Id of the <label> element itself — for a group that names itself with aria-labelledby instead of taking id.'],
+      ['claimGroup','() => void','Called once on mount by a child that is a role="group" of SEVERAL named controls. The label then drops htmlFor and the group names itself.'],
+    ]}/>
+    <p><code>Input</code>, <code>Textarea</code>, <code>Select</code>, <code>Combobox</code>, <code>Autocomplete</code>, <code>Checkbox</code>, <code>Radio</code>, <code>Switch</code> and <code>ChipGroup</code> read it. <strong>An explicit prop on the control always wins</strong> — pass <code>id</code> or <code>aria-describedby</code> directly and Field's value is ignored, which is what makes the component safe to adopt incrementally.</p>
+    <p><strong><code>FieldContext</code> is the documented extension point.</strong> A control this system does not ship reads it with <code>useContext(FieldContext)</code> and applies the four values itself; it is <code>null</code> outside a Field, so a control must handle standing alone.</p>
+    <p><strong>A group of controls is the one case where taking <code>id</code> is wrong</strong> (added 5 Sep 2026, for <code>DateRangePicker</code>). Field assumes one child control, and a composite with two named endpoints breaks that assumption in a way that is invisible on screen: if one endpoint takes the Field's <code>id</code>, the Field's label and that endpoint's own label both point at it, and browsers <em>concatenate</em> every <code>&lt;label for&gt;</code> aimed at one input — so it is announced "Shift period First shift" while its partner is announced only "Last shift". Such a child calls <code>claimGroup()</code> instead: the label keeps its element, its styling and its required mark but drops <code>htmlFor</code>, and the group references it through <code>aria-labelledby=&#123;labelId&#125;</code>. Field cannot detect this itself, so the group declares it.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Field for one control. Fieldset for a set.">
+    <p>There are no visual variants. The variation that matters is <strong>which of the two scaffolds you need</strong>, and it is decided by grammar: a <code>&lt;label for&gt;</code> names exactly one control, so it cannot name a group.</p>
+    <T cols={['','Field','Fieldset']} rows={[
+      ['Names','One control','A set of controls'],
+      ['Element','<div> + <label htmlFor>','<fieldset> + <legend>'],
+      ['Why','The label association only works one-to-one','The only grouping every screen reader announces without ARIA'],
+      ['Used by','Input, Textarea, Select, Combobox, Autocomplete','RadioGroup, CheckboxGroup, ChipGroup — internally. Reach for it directly only for LOOSE controls: wrapping one of those group components in a Fieldset nests a fieldset inside a fieldset and leaves the inner one unnamed.'],
+      ['Error target','The control (aria-invalid on it)','The GROUP — never an individual option, since the set is what is unanswered'],
+      ['Shared','Rendering only: same label type, same hint and error rows, same tokens','—'],
+    ]}/>
+    <div className="demo col">
+      <div className="form">
+        <Field label="Line" hint="Where the order runs.">
+          <Select options={[{value:'a',label:'Frame weld'},{value:'b',label:'Paint'}]} />
+        </Field>
+        {/* Raw Checkbox children — the case Fieldset documents. Wrapping a
+            CheckboxGroup here instead would nest a fieldset inside a
+            fieldset and leave the inner one unnamed, which is the exact
+            failure this page says Fieldset exists to prevent. A group
+            component labels itself; Fieldset is for loose controls. */}
+        <Fieldset label="Notify on" hint="Pick at least one." error={submitted ? 'Pick at least one channel.' : null}>
+          <Checkbox label="Email" />
+          <Checkbox label="SMS" />
+          <Checkbox label="Plant display" />
+        </Fieldset>
+        <Button variant="secondary" size="sm" onClick={()=>setSubmitted(v=>!v)}>{submitted?'Clear group error':'Submit empty'}</Button>
+      </div>
+      <Text size="xs" tone="tertiary">The two render identically on purpose — a form mixing fields and groups should look like one form, not two. <code>Fieldset</code> carried the same three defects as Field and was fixed in the same pass (§13).</Text>
+    </div>
+    <ul>
+      <li><strong>No inline (label-beside-control) variant.</strong> Labels sit above their control at every width — a left-labelled form has two ragged edges and breaks the moment a label wraps.</li>
+      <li><strong>No "optional" marker.</strong> Required is marked; optional is the default and marking it doubles the noise (§10).</li>
+      <li><strong>No character counter.</strong> That belongs to <code>Textarea</code>, which knows the value.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="None. It inherits, and its type is fixed.">
+    <p>Field has <strong>no size prop</strong>. Its label, hint and error are <code>--text-xs</code> at every control size, and the vertical rhythm is <code>--field-gap</code> (2px) between label, control and messages.</p>
+    <T cols={['Piece','Value','Why fixed']} rows={[
+      ['Label','--text-xs medium','A label at --text-sm competes with the value inside the control, which is the thing being read.'],
+      ['Hint / error','--text-xs','Both are secondary to the value, and both must stay above the 12px floor.'],
+      ['Gap','--field-gap','Tight on purpose: the label, control and message are ONE object, and the gap between fields must be visibly larger than the gaps inside one.'],
+      ['Message gap','--field-message-gap','Between the alert glyph and the error text.'],
+    ]}/>
+    <p><strong>The control sets the size, not the Field.</strong> <code>&lt;Input size="lg"&gt;</code> inside a Field gets a 40px box and a <code>--text-xs</code> label, and that asymmetry is deliberate — scaling the label with the control makes a large field shout twice.</p>
+    <p><strong>Field spacing does not ride <code>[data-density]</code></strong>, unlike Table and the controls themselves. Recorded because it looks like an omission: the label-to-control gap is already at the minimum that reads as attached, and compressing it further makes the label look like it belongs to the field above.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Four, and the important one is what does NOT disappear.">
+    <T cols={['State','Treatment']} rows={[
+      ['Default','Label, control, and the hint if there is one.'],
+      ['Required','Asterisk on the label (aria-hidden) plus aria-required on the control. Both halves, always.'],
+      ['Invalid','The error appears BELOW the hint, which stays. The control takes aria-invalid and its danger border from context.'],
+      ['Valid','Nothing. There is no success tick — a form of green ticks is a form that cannot be scanned for the one thing that is wrong.'],
+      ['Disabled','Not a Field state. Disable the control; the label and hint stay legible so the field can still be read.'],
+      ['Hint + error together','The normal invalid state, not an edge case (below).'],
+    ]}/>
+    <p className="warn"><strong>The hint used to be destroyed by the error, and that was the worst defect in this component.</strong> The render was <code>error ? err : hint ? hint : null</code> — so the moment a field became invalid, the rule the user needed in order to fix it disappeared. "Must be under 30,000" is what makes "Too large" actionable; without it the user is told they are wrong and not told what right looks like. It is a WCAG 3.3.2 (Labels or Instructions) and 3.3.3 (Error Suggestion) failure, and it applied to every form in the product.</p>
+    <div className="demo col">
+      <div className="two">
+        <div className="pane"><h3>Now</h3>
+          <Field label="Target quantity" hint="Must be under 30,000." error="Exceeds the line maximum by 12,000.">
+            <Input defaultValue="42000" align="right" />
+          </Field>
+          <Text size="xs" tone="tertiary">Rule and failure, in that order.</Text>
+        </div>
+        <div className="pane"><h3>Before 1.16.0</h3>
+          <Field label="Target quantity" error="Exceeds the line maximum by 12,000.">
+            <Input defaultValue="42000" align="right" />
+          </Field>
+          <Text size="xs" tone="tertiary">The rule is gone. Exceeds it by how much? Under what?</Text>
+        </div>
+      </div>
+    </div>
+    <p>If showing both reads as repetitive, <strong>the error copy is wrong, not the rule</strong>. An error that merely restates the hint ("Must be under 30,000" / "Must be under 30,000") is telling the user nothing they cannot see; say what is actually wrong with what they typed (§10).</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="It has none, and that is the design.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab','Reaches the control. The Field itself is never a tab stop — it is a <div> with a <label>.'],
+      ['(clicking the label)','Focuses the control. Native, and the reason the label is a real <label htmlFor> rather than a styled <span>.'],
+      ['(everything else)','Belongs to the control. Field adds no handlers at all.'],
+    ]}/>
+    <p>Field is the one component in this system with genuinely nothing in this section, and it is worth stating rather than omitting: <strong>the component adds no interactivity whatsoever</strong>. No handlers, no <code>tabIndex</code>, no roles on the wrapper. Everything a keyboard user does happens in the control, and the only keyboard-relevant thing Field contributes is that <em>clicking the label moves focus</em> — which comes free from using the real element and is lost the moment someone renders a label as a <code>&lt;span&gt;</code> for styling reasons.</p>
+    <p><strong>The label must not contain a control.</strong> A link or a button inside a <code>&lt;label&gt;</code> is reachable but activating it may also activate the labelled control, and screen readers fold it into the name. If a field needs a "What's this?" affordance, put a <code>Popover</code> trigger <em>beside</em> the label, outside it.</p>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="This section is the component.">
+    <ul>
+      <li><strong>The label is a real <code>&lt;label htmlFor&gt;</code></strong> pointing at a generated id. That single fact is why the component exists: association by structure, not by hand.</li>
+      <li><strong>No label warns.</strong> Without one, the control has an id, a description and <em>no name</em> — invisible on screen and unusable by a screen reader. Products that dropped the label for layout reasons (a filter row under its own column header) now use <code>labelHidden</code>, which keeps the name and hides the text.</li>
+      <li><strong>Two message ids, both described.</strong> <code>&lt;id&gt;-hint</code> and <code>&lt;id&gt;-err</code>, listed together in <code>aria-describedby</code> with the hint first, so the rule is read before the failure.</li>
+      <li><strong>The error's live region is always mounted;</strong> only its content is conditional. A <code>role="alert"</code> node inserted into the DOM together with its text is announced inconsistently across screen readers — the same rule <code>Snackbar</code> and <code>Alert</code> were both built around, and the one Field was breaking.</li>
+      <li><strong><code>role="alert"</code> rather than a polite region:</strong> an error appearing after a submit must interrupt, because the user has just tried to move on and needs to know they have not.</li>
+      <li><strong>Required is announced, not just drawn.</strong> The asterisk is <code>aria-hidden</code> and <code>aria-required</code> comes through context — a red asterisk alone is decoration.</li>
+      <li><strong>The hint survives the error</strong> (§06). 3.3.2 and 3.3.3.</li>
+      <li><strong>The alert glyph is <code>aria-hidden</code></strong>; the error text carries the meaning, and never relies on the red alone (1.4.1).</li>
+      <li><strong>Contrast:</strong> label <code>--field-label-text</code> (secondary), hint <code>--field-hint-text</code> (tertiary — legitimate, because the hint is supplementary and the error repeats what matters), error <code>--field-error-text</code> at 700-level.</li>
+      <li><strong>Never wrap a Field around a set.</strong> A <code>&lt;label for&gt;</code> pointing at the first radio of five names one option and orphans the other four. That is what <code>Fieldset</code> is for (§04).</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="None at all.">
+    <T cols={['Moment','Motion','Why']} rows={[
+      ['Error appearing','None. The message renders in place.','A field that grows by 18px with a transition pushes every field below it during the animation, and the user is usually already moving toward the next one.'],
+      ['Error clearing','None.','Same reason, upward.'],
+      ['Hint','Never moves — it is always there (§06).','Which is also why the layout no longer jumps between valid and invalid states in the way it did when the hint was swapped for the error.'],
+      ['Label / required mark','None.','—'],
+      ['Reduced motion','Nothing to reduce.','There was never any motion.'],
+    ]}/>
+    <p>An incidental benefit of keeping the hint: the field's height changes by one message row when an error appears, not by the difference between two different messages. The old behaviour could shrink a field on error (a two-line hint replaced by a one-line error) which moved everything below it <em>up</em> — the most disorienting version of a layout shift, because the thing the user was about to click moves toward them.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="Label names, hint rules, error diagnoses.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Label is a short noun phrase:</strong> "Target quantity", "Work order", "Due date".</li>
+        <li><strong>Hint states the rule</strong> in the affirmative: "Must be under 30,000", "Twelve characters, prefix WO".</li>
+        <li><strong>Error says what is wrong with what they typed:</strong> "Exceeds the line maximum by 12,000."</li>
+        <li><strong>Give the number, not the adjective:</strong> "Must be under 30,000" beats "Too large".</li>
+        <li><strong>Sentence case, full stops on hints and errors</strong> (they are sentences), none on labels.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>An error that repeats the hint.</strong> Both are visible now — if they say the same thing, the error is doing nothing (§06).</li>
+        <li><strong>"Invalid input", "This field is required", "Please enter a valid value".</strong> None of them says what to do.</li>
+        <li><strong>A placeholder instead of a label.</strong> It disappears on the first keystroke, exactly when it is needed.</li>
+        <li><strong>"(optional)" on every unrequired label.</strong> Mark required; optional is the default.</li>
+        <li><strong>A hint that repeats the label:</strong> "Enter the target quantity" under "Target quantity".</li>
+        <li><strong>Format rules only in a tooltip.</strong> A hint is in reading order; a tooltip is not (Tooltip §12).</li>
+      </ul></div>
+    </div>
+    <p>The three slots are three different jobs and the test is whether each says something the other two do not: <strong>label = what this is · hint = what counts as valid · error = what is wrong with what you gave me.</strong> A field where all three could be collapsed into one sentence is a field with two redundant slots filled in.</p>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="It fills its column and never goes side-by-side.">
+    <ul>
+      <li><strong>A Field fills its container</strong> — no width, no max-width. Field width is the form's grid, and a control's width should express its content's length (a quantity is not as wide as a note), which is the grid's job to allocate.</li>
+      <li><strong>Labels stay above the control at every width</strong> (§04). This is the single most consequential responsive decision here: a left-labelled form needs a second breakpoint and a label-column width, and it breaks the moment one label wraps to two lines.</li>
+      <li><strong>Hints and errors wrap</strong> — they are sentences, not values, and they are the one place in a form where prose is expected.</li>
+      <li><strong>Cap form columns at about 60ch</strong>, and lay multiple fields out with a grid whose gap is visibly larger than <code>--field-gap</code>, so each label reads as belonging to the control below it rather than the one above.</li>
+      <li><strong>Two fields per row only when the pair is one idea</strong> — a quantity and its unit, a start and an end. Never to save space.</li>
+      <li><strong>Use <code>labelHidden</code> in a filter row</strong>, where the column header above is already the label. The name survives; the duplication does not.</li>
+    </ul>
+    <div className="demo col">
+      <span className="lbl">A filter row: labelHidden, so each control keeps a name with nothing shown</span>
+      <div style={{display:'flex',gap:12,flexWrap:'wrap',alignItems:'flex-end'}}>
+        <Field label="Filter by line" labelHidden><Select size="sm" options={[{value:'',label:'All lines'},{value:'a',label:'Frame weld'}]} /></Field>
+        <Field label="Filter by state" labelHidden><Select size="sm" options={[{value:'',label:'Any state'},{value:'r',label:'Running'}]} /></Field>
+        <Field label="Search work orders" labelHidden><Input size="sm" placeholder="Search WO" /></Field>
+      </div>
+      <Text size="xs" tone="tertiary">Before <code>labelHidden</code>, a row like this was built by omitting <code>label</code> — which silently produced three unnamed controls. That is now a warning.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Six, and two of them are silent.">
+    <div className="two">
+      <div className="pane dont"><h3>The two that matter</h3><ul>
+        <li><strong>A Field with no label.</strong> The control gets an id and a description and no name. Nothing looks wrong, nothing throws, and the field is unusable to a screen reader — which is why it is now a console warning rather than a documentation note.</li>
+        <li><strong>A Field around a group.</strong> Wrapping a <code>RadioGroup</code> or five checkboxes in a Field points one <code>&lt;label for&gt;</code> at one option and orphans the rest, while looking completely correct. Use <code>Fieldset</code>.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Also don't</h3><ul>
+        <li><strong>A Field around a single Checkbox or Switch.</strong> Those render their own label beside the control; a Field adds a second one above it.</li>
+        <li><strong>Passing <code>id</code> to the control by hand</strong> "to be safe". It wins over the context, so a copy-pasted block gives two controls the same id and one label.</li>
+        <li><strong>An error with no hint</strong> on a field that has a format rule. The rule belongs there before the user gets it wrong, not only after.</li>
+        <li><strong>Using the hint as a description of the form.</strong> Form-level copy goes above the form.</li>
+        <li><strong>A Field as a layout wrapper</strong> around something that is not a control.</li>
+        <li><strong>Green ticks on valid fields.</strong> They make the one broken field harder to find.</li>
+      </ul></div>
+    </div>
+    <p className="warn">The review test for this component is not visual: <strong>tab to each control with a screen reader and listen for the name</strong>. Every defect Field has ever shipped — the missing label, the destroyed hint, the single message id, the unreliable live region — is inaudible in a screenshot and obvious in one pass with a reader.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="What was hardened on 5 Sep 2026, and why.">
+    <ul>
+      <li><strong>The hint survives the error.</strong> The render was <code>error ? err : hint ? hint : null</code>, so the instruction vanished at the moment it was needed (§06) — a 3.3.2/3.3.3 failure across every form in the product, and the reason this spec was worth writing before the four remaining ones.</li>
+      <li><strong>Two message ids replaced one.</strong> <code>&lt;id&gt;-msg</code> was shared by both messages, which is <em>why</em> only one could render: two nodes cannot share an id and <code>aria-describedby</code> could not point at both. Now <code>-hint</code> and <code>-err</code>, joined into <code>describedBy</code> with the hint first.</li>
+      <li><strong>The error's live region is always mounted</strong>, with only its content conditional. Previously <code>role="alert"</code> arrived with its text, which announces unreliably. <code>Snackbar</code> (1.10.0) and <code>Alert</code> (1.11.0) were both built specifically to avoid this; Field predates both and was never revisited.</li>
+      <li><strong>A missing label now warns,</strong> and <code>labelHidden</code> was added so the legitimate case — a filter row under its own column header — has a correct route that keeps the accessible name.</li>
+      <li><strong>The same three defects were found in <code>Fieldset</code> and fixed in the same pass.</strong> That is the instructive part: <code>Fieldset</code> was extracted at 1.9.1 to unify three copies of this code in <code>RadioGroup</code>, <code>CheckboxGroup</code> and <code>ChipGroup</code> — and it carried the bug into the shared scaffold, so every group in the system inherited it from one place instead of three. Extraction fixes drift; it does not fix defects, and it makes the ones it copies harder to notice.</li>
+      <li><strong>Geometry moved into tokens.</strong> <code>gap: 6</code> and the message's <code>gap: 4</code> were hard-coded numbers; they are now <code>--field-gap</code> and <code>--field-message-gap</code>, which is freeze criterion 3.</li>
+      <li><strong>The alert glyph is <code>aria-hidden</code> and top-aligned</strong> (<code>flex-start</code> + a 2px offset), so a two-line error does not centre its icon against the middle of the sentence.</li>
+      <li><strong>An explicit prop on the control still wins,</strong> unchanged — it is what makes Field adoptable one field at a time, and it is also the mechanism behind the duplicate-id anti-pattern (§12).</li>
+      <li><strong><code>claimGroup</code> is the one concession to composites</strong> (6 Sep 2026, additive). It is a mount-time claim rather than a prop because the consumer writing <code>&lt;Field&gt;&lt;DateRangePicker/&gt;&lt;/Field&gt;</code> should not have to know its child is a group — the child knows. Field's markup is otherwise unchanged: same label element, same styling, same required mark.</li>
+      <li><strong>Not added, on purpose:</strong> a size prop (the control sets size, §05), an inline/left-label variant, an "(optional)" marker, a character counter (Textarea owns it), a valid/success state, and density response (§05).</li>
+    </ul>
+    <div className="tokenlist">
+      {['--field-label-text','--field-hint-text','--field-error-text','--field-required-mark','--field-gap','--field-message-gap'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Using it, and extending it.">
+    <pre>{`import { Field, Fieldset, FieldContext } from '@meridian/forms';
+
+// One control. Field wires id / for / describedby / invalid / required.
+<Field
+  label="Target quantity"
+  hint="Must be under 30,000."          // the RULE — stays visible on error
+  error={errors.qty}                    // what is WRONG with their value
+  required
+>
+  <Input value={qty} onChange={setQty} align="right" />
+</Field>
+
+// A set. Never a Field — a <label for> cannot name a group.
+<Fieldset label="Notify on" hint="Pick at least one." error={errors.channels}>
+  <CheckboxGroup options={channels} value={picked} onChange={setPicked} />
+</Fieldset>
+
+// A control this system does not ship, reading the contract itself.
+function Money(props) {
+  const f = React.useContext(FieldContext);          // null outside a Field
+  return (
+    <input
+      id={props.id ?? f?.id}
+      aria-describedby={props['aria-describedby'] ?? f?.describedBy}
+      aria-invalid={f?.invalid || undefined}
+      aria-required={f?.required || undefined}
+      {...props}
+    />
+  );
+}`}</pre>
+    <ul>
+      <li><strong>Always pass <code>label</code></strong>, and <code>labelHidden</code> when it must not be seen. The warning exists because the failure is inaudible otherwise.</li>
+      <li><strong>Write the hint before you write the validator.</strong> If you cannot state the rule in a clause, the rule is probably wrong — and the error will end up saying "Invalid".</li>
+      <li><strong>Do not pass <code>id</code> to the control.</strong> Field generates one; an explicit id wins and is how copy-pasted blocks end up sharing a label (§12).</li>
+      <li><strong>Errors are per-field <em>and</em> summarised</strong> when a submit fails: keep the field errors and add one <code>Alert live="on"</code> above the form. The summary never replaces them.</li>
+      <li><strong>Clear the error on the input that fixes it</strong>, not only on the next submit — the live region will announce the new state.</li>
+      <li><strong>Reach for <code>Fieldset</code> the moment there are two related controls</strong> answering one question.</li>
+      <li><strong>Testing hooks:</strong> assert the control's <code>aria-describedby</code> contains <em>both</em> message ids when hint and error are set; that the error node exists in the DOM <em>before</em> the error does (the always-mounted region); that <code>getByLabelText</code> finds the control including with <code>labelHidden</code>; and that the hint is still present while invalid. The last one is the regression that shipped for four minor versions.</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

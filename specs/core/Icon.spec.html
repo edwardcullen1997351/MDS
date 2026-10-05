@@ -1,0 +1,354 @@
+<!-- @dsCard group="Specs · Core" viewport="1080x760" name="Icon" subtitle="Full specification — purpose, anatomy, props, sizes, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Icon — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+a{color:var(--text-accent);text-decoration:underline;text-underline-offset:2px}a:hover{color:var(--text-link)}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+td.num,th.num{text-align:right;font-family:var(--font-mono)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px}
+.staterow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px}
+.cell{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card)}
+.cell span{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);text-align:center;word-break:break-all}
+.szrow{display:flex;align-items:flex-end;gap:20px}
+.szcell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.szcell b{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);font-weight:400}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Icon, Badge, Button, IconButton } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows,numCols=[]}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i} className={numCols.includes(i)?'num':''}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={(j===0?'k ':'')+(numCols.includes(j)?'num':'')}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Core · Component specification</span>
+    <h1>Icon</h1>
+    <p className="lede">The system’s only icon component — every glyph on every surface goes through it. A Lucide glyph masked with <code>currentColor</code>, so every icon inherits the text colour of whatever contains it — and therefore inherits the dark theme, the disabled palette and the hover state for free, without a single colour prop.</p>
+    <div className="meta">
+      <span>components/core/Icon.jsx</span><span>window.MeridianDesignSystem_962c43.Icon</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 1 open item</span><span>since: 1.0</span><span>spec 1.1.0</span><span>Lucide 0.469.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="What it is for, and what it is not for.">
+    <p>Icon draws a glyph and nothing else. It has no box, no padding, no background and no interactivity — it is a piece of typography, sized in px and coloured by inheritance. Every icon on every Meridian surface goes through it.</p>
+    <ul>
+      <li><strong>Use</strong> for any glyph: inside Button and IconButton, in nav items, table cells, Badge, Tag, empty states, inline with text.</li>
+      <li><strong>Use <code>title</code></strong> only when the glyph carries meaning no adjacent text repeats — a status mark in a table cell with no label.</li>
+      <li><strong>Do not use</strong> as a control. It has no role, no focus and no accessible name by default; an <code>onClick</code> on an Icon is invisible to keyboards and screen readers. That is <code>IconButton</code>.</li>
+      <li><strong>Do not use</strong> inline SVG, an <code>&lt;img&gt;</code>, an icon font or emoji anywhere in a Meridian surface. They do not inherit <code>currentColor</code>, so they break in the dark theme and in every disabled state.</li>
+      <li><strong>Do not use</strong> for a status dot — that is a 6/8 px round mark, <code>--dot-size</code>, not a glyph.</li>
+      <li><strong>Do not use</strong> for illustration or spot art. See the illustration foundation.</li>
+    </ul>
+    <div className="demo">
+      <Icon name="activity" size={20} />
+      <Icon name="database" size={20} />
+      <Icon name="gauge" size={20} />
+      <Icon name="triangle-alert" size={20} style={{color:'var(--status-warning-solid)'}} />
+      <Icon name="circle-check" size={20} style={{color:'var(--status-success-solid)'}} />
+      <span style={{color:'var(--text-tertiary)',display:'inline-flex',alignItems:'center',gap:6,fontSize:'var(--text-xs)'}}><Icon name="clock" size={14} />inherits the tertiary colour of this text</span>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A square span with a masked background. There is no SVG in the DOM.">
+    <div className="demo" style={{gap:28}}>
+      <Icon name="settings" size={22} />
+      <Icon name="settings" size={20} />
+      <Icon name="settings" size={16} />
+      <Icon name="settings" size={14} />
+    </div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Box</strong> — an <code>inline-block</code> span, square, <code>width = height = size</code>, with <code>flex: 0 0 auto</code> so a flex parent can never stretch or shrink it.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Mask</strong> — the Lucide SVG loaded as <code>mask-image</code> from the pinned CDN, <code>no-repeat</code>, <code>center</code>, <code>contain</code>.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Fill</strong> — <code>background-color: currentColor</code>, painted through the mask. This is the whole mechanism: the glyph is a coloured rectangle wearing the SVG as a stencil.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Glyph geometry</strong> — Lucide’s 24 px grid and 2 px stroke, scaled by <code>contain</code>. At 14 px the effective stroke is ~1.17 px; at 22 px, ~1.83 px. Strokes get optically lighter as the icon gets smaller.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>No side bearing.</strong> Unlike a letterform the mask touches its own box edge, so a glyph sits optically closer to its label than a word would. <code>--icon-gap</code> is 8 px — the same as <code>--space-2</code> — and dense controls drop to <code>--icon-gap-tight</code> at 6 px.</span></div>
+    </div>
+    <T cols={['Region','Value','Token']} rows={[
+      ['Grid','24 px','--icon-grid'],
+      ['Stroke (source)','2 px, round caps, outline only','--icon-stroke'],
+      ['Box','size prop, square','--icon-xs / sm / md / lg'],
+      ['Gap to a label','8 px, or 6 px in dense controls','--icon-gap · --icon-gap-tight'],
+      ['Colour','currentColor — inherited, never set on the component','—'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Contract in Icon.d.ts. Anything else spreads onto the span.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['name',<span className="t">string</span>,<span style={{color:'var(--text-critical)'}}>required</span>,'Lucide name, kebab-case, resolved against the base path. A name that does not resolve renders nothing and warns once (§13).'],
+      ['size',<span className="t">'mark' | 'xs' | 'sm' | 'md' | 'lg' | number</span>,<span className="t">16</span>,'Token name preferred; numbers still work. Five steps — see §05.'],
+      ['title',<span className="t">string</span>,'—','Accessible name. Present → role="img" + aria-label. Absent → aria-hidden="true".'],
+      ['style',<span className="t">CSSProperties</span>,'—','Merged last. The legitimate use is color; also vertical alignment. See §14.'],
+      ['…rest',<span className="t">HTMLAttributes</span>,'—','className, data-*. There is no onClick contract — see §01.'],
+    ]}/>
+    <p><strong><code>strokeWidth</code> was removed in 1.1.0.</strong> It never set a stroke — Lucide ships a fixed 2 px stroke and a mask cannot be re-stroked, so the implementation quietly dropped opacity to 0.85 instead, breaking the colour-inheritance contract it appeared to serve. No product code passed it. Two statics were added in its place: <code>Icon.setBasePath()</code> and <code>Icon.getBasePath()</code>.</p>
+    <p><strong>There is no <code>color</code> prop, by design.</strong> Set <code>color</code> on the parent and the glyph follows. This is what makes one component work in the light theme, the dark theme, a disabled control and a hover state with no variants at all.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="None — and that is the specification.">
+    <p>Icon has no variants: no filled/outline pair, no tone prop, no size enum. The glyph set is Lucide’s outline style at a uniform 2 px stroke, and the only axes are <code>name</code> and <code>size</code>. Meaning comes from the surrounding context, and colour comes from inheritance.</p>
+    <T cols={['Axis','How it is expressed','Not a variant because']} rows={[
+      ['Colour','color on the parent, or style={{color}} for a status glyph','A tone prop would duplicate the status token names and drift from them.'],
+      ['Size','the size prop, four sanctioned steps','A size enum would fight the numeric sizes Button and IconButton already pass in.'],
+      ['Emphasis','the parent’s text colour — secondary for a resting toolbar, primary on hover','A "muted" variant would bypass the inheritance the component exists for.'],
+      ['Filled / solid','does not exist in Meridian','Lucide’s outline set is the house style; a filled glyph beside an outline one reads as two icon sets.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="inherited"><span style={{display:'inline-flex',gap:12,color:'var(--text-primary)'}}><Icon name="cpu" size={16} /><Icon name="hard-drive" size={16} /><Icon name="wifi" size={16} /></span><span style={{display:'inline-flex',gap:12,color:'var(--text-tertiary)'}}><Icon name="cpu" size={16} /><Icon name="hard-drive" size={16} /><Icon name="wifi" size={16} /></span></Row>
+      <Row label="status"><span style={{display:'inline-flex',gap:12}}>
+        <Icon name="circle-check" size={16} style={{color:'var(--status-success-solid)'}} />
+        <Icon name="triangle-alert" size={16} style={{color:'var(--status-warning-solid)'}} />
+        <Icon name="circle-x" size={16} style={{color:'var(--status-critical-solid)'}} />
+        <Icon name="info" size={16} style={{color:'var(--status-info-solid)'}} />
+      </span></Row>
+      <Row label="on dark"><span style={{display:'inline-flex',gap:12,padding:'8px 12px',background:'var(--surface-inverse)',color:'var(--text-inverse)',borderRadius:'var(--radius-sm)'}}><Icon name="cpu" size={16} /><Icon name="hard-drive" size={16} /><Icon name="wifi" size={16} /></span><span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>same component, no prop changed</span></Row>
+    </div>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Four steps. 22 px is the ceiling — nothing larger exists.">
+    <T cols={['size','Token','px','Effective stroke','Where']} numCols={[2,3]} rows={[
+      [<span className="t">"mark"</span>,'--icon-mark','11 px','~0.92 px','A mark inside a control’s OWN box: checkbox tick, tag remove ×, sort caret. Never on a surface.'],
+      [<span className="t">"xs"</span>,'--icon-xs','14 px','~1.17 px','Table rows, Badge, Tag, sm controls.'],
+      [<span className="t">"sm"</span>,'--icon-sm','16 px','~1.33 px','Default. Buttons, nav, inline with body text.'],
+      [<span className="t">"md"</span>,'--icon-md','20 px','~1.67 px','Page headers, specimen rows, section markers.'],
+      [<span className="t">"lg"</span>,'--icon-lg','22 px','~1.83 px','Empty states. The largest icon in the system.'],
+    ]}/>
+    <div className="demo">
+      <div className="szrow">
+        {[['mark','11'],['xs','14'],['sm','16'],['md','20'],['lg','22']].map(([n,s]) => (
+          <div className="szcell" key={n}><Icon name="triangle-alert" size={n} /><b>{n}</b><b>{s}px</b></div>
+        ))}
+      </div>
+    </div>
+    <ul>
+      <li><strong>Match the type, not the box.</strong> An icon beside 13 px text is 16 px; beside 12 px text, 14 px. The glyph should read as the same weight as the words next to it.</li>
+      <li><strong>Never interpolate.</strong> 13, 15, 18 and 24 px are not steps in this system — all four existed in the codebase and all four are gone (§14).</li>
+      <li><strong>Prefer the name to the number.</strong> Every other component in Meridian takes token names rather than raw values; <code>size="xs"</code> resolves to <code>var(--icon-xs)</code>, so a scale change reaches every call site at once. A name that is not one of the five falls back to 16 px and warns — see §13.</li>
+      <li><strong><code>"mark"</code> is not part of the icon scale.</strong> It is for a glyph sized to a control’s own box, where 14 px would nearly fill it — an 11 px tick in a 16 px checkbox. If it sits on a surface, it is an icon and takes a real step.</li>
+      <li><strong>The empty-state ceiling is 22 px.</strong> A big centred glyph is not how Meridian draws an empty state — that is illustration’s job.</li>
+      <li>Sizes do not respond to <code>[data-density]</code>. Control heights compress; glyphs stay legible.</li>
+    </ul>
+    <p><strong>Resolved in 1.1.0.</strong> <code>Icon.prompt.md</code> and <code>Icon.d.ts</code> both said “24+ for empty states” against <code>--icon-lg:22px</code> in the tokens. The tokens win: <strong>22 px is the ceiling</strong>, and both doc comments now say so.</p>
+    <p><strong>Resolved in 1.1.0.</strong> Eleven call sites were off the scale, mixing two different problems. Marks inside a control’s own box (Checkbox tick, Tag remove, Table sort caret — all 11 px) were legitimate but had no token; they now use <code>size="mark"</code>. Glyphs beside a label were simply drift and moved onto the scale: Field error 12→14, console breadcrumb 13→14, activity glyph 13→14, console nav 15→16, <code>IconButton</code> lg 18→20. Nothing in the system now renders a glyph off the five steps.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Icon has no states of its own. It borrows every one.">
+    <p>There is no hover, focus, pressed or disabled state on this component, and no transition. The glyph changes colour because its <em>parent</em> changed colour, which is why an icon inside a Button is correct in all six of that Button’s states without Icon knowing any of them exist.</p>
+    <T cols={['Apparent state','Where it actually comes from']} rows={[
+      ['Hover','The parent control’s foreground token stepping from text-secondary to text-primary.'],
+      ['Disabled','The parent’s disabled foreground (--text-disabled). Icon renders identically; only the inherited colour differs.'],
+      ['Selected','The parent’s selected foreground (--action-text).'],
+      ['Loading','Nothing here. Icon does not spin — see §09.'],
+      ['Missing glyph','Renders nothing, keeps its box, and warns once in the console. Marked data-icon-missing for tests and CI. §13.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="in a button"><Button variant="secondary" iconLeft="download">Export</Button><Button variant="secondary" iconLeft="download" disabled>Export</Button></Row>
+      <Row label="in iconbutton"><IconButton icon="pin" label="Pin" /><IconButton icon="pin" label="Pin" selected /><IconButton icon="pin" label="Pin" disabled /></Row>
+      <Row label="in a badge"><Badge tone="success">Running</Badge><Badge tone="critical">Faulted</Badge></Row>
+    </div>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="None. This is the point.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab','Not focusable. A span with no tabindex is not in the tab order, and Icon never adds one.'],
+      ['Enter / Space','Nothing. Icon has no activation behaviour.'],
+      ['Any key','Nothing.'],
+    ]}/>
+    <ul>
+      <li><strong>If you want a keyboard-reachable glyph, you want <code>IconButton</code>.</strong> Adding <code>onClick</code> to an Icon produces a control that works with a mouse and is invisible to everything else — no role, no name, no focus ring, no Enter/Space.</li>
+      <li>Never add <code>tabIndex</code>, <code>role="button"</code> or a key handler to an Icon. The result is a hand-rolled control missing the focus ring, the hit area and the disabled palette that IconButton gives you.</li>
+      <li>An Icon inside a Button or a link is decorative and correctly skipped — the control owns the tab stop and the name.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="The default is silence, and that is usually right.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Decorative default','No title → aria-hidden="true" and role="presentation". The glyph is skipped entirely, which is correct whenever adjacent text already says it ("Export" beside a download glyph).'],
+      ['Meaningful glyph','title → role="img" + aria-label. Use only when nothing nearby carries the meaning.'],
+      ['Contrast','Icons are non-text content: 3:1 under 1.4.11 when they convey meaning. Because the colour is inherited, the parent owns compliance — measured examples in the IconButton and Button specs. A decorative icon has no contrast requirement, but a glyph too faint to see is a design defect regardless.'],
+      ['Status colour','Never colour alone. A warning glyph pairs with text, a Badge label, or a title. Measured, --status-*-solid on a card: success 4.36:1, warning 5.28:1, critical 5.47:1, info 5.30:1 — all clear 3:1 comfortably as non-text content. Three also clear 4.5:1, but success does not, so none of the -solid tokens is a text colour: use --text-success / --text-warning / --text-critical for words.'],
+      ['Not a control','No role="button", no tabindex, no name by default — which is exactly why an interactive Icon is an accessibility failure and IconButton exists.'],
+      ['Forced colours','background-color + mask survives Windows High Contrast differently from an SVG: the glyph follows the forced text colour, which is the intended result.'],
+      ['Reduced motion','Nothing animates. Nothing to reduce.'],
+    ]}/>
+    <pre>{`// decorative — the label already says it
+<Button iconLeft="download">Export CSV</Button>
+
+// meaningful — a bare glyph in a table cell
+<Icon name="triangle-alert" size={14} title="Sensor offline"
+      style={{ color: 'var(--status-warning-solid)' }} />
+
+// wrong — a control that only works with a mouse
+<Icon name="x" onClick={close} />          // use IconButton`}</pre>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="Icons do not move.">
+    <T cols={['Change','Duration','Property']} rows={[
+      ['Colour, when the parent changes','inherited from the parent’s --transition-control (140 ms)','color — the glyph is not transitioned separately'],
+      ['Everything else','—','Nothing. Icon declares no transition and no animation.'],
+    ]}/>
+    <ul>
+      <li><strong>No spinning</strong> — not <code>loader</code>, not <code>refresh-cw</code>. Meridian has no icon-based spinner; an in-flight action disables its control and reports in a Toast.</li>
+      <li><strong>No glyph cross-fade.</strong> A state swap (<code>play</code> → <code>pause</code>, <code>chevron-down</code> → <code>chevron-up</code>) is an instant cut. Fading two glyphs through each other looks like a rendering fault.</li>
+      <li><strong>No rotation on disclosure chevrons.</strong> Swap the glyph; do not <code>transform: rotate</code> it.</li>
+      <li>Never animate <code>size</code> — the mask re-rasterises and the stroke visibly crawls.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="Choosing the glyph is the content decision.">
+    <T cols={['Meaning','Use','Not']} rows={[
+      ['Warning','triangle-alert','alert-triangle (pre-0.4xx name — 404s)'],
+      ['Success','circle-check','check-circle (renamed)'],
+      ['Error','circle-x','x-circle (renamed)'],
+      ['Overflow menu','ellipsis / ellipsis-vertical','more-horizontal / more-vertical (renamed — both 404)'],
+      ['Delete','trash-2','trash, bin, x'],
+      ['External link','arrow-up-right','external-link (reserve for a literal new window)'],
+      ['Metric / chart','chart-no-axes-column','bar-chart (renamed)'],
+    ]}/>
+    <ul>
+      <li><strong>One meaning, one glyph, system-wide.</strong> If <code>trash-2</code> is delete, nothing else is delete and <code>trash-2</code> means nothing else.</li>
+      <li><strong>Verify the name against 0.469.0.</strong> Lucide renamed a large batch of icons; the old names silently 404 and render a solid square (§13). The renames above are the ones already hit in this project.</li>
+      <li><strong>Prefer the literal glyph</strong> to the clever one. A database is a database, not a stack of coins.</li>
+      <li><strong>No decorative icons in prose</strong>, no icon in a heading, no emoji anywhere.</li>
+      <li>If a glyph needs a legend to be understood, it needs a word instead.</li>
+    </ul>
+    <div className="demo"><div className="grid">
+      {['triangle-alert','circle-check','circle-x','info','ellipsis','trash-2','arrow-up-right','chart-no-axes-column','activity','database','gauge','clock'].map(n => (
+        <div className="cell" key={n}><Icon name={n} size={20} /><span>{n}</span></div>
+      ))}
+    </div></div>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Fixed px. The glyph does not scale with the viewport.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','Same four steps. Icons do not grow on small screens — the touch target grows (IconButton at lg), the glyph inside stays 16 px. A row of labelled actions may drop to icon-only, which means swapping Button for IconButton, not shrinking the Icon.'],
+      ['tablet ≥ 600','Unchanged.'],
+      ['desktop ≥ 1024','Unchanged.'],
+      ['ultrawide ≥ 1600','Unchanged. Nothing in the icon scale is viewport-relative.'],
+    ]}/>
+    <ul>
+      <li>Never size an icon in <code>em</code>, <code>rem</code> or <code>%</code>. A mask at a fractional px size renders a soft, crawling stroke.</li>
+      <li><code>flex: 0 0 auto</code> is deliberate: in a flex row with a long label, the label truncates and the glyph never squashes.</li>
+      <li>Device pixel ratio is handled by the SVG mask itself — there is no 2× asset and none is needed.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Let colour inherit; set <code>color</code> on the parent.</li>
+        <li>Use the four sanctioned sizes only.</li>
+        <li>Leave decorative glyphs unlabelled — <code>aria-hidden</code> is correct.</li>
+        <li>Add <code>title</code> when a bare glyph carries the meaning.</li>
+        <li>Verify every name against Lucide 0.469.0.</li>
+        <li>Reach for <code>IconButton</code> the moment a glyph needs to be clicked.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>Put <code>onClick</code> on an Icon.</li>
+        <li>Pass a hex or a primitive to <code>color</code>, or invent a tone prop.</li>
+        <li>Reach for a stroke-width prop — there is none; Lucide’s stroke is fixed.</li>
+        <li>Use 18, 24, 32 px, or size in em/rem.</li>
+        <li>Ship inline SVG, an icon font, an <code>&lt;img&gt;</code> glyph, or emoji.</li>
+        <li>Spin, rotate, cross-fade or resize a glyph.</li>
+        <li>Label a decorative icon — it doubles the announcement.</li>
+        <li>Use a glyph as the sole carrier of a status.</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="How it works, and the three things wrong with it.">
+    <ul>
+      <li><strong>Mask, not SVG.</strong> <code>background-color: currentColor</code> painted through <code>mask-image: url(…)</code>. No SVG in the DOM, no <code>fill</code> to override, colour inheritance for free. The trade is everything below.</li>
+      <li><strong>Glyphs load from a pinned CDN</strong> — <code>unpkg.com/lucide-static@0.469.0/icons/&lt;name&gt;.svg</code>, one request per distinct icon, then browser-cached.</li>
+      <li><strong>The span is always square and never flexes</strong> (<code>flex: 0 0 auto</code>).</li>
+      <li><strong><code>title</code> switches the a11y contract</strong> from <code>aria-hidden</code> to <code>role="img"</code> + <code>aria-label</code>. There is no partial state.</li>
+    </ul>
+    <p><strong>Fixed in 1.1.0 — a missing glyph renders nothing.</strong> Previously a 404 left the mask unapplied and the span painted its full <code>currentColor</code> rectangle: a confident dark square exactly where the glyph should be. It looked deliberate, so it survived review — twice in this project (<code>more-horizontal</code>, <code>more-vertical</code>). Now each URL is probed once with an <code>Image()</code> and the fill is withheld until it loads: a bad name paints nothing, keeps its box so layout never shifts, sets <code>data-icon-missing</code>, and warns once in the console naming the likely rename. Results are cached per URL, so a glyph already seen mounts synchronously with no flash.</p>
+    <p><strong>Fixed in 1.1.0 — <code>strokeWidth</code> removed.</strong> See §03.</p>
+    <p><strong>Fixed in 1.1.0 — an unknown size name warns and falls back.</strong> The first cut of the name resolver passed an unrecognised string straight into <code>width</code>/<code>height</code>; the browser dropped it, the box collapsed to 0 and the glyph vanished with no feedback — the same silent-confident failure as a bad glyph name, and more likely now that §05 tells authors to prefer names. An unknown name now renders at 16 px and warns, listing the valid steps. Numbers and real CSS lengths (<code>size="18px"</code>) still pass through untouched.</p>
+    <p><strong>Addressed in 1.1.0 — the CDN is now configurable.</strong> <code>Icon.setBasePath('/assets/icons/')</code> at startup points every glyph at your own origin, which removes the runtime dependency on unpkg. The default is still the pinned CDN, so nothing changes unless you opt in. The config is a static <em>on the component</em> deliberately: the compiler only exposes capital-initial exports on <code>window.&lt;Namespace&gt;</code>, so a bare <code>setIconBasePath</code> would have been unreachable for every consumer loading the bundle — which is exactly how it shipped in the first draft of this fix.</p>
+    <p className="warn"><strong>Open — the glyph files are not vendored, but the failure is no longer silent.</strong> The mechanism has been in place since 1.1.0 and <code>assets/icons/</code> still holds no SVGs, so an offline consumer or one under a strict <code>img-src</code> policy gets an empty box per glyph. What changed in 1.22.2 is the <em>silence</em>: the first glyph that fails to resolve now logs one warning naming the base path, the failing glyph and the fix. That was the half of this item that could be closed here — vendoring itself needs the <code>lucide-static</code> files, which is not a decision anybody can make in this repository, and <code>assets/icons/README.md</code> carries the three-step recipe for whoever has them.</p>
+    <div className="tokenlist">
+      <span>--icon-grid</span><span>--icon-stroke</span><span>--icon-xs</span><span>--icon-sm</span><span>--icon-md</span><span>--icon-lg</span><span>--icon-gap</span><span>--icon-gap-tight</span><span>--dot-size</span><span>--dot-size-lg</span>
+    </div>
+    <p>Icon reads none of these at runtime — <code>size</code> is a number. The tokens are the contract the <em>callers</em> honour, which is why an arbitrary size passes type-checking and still violates the system.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { Icon } from '@meridian/ds';        // or window.MeridianDesignSystem_962c43
+
+// colour comes from the parent — this is the pattern
+<span style={{ color: 'var(--text-tertiary)', display: 'inline-flex',
+               alignItems: 'center', gap: 'var(--icon-gap-tight)' }}>
+  <Icon name="clock" size={14} />
+  Last reading 14:32
+</span>
+
+// a status glyph is the one place style={{color}} is correct
+<Icon name="triangle-alert" size={14} title="Sensor offline"
+      style={{ color: 'var(--status-warning-solid)' }} />`}</pre>
+    <ul>
+      <li><strong>Styling.</strong> <code>style</code> merges last. <code>color</code> is legitimate (status glyphs); so is <code>verticalAlign</code>. Setting <code>width</code>, <code>height</code>, <code>background</code> or <code>mask</code> defeats the component.</li>
+      <li><strong>Alignment.</strong> Inside a flex row use <code>align-items: center</code> and <code>gap</code>. Inline in a sentence, prefer a flex wrapper — an <code>inline-block</code> box aligns to the baseline, so it sits slightly high next to lowercase text.</li>
+      <li><strong>Testing.</strong> There is no accessible name to query by default. Assert on <code>[data-icon="name"]</code> — the attribute exists for exactly this. A labelled icon is <code>getByRole('img', {'{ name: /sensor offline/i }'})</code>.</li>
+      <li><strong>Auditing names.</strong> <code>document.querySelectorAll('[data-icon-missing]')</code> lists every glyph that failed to resolve on a page — one selector, no fetching. Assert it is empty in CI.</li>
+      <li><strong>Server rendering.</strong> With no DOM to probe with, SSR assumes the glyph is good and paints it — so server output matches the old behaviour and hydration then corrects a bad name. On a cold client cache a glyph appears one paint after first render; on a warm cache, immediately.</li>
+      <li><strong>Frozen 4 Sep 2026.</strong> The API is closed: <code>name</code>, <code>size</code>, <code>title</code>, <code>style</code>, plus the statics <code>Icon.setBasePath</code> / <code>Icon.getBasePath</code>. All four items open at the first draft are resolved: silent-failure squares, the <code>strokeWidth</code> prop, the CDN dependency, and the 22-vs-24 px ceiling.</li>
+      <li><strong>Migration to 1.1.0.</strong> One prop removed (<code>strokeWidth</code>, unused by any call site) — technically breaking, so it lands in this minor while Icon is young rather than becoming permanent. No visual change to any correct icon; incorrect names change from a solid square to nothing.</li>
+      <li><strong>Call-site audit closed.</strong> <code>size</code> now accepts the token names and every off-scale glyph in the system has moved onto a step (§05). Widening the type is additive, so numeric call sites keep working — but a raw number that is not 11/14/16/20/22 is now a lint target.</li>
+      <li><strong>Still open, outside the freeze.</strong> One: vendoring the glyph files into <code>assets/icons/</code> (a build step — §13). Does not touch Icon’s API. <strong>Half-closed in 1.22.2:</strong> a single console warning now fires on the first unresolved glyph, naming the base path, the glyph and the fix, and it resets when <code>setBasePath</code> is called so a second wrong path earns a second warning. An empty box with no error was the reason this item could sit open for twenty minors without anyone noticing it was live.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

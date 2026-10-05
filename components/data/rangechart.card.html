@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Range Chart Component Showcase · Meridian Design System</title>
+  <link rel="stylesheet" href="../../tokens/tokens.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+    }
+    body {
+      margin: 0;
+      padding: 32px 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .showcase-header {
+      max-width: 1120px;
+      margin: 0 auto 32px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: #e0e7ff;
+      color: #3730a3;
+      margin-bottom: 8px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin: 0;
+    }
+    .demo-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+    .demo-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .demo-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+    .demo-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 0 0 16px;
+    }
+  </style>
+
+  <!-- React & Babel for live Card preview -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+
+  <header class="showcase-header">
+    <div class="badge">Data Visualization · 13</div>
+    <h1>Range Chart (Bounded Intervals & Uncertainty)</h1>
+    <p class="subtitle">
+      Compare bounded intervals, statistical confidence, before/after endpoints, process variation, and tolerance deviations. Features floating interval bars, dumbbell delta links, error whiskers, continuous range area bands, WCAG 1.4.1 hatch fills, and accessible data table (<kbd>Alt+F11</kbd>).
+    </p>
+  </header>
+
+  <main class="demo-grid">
+    <!-- Live Demo 1: CNC Machining Tolerance Bands -->
+    <section class="demo-card">
+      <div class="demo-title">1. CNC Machining Critical Tolerance Bands (Interval Bar Variant)</div>
+      <div class="demo-desc">Floating range bars showing Lower & Upper Spec Limits (LSL / USL) with central measured dimension ticks and nominal target line.</div>
+      <div id="demo-root-1"></div>
+    </section>
+
+    <!-- Live Demo 2: Kaizen Cycle Time Reduction -->
+    <section class="demo-card">
+      <div class="demo-title">2. Shop-Floor Kaizen Cycle Time Reduction (Dumbbell Variant)</div>
+      <div class="demo-desc">Before vs After endpoint comparison highlighting cycle time optimization (green) vs process bottlenecks (red).</div>
+      <div id="demo-root-2"></div>
+    </section>
+
+    <!-- Live Demo 3: Statistical 95% Confidence Intervals -->
+    <section class="demo-card">
+      <div class="demo-title">3. Steel Coil Tensile Yield Strength (95% CI Error Bar Variant)</div>
+      <div class="demo-desc">Central batch mean with 95% Confidence Interval error whiskers across incoming raw material heats.</div>
+      <div id="demo-root-3"></div>
+    </section>
+
+    <!-- Live Demo 4: Heat Treatment Temperature Variation Band -->
+    <section class="demo-card">
+      <div class="demo-title">4. Furnace Heat Cycle Temperature Variation (Range Area Band)</div>
+      <div class="demo-desc">Continuous sequence envelope displaying min/max temperature variation band with central thermocouple telemetry.</div>
+      <div id="demo-root-4"></div>
+    </section>
+  </main>
+
+  <script type="text/babel">
+    const { useState, useMemo, useRef, useEffect, useCallback } = React;
+
+    const STATUS_COLORS = {
+      nominal: '#16a34a',
+      warning: '#d97706',
+      critical: '#dc2626',
+      info: '#2563eb',
+      neutral: '#64748b'
+    };
+
+    const DUMBBELL_ENDPOINT_COLORS = {
+      before: '#64748b',
+      afterImproved: '#16a34a',
+      afterRegressed: '#dc2626'
+    };
+
+    function RangeChart({
+      data = [],
+      variant = 'interval-bar',
+      orientation = 'horizontal',
+      width = 760,
+      height = 360,
+      title = 'Bounded Interval Range Chart',
+      subtitle = 'Suryodaya Autocomp Ltd · Chakan Plant (PL-04)',
+      lowerKey = 'lower',
+      upperKey = 'upper',
+      centerKey = 'center',
+      targetKey = 'target',
+      categoryKey = 'label',
+      unit = '',
+      targetLine = null,
+      showCenterEstimate = true,
+      showDirectLabels = true,
+      showControls = true,
+      showSearch = true,
+      onItemClick = null
+    }) {
+      const [selectedId, setSelectedId] = useState(null);
+      const [hoveredItem, setHoveredItem] = useState(null);
+      const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+      const [sortBy, setSortBy] = useState('default');
+      const [searchQuery, setSearchQuery] = useState('');
+      const [isTableModalOpen, setIsTableModalOpen] = useState(false);
+
+      const svgRef = useRef(null);
+
+      useEffect(() => {
+        const handleKeyDown = (e) => {
+          if (e.altKey && (e.key === 'F11' || e.keyCode === 122)) {
+            e.preventDefault();
+            setIsTableModalOpen(prev => !prev);
+          }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+      }, []);
+
+      const filteredData = useMemo(() => {
+        if (!searchQuery.trim()) return data;
+        const q = searchQuery.toLowerCase().trim();
+        return data.filter(d => {
+          const label = String(d[categoryKey] || d.id || '').toLowerCase();
+          const semantics = String(d.intervalSemantics || d.category || '').toLowerCase();
+          return label.includes(q) || semantics.includes(q);
+        });
+      }, [data, searchQuery, categoryKey]);
+
+      const sortedData = useMemo(() => {
+        if (variant === 'range-area' || sortBy === 'default') return filteredData;
+        const list = [...filteredData];
+        return list.sort((a, b) => {
+          const lowA = Number(a[lowerKey] ?? 0);
+          const lowB = Number(b[lowerKey] ?? 0);
+          const upA = Number(a[upperKey] ?? 0);
+          const upB = Number(b[upperKey] ?? 0);
+          const spreadA = Math.abs(upA - lowA);
+          const spreadB = Math.abs(upB - lowB);
+
+          if (sortBy === 'spread-desc') return spreadB - spreadA;
+          if (sortBy === 'spread-asc') return spreadA - spreadB;
+          if (sortBy === 'lower-asc') return lowA - lowB;
+          if (sortBy === 'upper-desc') return upB - upA;
+          if (sortBy === 'label-asc') return String(a[categoryKey] || '').localeCompare(String(b[categoryKey] || ''));
+          return 0;
+        });
+      }, [filteredData, sortBy, lowerKey, upperKey, categoryKey, variant]);
+
+      const margin = useMemo(() => {
+        if (orientation === 'horizontal') {
+          return { top: 28, right: 48, bottom: 44, left: 180 };
+        }
+        return { top: 28, right: 32, bottom: 64, left: 60 };
+      }, [orientation]);
+
+      const innerWidth = Math.max(100, width - margin.left - margin.right);
+      const innerHeight = Math.max(100, height - margin.top - margin.bottom);
+
+      const { domainMin, domainMax, domainSpan } = useMemo(() => {
+        if (!sortedData || sortedData.length === 0) {
+          return { domainMin: 0, domainMax: 100, domainSpan: 100 };
+        }
+
+        let min = Infinity;
+        let max = -Infinity;
+
+        sortedData.forEach(d => {
+          const l = d[lowerKey] != null ? Number(d[lowerKey]) : null;
+          const u = d[upperKey] != null ? Number(d[upperKey]) : null;
+          const c = d[centerKey] != null ? Number(d[centerKey]) : null;
+          const t = d[targetKey] != null ? Number(d[targetKey]) : null;
+
+          if (l != null && !isNaN(l) && l < min) min = l;
+          if (u != null && !isNaN(u) && u > max) max = u;
+          if (c != null && !isNaN(c)) {
+            if (c < min) min = c;
+            if (c > max) max = c;
+          }
+          if (t != null && !isNaN(t)) {
+            if (t < min) min = t;
+            if (t > max) max = t;
+          }
+        });
+
+        if (targetLine != null) {
+          const tVal = typeof targetLine === 'number' ? targetLine : targetLine.value;
+          if (tVal != null && !isNaN(tVal)) {
+            if (tVal < min) min = tVal;
+            if (tVal > max) max = tVal;
+          }
+        }
+
+        if (min === Infinity || max === -Infinity) {
+          return { domainMin: 0, domainMax: 100, domainSpan: 100 };
+        }
+
+        const span = max - min || 1;
+        const pad = span * 0.08;
+        return {
+          domainMin: min - pad,
+          domainMax: max + pad,
+          domainSpan: (max + pad) - (min - pad)
+        };
+      }, [sortedData, lowerKey, upperKey, centerKey, targetKey, targetLine]);
+
+      const valToX = useCallback((val) => {
+        if (val == null || isNaN(val)) return 0;
+        return ((val - domainMin) / domainSpan) * innerWidth;
+      }, [domainMin, domainSpan, innerWidth]);
+
+      const valToY = useCallback((val) => {
+        if (val == null || isNaN(val)) return innerHeight;
+        return innerHeight - ((val - domainMin) / domainSpan) * innerHeight;
+      }, [domainMin, domainSpan, innerHeight]);
+
+      const quantTicks = useMemo(() => {
+        const count = 5;
+        const ticks = [];
+        for (let i = 0; i <= count; i++) {
+          const val = domainMin + (domainSpan * (i / count));
+          ticks.push(val);
+        }
+        return ticks;
+      }, [domainMin, domainSpan]);
+
+      const rangeAreaPaths = useMemo(() => {
+        if (variant !== 'range-area' || sortedData.length === 0) return null;
+
+        const n = sortedData.length;
+        const stepX = n > 1 ? innerWidth / (n - 1) : innerWidth / 2;
+
+        const upperCoords = [];
+        const lowerCoords = [];
+        const centerCoords = [];
+
+        sortedData.forEach((d, i) => {
+          const x = i * stepX;
+          const up = Number(d[upperKey] ?? 0);
+          const low = Number(d[lowerKey] ?? 0);
+          const cent = d[centerKey] != null ? Number(d[centerKey]) : (low + up) / 2;
+
+          const yUp = valToY(up);
+          const yLow = valToY(low);
+          const yCent = valToY(cent);
+
+          upperCoords.push([x, yUp]);
+          lowerCoords.unshift([x, yLow]);
+          centerCoords.push([x, yCent]);
+        });
+
+        let bandPath = `M ${upperCoords[0][0]} ${upperCoords[0][1]}`;
+        for (let i = 1; i < upperCoords.length; i++) {
+          bandPath += ` L ${upperCoords[i][0]} ${upperCoords[i][1]}`;
+        }
+        for (let i = 0; i < lowerCoords.length; i++) {
+          bandPath += ` L ${lowerCoords[i][0]} ${lowerCoords[i][1]}`;
+        }
+        bandPath += ' Z';
+
+        let centerLinePath = `M ${centerCoords[0][0]} ${centerCoords[0][1]}`;
+        for (let i = 1; i < centerCoords.length; i++) {
+          centerLinePath += ` L ${centerCoords[i][0]} ${centerCoords[i][1]}`;
+        }
+
+        return { bandPath, centerLinePath, centerCoords };
+      }, [variant, sortedData, upperKey, lowerKey, centerKey, innerWidth, valToY]);
+
+      const rowCount = Math.max(1, sortedData.length);
+      const rowHeight = innerHeight / rowCount;
+      const barThickness = Math.max(6, Math.min(22, rowHeight * 0.45));
+
+      return (
+        <div style={{
+          position: 'relative',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: 8,
+          padding: '16px 20px',
+          fontFamily: 'system-ui, sans-serif'
+        }}>
+          {/* Header & Controls Toolbar */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 16,
+            flexWrap: 'wrap',
+            gap: 12
+          }}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 15, color: '#0f172a' }}>{title}</div>
+              <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{subtitle}</div>
+            </div>
+
+            {showControls && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                {showSearch && (
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="text"
+                      placeholder="Filter category..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      style={{
+                        padding: '4px 10px',
+                        fontSize: 12,
+                        border: '1px solid #cbd5e1',
+                        borderRadius: 4,
+                        outline: 'none',
+                        width: 150
+                      }}
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        style={{
+                          position: 'absolute',
+                          right: 6,
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          border: 'none',
+                          background: 'none',
+                          cursor: 'pointer',
+                          color: '#94a3b8',
+                          fontSize: 11
+                        }}
+                      >✕</button>
+                    )}
+                  </div>
+                )}
+
+                {variant !== 'range-area' && (
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    style={{
+                      padding: '4px 8px',
+                      fontSize: 12,
+                      border: '1px solid #cbd5e1',
+                      borderRadius: 4,
+                      background: '#ffffff',
+                      color: '#334155',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <option value="default">Default Order</option>
+                    <option value="spread-desc">Spread (High → Low)</option>
+                    <option value="spread-asc">Spread (Low → High)</option>
+                    <option value="lower-asc">Lower Bound (Ascending)</option>
+                    <option value="upper-desc">Upper Bound (Descending)</option>
+                    <option value="label-asc">Category Name (A → Z)</option>
+                  </select>
+                )}
+
+                <button
+                  onClick={() => setIsTableModalOpen(true)}
+                  title="Accessible Table Modal (Alt + F11)"
+                  style={{
+                    padding: '4px 10px',
+                    fontSize: 11,
+                    fontWeight: 600,
+                    border: '1px solid #cbd5e1',
+                    borderRadius: 4,
+                    background: '#f8fafc',
+                    color: '#0284c7',
+                    cursor: 'pointer'
+                  }}
+                >
+                  📊 Table View
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* SVG Canvas Area */}
+          <div style={{ position: 'relative', width: '100%', overflowX: 'auto' }}>
+            <svg
+              ref={svgRef}
+              width={width}
+              height={height}
+              viewBox={`0 0 ${width} ${height}`}
+              style={{ display: 'block', margin: '0 auto' }}
+            >
+              <defs>
+                <pattern id="rc-hatch-warning" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                  <line x1="0" y1="0" x2="0" y2="8" stroke="#d97706" strokeWidth="2" opacity="0.35" />
+                </pattern>
+                <pattern id="rc-hatch-critical" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+                  <line x1="0" y1="0" x2="0" y2="8" stroke="#dc2626" strokeWidth="2" opacity="0.4" />
+                </pattern>
+                <filter id="rc-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="1" stdDeviation="2" floodOpacity="0.15" />
+                </filter>
+              </defs>
+
+              <g transform={`translate(${margin.left}, ${margin.top})`}>
+                {/* Quantitative Grid Lines & Labels */}
+                {orientation === 'horizontal' ? (
+                  <g className="grid-quantitative-x">
+                    {quantTicks.map((val, idx) => {
+                      const x = valToX(val);
+                      return (
+                        <g key={idx} transform={`translate(${x}, 0)`}>
+                          <line y1="0" y2={innerHeight} stroke="#f1f5f9" strokeWidth="1" />
+                          <line y1={innerHeight} y2={innerHeight + 5} stroke="#cbd5e1" strokeWidth="1" />
+                          <text
+                            y={innerHeight + 18}
+                            fontSize="11"
+                            fill="#64748b"
+                            textAnchor="middle"
+                          >
+                            {val.toLocaleString('en-IN', { maximumFractionDigits: 2 })} {unit}
+                          </text>
+                        </g>
+                      );
+                    })}
+                  </g>
+                ) : (
+                  <g className="grid-quantitative-y">
+                    {quantTicks.map((val, idx) => {
+                      const y = valToY(val);
+                      return (
+                        <g key={idx} transform={`translate(0, ${y})`}>
+                          <line x1="0" x2={innerWidth} stroke="#f1f5f9" strokeWidth="1" />
+                          <line x1="-5" x2="0" stroke="#cbd5e1" strokeWidth="1" />
+                          <text
+                            x="-10"
+                            y="4"
+                            fontSize="11"
+                            fill="#64748b"
+                            textAnchor="end"
+                          >
+                            {val.toLocaleString('en-IN', { maximumFractionDigits: 2 })} {unit}
+                          </text>
+                        </g>
+                      );
+                    })}
+                  </g>
+                )}
+
+                {/* Target Baseline Reference Line */}
+                {targetLine != null && (() => {
+                  const tVal = typeof targetLine === 'number' ? targetLine : targetLine.value;
+                  const tLabel = typeof targetLine === 'number' ? `Target: ${tVal} ${unit}` : targetLine.label || `Target: ${tVal} ${unit}`;
+                  if (tVal == null || isNaN(tVal)) return null;
+
+                  if (orientation === 'horizontal') {
+                    const tx = valToX(tVal);
+                    return (
+                      <g className="target-baseline" transform={`translate(${tx}, 0)`}>
+                        <line y1="-8" y2={innerHeight} stroke="#dc2626" strokeWidth="1.5" strokeDasharray="4,3" />
+                        <text y="-12" fontSize="10" fontWeight="600" fill="#dc2626" textAnchor="middle">
+                          {tLabel}
+                        </text>
+                      </g>
+                    );
+                  } else {
+                    const ty = valToY(tVal);
+                    return (
+                      <g className="target-baseline" transform={`translate(0, ${ty})`}>
+                        <line x1="0" x2={innerWidth + 8} stroke="#dc2626" strokeWidth="1.5" strokeDasharray="4,3" />
+                        <text x={innerWidth + 12} y="3" fontSize="10" fontWeight="600" fill="#dc2626" textAnchor="start">
+                          {tLabel}
+                        </text>
+                      </g>
+                    );
+                  }
+                })()}
+
+                {/* VARIANT: RANGE AREA (Continuous Band) */}
+                {variant === 'range-area' && rangeAreaPaths && (
+                  <g className="range-area-layer">
+                    <path
+                      d={rangeAreaPaths.bandPath}
+                      fill="#e0f2fe"
+                      opacity="0.8"
+                      stroke="#38bdf8"
+                      strokeWidth="1"
+                    />
+                    <path
+                      d={rangeAreaPaths.centerLinePath}
+                      fill="none"
+                      stroke="#0284c7"
+                      strokeWidth="2.5"
+                    />
+                    {rangeAreaPaths.centerCoords.map((pt, i) => {
+                      const item = sortedData[i];
+                      const isHovered = hoveredItem?.index === i;
+                      return (
+                        <circle
+                          key={i}
+                          cx={pt[0]}
+                          cy={pt[1]}
+                          r={isHovered ? 6 : 4}
+                          fill="#0284c7"
+                          stroke="#ffffff"
+                          strokeWidth="2"
+                          style={{ cursor: 'pointer', transition: 'all 0.15s ease' }}
+                          onMouseEnter={(e) => {
+                            setHoveredItem({ ...item, index: i });
+                            setTooltipPos({ x: e.clientX, y: e.clientY });
+                          }}
+                          onMouseLeave={() => setHoveredItem(null)}
+                        />
+                      );
+                    })}
+                  </g>
+                )}
+
+                {/* VARIANT: INTERVAL BAR, DUMBBELL, ERROR BAR */}
+                {variant !== 'range-area' && orientation === 'horizontal' && (
+                  <g className="discrete-horizontal-layer">
+                    {sortedData.map((d, idx) => {
+                      const itemId = d.id || `item-${idx}`;
+                      const isSelected = selectedId === itemId;
+                      const isHovered = hoveredItem?.id === itemId;
+
+                      const low = Number(d[lowerKey] ?? 0);
+                      const up = Number(d[upperKey] ?? 0);
+                      const cent = d[centerKey] != null ? Number(d[centerKey]) : null;
+
+                      const xLow = valToX(low);
+                      const xUp = valToX(up);
+                      const xStart = Math.min(xLow, xUp);
+                      const barWidth = Math.max(2, Math.abs(xUp - xLow));
+
+                      const yCenter = idx * rowHeight + (rowHeight / 2);
+                      const status = d.status || 'nominal';
+                      const statusColor = STATUS_COLORS[status];
+
+                      return (
+                        <g
+                          key={itemId}
+                          className="range-row-horizontal"
+                          style={{ cursor: 'pointer' }}
+                          onMouseEnter={(e) => {
+                            setHoveredItem(d);
+                            setTooltipPos({ x: e.clientX, y: e.clientY });
+                          }}
+                          onMouseLeave={() => setHoveredItem(null)}
+                          onClick={(e) => {
+                            setSelectedId(itemId);
+                            if (onItemClick) onItemClick(d, e);
+                          }}
+                        >
+                          <rect
+                            x={-margin.left + 8}
+                            y={idx * rowHeight + 2}
+                            width={width - 24}
+                            height={rowHeight - 4}
+                            fill={isSelected ? '#eff6ff' : isHovered ? '#f8fafc' : 'transparent'}
+                            rx="4"
+                          />
+
+                          <text
+                            x="-12"
+                            y={yCenter + 4}
+                            fontSize="12"
+                            fontWeight={isSelected || isHovered ? 600 : 400}
+                            fill={isSelected ? '#0284c7' : '#1e293b'}
+                            textAnchor="end"
+                          >
+                            {d[categoryKey] || `Item ${idx + 1}`}
+                          </text>
+
+                          {/* Interval Bar */}
+                          {variant === 'interval-bar' && (
+                            <g>
+                              <rect
+                                x={xStart}
+                                y={yCenter - barThickness / 2}
+                                width={barWidth}
+                                height={barThickness}
+                                rx={barThickness / 3}
+                                fill={status === 'critical' ? 'url(#rc-hatch-critical)' : status === 'warning' ? 'url(#rc-hatch-warning)' : statusColor}
+                                stroke={statusColor}
+                                strokeWidth={isSelected ? 2 : 1}
+                                opacity={isHovered ? 1 : 0.85}
+                                filter="url(#rc-glow)"
+                              />
+
+                              {showCenterEstimate && cent != null && (
+                                <line
+                                  x1={valToX(cent)}
+                                  x2={valToX(cent)}
+                                  y1={yCenter - barThickness / 2 - 2}
+                                  y2={yCenter + barThickness / 2 + 2}
+                                  stroke="#0f172a"
+                                  strokeWidth="2.5"
+                                />
+                              )}
+
+                              {showDirectLabels && (
+                                <g fontSize="10" fill="#64748b">
+                                  <text x={xStart - 5} y={yCenter + 3} textAnchor="end">{low}</text>
+                                  <text x={xStart + barWidth + 5} y={yCenter + 3} textAnchor="start">{up}</text>
+                                </g>
+                              )}
+                            </g>
+                          )}
+
+                          {/* Dumbbell */}
+                          {variant === 'dumbbell' && (() => {
+                            const isImproved = d.isImproved ?? (up <= low);
+                            const endpointEndColor = isImproved ? DUMBBELL_ENDPOINT_COLORS.afterImproved : DUMBBELL_ENDPOINT_COLORS.afterRegressed;
+
+                            return (
+                              <g>
+                                <line
+                                  x1={xLow}
+                                  x2={xUp}
+                                  y1={yCenter}
+                                  y2={yCenter}
+                                  stroke="#94a3b8"
+                                  strokeWidth={isSelected ? 3 : 2}
+                                  strokeDasharray={d.dashed ? '3,2' : undefined}
+                                />
+                                <circle
+                                  cx={xLow}
+                                  cy={yCenter}
+                                  r="6"
+                                  fill={DUMBBELL_ENDPOINT_COLORS.before}
+                                  stroke="#ffffff"
+                                  strokeWidth="1.5"
+                                />
+                                <circle
+                                  cx={xUp}
+                                  cy={yCenter}
+                                  r="7"
+                                  fill={endpointEndColor}
+                                  stroke="#ffffff"
+                                  strokeWidth="2"
+                                  filter="url(#rc-glow)"
+                                />
+                                {showDirectLabels && (
+                                  <g fontSize="10" fontWeight="600">
+                                    <text x={xLow} y={yCenter - 9} textAnchor="middle" fill="#64748b">{low}</text>
+                                    <text x={xUp} y={yCenter - 9} textAnchor="middle" fill={endpointEndColor}>{up}</text>
+                                  </g>
+                                )}
+                              </g>
+                            );
+                          })()}
+
+                          {/* Error Bar */}
+                          {variant === 'error-bar' && (() => {
+                            const cVal = cent != null ? cent : (low + up) / 2;
+                            const xCent = valToX(cVal);
+
+                            return (
+                              <g>
+                                <line
+                                  x1={xLow}
+                                  x2={xUp}
+                                  y1={yCenter}
+                                  y2={yCenter}
+                                  stroke="#334155"
+                                  strokeWidth="1.5"
+                                />
+                                <line
+                                  x1={xLow}
+                                  x2={xLow}
+                                  y1={yCenter - 5}
+                                  y2={yCenter + 5}
+                                  stroke="#334155"
+                                  strokeWidth="1.5"
+                                />
+                                <line
+                                  x1={xUp}
+                                  x2={xUp}
+                                  y1={yCenter - 5}
+                                  y2={yCenter + 5}
+                                  stroke="#334155"
+                                  strokeWidth="1.5"
+                                />
+                                <circle
+                                  cx={xCent}
+                                  cy={yCenter}
+                                  r="5"
+                                  fill={statusColor}
+                                  stroke="#ffffff"
+                                  strokeWidth="1.5"
+                                />
+                              </g>
+                            );
+                          })()}
+                        </g>
+                      );
+                    })}
+                  </g>
+                )}
+              </g>
+            </svg>
+
+            {/* Float Tooltip */}
+            {hoveredItem && (
+              <div style={{
+                position: 'fixed',
+                left: tooltipPos.x + 14,
+                top: tooltipPos.y + 14,
+                background: '#0f172a',
+                color: '#ffffff',
+                padding: '10px 14px',
+                borderRadius: 6,
+                fontSize: 12,
+                boxShadow: '0 8px 20px rgba(0,0,0,0.25)',
+                pointerEvents: 'none',
+                zIndex: 100,
+                maxWidth: 260
+              }}>
+                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 4 }}>
+                  {hoveredItem[categoryKey] || hoveredItem.label || hoveredItem.id}
+                </div>
+
+                {hoveredItem.intervalSemantics && (
+                  <div style={{ color: '#94a3b8', fontSize: 11, marginBottom: 6 }}>
+                    Construct: <strong>{hoveredItem.intervalSemantics}</strong>
+                  </div>
+                )}
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '4px 12px', fontSize: 11 }}>
+                  <span style={{ color: '#cbd5e1' }}>Lower Bound:</span>
+                  <span style={{ fontWeight: 600, textAlign: 'right' }}>{hoveredItem[lowerKey]} {unit}</span>
+
+                  <span style={{ color: '#cbd5e1' }}>Upper Bound:</span>
+                  <span style={{ fontWeight: 600, textAlign: 'right' }}>{hoveredItem[upperKey]} {unit}</span>
+
+                  {hoveredItem[centerKey] != null && (
+                    <>
+                      <span style={{ color: '#38bdf8' }}>Center Estimate:</span>
+                      <span style={{ fontWeight: 600, textAlign: 'right', color: '#38bdf8' }}>
+                        {hoveredItem[centerKey]} {unit}
+                      </span>
+                    </>
+                  )}
+
+                  <span style={{ color: '#cbd5e1' }}>Spread (Span):</span>
+                  <span style={{ fontWeight: 600, textAlign: 'right' }}>
+                    {Math.abs(Number(hoveredItem[upperKey]) - Number(hoveredItem[lowerKey])).toLocaleString('en-IN', { maximumFractionDigits: 2 })} {unit}
+                  </span>
+
+                  {variant === 'dumbbell' && (
+                    <>
+                      <span style={{ color: '#fcd34d' }}>Delta (Change):</span>
+                      <span style={{ fontWeight: 600, textAlign: 'right', color: '#fcd34d' }}>
+                        {(Number(hoveredItem[upperKey]) - Number(hoveredItem[lowerKey])).toFixed(1)} {unit}
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                {hoveredItem.status && (
+                  <div style={{ marginTop: 6, fontSize: 11, color: STATUS_COLORS[hoveredItem.status] }}>
+                    ● Status: {hoveredItem.status.toUpperCase()}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Accessible Table Modal */}
+          {isTableModalOpen && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(15, 23, 42, 0.65)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 999
+            }}>
+              <div style={{
+                background: '#ffffff',
+                borderRadius: 8,
+                width: '90%',
+                maxWidth: 720,
+                maxHeight: '80vh',
+                display: 'flex',
+                flexDirection: 'column',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.25)'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '16px 20px',
+                  borderBottom: '1px solid #e2e8f0'
+                }}>
+                  <h3 style={{ margin: 0, fontSize: 16, color: '#0f172a' }}>Accessible Range & Interval Data Table</h3>
+                  <button
+                    onClick={() => setIsTableModalOpen(false)}
+                    style={{ border: 'none', background: 'none', fontSize: 18, cursor: 'pointer', color: '#64748b' }}
+                  >✕</button>
+                </div>
+
+                <div style={{ padding: 20, overflowY: 'auto', flex: 1 }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc', borderBottom: '1px solid #cbd5e1', textAlign: 'left' }}>
+                        <th style={{ padding: '8px 10px' }}>Category / Item</th>
+                        <th style={{ padding: '8px 10px' }}>Interval Semantics</th>
+                        <th style={{ padding: '8px 10px', textAlign: 'right' }}>Lower Limit</th>
+                        <th style={{ padding: '8px 10px', textAlign: 'right' }}>Center Estimate</th>
+                        <th style={{ padding: '8px 10px', textAlign: 'right' }}>Upper Limit</th>
+                        <th style={{ padding: '8px 10px', textAlign: 'right' }}>Spread (Interval)</th>
+                        <th style={{ padding: '8px 10px' }}>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sortedData.map((d, i) => {
+                        const low = Number(d[lowerKey] ?? 0);
+                        const up = Number(d[upperKey] ?? 0);
+                        const cent = d[centerKey] != null ? Number(d[centerKey]) : null;
+                        const spread = Math.abs(up - low);
+
+                        return (
+                          <tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                            <td style={{ padding: '8px 10px', fontWeight: 600 }}>{d[categoryKey] || `Item ${i + 1}`}</td>
+                            <td style={{ padding: '8px 10px', color: '#64748b' }}>{d.intervalSemantics || 'Bounded Range'}</td>
+                            <td style={{ padding: '8px 10px', textAlign: 'right' }}>{low.toLocaleString('en-IN')} {unit}</td>
+                            <td style={{ padding: '8px 10px', textAlign: 'right', color: '#0284c7' }}>
+                              {cent != null ? `${cent.toLocaleString('en-IN')} ${unit}` : '—'}
+                            </td>
+                            <td style={{ padding: '8px 10px', textAlign: 'right' }}>{up.toLocaleString('en-IN')} {unit}</td>
+                            <td style={{ padding: '8px 10px', textAlign: 'right', fontWeight: 600 }}>
+                              {spread.toLocaleString('en-IN', { maximumFractionDigits: 2 })} {unit}
+                            </td>
+                            <td style={{ padding: '8px 10px', color: STATUS_COLORS[d.status || 'nominal'], fontWeight: 600 }}>
+                              {(d.status || 'nominal').toUpperCase()}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // --- Live Demo Datasets ---
+    const cncToleranceData = [
+      { id: 'dim-1', label: 'Crankshaft Main Journal Dia', lower: 49.985, upper: 50.015, center: 50.002, target: 50.000, status: 'nominal', intervalSemantics: 'Tolerance Band (±15 µm)' },
+      { id: 'dim-2', label: 'Cylinder Bore Diameter', lower: 82.490, upper: 82.520, center: 82.518, target: 82.500, status: 'warning', intervalSemantics: 'Tolerance Band (±15 µm)' },
+      { id: 'dim-3', label: 'Piston Pin Bore Dia', lower: 21.992, upper: 22.008, center: 22.012, target: 22.000, status: 'critical', intervalSemantics: 'Tolerance Band (±8 µm)' },
+      { id: 'dim-4', label: 'Connecting Rod Big End', lower: 53.980, upper: 54.020, center: 54.004, target: 54.000, status: 'nominal', intervalSemantics: 'Tolerance Band (±20 µm)' },
+      { id: 'dim-5', label: 'Camshaft Bearing Journal', lower: 27.988, upper: 28.012, center: 27.995, target: 28.000, status: 'nominal', intervalSemantics: 'Tolerance Band (±12 µm)' }
+    ];
+
+    const kaizenCycleTimeData = [
+      { id: 'op-1', label: 'Press Line 01 (800T Blanking)', lower: 48, upper: 32, isImproved: true, status: 'nominal', intervalSemantics: 'Before → After Kaizen' },
+      { id: 'op-2', label: 'Press Line 02 (1200T Drawing)', lower: 64, upper: 44, isImproved: true, status: 'nominal', intervalSemantics: 'Before → After Kaizen' },
+      { id: 'op-3', label: 'Robotic Spot Welding Cell', lower: 52, upper: 58, isImproved: false, status: 'critical', intervalSemantics: 'Before → After Kaizen' },
+      { id: 'op-4', label: 'CNC Mill Flange Face', lower: 42, upper: 28, isImproved: true, status: 'nominal', intervalSemantics: 'Before → After Kaizen' },
+      { id: 'op-5', label: 'Final Inspection & CMM Probe', lower: 36, upper: 22, isImproved: true, status: 'nominal', intervalSemantics: 'Before → After Kaizen' }
+    ];
+
+    const steelYieldStrengthData = [
+      { id: 'heat-01', label: 'Heat #H401 (Grade HR-590)', lower: 582, upper: 608, center: 595, status: 'nominal', intervalSemantics: '95% Confidence Interval' },
+      { id: 'heat-02', label: 'Heat #H402 (Grade HR-590)', lower: 574, upper: 598, center: 586, status: 'nominal', intervalSemantics: '95% Confidence Interval' },
+      { id: 'heat-03', label: 'Heat #H403 (Grade DP-780)', lower: 760, upper: 810, center: 785, status: 'nominal', intervalSemantics: '95% Confidence Interval' },
+      { id: 'heat-04', label: 'Heat #H404 (Grade DP-780)', lower: 742, upper: 778, center: 752, status: 'warning', intervalSemantics: '95% Confidence Interval' },
+      { id: 'heat-05', label: 'Heat #H405 (Grade CR-440)', lower: 420, upper: 450, center: 435, status: 'nominal', intervalSemantics: '95% Confidence Interval' }
+    ];
+
+    const furnaceTempBandData = [
+      { id: 't-1', label: 'Zone 1 (Pre-Heat)', lower: 280, upper: 320, center: 300, status: 'nominal', intervalSemantics: 'Min-Max Range' },
+      { id: 't-2', label: 'Zone 2 (Ramp Up)', lower: 540, upper: 610, center: 580, status: 'nominal', intervalSemantics: 'Min-Max Range' },
+      { id: 't-3', label: 'Zone 3 (Austenitizing)', lower: 840, upper: 890, center: 865, status: 'nominal', intervalSemantics: 'Min-Max Range' },
+      { id: 't-4', label: 'Zone 4 (Soak Hold)', lower: 855, upper: 885, center: 870, status: 'nominal', intervalSemantics: 'Min-Max Range' },
+      { id: 't-5', label: 'Zone 5 (Quench Entry)', lower: 790, upper: 830, center: 810, status: 'nominal', intervalSemantics: 'Min-Max Range' },
+      { id: 't-6', label: 'Zone 6 (Tempering)', lower: 410, upper: 450, center: 430, status: 'nominal', intervalSemantics: 'Min-Max Range' }
+    ];
+
+    ReactDOM.render(
+      <RangeChart
+        data={cncToleranceData}
+        variant="interval-bar"
+        orientation="horizontal"
+        unit="mm"
+        title="CNC Machining Critical Tolerance Bands (PL-04)"
+        subtitle="Lower Spec Limit (LSL) to Upper Spec Limit (USL) with measured mean"
+        width={760}
+        height={320}
+      />,
+      document.getElementById('demo-root-1')
+    );
+
+    ReactDOM.render(
+      <RangeChart
+        data={kaizenCycleTimeData}
+        variant="dumbbell"
+        orientation="horizontal"
+        unit="sec"
+        title="Kaizen Cycle Time Optimization: Before vs After"
+        subtitle="Gray = Before Kaizen baseline; Green/Red = After Kaizen (Target ≤ 35s)"
+        targetLine={{ value: 35, label: 'Kaizen Target ≤ 35s' }}
+        width={760}
+        height={320}
+      />,
+      document.getElementById('demo-root-2')
+    );
+
+    ReactDOM.render(
+      <RangeChart
+        data={steelYieldStrengthData}
+        variant="error-bar"
+        orientation="horizontal"
+        unit="MPa"
+        title="Raw Material Steel Coil Tensile Yield Strength (95% CI)"
+        subtitle="Sample batch mean with 95% Confidence Interval error whiskers"
+        width={760}
+        height={320}
+      />,
+      document.getElementById('demo-root-3')
+    );
+
+    ReactDOM.render(
+      <RangeChart
+        data={furnaceTempBandData}
+        variant="range-area"
+        unit="°C"
+        title="Continuous Heat Treatment Furnace Thermal Envelope"
+        subtitle="Shaded min-max thermal variation band with central thermocouple pyrometer"
+        width={760}
+        height={300}
+      />,
+      document.getElementById('demo-root-4')
+    );
+  </script>
+</body>
+</html>

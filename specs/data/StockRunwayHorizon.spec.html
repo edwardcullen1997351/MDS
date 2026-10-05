@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>StockRunwayHorizon Specification — Meridian Design System</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <style>
+    body { font-family: var(--ds-global-fontFamily-sans, system-ui); padding: 32px; color: var(--ds-semantic-color-text-primary, #0f172a); }
+    h1 { font-size: 24px; font-weight: 700; }
+    h2 { font-size: 18px; margin-top: 24px; }
+    code { font-family: var(--ds-global-fontFamily-mono, monospace); background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border: 1px solid #e2e8f0; padding: 8px 12px; text-align: left; }
+    th { background: #f8fafc; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h1>StockRunwayHorizon Specification (§01–§21)</h1>
+  <p><strong>Wave 3 — Data Visualization (High)</strong>: 24px high micro-horizontal SVG bar visualization rendered inline within matrix rows and data grids.</p>
+
+  <h2>§01 Geometric Layers & Visual Anatomy</h2>
+  <ul>
+    <li><strong>Micro Height</strong>: Exactly 24px high (<code>viewBox="0 0 100 24"</code>) designed for dense ERP matrix cells.</li>
+    <li><strong>Segment 1 (Green)</strong>: Safe stock coverage days (<code>--ds-global-color-success-500</code>).</li>
+    <li><strong>Segment 2 (Yellow/Amber)</strong>: Reorder threshold buffer zone (<code>--ds-global-color-warning-500</code>).</li>
+    <li><strong>Vertical Marker (Red)</strong>: Zero-stockout event date marker line with top flag/diamond notch (<code>--ds-global-color-danger-500</code>).</li>
+    <li><strong>Hatch Pattern (Deficit)</strong>: Diagonal stripe pattern representing zero stockout risk zone.</li>
+  </ul>
+
+  <h2>§02 Technical Contracts & Props</h2>
+  <table>
+    <thead>
+      <tr><th>Prop / Input</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>safeDays</code></td><td>number</td><td>—</td><td>Number of safe coverage days.</td></tr>
+      <tr><td><code>reorderDays</code></td><td>number</td><td>—</td><td>Number of days in safety stock / reorder zone.</td></tr>
+      <tr><td><code>totalHorizonDays</code></td><td>number</td><td>30</td><td>Total horizon days for percentage scale.</td></tr>
+      <tr><td><code>stockoutDay</code></td><td>number</td><td>safeDays + reorderDays</td><td>Projected zero-stockout day offset.</td></tr>
+      <tr><td><code>stockoutDateLabel</code></td><td>string</td><td>'Oct 24'</td><td>Zero-stockout date text.</td></tr>
+      <tr><td><code>reorderPointDateLabel</code></td><td>string</td><td>'Oct 18'</td><td>Reorder threshold date text.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>§03 Companions</h2>
+  <ul>
+    <li><code>LeadTimeTransferGlyph</code>: Road-transfer indicator (e.g., <code>H-9 ➔ F-119 [4h]</code>) with transit status and carrier metadata.</li>
+    <li><code>IntercompanyStockRibbon</code>: Consolidated 4-metric intercompany balance strip (Plant stock, Warehouse stock, In-transit STO, Net balance).</li>
+  </ul>
+</body>
+</html>

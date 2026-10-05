@@ -1,0 +1,272 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Bulk selection and action" subtitle="Full specification — selection by identity, a declared aggregate scope, and a snapshot the operation resolves against · manufacturing ERP reference" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Bulk selection and action — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.mn{font-size:10px;color:var(--text-secondary);line-height:1.5}
+.mb{align-self:flex-start;height:26px;padding:0 10px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:10px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.mb.q{background:var(--surface-sunken);color:var(--text-primary);border:var(--border-hairline)}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-warning-soft);color:var(--text-warning)}
+.ma.bad{background:var(--status-critical-soft);color:var(--text-critical)}
+.rows{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-card)}
+.rows div{display:flex;align-items:center;gap:8px;padding:5px 8px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);border-bottom:var(--border-subtle)}
+.rows div:last-child{border-bottom:none}
+.rows span.id{color:var(--text-primary);width:112px;flex:none}
+.bx{width:10px;height:10px;border:1px solid var(--border-strong);border-radius:2px;flex:none}
+.bx.on{background:var(--action-solid);border-color:var(--action-solid)}
+.bx.part{background:var(--action-solid);border-color:var(--action-solid);opacity:.5}
+.mcount{font-size:10px;font-family:var(--font-mono);color:var(--text-tertiary)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Bulk selection and action</h1>
+  <p class="lede">Selecting several items from a collection and running one operation over them — with selection held as identities, an aggregate whose scope is declared rather than assumed, a target snapshot taken when the operation begins, and an outcome that says exactly which items are done and which are not.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: Table or List, Checkbox, Button</span><span>Reference implementation: <a href="bulk-selection-action-reference.card.html">card</a> · <a href="../../templates/bulk-selection-action/BulkSelectionAction.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — posting gate-inward goods receipts</span><span>Sections included: 13 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>A stores clerk has eighteen counted goods receipts waiting and wants to post the fourteen that are clean. The items are chosen explicitly, the operation runs once over the chosen set, and each item can succeed or fail on its own. The pattern owns what sits between the ticks and the outcome: what selection <em>is</em> when the collection changes underneath it, what an aggregate checkbox covers, what the operation targets once it has begun, and what the user is left holding when half of it worked.</p>
+    <p><strong>Use it when</strong> one operation should apply to several explicitly chosen items of a collection.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>A work queue or register where items are dispatched in batches.</li><li>An operation whose per-item result can differ — posting, releasing, approving, exporting.</li><li>A set the user assembles across pages or refinements before acting.</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>Rows arriving in a file.</strong> Import rows have no identity until they are created, were never chosen, and are addressed by line number — which this pattern rightly forbids. That is <a href="BulkDataImport.spec.html">bulk data import</a>, where partial acceptance is the expected answer rather than a broken promise.</li><li><strong>Moving one item to a new position, or into another collection.</strong> That is <a href="DirectManipulationOfOrder.spec.html">direct manipulation of order</a>: one identity, an origin index, and a rollback — not a snapshot of many with per-item outcomes.</li><li><strong>An operation over everything.</strong> "Post all pending receipts" needs no selection; a checkbox column that is always fully ticked is scaffolding for a decision nobody makes.</li><li><strong>One item at a time.</strong> A per-row action is a row action. Selection exists to make one operation cover many; a bulk bar over a single selection is a slower row action.</li><li><strong>Narrowing what is shown.</strong> Ticking to filter is <a href="CollectionRefinement.spec.html">collection refinement</a> — refinement changes membership, selection changes targets.</li><li><strong>The confirmation itself.</strong> The dialog's own contract — what it says, how it is dismissed, what it guarantees — belongs to confirmed action; this pattern owns only whether one is required and what set it names.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">Collection</td><td><code>Table</code> or <code>List</code></td><td>Required. Provides the items and their stable identities. Its pagination and refinement define the scopes the aggregate may cover (§05).</td></tr>
+      <tr><td class="k">Item selection</td><td><code>Checkbox</code>, per item</td><td>Required. Named after the record, not "select row" — the name is what a screen reader reads when the user arrives on it.</td></tr>
+      <tr><td class="k">Aggregate selection</td><td><code>Checkbox</code> in the header, tri-state</td><td>Required wherever more than a page of items exists. Covers exactly the declared scope, reports the mixed state, and never claims more than it selected.</td></tr>
+      <tr><td class="k">Scope extension</td><td><code>Button</code></td><td>Required when the aggregate covers less than the whole set — the explicit second step that reaches the rest, stated in items ("Select all 18 pending lines").</td></tr>
+      <tr><td class="k">Actions</td><td><code>Button</code>, grouped in a <code>Toolbar</code> or <code>ButtonGroup</code>; <code>Menu</code> for the long tail</td><td>Required, at least one. Each names its scope and its count (§14). A <code>Toolbar</code> gives the set one accessible name and one tab stop, which is what keeps a growing action row usable.</td></tr>
+      <tr><td class="k">Confirmation</td><td><code>Dialog</code></td><td>Required per the declared <code>confirmation</code> policy (§05). It names the set, not just the action.</td></tr>
+      <tr><td class="k">Outcome</td><td><code>Alert</code> · <code>Toast</code> or <code>Snackbar</code> for a wholly successful, low-consequence result</td><td>Required. A partial outcome must persist until the user resolves it, which rules out a timed notification for anything with unresolved items.</td></tr>
+      <tr><td class="k">Progress</td><td><code>Progress</code></td><td>Required while the operation runs, with the count in the label. The collection is not replaced by a spinner.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>Selection.</strong> The user ticks items, or the aggregate for its declared scope, or extends that scope explicitly. Each change updates the count and the availability of every action.</li>
+      <li><strong>Initiation.</strong> The user activates an action. The targets are snapshotted here (§04) and the action becomes single-shot until it resolves.</li>
+      <li><strong>Confirmation.</strong> Where required, a dialog names the operation and the snapshotted set. Cancelling changes nothing — not the selection, not the collection.</li>
+      <li><strong>Execution.</strong> The operation runs over the snapshot. Selection may not be edited into the running operation; the collection remains readable.</li>
+      <li><strong>Resolution.</strong> The result is per item: done, or unresolved with a reason. Membership is updated for the items that completed.</li>
+      <li><strong>Disposition.</strong> Selection is reconciled under the declared <code>postActionSelection</code> policy — unresolved items retained so retry has a target, or cleared — and the outcome is announced.</li>
+      <li><strong>Retry.</strong> Retry runs on the unresolved items only, as a new operation with its own snapshot.</li>
+    </ol>
+    <p>Order matters in two places: the snapshot precedes the confirmation, so what the dialog names is what will run; and membership is updated before the outcome is announced, so the counts the user reads match the register in front of them.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Selection is a set of stable identities.</strong> Receipt numbers, not row indices — a sort, a page turn or a refinement re-assigns every position, and an index-based selection then points at whatever moved into that slot.</li>
+      <li><strong>Selection outlives the page.</strong> Identities selected on one page stay selected when the user navigates; the count is of items, never of visible rows, and is stated against the collection total.</li>
+      <li><strong>The aggregate covers a declared scope and says which.</strong> Visible page, current result set, or whole collection (§05). Anything beyond that scope is reached by an explicit second action, never by an aggregate that quietly means more than it shows.</li>
+      <li><strong>The aggregate reports mixed state honestly.</strong> Some-but-not-all in scope is indeterminate; it is not unchecked, and it is not checked.</li>
+      <li><strong>Membership changes reconcile the selection.</strong> An item that leaves the collection leaves the selection, and the removal is stated with the new count. A selection holding identities that no longer exist is the mechanism by which a bulk action acts on the wrong thing.</li>
+      <li><strong>Action availability follows the current selection.</strong> With nothing selected, actions are unavailable under the declared policy and say why. Availability is derived from the selection, never a flag toggled by the selection handler.</li>
+      <li><strong>The operation resolves against the snapshot taken at initiation.</strong> Selection edited after the button is pressed does not join the running operation, and items removed from the selection mid-flight are not spared from it.</li>
+      <li><strong>An action is single-shot until it resolves.</strong> A second activation of the same action does nothing — not a second operation, not a queued one.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="rows"><div><span class="bx part"></span><span class="id">MRR-2026-1841</span><span>BRK-4820-B</span></div><div><span class="bx on"></span><span class="id">MRR-2026-1842</span><span>BRG-1120</span></div></div><span class="mcount">selection = ["MRR-2026-1842","MRR-2026-1846"]</span><span class="mn">2 of 18 lines selected — across 3 pages.</span></div><p class="why">Identities, so sorting by gate time or paging to the next six changes nothing about what will be posted.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="rows"><div><span class="bx"></span><span class="id">MRR-2026-1841</span><span>BRK-4820-B</span></div><div><span class="bx on"></span><span class="id">MRR-2026-1842</span><span>BRG-1120</span></div></div><span class="mcount">selection = [1, 5]</span><span class="mn">2 rows selected on this page.</span></div><p class="why">Row 1 after a re-sort is a different receipt. The clerk posts a ₹1,68,000 casting line they never ticked, and the count silently resets on every page turn.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+  <div class="body">
+    <p>Four choices belong to the application of the pattern. The first is the one users get wrong most often when it is left implicit, because both plausible answers are defensible.</p>
+    <table><thead><tr><th>Property</th><th>Options</th><th>What it decides</th></tr></thead><tbody>
+      <tr><td class="k">aggregateScope</td><td><code>page</code> · <code>result-set</code> · <code>collection</code></td><td>What the header checkbox selects. <code>page</code> is the safe default and pairs with an explicit extension to the wider set; <code>result-set</code> suits a refined view the user has deliberately narrowed; <code>collection</code> is legitimate only where the whole collection is small and fully known — and where no refinement is in play, <code>result-set</code> and <code>collection</code> coincide, which is why the reference implementation offers the two distinguishable scopes. Whatever is chosen, the scope is named in words beside the count.</td></tr>
+      <tr><td class="k">actionAvailability</td><td><code>disabled-with-reason</code> · <code>hidden</code></td><td>How actions present with nothing selected. <code>disabled-with-reason</code> teaches the interaction — the user sees what selecting is for; <code>hidden</code> keeps a dense screen quiet but hides the affordance from a first-time user. Never a live action that fails on an empty set.</td></tr>
+      <tr><td class="k">confirmation</td><td><code>destructive-only</code> · <code>always</code> · <code>threshold</code></td><td>When a confirmation step is required. <code>threshold</code> names a count above which any action confirms, for operations that are safe in tens and alarming in hundreds — the count itself is declared with it. The dialog's own contract is confirmed action's; what this property decides is whether it appears.</td></tr>
+      <tr><td class="k">postActionSelection</td><td><code>keep-unresolved</code> · <code>clear-all</code></td><td>What the selection becomes after an operation resolves. <code>keep-unresolved</code> leaves retry a target and is right wherever partial failure is possible; <code>clear-all</code> suits an operation that cannot partially fail, where a surviving selection invites a second, pointless run.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <table><thead><tr><th>State</th><th>What is true</th><th>What is displayed</th></tr></thead><tbody>
+      <tr><td class="k">none selected</td><td>The selection is empty. The baseline.</td><td>The collection, the pending total, actions unavailable under the declared policy with the reason.</td></tr>
+      <tr><td class="k">partially selected</td><td>Some items in the aggregate's scope are selected.</td><td>Count of items against the collection total, aggregate indeterminate, actions available and counted.</td></tr>
+      <tr><td class="k">all in scope selected</td><td>Every selectable item in the declared scope is selected.</td><td>The scope named in words, and — where the scope is narrower than the collection — the explicit extension to the rest.</td></tr>
+      <tr><td class="k">action pending</td><td>An operation is running over a frozen snapshot.</td><td>Progress with the operation and the count; the collection still readable; the action single-shot.</td></tr>
+      <tr><td class="k">partially failed</td><td>Resolved with some items done and some unresolved, each with a reason.</td><td>A persistent outcome listing both sets, unresolved items still selected, retry scoped to them.</td></tr>
+      <tr><td class="k">wholly failed</td><td>Resolved with nothing done.</td><td>The failure and its cause, the selection intact, retry over the same set.</td></tr>
+      <tr><td class="k">completed</td><td>Every snapshotted item resolved successfully.</td><td>The outcome with the count, membership updated, selection disposed of under the declared policy.</td></tr>
+    </tbody></table>
+    <p class="warn"><strong>Partially failed is a first-class state, not an error message.</strong> An operation over many items has a distribution of outcomes, not a boolean. Modelling the result as success-or-failure forces the two lies this pattern exists to prevent: reporting a partial run as a success, and offering a retry that repeats the work that already succeeded.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Error handling</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Partial failure names the unresolved items,</strong> individually, with a reason each, whenever the response distinguishes them. "Some items could not be posted" leaves the user to diff eighteen rows against their memory.</li>
+      <li><strong>Completed work is stated too.</strong> The user needs to know what no longer needs doing as much as what does — and that is what makes the retry scope legible.</li>
+      <li><strong>Retry targets the unresolved set only.</strong> Successful items have left the operation's world: they are out of the snapshot, out of the collection where the action removes them, and cannot be repeated by pressing retry.</li>
+      <li><strong>Where per-item outcomes are unavailable,</strong> the whole operation reports as unresolved and says the outcome is unknown — never as success, and never as a specific count the response did not support.</li>
+      <li><strong>The selection after a failure supports recovery.</strong> Under <code>keep-unresolved</code> the failed identities remain selected and the actions stay available on them; the user never has to re-tick their way back.</li>
+      <li><strong>An outcome with unresolved items persists</strong> until acted on. A toast that expires takes the only record of what failed with it.</li>
+      <li><strong>An item that vanished mid-operation is unresolved with that reason,</strong> not silently dropped from the count. "Posted by stores while this ran" is a different fact from "posted by you".</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma">4 of 6 lines posted · 2 unresolved<br><span class="mh">Posted: MRR-2026-1842, 1843, 1844, 1845. Still pending: MRR-2026-1841 — received 240 against a PO balance of 200. MRR-2026-1846 — PO-88209 under amendment, revision 3 pending approval.</span></div><div class="mb">Retry 2 unresolved</div></div><p class="why">Both sets named, each failure attributed to a cause the clerk can act on, and a retry that cannot double-post the four that worked.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma bad">Some receipts could not be posted.</div><div class="mb">Retry all 6</div></div><p class="why">No identities, no reasons, and a retry over the original six — which reposts four lines into inventory and puts the stock count out by 24,800 pieces.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Every item checkbox is named after its record.</strong> "Receipt MRR-2026-1841", not "Select" — a column of eighteen identical names is unusable, and the row's other cells are not read on arrival at the control.</li>
+      <li><strong>The aggregate control names its scope and reports mixed state through the platform.</strong> "Select all 6 lines on this page", with the indeterminate state on the control itself rather than a dash drawn on top of it.</li>
+      <li><strong>The selection count is announced politely as it changes,</strong> once per change, including the scope in words. A count rendered only as a heading is invisible to anyone not looking at it.</li>
+      <li><strong>Changes in available actions are perceivable without seeing them.</strong> Actions live in a named group, and their labels carry the count, so an action that becomes available is discoverable by reading rather than by noticing a colour change.</li>
+      <li><strong>Focus is not moved by selection.</strong> Ticking an item leaves focus on that item's control so a keyboard user can tick the next; the outcome announcement does not steal it either.</li>
+      <li><strong>Outcomes are announced by their severity.</strong> Completion politely; partial or whole failure as an alert, because the user's model of what has been done is now wrong.</li>
+      <li><strong>Focus after a resolved operation lands somewhere accountable</strong> — the outcome message when there is unresolved work to read, otherwise the action that ran. Never the document, and never a row that has left the collection.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Action labels state their scope and count.</strong> "Post 6 lines", not "Post" — the label is the last thing the user reads before an irreversible operation over a set they assembled minutes ago.</li>
+      <li><strong>The scope of an aggregate is written in words,</strong> not implied by where the checkbox sits: "all 6 on this page", "every line in the register".</li>
+      <li><strong>The extension to a wider scope states the wider count.</strong> "Select all 18 pending lines" — a user who cannot see the total cannot judge what they are about to take on.</li>
+      <li><strong>Confirmation names the consequence for the set,</strong> in the set's own units and value: how many, what happens to them, what cannot be undone. "Are you sure?" adds a click and no information.</li>
+      <li><strong>Partial-failure wording separates completed from unresolved</strong> and never merges them into a single count. Both halves get their identities.</li>
+      <li><strong>Counts are stated against the collection total,</strong> "6 of 18 lines selected", so a selection assembled across pages is never mistaken for the whole register.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><span class="mn">6 of 18 lines selected · all six on this page</span><div style="display:flex;gap:6px"><div class="mb">Post 6 lines</div><div class="mb q">Reject 6 lines</div></div><span class="mh">Select all 18 pending lines</span></div><p class="why">Scope, count and consequence are all readable before the press, and the wider scope is an offer with its own number.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><span class="mn">All selected</span><div style="display:flex;gap:6px"><div class="mb">Post</div><div class="mb q">Reject</div></div></div><p class="why">"All" of what — the page, the register, or the filtered view? The clerk presses Post believing six, and eighteen lines and ₹10,15,000 of stock go to inventory.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§17</span><h2>Performance</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The single-shot guard is applied at the state transition,</strong> not by disabling the button — a disabled attribute arrives a frame late and a double press is faster than a frame.</li>
+      <li><strong>An operation over a large set reports progress in items,</strong> not as an unmeasurable spinner: "posting 140 of 400 lines" is the only signal that tells the user whether to wait.</li>
+      <li><strong>The rest of the page stays usable while the operation runs.</strong> The collection is readable and the user can page through it; only the actions and the selection are frozen, because both are inputs to the running operation.</li>
+      <li><strong>Per-item results are applied as they arrive where the response streams them,</strong> so a long operation shows real progress; the outcome is still announced once, when the operation resolves.</li>
+      <li><strong>An operation that outlives the view is not lost.</strong> Either it is bounded and the view waits for it, or it is a job with its own progress and its own record — a bulk action that silently continues after the user navigates away has no outcome contract at all.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+      <tr><td class="k">Selected item disappears</td><td>Removed from the selection, and the removal stated with the new count. Never left in the set to be sent as a target that no longer exists.</td></tr>
+      <tr><td class="k">Collection changes after selection</td><td>Selection reconciles against membership on every read. Items that remain stay selected; the aggregate recomputes against the new scope, which may make a full selection partial.</td></tr>
+      <tr><td class="k">Item disappears while the operation runs</td><td>Resolved as unresolved with that reason (§10). The snapshot is not edited mid-flight.</td></tr>
+      <tr><td class="k">Aggregate scope narrower than the collection</td><td>The count and the scope are stated together, and the wider set is offered explicitly with its own total. An aggregate never silently means more than it selected.</td></tr>
+      <tr><td class="k">Repeated activation</td><td>The second activation is refused while the first is pending. No queue, no second operation, no double post.</td></tr>
+      <tr><td class="k">Selection edited after initiation</td><td>Ignored by the running operation. Newly selected items are not swept in, and de-selected items are not spared.</td></tr>
+      <tr><td class="k">Confirmation cancelled</td><td>Nothing changes: not the selection, not the collection, not the availability of the action. The snapshot is discarded.</td></tr>
+      <tr><td class="k">Every item in the collection acted on</td><td>The collection becomes genuinely empty and says so — "everything has been posted", not "no results". The selection is empty and the actions unavailable.</td></tr>
+      <tr><td class="k">Selection spans a refinement change</td><td>Identities outside the refined view remain selected, and the count says how many are not visible. Refinement changes what is shown, never what is selected.</td></tr>
+      <tr><td class="k">Ineligible item selected</td><td>Selectable, and either refused by availability with the reason before the run, or resolved as unresolved with the reason after it. Never silently skipped inside a successful count.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Store selection as a set of identities</strong> above the collection component, so paging, sorting and refinement cannot touch it. The table renders the intersection of the selection with what it is showing; it does not own the selection.</li>
+      <li><strong>Reconcile on read, not on event.</strong> Deriving the live selection as identities-still-in-membership means no event handler has to remember to prune it, and no path can leave a ghost identity behind.</li>
+      <li><strong>Declare the aggregate scope as data,</strong> and compute both the aggregate's own state and the extension offer from it. A select-all implemented as "tick every visible checkbox" cannot express the wider scope at all.</li>
+      <li><strong>Snapshot the targets into the operation object at initiation</strong> and let nothing else read the live selection afterwards. This is what makes confirmation, execution and outcome all describe the same set.</li>
+      <li><strong>Guard the operation with the state transition itself</strong> — a pending operation object refuses a second start — rather than with the button's disabled state.</li>
+      <li><strong>Require per-item results from the operation.</strong> The response says which identities succeeded; the outcome, the membership update and the retry scope are all derived from that one list. A boolean response makes §10 unimplementable.</li>
+      <li><strong>Derive the retry set from the outcome,</strong> intersected with current membership, so retry after a further change still targets only what genuinely remains.</li>
+      <li><strong>Update membership before announcing,</strong> so the announced counts and the collection agree at the moment the user reads them.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted"><strong>Omitted sections and why.</strong>
+§06 Variants — the scope, availability, confirmation and disposition choices are declared policies within one contract (§05); a bulk bar, a toolbar and an overflow menu are presentations of the same actions.
+§07 Sizes — no coordinated sizing exists at the pattern level.
+§09 Validation — a selection is not judged for correctness. Eligibility known before the run is action availability (§04); eligibility only the service knows is partial failure (§10). Where one item's eligibility depends on another value, that is <a href="ConditionalInput.spec.html">conditional input</a>.
+§11 Input &amp; interaction modalities — range selection with <kbd>Shift</kbd> and pointer drag are conveniences the collection component may offer; the pattern requires nothing of them, and its one cross-component focus rule is in §12.
+§13 Motion — a row leaving the collection may animate out, but no motion carries pattern-owned meaning, and none may delay the outcome announcement.
+§15 Responsive — the actions may move from a toolbar into an overflow menu or a bottom bar, which changes their presentation and not the interaction.
+§16 Internationalization — the pattern is direction-agnostic and holds no locale-sensitive values of its own; counts and currency in its messages are formatted by the product's locale rules.
+§19 Anti-patterns — the refusals in §01, the identity and snapshot rules in §04, and the retry rules in §10 cover the recurring misuses.
+§21 Developer notes — the contract in §04, §05, §08, §10 and §20 is the whole contract; the one technical requirement it adds to an API, per-item results, is stated in §20.</p>
+</div></body></html>

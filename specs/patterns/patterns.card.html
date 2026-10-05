@@ -1,0 +1,245 @@
+<!-- @dsCard group="Specs · Patterns" viewport="900x560" name="Patterns index" subtitle="What each pattern owns, what it refuses, and the sections it was written against" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Interaction patterns — index</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:28px}
+.wrap{max-width:860px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-3xl);font-weight:var(--weight-light);letter-spacing:-0.02em}
+p{margin:0;max-width:78ch;color:var(--text-secondary);text-wrap:pretty}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}
+a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+.rule{margin:20px 0 0;border-top:var(--border-width) solid var(--border-strong)}
+.item{display:grid;grid-template-columns:150px minmax(0,1fr);gap:24px;padding:20px 0;border-bottom:var(--border-hairline)}
+.item:last-of-type{border-bottom:none}
+.head{display:flex;flex-direction:column;gap:6px}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+.parts{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:10px;min-width:0}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+.secs{display:flex;flex-wrap:wrap;gap:5px}
+.s{font-family:var(--font-mono);font-size:var(--text-2xs);padding:1px 6px;border-radius:var(--radius-xs);background:var(--surface-sunken);color:var(--text-secondary)}
+.s.off{background:transparent;border:var(--border-hairline);color:var(--text-tertiary)}
+.legend{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:14px;line-height:1.8}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+@media (max-width:700px){.item{grid-template-columns:1fr;gap:12px}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Interaction patterns</span>
+<h1>Patterns index</h1>
+<p>An Interaction Pattern is a standardized way of solving a recurring interaction problem with existing components. It has no public API and nothing to install: what it specifies is the interaction contract the composition creates — sequencing, coordination, commit and cancel semantics, recovery. Each pattern ships three artifacts — a specification, a working reference implementation under <code>templates/</code> set in a manufacturing ERP scenario, and do/don't visual pairs inside the sections whose rules they demonstrate — and each spec states at its foot which sections it omitted and why. Every scenario is set in the same works — Suryodaya Autocomp Ltd, Chakan plant (PL-04), Pune, in rupees and IST. See the <a href="../../guidelines/interaction-pattern-spec-standard.card.html">interaction pattern spec standard</a> for the section set, the include/omit tests, and what every pattern must ship; a fixed assembly with an API belongs in <a href="../composite/composite.card.html">composite</a> instead, and a screen frame in <a href="../layouts/layouts.card.html">layouts</a>.</p>
+<div class="rule"></div>
+
+<div class="item">
+  <div class="head"><h2><a href="ValidatedSubmission.spec.html">Validated submission</a></h2><span class="parts">Reference: releasing a work order to a production line</span><span class="parts">Fieldset, Field, Input, Button · optional Textarea, Select, Checkbox(Group), Radio(Group), Switch, Combobox, Autocomplete, MultiCombobox, Slider, RangeSlider, DatePicker, TimeField, Alert, Toast, Snackbar, Progress</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> one coherent snapshot evaluated by every rule, the scope and timing of independent versus dependent validation, the permanent distinction between <code>invalid</code> and <code>failed</code>, single-shot commitment guarded at the state transition, preservation of entered values through failure, retry against current intended values, a declared post-success disposition, and focus to the first actionable problem without hiding the rest.</li>
+      <li><strong>Refuses</strong> a single field's own validation, per-control commit, wording operational failure as invalid input, replaying an obsolete snapshot on retry, silently discarding values, and a permanently unavailable commit that leaves the user unable to learn what is wrong.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s off">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s off">§16</span><span class="s">§17</span><span class="s">§18</span><span class="s off">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="validated-submission-reference.card.html">card</a> · <a href="../../templates/validated-submission/ValidatedSubmission.dc.html">standalone</a> · do/don't pairs in §08, §09, §10, §14 · status: frozen 7 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="ConditionalInput.spec.html">Conditional input</a></h2><span class="parts">Reference: dispositioning a nonconforming lot</span><span class="parts">Field, one controlling control, one dependent control · optional Fieldset, Input, Textarea, Select, Checkbox(Group), Radio(Group), Switch, Combobox, Autocomplete, MultiCombobox, DatePicker, TimeField, Alert</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> the dependency between a controlling value and its dependents as a deterministic rule over values rather than over what is on screen, the declared <code>unavailability</code>, <code>retention</code> and <code>requiredness</code> policies, requiredness and validation that follow applicability in both directions, exclusion of inapplicable values from the submission, one statement of what changed, and focus rescued out of content that becomes unavailable.</li>
+      <li><strong>Refuses</strong> disclosure with no input dependency, applicability derived from visibility, a dependent left blocking-required behind a false condition, silently discarded or silently restored values, a controller disabled by its own dependent, a chained dependent active under an inactive parent, and copy that assumes the user saw the change.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s">§09</span><span class="s off">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s off">§16</span><span class="s off">§17</span><span class="s">§18</span><span class="s off">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="conditional-input-reference.card.html">card</a> · <a href="../../templates/conditional-input/ConditionalInput.dc.html">standalone</a> · do/don't pairs in §04, §09, §12, §14 · status: frozen 7 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="StagedInput.spec.html">Staged input</a></h2><span class="parts">Reference: raising a purchase requisition</span><span class="parts">Fieldset, Field, Button · optional Input, Textarea, Select, Checkbox(Group), Radio(Group), Switch, Combobox, Autocomplete, MultiCombobox, DatePicker, TimeField, Progress, Heading, Text, Alert</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> exactly one current stage, a forward gate that judges the current stage alone, backward movement that validates nothing and commits nothing, one value model that no transition rebuilds, stage applicability as a rule over values, the split between stage-local and cross-stage rules with each cross-stage problem attributed to the stage that can fix it, surgical invalidation of genuinely dependent later values, single-shot completion over the coherent staged set, and stage data that survives a failed completion.</li>
+      <li><strong>Refuses</strong> stages that are only headings, a gate that blocks on stages the user has not been asked, backward movement blocked by the current stage's errors, cross-stage rules raised where they cannot be resolved, wholesale clearing of everything downstream of an edit, any commit before the final action, stored stage-complete flags, progress wording that claims completion before it succeeds, and a failure that discards the task.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s off">§16</span><span class="s off">§17</span><span class="s">§18</span><span class="s off">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="staged-input-reference.card.html">card</a> · <a href="../../templates/staged-input/StagedInput.dc.html">standalone</a> · do/don't pairs in §04, §09, §10, §14 · status: frozen 7 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="SearchResults.spec.html">Search results</a></h2><span class="parts">Reference: item master lookup for a short material</span><span class="parts">SearchField, List or Table · optional Card, ListItem, Pagination, Progress, Skeleton, EmptyState, Alert, Button</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> the correspondence between one query state and one result set, a count and range always stated in terms of the query that produced them, retrieval as a state of the pair rather than a third screen, retained results labelled as the previous query's, zero matches as a completed retrieval, failure kept permanently distinct from it, retry against the query the user currently intends, result-dependent state reset and announced when the query changes, paging and sorting as retrievals against the current query, and the request identity that lets only the current response write result state.</li>
+      <li><strong>Refuses</strong> a count attached to rows from an earlier query, blanking the region on every keystroke, an outage rendered as no results, first-run copy on a query that matched none of an existing set, focus moved to the results, assertive per-keystroke announcements, a sort applied to one page of many, a page position carried onto a new query, and an obsolete response rendered even for a frame.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s off">§16</span><span class="s">§17</span><span class="s">§18</span><span class="s off">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="search-results-reference.card.html">card</a> · <a href="../../templates/search-results/SearchResults.dc.html">standalone</a> · do/don't pairs in §04, §10, §12, §14 · status: frozen 7 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="CollectionRefinement.spec.html">Collection refinement</a></h2><span class="parts">Reference: triaging the maintenance work request backlog</span><span class="parts">At least one filtering control, List or Table · optional SearchField, Select, Checkbox(Group), Radio(Group), SegmentedControl, Combobox, MultiCombobox, DatePicker, DateRangePicker, RangeSlider, Chip, ChipGroup, Tag, TagList, Button, EmptyState, Progress, Skeleton</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> one canonical refinement model read by the controls, the active-criteria tokens, the option counts and the collection, removal that writes through to its originating control, composition stated as a rule over dimensions rather than implied by layout, a defined unrefined state that clearing returns to exactly, the declared <code>mode</code>, <code>debounce</code>, <code>unavailableOptions</code> and <code>zeroResultRecovery</code> policies, counts that state what a value would leave, reconciliation of pagination and selection the refinement invalidates, and a refinement identity that stops a stale update writing newer state.</li>
+      <li><strong>Refuses</strong> a second copy of any criterion, a token no control holds, counts computed against the unrefined collection, a selected value hidden or disabled out of reach, unrefined and no-matches collapsed into one “nothing to show”, per-dimension application inside one set, a bare “Clear” whose scope is a guess, tokens stripped of their dimension, focus moved to the collection as it updates, and controls disabled while it does.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s off">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s off">§16</span><span class="s">§17</span><span class="s">§18</span><span class="s off">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="collection-refinement-reference.card.html">card</a> · <a href="../../templates/collection-refinement/CollectionRefinement.dc.html">standalone</a> · do/don't pairs in §04, §14 · status: frozen 7 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="BulkSelectionAction.spec.html">Bulk selection and action</a></h2><span class="parts">Reference: posting gate-inward goods receipts</span><span class="parts">Table or List, Checkbox, Button · optional CheckboxGroup, Toolbar, ButtonGroup, Menu, MenuList, Alert, Dialog, Toast, Snackbar, Progress</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> selection as a set of stable identities that outlives paging, sorting and refinement, an aggregate whose scope is declared and named in words with any wider set offered explicitly, honest mixed state, reconciliation of selection against changing membership, action availability derived from the current selection, a target snapshot frozen at initiation that confirmation and outcome both describe, a single-shot guard at the state transition, partial failure as a first-class state naming completed and unresolved work item by item, and retry scoped to the unresolved.</li>
+      <li><strong>Refuses</strong> selection by row position, a count of visible rows, an aggregate that means more than it selected, ghost identities left in the set, an operation that reads the live selection after it began, a second activation while pending, a partial run reported as success, a retry that repeats completed work, a timed toast carrying the only record of what failed, and an action label without its scope and count.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s off">§16</span><span class="s">§17</span><span class="s">§18</span><span class="s off">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="bulk-selection-action-reference.card.html">card</a> · <a href="../../templates/bulk-selection-action/BulkSelectionAction.dc.html">standalone</a> · do/don't pairs in §04, §10, §14 · status: frozen 7 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="SelectionDrivenDetail.spec.html">Selection-driven detail</a></h2><span class="parts">Reference: reading a die's tool life in the press-shop tool crib</span><span class="parts">List or Table, Card or Surface · optional Heading, Text, DescriptionList, Image, Avatar, Badge, Tag, Button, ButtonGroup, EmptyState, Skeleton, Alert</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> exactly one current selection held as a stable identity, selection as interaction state rather than navigation, a detail region that always corresponds to the current selection and names it, the declared <code>initialSelection</code>, <code>removalPolicy</code>, <code>loadingTreatment</code> and <code>presentation</code> policies, retained content labelled as the previous item's, unavailability kept permanently distinct from retrieval failure, actions read against the selected identity at activation, a serialized presentation that preserves the selection and the return, and the request identity that lets only the current selection's response write detail state.</li>
+      <li><strong>Refuses</strong> selection by row position, a panel with no subject, unlabelled previous content under a new selection, a stale response rendered even for a frame, a vanished item reported as a failed read, a history entry per selection, focus moved into the detail on every pick, a highlight as the only selection state, an automatic replacement under a button the user was already reaching for, and a serialization that loses the selection on return.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s">§15</span><span class="s off">§16</span><span class="s">§17</span><span class="s">§18</span><span class="s off">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="selection-driven-detail-reference.card.html">card</a> · <a href="../../templates/selection-driven-detail/SelectionDrivenDetail.dc.html">standalone</a> · do/don't pairs in §04, §08, §12, §14 · status: frozen 7 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="CollectionEditing.spec.html">Collection editing</a></h2><span class="parts">Reference: editing the press-shop weekly shift capacity plan</span><span class="parts">Table or List, Field, an editable input, Button · optional IconButton, ButtonGroup, Select, Checkbox, Switch, Combobox, DatePicker, TimeField, Badge, Alert, Toast, Snackbar, Progress</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> committed values and drafts as separate state keyed by item identity, a draft initialised from committed values and stamped with the revision it was opened against, cancel as deletion of the draft, validation over the whole draft with cross-value rules reported on the field that can satisfy them, a commit that is the only writer of canonical data, the declared <code>concurrency</code>, <code>entry</code>, <code>staleDraftPolicy</code> and <code>postSaveDisposition</code> policies, a failure that preserves the draft and states that nothing was committed, retry against the current draft, conflict kept distinct from failure, and focus that goes into the first editor and back to the row's own control.</li>
+      <li><strong>Refuses</strong> canonical data mutated by keystroke, drafts keyed by row position, a shared editor buffer, a row that reads committed while showing a draft, an invalid draft reverted on refusal, a retry that replays the values the user has since corrected, a silent last-write-wins over someone else's revision, a draft discarded because a filter hid its row, a second commit while one is in flight, and "Done"/"Close" as the names of commit and cancel.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s off">§16</span><span class="s">§17</span><span class="s">§18</span><span class="s off">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="collection-editing-reference.card.html">card</a> · <a href="../../templates/collection-editing/CollectionEditing.dc.html">standalone</a> · do/don't pairs in §04, §09, §10, §14 · status: frozen 7 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="ConfirmedAction.spec.html">Confirmed action</a></h2><span class="parts">Reference: cancelling a released work order mid-run</span><span class="parts">Button or IconButton, Dialog, Button · optional Heading, Text, DescriptionList, Alert, Checkbox, Toast, Snackbar, Progress</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> the separation of initiation from commitment, an initiation whose only side effect is capturing the target and the figures shown, a consequence stated in the plant's own units, revalidation of the live target against that capture before dispatch, the declared <code>acknowledgement</code>, <code>dismissal</code>, <code>targetRevalidation</code> and <code>completionFeedback</code> policies, cancellation and every non-action dismissal as side-effect free, confirmation state kept separate from operation state, a single-shot guard at the transition, failure that states the target is unchanged, and retry that re-asks against current figures.</li>
+      <li><strong>Refuses</strong> an operation dispatched on open, an optimistic post-operation view, "Are you sure?" where the numbers are computable, Yes/No under a negative question, a substitute target when the original became invalid, a stale intent replayed by a silent retry, initial focus on the destructive control, a pending spinner trapped inside the dialog, failure carried by a timed toast, and confirmation used as friction on a reversible action.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s off">§16</span><span class="s">§17</span><span class="s">§18</span><span class="s off">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="confirmed-action-reference.card.html">card</a> · <a href="../../templates/confirmed-action/ConfirmedAction.dc.html">standalone</a> · do/don't pairs in §04, §10, §12, §14 · status: frozen 7 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="ExplicitSave.spec.html">Explicit save</a></h2><span class="parts">Reference: changing the parameters of a routing operation</span><span class="parts">At least one editable control, ButtonGroup or several Buttons · optional Fieldset, Field, Dialog, Drawer, Popover, Alert, Toast, Snackbar, Progress, Badge</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> a draft boundary the user opens and closes deliberately, a draft seeded from committed state and stamped with its revision, a commit that promotes one coherent draft and is the only writer, a cancel available in every draft state including invalid, one declared meaning for every dismissal route, dirty derived by comparison rather than remembered, the declared <code>surface</code>, <code>dismissalPolicy</code>, <code>cancelWhenDirty</code> and <code>postCommitDisposition</code> policies, a failure that keeps the draft as typed and states that nothing was committed, and focus that lands predictably when the context closes.</li>
+      <li><strong>Refuses</strong> a dismissal that commits, dismissal semantics that differ between Escape, the scrim and the close control, a guard on a clean draft, a dirty flag set by the first keystroke and never cleared, a cancel disabled by the draft's own errors, an editing context closed to display its failure, a retry that replays superseded values, a silent last-write-wins over a newer revision, autosave behind a Save button, and "Done"/"Close" as the names of commit and discard.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s off">§16</span><span class="s">§17</span><span class="s">§18</span><span class="s off">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="explicit-save-reference.card.html">card</a> · <a href="../../templates/explicit-save/ExplicitSave.dc.html">standalone</a> · do/don't pairs in §04, §09, §10, §14 · status: frozen 7 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="AsynchronousAction.spec.html">Asynchronous action</a></h2><span class="parts">Reference: MRP regeneration, availability checks and a gate-label print</span><span class="parts">Button or IconButton, Progress · optional Alert, Toast, Snackbar, Skeleton, Dialog, Drawer, Badge, Table</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> a logical identity per operation held outside component state, pending feedback bound to the operation's subject rather than to the control that started it, a declared answer to a second activation guarded at the transition, resolutions matched to the request that produced them, the declared <code>blocking</code>, <code>repeatActivation</code>, <code>completionFeedback</code>, <code>orphanPolicy</code> and <code>feedbackDelay</code> policies, retry that resumes from the failed stage instead of repeating completed work, an operation that outlives its initiating context, and a recorded decision for every response it deliberately does not apply.</li>
+      <li><strong>Refuses</strong> one page-level loading flag over concurrent operations, pending rendered as success, a second press that silently duplicates a write, a superseded or orphaned answer written into the interface, an unattributed "Done" after overlapping jobs, an indicator that flashes for an imperceptible wait, a fabricated percentage, a retry that re-runs succeeded stages, a failure carried by a timed toast, focus moved merely to expose status, and blocking assumed rather than declared.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s off">§16</span><span class="s">§17</span><span class="s">§18</span><span class="s off">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="asynchronous-action-reference.card.html">card</a> · <a href="../../templates/asynchronous-action/AsynchronousAction.dc.html">standalone</a> · do/don't pairs in §04, §10, §14, §17 · status: frozen 7 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="RecoverableFailure.spec.html">Recoverable failure</a></h2><span class="parts">Reference: posting a shift's production confirmations</span><span class="parts">Alert, Button · optional Progress, Toast, Snackbar, Field, Input, Textarea, Select, List, Table, EmptyState, Badge</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> failure held as state with the context a valid retry needs, validation, emptiness, pending and operational failure kept as four separate categories in code as well as copy, preservation of every value and every succeeded part through the failure, recovery derived from current state and scoped by <code>retryScope</code>, one failure state replaced with an attempt count rather than stacked, the declared <code>repeatedFailure</code>, <code>failureFeedback</code>, <code>retrievalPreservation</code> and <code>retryBackoff</code> policies, an explicit non-recoverable case that offers a route instead of a retry, and clearance of failures whose condition has stopped being current.</li>
+      <li><strong>Refuses</strong> a region rebuilt on failure, an outage phrased as a mistake in the user's entries, an empty answer phrased as an error, a bare "Retry" of ambiguous scope, a retry that reposts work that already succeeded, a retry offered where repeating cannot change the outcome, stacked identical alerts, stale content presented as current, a timed toast carrying the only record of a failure, and a stale error left beside the state that has already superseded it.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s off">§16</span><span class="s">§17</span><span class="s">§18</span><span class="s off">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="recoverable-failure-reference.card.html">card</a> · <a href="../../templates/recoverable-failure/RecoverableFailure.dc.html">standalone</a> · do/don't pairs in §04, §08, §10, §14 · status: frozen 7 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="EvidenceAttachment.spec.html">Evidence attachment</a></h2><span class="parts">Reference: returning a calibrated bore gauge to service</span><span class="parts">FileUpload, Button · optional Field, Input, Alert</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> the relationship between an attachment set and the commit it gates: the gate itself as the conjunction of the set's aggregate status and the record's own validation, a blocked commit that always states its reason in adjacent text, one commit at a time, evidence and fields that never block each other, a commit that references uploaded files by id rather than re-uploading them, required-evidence status asserted immediately with its message deferred until the set is touched, three distinct failures (a file, the post, and an unknown outcome that claims neither), what survives each of them, and post-commit removal closed by default or recorded when a role may still do it.</li>
+      <li><strong>Refuses</strong> committing on the strength of a filename rather than the set's status, an upload mistaken for a save, a set-level spinner in place of per-file bars, silently discarding a failed file because evidence was optional, unrecorded removal after commit, a blind retry on an unknown outcome, and use for file imports, whose files are consumed rather than kept.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s off">§16</span><span class="s off">§17</span><span class="s">§18</span><span class="s">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="evidence-attachment-reference.card.html">card</a> · <a href="../../templates/evidence-attachment/EvidenceAttachment.dc.html">standalone</a> · do/don't pairs in §04, §09, §10 · status: frozen 7 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="DirectManipulationOfOrder.spec.html">Direct manipulation of order</a></h2><span class="parts">Reference: resequencing the routing of BRK-4820-A, and subcontracting one of its operations</span><span class="parts">List or Table, IconButton, Button · optional Badge, Tag, Alert, Snackbar, Progress, Menu, Select</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> order and membership as committed state that only a successful commit may write, a grab that records identity <em>and</em> origin index, a proposed index that always exists while grabbed and is never read downstream, drop legality declared as a local rule over candidate positions, an abandon with no side effects, the declared <code>commitTiming</code>, <code>rollbackTarget</code>, <code>dropLegality</code>, <code>transferAtomicity</code> and <code>announcementScope</code> policies, a keyboard grab that is the same operation through the same state machine, a refused move returned to its origin index and stated persistently, a transfer committed over both collections at once, and a resulting position announced in the collection's own terms.</li>
+      <li><strong>Refuses</strong> a canonical sequence mutated on drop, a grab that stores only the dragged id, a refused item dropped at the end of the collection, legality discovered on release when it was knowable before, optimism without the unconfirmed marking or the rollback, a keyboard path that skips the legality check, a handle that is a glyph on a div, hover-only affordances, a transfer that leaves an operation in neither collection, a blind retry of a sequence write whose outcome is unknown, reordering offered under a foreign sort, and "Order updated" as a result.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s">§16</span><span class="s">§17</span><span class="s">§18</span><span class="s off">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="direct-manipulation-of-order-reference.card.html">card</a> · <a href="../../templates/direct-manipulation-of-order/DirectManipulationOfOrder.dc.html">standalone</a> · do/don't pairs in §04, §10, §11, §14 · status: frozen 7 Sep 2026 · 0 open items — the mechanics were promoted to <a href="../composite/SortableCollection.spec.html">SortableCollection</a>; the commit, the optimism and the rollback stay here</p>
+  </div>
+</div>
+
+<div class="item">
+  <div class="head"><h2><a href="BulkDataImport.spec.html">Bulk data import</a></h2><span class="parts">Reference: importing a supplier catalogue into the PL-04 item master</span><span class="parts">FileUpload, Table, Select, Button, Alert, Progress · optional Badge, Icon</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Owns</strong> a file as the transaction rather than as evidence: a mapping from target field to source column that gates the judgement, a dry run that writes nothing and whose verdict is exactly what commits, that verdict held with the mapping signature it was computed under so staleness is an inequality rather than a flag, three separate levels of judgement (file, mapping, row) each reported where it can be acted on, partial acceptance as a success with a remainder rather than a partial failure, updates counted apart from creations under <code>upsert</code>, the declared <code>existingRecords</code>, <code>commitScope</code>, <code>mappingSource</code>, <code>previewStaleness</code> and <code>rejectDelivery</code> policies, a commit labelled with the number it will write and guarded by its own state transition, a part-way write resumed over the remainder only, and rejects delivered as an artifact the corrector can take away.</li>
+      <li><strong>Refuses</strong> importing on upload, a verdict that is only a count, a silently applied inference, a stale verdict committed anyway, "Import complete" over a partial acceptance, rejection styled as failure, a blind retry after a partial write, one progress bar spanning parse, judge and write, a mapping table keyed by source column so a missing required field is invisible, an unmapped source column dropped without a word, and a dry run whose endpoint reserves numbers — which makes it not a dry run.</li>
+    </ul>
+    <div class="secs">
+      <span class="s">§01</span><span class="s">§02</span><span class="s">§03</span><span class="s">§04</span><span class="s">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s">§08</span><span class="s">§09</span><span class="s">§10</span><span class="s off">§11</span><span class="s">§12</span><span class="s off">§13</span><span class="s">§14</span><span class="s off">§15</span><span class="s off">§16</span><span class="s">§17</span><span class="s">§18</span><span class="s">§19</span><span class="s">§20</span><span class="s off">§21</span>
+    </div>
+    <p class="parts">Reference implementation: <a href="bulk-data-import-reference.card.html">card</a> · <a href="../../templates/bulk-data-import/BulkDataImport.dc.html">standalone</a> · do/don't pairs in §04, §09, §10, §14 · status: frozen 8 Sep 2026 · 0 open items</p>
+  </div>
+</div>
+
+<p class="legend">Filled = included · outlined = omitted, with the reason stated at the foot of that spec. Numbers never renumber.<br>Candidates not yet written: optimistic update and reconciliation · progressive disclosure of detail · undo and reversal.<br>One composite came out of this set: <a href="../composite/SortableCollection.spec.html">SortableCollection</a>, the promoted mechanics of direct manipulation of order.</p>
+</div>
+</body></html>

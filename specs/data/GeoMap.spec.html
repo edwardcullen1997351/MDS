@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GeoMap · 14-Section Specification Standard</title>
+  <link rel="stylesheet" href="../../tokens/tokens.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+    }
+    body {
+      margin: 0;
+      padding: 40px 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .spec-container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .spec-header {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 24px;
+      margin-bottom: 36px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #a7f3d0;
+      margin-top: 8px;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      color: #0f172a;
+    }
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+    p, li {
+      font-size: 14px;
+      color: #334155;
+    }
+    ul, ol {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      background: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="spec-container">
+    <header class="spec-header">
+      <div class="badge">Data Visualization Standard · Component 12 of 12</div>
+      <h1>GeoMap Specification Standard</h1>
+      <div class="status-tag">
+        <span>✓</span> status: frozen 9 Sep 2026 · 0 open items
+      </div>
+    </header>
+
+    <!-- 1. Purpose & Analytical Intent -->
+    <section>
+      <h2>1. Purpose & Analytical Intent</h2>
+      <p>
+        The <code>GeoMap</code> component represents multi-dimensional datasets where geographic position, shape, distance, route, spatial topology, or territorial boundary is analytically meaningful. It serves to:
+      </p>
+      <ul>
+        <li><strong>Analyze Spatial Distributions:</strong> Identify geographic clustering of plants, vendors, OEM customers, and container ports.</li>
+        <li><strong>Examine Supply Chain Corridors:</strong> Evaluate multi-modal logistics flow volume, route transit duration, and bottleneck delays across highway/rail freight corridors.</li>
+        <li><strong>Territory & Regional Yield Benchmarking:</strong> Visualize state-level manufacturing dispatches, regional scrap rates, and production quotas via choropleth fills.</li>
+      </ul>
+    </section>
+
+    <!-- 2. Anatomy & Hierarchy -->
+    <section>
+      <h2>2. Anatomy & Hierarchy</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Element</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>Projection Engine</code></td>
+            <td>Mathematical Core</td>
+            <td>Translates spherical [Longitude, Latitude] coordinates into 2D SVG canvas [x, y] coordinates using Mercator or Equirectangular projections.</td>
+          </tr>
+          <tr>
+            <td><code>Region Polygons</code></td>
+            <td>Choropleth Layer</td>
+            <td>SVG path polygons representing territorial/state boundaries with fill values mapped to quantitative measures or status codes.</td>
+          </tr>
+          <tr>
+            <td><code>Hub Nodes</code></td>
+            <td>Proportional Symbols</td>
+            <td>Interactive markers placed at projected coordinates with semantic icons, capacity radii, status rings, and collision halos.</td>
+          </tr>
+          <tr>
+            <td><code>Freight Corridors</code></td>
+            <td>Flow Links</td>
+            <td>Curved quadratic bezier routes connecting source and target hubs with flow-weighted stroke widths, directional markers, and mode dashes.</td>
+          </tr>
+          <tr>
+            <td><code>Map Scale & Toolbar</code></td>
+            <td>Spatial Controls</td>
+            <td>Interactive zoom controls, pan gestures, search filter input, layer visibility toggles, and metric scale bar.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 3. Data Model & Input Contract -->
+    <section>
+      <h2>3. Data Model & Input Contract</h2>
+      <pre><code>export interface GeoRegion {
+  id: string;
+  name: string;
+  code?: string;
+  value?: number;
+  formattedValue?: string;
+  status?: 'nominal' | 'warning' | 'critical' | 'info';
+  category?: string;
+  d?: string; // SVG path data
+}
+
+export interface GeoHub {
+  id: string;
+  name: string;
+  type: 'plant' | 'vendor' | 'oem' | 'port' | 'warehouse' | 'station';
+  coordinates: [number, number]; // [lon, lat]
+  value?: number;
+  unit?: string;
+  status: 'nominal' | 'warning' | 'critical' | 'info';
+  city?: string;
+}
+
+export interface GeoRoute {
+  id: string;
+  source: string; // Hub id
+  target: string; // Hub id
+  flow: number;
+  unit?: string;
+  status: 'nominal' | 'warning' | 'critical' | 'info';
+  mode: 'road' | 'rail' | 'sea' | 'air';
+  transitHours?: number;
+  curvature?: number;
+}
+
+export interface GeoMapData {
+  regions?: GeoRegion[];
+  hubs?: GeoHub[];
+  routes?: GeoRoute[];
+}</code></pre>
+    </section>
+
+    <!-- 4. Visual Encoding & Aesthetics -->
+    <section>
+      <h2>4. Visual Encoding & Aesthetics</h2>
+      <ul>
+        <li><strong>Status Colors:</strong> Nominal (<code>#16a34a</code>), Warning (<code>#d97706</code>), Critical (<code>#dc2626</code>), Info (<code>#2563eb</code>).</li>
+        <li><strong>Non-Color Differentiation:</strong> Critical regions utilize 45° diagonal hatch patterns (<code>#hatch-critical</code>), and Warning regions utilize 45° dashed hatch patterns (<code>#hatch-warning</code>) to strictly satisfy WCAG 1.4.1.</li>
+        <li><strong>Corridor Weighting:</strong> Flow lines calculate stroke width using: <code>strokeWidth = max(2, min(6, (flow / 10000) * 2))</code> with 3px white halo backing for high contrast over land polygons.</li>
+        <li><strong>Hub Mark Elevation:</strong> Dropshadow filter (<code>feDropShadow</code>) and 2.5px white border halos ensure pin clarity on high-density displays.</li>
+      </ul>
+    </section>
+
+    <!-- 5. Included Variants -->
+    <section>
+      <h2>5. Included Variants</h2>
+      <ul>
+        <li><code>hybrid</code> (Default): Complete layered rendering displaying choropleth state boundaries, proportional hub nodes, and connecting freight corridors.</li>
+        <li><code>choropleth</code>: Emphasizes regional boundaries and territorial metrics (e.g. state scrap rate variance, regional dispatch quotas).</li>
+        <li><code>bubble</code>: Focuses exclusively on hub coordinates with radius scaled proportionally to facility throughput or capacity.</li>
+        <li><code>route</code>: High-contrast logistics corridor view mapping inter-facility freight transfers, transit times, and transport modes (rail dashed, road solid).</li>
+      </ul>
+    </section>
+
+    <!-- 6. Primitive & Core Component Composition -->
+    <section>
+      <h2>6. Primitive & Core Component Composition</h2>
+      <ul>
+        <li><strong>Primitives:</strong> <code>Box</code>, <code>Text</code>, <code>Heading</code>, <code>Surface</code>, <code>Container</code>.</li>
+        <li><strong>Core Components:</strong> <code>Tooltip</code> (hover contextual metadata), <code>Popover</code> (hub drilldowns), <code>Skeleton</code> (data loading placeholder), <code>EmptyState</code> (zero-match search results).</li>
+        <li><strong>Composite Components:</strong> <code>Toolbar</code> (zoom in, zoom out, reset view, layer toggles), <code>SearchField</code> (hub/route filter with auto-clear).</li>
+      </ul>
+    </section>
+
+    <!-- 7. Visualization-Native Elements & Engine Math -->
+    <section>
+      <h2>7. Visualization-Native Elements & Engine Math</h2>
+      <p>
+        The component incorporates Section 17 math from <code>viz-core.js</code>:
+      </p>
+      <ul>
+        <li><strong>Mercator Projection Engine:</strong> Converts spherical coordinates $[\lambda, \phi]$ to 2D plane:
+          <pre><code>x = (width / 2) + scale * (lambda - lambda0);
+y = (height / 2) - scale * (ln(tan(π / 4 + phi / 2)) - ln(tan(π / 4 + phi0 / 2)));</code></pre>
+        </li>
+        <li><strong>Quadratic Bezier Route Curves:</strong> Calculates normal offset midpoints to arc logistics corridors away from straight overlapping lines:
+          <pre><code>cx = mx + (-dy / dist) * dist * curvature;
+cy = my + (dx / dist) * dist * curvature;
+path = `M ${x0} ${y0} Q ${cx} ${cy} ${x1} ${y1}`;</code></pre>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 8. Interactive Behaviors & Gestures -->
+    <section>
+      <h2>8. Interactive Behaviors & Gestures</h2>
+      <ul>
+        <li><strong>Pan & Zoom:</strong> Drag anywhere on the land surface to pan; click <code>＋</code> / <code>－</code> buttons or double click to zoom from 0.6x to 3.5x.</li>
+        <li><strong>Live Filter:</strong> Typing in the search field dynamically isolates matching hubs and connecting corridors, dimming non-matching elements.</li>
+        <li><strong>Selection Highlight:</strong> Clicking any hub or corridor triggers an animated dashed selection ripple ring and isolates connected upstream/downstream lanes.</li>
+      </ul>
+    </section>
+
+    <!-- 9. Layout Templates & Responsiveness -->
+    <section>
+      <h2>9. Layout Templates & Responsiveness</h2>
+      <ul>
+        <li><strong>Split View / Master-Detail:</strong> Left-hand map viewport paired with right-hand facility telemetry inspection cards.</li>
+        <li><strong>Dashboard Layout:</strong> Fully responsive SVG <code>viewBox</code> maintaining aspect ratio across desktop (1080p, 1440p) and mobile tablet viewports.</li>
+      </ul>
+    </section>
+
+    <!-- 10. Accessibility (WCAG 2.2 AA & Section 508) -->
+    <section>
+      <h2>10. Accessibility (WCAG 2.2 AA & Section 508)</h2>
+      <ul>
+        <li><strong>WCAG 1.4.1 (Use of Color):</strong> Warning and Critical state polygons use distinctive SVG hatch line patterns in addition to color fills.</li>
+        <li><strong>Accessible Table (<kbd>Alt+F11</kbd>):</strong> Full accessible HTML data table modal exposing all facility names, coordinates, capacities, corridor flows, transit times, and status levels for screen readers.</li>
+        <li><strong>Keyboard Navigation:</strong> All hubs and corridors support keyboard focus ring (<code>outline: 2px solid #0284c7</code>) and Enter/Space trigger activation.</li>
+      </ul>
+    </section>
+
+    <!-- 11. State Matrix & Edge Cases -->
+    <section>
+      <h2>11. State Matrix & Edge Cases</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>Component Behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Empty Data / Zero Hubs</td>
+            <td>Renders base territorial polygon backdrop with an informative <code>EmptyState</code> overlay.</td>
+          </tr>
+          <tr>
+            <td>Co-located Hubs (Overlap)</td>
+            <td>Applies radial offset dispersion or cluster badges when two hubs share identical coordinates.</td>
+          </tr>
+          <tr>
+            <td>Missing Corridor Endpoints</td>
+            <td>Gracefully skips invalid routes without crashing SVG rendering thread.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 12. Performance & Rendering Budgets -->
+    <section>
+      <h2>12. Performance & Rendering Budgets</h2>
+      <ul>
+        <li><strong>Frame Budget:</strong> Smooth 60fps pan and zoom via CSS hardware-accelerated SVG group transforms.</li>
+        <li><strong>Bundle Budget:</strong> Zero heavy external mapping libraries (No Leaflet or Mapbox dependencies); pure React + SVG rendering under 25KB.</li>
+      </ul>
+    </section>
+
+    <!-- 13. Manufacturing Domain Implementation -->
+    <section>
+      <h2>13. Manufacturing Domain Implementation (Suryodaya Autocomp Ltd)</h2>
+      <ul>
+        <li><strong>Entity:</strong> Suryodaya Autocomp Ltd (Chakan Plant PL-04, Pune).</li>
+        <li><strong>Upstream Suppliers:</strong> Vijayanagar Steel Works (Bellary, KA) supplying hot-rolled steel coils via freight rail.</li>
+        <li><strong>OEM Clients:</strong> Sanand OEM Assembly (GJ), Chennai Auto Cluster (TN), and Manesar Powertrain (HR).</li>
+        <li><strong>Export Port:</strong> Nhava Sheva Container Terminal (JNPT, Navi Mumbai) via dedicated road freight corridor.</li>
+        <li><strong>Number Formatting:</strong> Strict <code>en-IN</code> formatting (e.g. <code>84,200 MT</code>, <code>14,200 TEU</code>).</li>
+      </ul>
+    </section>
+
+    <!-- 14. Verification & Validation Checklist -->
+    <section>
+      <h2>14. Verification & Validation Checklist</h2>
+      <ul>
+        <li>[x] Projection engine handles Mercator & Equirectangular conversions cleanly.</li>
+        <li>[x] Curved quadratic bezier routing implemented for freight logistics corridors.</li>
+        <li>[x] Layer visibility toggles (Regions, Hubs, Corridors) operate reactively.</li>
+        <li>[x] WCAG 1.4.1 hatch patterns active for warning/critical regions.</li>
+        <li>[x] Accessible spatial table modal bound to <kbd>Alt+F11</kbd>.</li>
+        <li>[x] Zero open items · Status frozen 9 Sep 2026.</li>
+      </ul>
+    </section>
+  </div>
+
+</body>
+</html>

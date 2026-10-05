@@ -1,0 +1,214 @@
+<!-- @dsCard group="Specs · Layouts" viewport="1080x760" name="Holy grail" subtitle="Full specification — a dominant centre between two lateral regions with independent purposes: what the frame owns, the order the two sides leave in, and the neighbour it is confused with" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Holy grail — layout template specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+.mock{padding:14px;display:flex;gap:10px;background:var(--background-page);min-height:150px}
+.mock.stack{flex-direction:column}
+.col{display:flex;flex-direction:column;gap:7px;min-width:0}
+.ml{font-size:10px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+.bar{height:8px;border-radius:3px;background:var(--surface-sunken);border:var(--border-hairline)}
+.bar.h{height:14px;background:var(--surface-card)}
+.blk{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:8px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:96ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Layout template</span>
+  <h1>Holy grail</h1>
+  <p class="lede">Anjali Deshmukh releases the week's press work at 09:40 on a Tuesday. Two different things decide what she releases and neither is the queue itself: the criteria that narrow it, and the capacity and material position that say whether what is left can actually be run. Those are not two halves of one panel — one is input to the queue, the other is a constraint on acting on it — and moving either off screen turns the decision into two screens and a memory. This layout is the frame for exactly that: a dominant central region flanked by two lateral regions with genuinely independent semantic purposes, optionally between a top and a bottom region.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/layout-template-spec-standard.card.html">Layout template spec standard §01–§14</a></span><span>Regions: 7 (3 required, 4 optional)</span><span>Reference implementation: <a href="holy-grail-reference.card.html">card</a> · <a href="../../templates/holy-grail/HolyGrail.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — press-shop work order release, week 2026-W37</span><span>Sections included: 10 of 14</span><span style="color:var(--text-primary)">status: frozen 8 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <p>Support a central primary workspace that simultaneously requires two different classes of lateral information or control. The established convention is precisely this — a central flexible region between two side regions, historically with a top and a bottom region around them — and the convention is worth keeping only where the two sides do different work. The test is <em>independent semantic purpose</em>: name what each lateral region is for in one clause without using the other's words. Criteria that narrow the queue, and constraints that gate acting on it, pass. Filters on the left and more filters on the right do not.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>Refinement controls on one side, the consequences of the refined set on the other — load, cost, exposure — with the collection in the centre.</li><li>A workspace where one side supplies what goes in and the other reports what the current state implies.</li><li>Two lateral regions each consulted repeatedly during the same task, where losing either costs a screen change.</li></ul></div>
+      <div class="pane dont"><h3>Not this layout</h3><ul><li><strong>One persistent secondary region.</strong> Use <a href="Sidebar.spec.html">sidebar</a>; a second column invented for symmetry is not a purpose.</li><li><strong>Three content groups.</strong> Having three things to show is not having two lateral roles.</li><li><strong>Global navigation + local navigation + content.</strong> Navigation-system architecture is outside this catalog and does not, by itself, call for this frame.</li><li><strong>A lateral collection whose selection replaces the centre.</strong> That is master–detail wearing three columns.</li></ul></div>
+    </div>
+    <p><strong>Applicable interaction patterns.</strong> <em>Primary:</em> none — the frame hosts patterns rather than implying one. <em>Supported:</em> <a href="../patterns/CollectionRefinement.spec.html">collection refinement</a>, <a href="../patterns/SearchResults.spec.html">search results</a>. Where refinement is the pattern, the leading region holds the criteria and the centre the collection; the criteria model, the counts and the clearing semantics stay the pattern's, and this frame adds only that a second, differently-purposed region stays beside them.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <table><thead><tr><th>#</th><th>Region</th><th>Requirement</th><th>What it owns</th></tr></thead><tbody>
+      <tr><td class="k">1</td><td class="k">Outer container</td><td>Required</td><td>The frame's outer measure and gutter, and the three-track body structure. One per screen; regions 2–6 are its children and nothing else is.</td></tr>
+      <tr><td class="k">2</td><td class="k">Top region</td><td>Optional</td><td>Spans the body. States the subject of the whole screen and owns the <code>h1</code>. If it is present it spans all three body regions — a top region over only part of the body is region 4's own header, not this region.</td></tr>
+      <tr><td class="k">3</td><td class="k">Leading region</td><td>Required</td><td>The first lateral region and its declared purpose, its width (§03), its persistence, and its own internal order. Its function is not prescribed: controls, criteria, reference, an index. It must be nameable in one clause.</td></tr>
+      <tr><td class="k">4</td><td class="k">Main region</td><td>Required</td><td>The dominant, flexible centre. Owns the usable-width floor (§13): it is the track that flexes, and it is never compressed so that both lateral regions can stay.</td></tr>
+      <tr><td class="k">5</td><td class="k">Trailing region</td><td>Required</td><td>The second lateral region, with a purpose independent of region 3's. Duplicating region 3's role here does not justify the template.</td></tr>
+      <tr><td class="k">6</td><td class="k">Bottom region</td><td>Optional</td><td>Spans the body. Where the screen's committing action or its running summary lives. Reserves its height whether or not it has anything to say, so the centre does not reflow when it fills.</td></tr>
+      <tr><td class="k">7</td><td class="k">Dividers</td><td>Optional</td><td>Clarify the two body boundaries where surface and gap do not. Never load-bearing: a frame legible only because of two rules has a spacing problem.</td></tr>
+    </tbody></table>
+    <p><strong>The centre stays dominant.</strong> Three regions in a row is the shape that most easily loses its subject: if the two lateral tracks together are wider than the centre, the screen no longer has a primary workspace and the reader cannot tell which region they are meant to be working in.</p>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — two roles, one dominant centre</div><div class="mock"><div class="col" style="flex:0 0 22%"><span class="ml">3 · criteria</span><div class="blk"><div class="bar"></div><div class="bar" style="width:70%"></div></div></div><div class="col" style="flex:1"><span class="ml">4 · the queue</span><div class="blk"><div class="bar h"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div><div class="col" style="flex:0 0 24%"><span class="ml">5 · capacity</span><div class="blk"><div class="bar"></div><div class="bar" style="width:60%"></div></div></div></div><div class="why">One side narrows the queue, the other says what releasing it would cost the shift. Neither can be described in the other's words, and the centre is wider than both together.</div></div>
+      <div class="no"><div class="cap">Don't — the same role twice</div><div class="mock"><div class="col" style="flex:0 0 30%"><span class="ml">3 · filters</span><div class="blk" style="border-color:var(--status-critical-border)"><div class="bar"></div><div class="bar" style="width:70%"></div></div></div><div class="col" style="flex:1"><span class="ml">4 · the queue</span><div class="blk"><div class="bar h"></div><div class="bar"></div></div></div><div class="col" style="flex:0 0 30%"><span class="ml">5 · more filters</span><div class="blk" style="border-color:var(--status-critical-border)"><div class="bar"></div><div class="bar" style="width:70%"></div></div></div></div><div class="why">Splitting one purpose across two sides makes the user hunt for which half a control is in, and the centre pays for both. That is a <a href="Sidebar.spec.html">sidebar</a> whose contents were not organised.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Properties</h2><span class="sec-note">Conditional — included: four choices change the frame's contract</span></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Values</th><th>Default</th><th>Effect</th></tr></thead><tbody>
+      <tr><td class="k">leadingWidth</td><td>fixed/bounded track · proportional</td><td>bounded, 280px</td><td>Fixed or bounded gives a stable region and hands surplus width to the centre — the default. Proportional (<code>minmax(240px, 0.24fr)</code>) only where the region's content genuinely scales with the viewport. Either way it carries a minimum, below which §11 displaces rather than squeezes.</td></tr>
+      <tr><td class="k">trailingWidth</td><td>fixed/bounded track · proportional</td><td>bounded, 320px</td><td>Set independently of the leading region: the two sides hold different material and there is no reason for them to be the same width. Symmetry here is a coincidence, not a rule.</td></tr>
+      <tr><td class="k">mainMinWidth</td><td>usable-width floor, px</td><td>560px</td><td>The measure below which the centre stops being a workspace. It is a declared number, not an outcome: it is what makes the §11 displacement mandatory rather than a judgement call, and it is expressed literally as the centre track's <code>minmax</code> floor (§13).</td></tr>
+      <tr><td class="k">lateralPersistence</td><td>per region: <code>persistent</code> · <code>collapsible</code></td><td>both <code>persistent</code></td><td>Persistent is the point of the frame. Collapsible is legitimate where the centre occasionally needs the full measure — a wide table, a drawing — and is then set per region, because the two sides are not equally dispensable. The control that hides a region must restore it and must say which state it is in (§08). Collapsed is a user state, never a shipped default. <strong>A close control inside a lateral region is admitted only where that region is <code>collapsible</code>, and only in addition to the toggle that restores it</strong> — a region set <code>persistent</code> carries no dismiss affordance at all, because the frame promises it is there. In the <code>Drawer</code> route, add none: <code>Drawer</code> owns its own close.</td></tr>
+    </tbody></table>
+    <p>Presence of the top region, the bottom region and the dividers is composition, not configuration. What either lateral region <em>contains</em> is not a property of this frame — only that the two purposes differ (§01).</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§06</span><h2>States</h2><span class="sec-note">Conditional — included: the frame holds states no component in it holds</span></div>
+  <div class="body">
+    <table><thead><tr><th>State</th><th>When</th><th>Contract</th></tr></thead><tbody>
+      <tr><td class="k">three-region</td><td>Wide width, both lateral regions persistent or expanded</td><td>All three body regions co-visible, centre dominant. The frame's normal state and the one it exists for.</td></tr>
+      <tr><td class="k">collapsed</td><td>A region set <code>collapsible</code>, user hid it</td><td>That region leaves the visual <em>and</em> accessibility trees — not merely hidden. Its toggle stays, reports <code>aria-expanded="false"</code>, and restores the region to the scroll and internal state it had. Held per region: one side collapsed is not both.</td></tr>
+      <tr><td class="k">displaced</td><td>Constrained width (§11), stacking route</td><td>A lateral region sits before or after the centre in one column — same region, same contents, same accessible name. Nothing about it is a different component.</td></tr>
+      <tr><td class="k">temporary</td><td>Constrained width (§11), <code>Drawer</code> route</td><td>A lateral region is reachable on request and closed by default. <code>Drawer</code> owns modality, focus trap and dismissal; the frame owns only that the trigger exists, is discoverable, names the region, and that closing loses nothing.</td></tr>
+    </tbody></table>
+    <p>The states are per lateral region, and the pair is not symmetric: the frame must be able to be in <em>trailing displaced, leading present</em> — that is the whole intermediate width — so an implementation that stores one flag for "lateral regions hidden" cannot express §11. Everything else on the screen belongs to the pattern in play; this frame neither holds nor coordinates it.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>Accessibility</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>DOM order is meaningful document order, not the visual left-to-right sweep.</strong> Order the regions as they are meant to be read: material used before acting precedes the centre, material about the centre's current state follows it. Where the two disagree, the reading order wins and the visual placement is achieved with tracks, never by re-ordering the markup.</li>
+      <li><strong>Every responsive form keeps a working order.</strong> The stacked form (§11) must read as a task, not as a column emptied top to bottom: criteria, then the work, then what the work implies. An order that is right at desk width and scrambled on a tablet is an unmet contract.</li>
+      <li><strong>Landmarks by role, names always.</strong> Region 4 is <code>main</code>. Regions 3 and 5 take <code>aside</code>, or <code>search</code>/<code>form</code> where that is genuinely what they are, and each carries an accessible name in every state — with two lateral regions, unnamed ones are indistinguishable from each other in a landmark list, which is the specific failure this frame invites.</li>
+      <li><strong>Bypass to the centre.</strong> When a lateral region precedes the centre in the document, the frame provides a discoverable way past it — a skip link, or the top region's own first control — so keyboard and screen-reader users are not walked through the criteria on every visit.</li>
+      <li><strong>A control that exposes a region says which region and what state.</strong> <code>aria-expanded</code> reflects whether that region is showing, and <code>aria-controls</code> names it <em>only while it is in the document</em>; when it is genuinely gone the attribute is omitted rather than left pointing at nothing. Label by content — "Show capacity and material", not "Toggle right panel".</li>
+      <li><strong>An in-region close is a shortcut, never the canonical control.</strong> A control inside a lateral region can hide it but cannot bring it back, so the toggle outside it remains the one that carries <code>aria-expanded</code> and <code>aria-controls</code>, and activating the in-region close moves focus to that toggle. A region dismissed with no focus destination and no visible way back is the collapsed-by-default failure (§12) arriving one interaction later.</li>
+      <li><strong>Heading levels run down the document, not across the tracks.</strong> The top region owns the <code>h1</code>; all three body regions start their own sections at <code>h2</code>. Lateral position is not hierarchy, and the centre being dominant does not make its heading a level higher.</li>
+      <li><strong>Each region scrolls to its own focus.</strong> Where a region owns its scroll (§13), focus moving into it must bring the focused control into view.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§09</span><h2>Motion</h2><span class="sec-note">Conditional — included: the frame's structure changes under §06</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Collapse and restore are the only motion this frame owns.</strong> A lateral region leaves and returns along its own axis — width, not opacity — so the centre visibly takes and gives back the space. A fade reads as content vanishing; a slide reads as a region moving.</li>
+      <li><strong>One region moves at a time.</strong> Animating both sides together turns a small change into the whole screen rearranging, and the centre's edges become impossible to track.</li>
+      <li><strong>Use the system's short duration and standard easing.</strong> Motion here is orientation, not expression.</li>
+      <li><strong>The <code>Drawer</code> route uses <code>Drawer</code>'s own enter and exit</strong>, and the frame underneath is not animated as well.</li>
+      <li><strong>Responsive displacement is not animated.</strong> A layout re-laying out at a breakpoint is not an event the user caused.</li>
+      <li><strong>The region leaves the document when the motion ends, not when it starts</strong> — mounted and <code>aria-hidden</code> on its way out, removed once the width reaches zero, so §06 and the animation do not contradict each other.</li>
+      <li><strong>Reduced motion:</strong> the region appears and disappears without transition and leaves the document in the same frame. Nothing in the contract depends on the animation.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Content rules</h2><span class="sec-note">Conditional — included: the frame only reads correctly if the two sides stay distinct</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Each lateral region's heading names its own role, in its own words.</strong> "Release criteria" and "Capacity and material" are two roles; "Filters" and "More" are one role and an apology. The headings are how a reader learns the frame has two sides on purpose.</li>
+      <li><strong>No control appears on both sides.</strong> A duplicated action or field is the first symptom that the two purposes have merged; move it to the side that owns the decision it belongs to.</li>
+      <li><strong>The centre names the subject the sides are about.</strong> The three regions share terminology — the same word for a work order, a line, a shift — because the reader is expected to carry a value across two boundaries without translating it.</li>
+      <li><strong>A lateral region reports; it does not become the work.</strong> If material in region 3 or 5 grows until it needs its own scroll, its own tabs and its own actions to be usable, it has stopped being lateral and the screen needs splitting.</li>
+      <li><strong>Truncation policy belongs to the sides, wrapping to the centre.</strong> Lateral regions are narrow by contract: their content must survive truncation with the meaning intact. The centre is where full values, long descriptions and wide tables are allowed to take the room.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§11</span><h2>Responsive</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Wide.</strong> All three body regions coexist. Surplus width goes to the centre; bounded lateral tracks do not grow with the viewport.</li>
+      <li><strong>Intermediate.</strong> One lateral region leaves the horizontal composition — stacked, conditionally presented, or in a <code>Drawer</code> — and the other stays. Which one leaves is decided by semantic importance to the task, declared once for the screen, and it is the same one every time.</li>
+      <li><strong>Constrained.</strong> Both lateral regions leave. The centre keeps priority and the full measure; the displaced regions keep the §08 reading order — the one read before acting above the centre, the one about the centre's state below it.</li>
+      <li><strong>The floor is the trigger.</strong> Displacement happens when the centre reaches <code>mainMinWidth</code>, not at a fashionable device width, and never by narrowing all three tracks together.</li>
+      <li><strong>Displacement is not a different layout.</strong> Same regions, same contents, same names, same order logic. A constrained-width side that loses half its content was two designs.</li>
+      <li><strong>Collapsible is a user choice, not a breakpoint.</strong> Do not hide a side at some width and call it responsive: that is displacement, and it follows the rules above.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — the less-used side leaves first</div><div class="mock"><div class="col" style="flex:0 0 28%"><span class="ml">3 · criteria</span><div class="blk"><div class="bar"></div><div class="bar" style="width:70%"></div></div></div><div class="col" style="flex:1"><span class="ml">4 · centre, still above its floor</span><div class="blk"><div class="bar h"></div><div class="bar"></div><div class="bar"></div></div></div></div><div class="why">On a tablet at the planning desk the criteria are touched every minute and the capacity read a few times an hour, so region 5 goes to a <code>Drawer</code> and region 3 stays. Priority is measured in use, not in position.</div></div>
+      <div class="no"><div class="cap">Don't — narrow all three</div><div class="mock"><div class="col" style="flex:0 0 30%"><span class="ml">3</span><div class="blk"><div class="bar" style="width:80%"></div></div></div><div class="col" style="flex:0 0 36%"><span class="ml">4 · below the floor</span><div class="blk" style="border-color:var(--status-critical-border)"><div class="bar h" style="width:90%"></div><div class="bar" style="width:70%"></div></div></div><div class="col" style="flex:0 0 30%"><span class="ml">5</span><div class="blk"><div class="bar" style="width:80%"></div></div></div></div><div class="why">Keeping the shape costs the work: nine table columns become a horizontal scroll, both sides go to three words a line, and the planner opens the queue in a second tab instead.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Anti-patterns</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Three columns because there are three content groups.</strong> The frame is justified by two independent lateral <em>roles</em>, not by a count of things to display.</li>
+      <li><strong>The same supplementary role on both sides.</strong> Filters left and filters right, context left and context right: one region's worth of material spread over two, and the centre paying for it.</li>
+      <li><strong>Reaching for it when one persistent secondary region is enough.</strong> Use <a href="Sidebar.spec.html">sidebar</a>. A second lateral region invented for balance is the most common way this frame is adopted wrongly.</li>
+      <li><strong>Treating global navigation + local navigation + content as this template.</strong> Navigation-system architecture is outside this catalog, and a nav shell is not a workspace frame.</li>
+      <li><strong>A lateral collection whose selection replaces the centre.</strong> That is master–detail; its contract — selection identity, correspondence, stale content, empty state — is specified nowhere here.</li>
+      <li><strong>Compressing the centre to keep both sides.</strong> Named again because it is the failure this layout actually ships with.</li>
+      <li><strong>Lateral regions wider, together, than the centre.</strong> The screen then has three peers and no subject.</li>
+      <li><strong>Both sides collapsed by default.</strong> A frame whose defining regions start hidden is a single column with two extra controls.</li>
+      <li><strong>Sides reachable only by scrolling past the centre.</strong> A region below a long table is not lateral information; it is a footer.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§13</span><h2>Implementation notes</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Three tracks, one declaration.</strong> Build the body with <code>Grid</code>/<code>GridItem</code>; <code>Container</code>, <code>Surface</code>, <code>Box</code>, <code>Stack</code> and <code>Divider</code> establish the regions and their boundaries. The lateral tracks are fixed or bounded lengths, the centre is <code>minmax(&lt;mainMinWidth&gt;, 1fr)</code>. That <code>minmax</code> is the §11 contract expressed as one value — without it the frame silently squeezes instead of displacing.</li>
+      <li><strong>All three tracks need <code>min-width: 0</code>.</strong> A wide table or a long part number in any region will otherwise push its track past the declared width and break the composition from inside — with three tracks this is three times as likely and much harder to see.</li>
+      <li><strong>Compose the track list from the regions that are present</strong>, rather than declaring three tracks and emptying one. An empty track still takes its width, and the centre never gets it back.</li>
+      <li><strong>Document order is authored, not arranged.</strong> Do not place regions with <code>order</code> or explicit grid lines against their DOM sequence; §08's reading order and the visual order must come from the same source.</li>
+      <li><strong>Independent scroll is opt-in and explicit.</strong> Either the page scrolls as one, or each region owns its own scroll container with its own height constraint. Three scroll contexts by accident is this frame's signature defect; two of them nested is unusable.</li>
+      <li><strong>A collapsible region's track sizes to its content</strong> (<code>auto</code>), so the region's own width transition moves the boundary. Animating <code>grid-template-columns</code> makes the frame's structure the animated thing.</li>
+      <li><strong>A sticky region sticks within its own track</strong>, never to the viewport, and never overlaps the centre or its own scroll. The bottom region, if it is anchored, reserves its height rather than covering the last row.</li>
+      <li><strong>The <code>Drawer</code> route is the same content mounted elsewhere</strong>, not a second implementation of the region. One component, two homes, or the copies drift within a release.</li>
+      <li><strong>The frame holds only §06's state</strong> — per-region collapse and drawer flags. Everything the regions contain holds its own state, and the layout passes nothing between them.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted">Omitted, with reasons — §04 Variants: one structural form; lateral widths, the centre's floor and per-region persistence are properties (§03), and the intermediate and constrained arrangements are §11 consequences, not standing choices. · §05 Sizes: no frame-level size classes; the tracks are §03 properties and everything else comes from the spacing and density tokens. · §07 Keyboard: the frame introduces no keyboard relationship between regions — focus runs in document order, the toggles are ordinary <code>Button</code>s, the bypass affordance is specified in §08 as an accessibility contract rather than a shortcut scheme, and the <code>Drawer</code> route's focus trap and restoration are <code>Drawer</code>'s own. · §14 Developer notes: nothing technical remains once §13 is written — no slot API, no routing or persistence responsibility beyond §06's per-region flags, no per-region data boundary.</p>
+<p class="omitted">Applies to: this layout template · Section set and include/omit tests: <a href="../../guidelines/layout-template-spec-standard.card.html">layout template spec standard</a> · Register: <a href="layouts.card.html">layouts index</a></p>
+</div>
+</body></html>

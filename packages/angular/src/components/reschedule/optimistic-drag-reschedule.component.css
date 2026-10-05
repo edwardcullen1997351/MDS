@@ -1,0 +1,376 @@
+/* ==========================================================================
+   OptimisticDragReschedule (§01–§14) - Angular
+   Drag-and-drop reschedule with optimistic execution and spring rebound
+   Strict Design Tokens — Zero Raw Hex Colors
+   ========================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.ds-drag-reschedule {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-global-space-4, 16px);
+  width: 100%;
+  font-family: var(--ds-global-fontFamily-sans, system-ui, sans-serif);
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+}
+
+.ds-drag-reschedule__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.ds-drag-reschedule__title {
+  margin: 0;
+  font-size: var(--ds-global-fontSize-base, 16px);
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+}
+
+.ds-drag-reschedule__subtitle {
+  margin: 4px 0 0 0;
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  color: var(--ds-semantic-color-text-secondary, #64748b);
+}
+
+/* Board & Columns */
+.ds-drag-reschedule__board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ds-global-space-4, 16px);
+  align-items: start;
+}
+
+.ds-drag-reschedule__col {
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  border-radius: var(--ds-global-radius-lg, 8px);
+  padding: var(--ds-global-space-3, 12px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-global-space-3, 12px);
+  min-height: 280px;
+  transition: all 0.2s ease;
+}
+
+.ds-drag-reschedule__col--dragover {
+  background: var(--ds-global-color-brand-50, #eff6ff);
+  border-color: var(--ds-semantic-color-action-primary-default, #2563eb);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.ds-drag-reschedule__col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--ds-global-space-2, 8px);
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+.ds-drag-reschedule__col-title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-drag-reschedule__col-name {
+  font-size: var(--ds-global-fontSize-sm, 13px);
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+}
+
+.ds-drag-reschedule__col-time {
+  font-size: 11px;
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+}
+
+.ds-drag-reschedule__col-capacity {
+  font-size: 11px;
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  font-weight: var(--ds-global-fontWeight-semibold, 600);
+  font-variant-numeric: tabular-nums;
+  padding: 2px 6px;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+}
+
+.ds-drag-reschedule__col-capacity--exceeded {
+  background: var(--ds-global-color-danger-50, #fef2f2);
+  color: var(--ds-global-color-danger-700, #b91c1c);
+  border-color: var(--ds-global-color-danger-500, #ef4444);
+}
+
+.ds-drag-reschedule__order-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-global-space-3, 12px);
+  flex: 1 1 auto;
+}
+
+.ds-drag-reschedule__empty-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  border: 2px dashed var(--ds-semantic-color-border-subtle, #e2e8f0);
+  border-radius: var(--ds-global-radius-md, 6px);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  text-align: center;
+  padding: 8px;
+}
+
+/* Order Cards */
+.ds-drag-order-card {
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  border-radius: var(--ds-global-radius-md, 6px);
+  padding: var(--ds-global-space-3, 12px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-global-space-2, 6px);
+  cursor: grab;
+  box-shadow: var(--ds-global-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+  touch-action: none;
+  position: relative;
+}
+
+.ds-drag-order-card:hover {
+  border-color: var(--ds-semantic-color-border-default, #cbd5e1);
+  box-shadow: var(--ds-global-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+}
+
+.ds-drag-order-card:focus-visible {
+  outline: 2px solid var(--ds-semantic-color-border-focus, #3b82f6);
+  outline-offset: 2px;
+}
+
+.ds-drag-order-card--dragging {
+  opacity: 0.45;
+  cursor: grabbing;
+}
+
+/* Optimistic & Confirmed States */
+.ds-drag-order-card--validating {
+  border-color: var(--ds-semantic-color-action-primary-default, #2563eb);
+  background: var(--ds-global-color-brand-50, #eff6ff);
+  cursor: wait;
+}
+
+.ds-drag-order-card--confirmed {
+  border-color: var(--ds-global-color-success-500, #22c55e);
+  animation: ds-confirmed-flash 0.8s ease;
+}
+
+@keyframes ds-confirmed-flash {
+  0% { box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.4); }
+  100% { box-shadow: var(--ds-global-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05)); }
+}
+
+/* Spring Bounce Back Animation on Validation Rebound */
+.ds-drag-order-card--rebounding {
+  animation: ds-rebound-bounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  border-color: var(--ds-global-color-danger-500, #ef4444);
+}
+
+@keyframes ds-rebound-bounce {
+  0% {
+    transform: scale(0.96) translateX(12px);
+    opacity: 0.8;
+  }
+  30% {
+    transform: scale(1.03) translateX(-8px);
+  }
+  60% {
+    transform: scale(0.99) translateX(4px);
+  }
+  85% {
+    transform: scale(1.01) translateX(-2px);
+  }
+  100% {
+    transform: scale(1) translateX(0);
+    opacity: 1;
+  }
+}
+
+.ds-drag-order-card--error {
+  border-color: var(--ds-global-color-danger-500, #ef4444);
+  background: var(--ds-global-color-danger-50, #fef2f2);
+}
+
+.ds-drag-order-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ds-drag-order-card__code {
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+  color: var(--ds-semantic-color-text-interactive, #2563eb);
+}
+
+.ds-drag-order-card__qty {
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+  font-variant-numeric: tabular-nums;
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+}
+
+.ds-drag-order-card__name {
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  font-weight: var(--ds-global-fontWeight-medium, 500);
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+  line-height: 1.35;
+}
+
+.ds-drag-order-card__line {
+  font-size: 11px;
+  color: var(--ds-semantic-color-text-secondary, #64748b);
+}
+
+/* Status Banners */
+.ds-drag-order-card__status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  font-size: 11px;
+  font-weight: var(--ds-global-fontWeight-semibold, 600);
+}
+
+.ds-drag-order-card__status--validating {
+  background: var(--ds-global-color-brand-50, #eff6ff);
+  color: var(--ds-semantic-color-action-primary-default, #2563eb);
+}
+
+.ds-drag-order-card__spinner {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--ds-semantic-color-action-primary-default, #2563eb);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: ds-spinner 0.6s linear infinite;
+}
+
+@keyframes ds-spinner {
+  to { transform: rotate(360deg); }
+}
+
+.ds-drag-order-card__status--confirmed {
+  background: var(--ds-global-color-success-50, #f0fdf4);
+  color: var(--ds-global-color-success-700, #15803d);
+}
+
+.ds-drag-order-card__error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  background: var(--ds-global-color-danger-50, #fef2f2);
+  border: 1px solid var(--ds-global-color-danger-500, #ef4444);
+  font-size: 11px;
+  color: var(--ds-global-color-danger-700, #b91c1c);
+  gap: 4px;
+}
+
+.ds-drag-order-card__error-text {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ds-drag-order-card__error-text span:last-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ds-drag-order-card__dismiss-btn {
+  background: transparent;
+  border: none;
+  color: var(--ds-global-color-danger-700, #b91c1c);
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 11px;
+}
+
+/* Quick Jump Shift Pills */
+.ds-drag-order-card__shift-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+.ds-drag-order-card__shift-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: var(--ds-global-fontWeight-semibold, 600);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+}
+
+.ds-drag-order-card__shift-btn {
+  min-width: 24px;
+  min-height: 24px;
+  padding: 2px 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  font-size: 11px;
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.ds-drag-order-card__shift-btn:hover:not(:disabled) {
+  background: var(--ds-global-color-brand-50, #eff6ff);
+  border-color: var(--ds-semantic-color-action-primary-default, #2563eb);
+  color: var(--ds-semantic-color-action-primary-default, #2563eb);
+}
+
+.ds-drag-order-card__shift-btn--active {
+  background: var(--ds-semantic-color-action-primary-default, #2563eb);
+  color: var(--ds-semantic-color-action-primary-text, #ffffff);
+  border-color: var(--ds-semantic-color-action-primary-default, #2563eb);
+}
+
+.ds-drag-order-card__shift-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .ds-drag-reschedule__board {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-drag-order-card,
+  .ds-drag-order-card--rebounding,
+  .ds-drag-reschedule__col {
+    animation: none !important;
+    transition: none !important;
+  }
+}

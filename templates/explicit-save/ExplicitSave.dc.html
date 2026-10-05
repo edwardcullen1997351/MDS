@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Explicit save" description="Interaction pattern reference implementation, set in a manufacturing ERP — changing the parameters of a routing operation at the Chakan plant: a draft that never touches the committed routing, cross-field validation before commit, cancel that restores, a documented rule for dismissal while dirty, and a commit failure that keeps every figure the engineer typed." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:1240px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/ExplicitSave.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+</div>
+<p style="margin:0;max-width:84ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note, the draft inspector at the foot, and the four tweaks under <span style="font-family:var(--font-mono)">Demo harness</span> — exists to make the contract visible. Committing is a timer standing in for the routing-revision call; the comment above it says what to replace. The four tweaks under <span style="font-family:var(--font-mono)">Pattern properties</span> are not harness: <span style="font-family:var(--font-mono)">surface</span>, <span style="font-family:var(--font-mono)">dismissalPolicy</span>, <span style="font-family:var(--font-mono)">cancelWhenDirty</span> and <span style="font-family:var(--font-mono)">postCommitDisposition</span> are the §05 policies an adopting team must declare.</p>
+<p style="margin:0;max-width:84ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Open an operation and change a figure: the routing table behind keeps reading revision 6 until a commit succeeds, and <span style="font-family:var(--font-mono)">Discard changes</span> puts nothing back because nothing was written. Press Escape or click the scrim while dirty to meet the <span style="font-family:var(--font-mono)">dismissalPolicy</span>. Put OP-40 on WC-VMC-02, or a scrap allowance above 2% with a check every 100 pieces, for an invalid draft that stays editable. Turn on <span style="font-family:var(--font-mono)">Routing service refuses the commit</span> and save — every field survives with a message that says the routing did not change. Turn on <span style="font-family:var(--font-mono)">Tool room revises the routing</span> for a commit that fails because the draft was opened against an older revision, and <span style="font-family:var(--font-mono)">Operation removed from the routing</span> for a subject withdrawn mid-edit. Try opening a second operation while one is open: the refusal is a sentence and focus goes back to the open draft, not a dead button. The drawer is deliberately non-modal, so the routing table beside it stays readable and operable — which is what makes that refusal, and the unchanged committed figures, visible while a draft is open. The <span style="font-family:var(--font-mono)">dialog</span> surface is modal, and is where scrim dismissal is exercised.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Process engineering · routing RTG-7310-B · Suryodaya Autocomp Ltd · Chakan plant (PL-04) · IST</span>
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">Routing operation parameters</h1>
+<p style="margin:0;max-width:82ch;color:var(--text-secondary);font-size:var(--text-sm);line-height:1.55">CRB-7310-B compressor bracket, machined — three operations, standard lot 480 pieces. Editing an operation opens a provisional copy of its parameters; the routing only changes when the engineer commits, and the commit writes a new revision with the change note attached.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px;padding:15px 18px;border-bottom:var(--border-hairline)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ revLine }}</span>
+<span style="font-size:var(--text-xs);color:var(--text-secondary);max-width:52ch;text-wrap:pretty">{{ editHeading }}</span>
+</div>
+
+<sc-if value="{{ hasNotices }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:10px;padding:15px 18px;border-bottom:var(--border-hairline)">
+<sc-for list="{{ notices }}" as="n" hint-placeholder-count="1">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ n.tone }}" title="{{ n.title }}" live="on" size="sm" action="{{ n.action }}" onDismiss="{{ n.onDismiss }}" hint-size="100%,96px">{{ n.body }}</x-import>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ saving }}" hint-placeholder-val="{{ false }}">
+<div style="padding:12px 18px;border-bottom:var(--border-hairline)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Progress" variant="bar" size="sm" label="{{ savingLabel }}" delay="{{ 150 }}" hint-size="100%,20px"></x-import>
+</div>
+</sc-if>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Table" caption="Routing RTG-7310-B operations, part CRB-7310-B" columns="{{ columns }}" rows="{{ rows }}" rowKey="id" minWidth="1060px" hint-size="100%,260px"></x-import>
+
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;border-top:var(--border-hairline);background:var(--surface-sunken)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ routingSummary }}</span>
+<div role="status" aria-live="polite" style="min-height:17px;font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty;max-width:66ch">{{ announcement }}</div>
+</div>
+</div>
+
+<sc-if value="{{ inlineOpen }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);padding:20px 22px">
+<div style="display:flex;flex-direction:column;gap:3px">
+<h2 style="margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em">{{ surfaceTitle }}</h2>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary)">{{ surfaceDescription }}</p>
+</div>
+<dc-import name="OperationFields" f="{{ fields }}" hint-size="100%,560px"></dc-import>
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;border-top:var(--border-hairline)">
+<span style="font-size:var(--text-xs);color:var(--text-secondary);max-width:56ch;text-wrap:pretty">{{ footerHint }}</span>
+<div style="display:flex;gap:8px">{{ footerButtons }}</div>
+</div>
+</div>
+</sc-if>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:12px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:15px 17px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Committed routing, draft &amp; commit state · remove on copy</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px 20px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="9">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:118px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;border-top:var(--border-hairline);padding-top:11px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Committed (canonical routing)</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ committedText }}</pre>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Draft (promoted only by a successful commit)</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ draftText }}</pre>
+</div>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">Dirty is derived by comparing the two columns field by field, plus any text in the change note — never from whether a control has been focused or has emitted a change event (§20). That derivation is why typing 60 back over 55 makes the draft clean again, and why dismissal stops asking.</p>
+</div>
+
+</div>
+</div>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Drawer" open="{{ drawerOpen }}" title="{{ surfaceTitle }}" description="{{ surfaceDescription }}" side="right" size="lg" modal="{{ false }}" dismissible="{{ dismissible }}" onClose="{{ onDismissAttempt }}" footer="{{ drawerFooter }}" hint-size="640px,100%">
+<dc-import name="OperationFields" f="{{ fields }}" hint-size="100%,560px"></dc-import>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Dialog" open="{{ dialogOpen }}" title="{{ surfaceTitle }}" description="{{ surfaceDescription }}" width="lg" dismissible="{{ dismissible }}" onClose="{{ onDismissAttempt }}" footer="{{ drawerFooter }}" hint-size="720px,600px">
+<dc-import name="OperationFields" f="{{ fields }}" hint-size="100%,560px"></dc-import>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Dialog" open="{{ confirmOpen }}" title="{{ confirmTitle }}" description="{{ confirmDescription }}" tone="danger" width="md" onClose="{{ keepEditing }}" footer="{{ confirmFooter }}" hint-size="520px,260px">
+<p style="margin:0;font-size:var(--text-sm);color:var(--text-secondary);line-height:1.55;text-wrap:pretty">{{ confirmBody }}</p>
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1300,&quot;height&quot;:980},&quot;surface&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;drawer&quot;,&quot;dialog&quot;,&quot;inline&quot;],&quot;default&quot;:&quot;drawer&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Editing surface&quot;},&quot;dismissalPolicy&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;guard&quot;,&quot;discard&quot;,&quot;block&quot;],&quot;default&quot;:&quot;guard&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Dismissal while dirty&quot;},&quot;cancelWhenDirty&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;immediate&quot;,&quot;confirm&quot;],&quot;default&quot;:&quot;immediate&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Cancel while dirty&quot;},&quot;postCommitDisposition&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;close&quot;,&quot;stay&quot;],&quot;default&quot;:&quot;close&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;After a successful commit&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:200,&quot;max&quot;:3000,&quot;step&quot;:100,&quot;default&quot;:900,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Routing-commit latency&quot;},&quot;commitFails&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Routing service refuses the commit&quot;},&quot;revisedElsewhere&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Tool room revises the routing&quot;},&quot;operationWithdrawn&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Operation removed from the routing&quot;}}">
+// Routing RTG-7310-B, part CRB-7310-B (compressor bracket, machined), PL-04.
+// `rate` is the work centre's machine rate in rupees per hour; the standard
+// lot is 480 pieces.
+const ROUTING = { part: 'CRB-7310-B', desc: 'Compressor bracket, machined', id: 'RTG-7310-B', lot: 480 };
+const OPS = [
+  { id: 'OP-20', name: 'Rough mill faces', bore: false },
+  { id: 'OP-40', name: 'Finish bore \u00d862 H7', bore: true },
+  { id: 'OP-60', name: 'Deburr and wash', bore: false }
+];
+const COMMITTED = {
+  'OP-20': { wc: 'WC-CNC-01', setup: 45, cycle: 96, operators: 1, insp: 120, scrap: 1.5, fpa: false },
+  'OP-40': { wc: 'WC-CNC-04', setup: 60, cycle: 132, operators: 1, insp: 50, scrap: 2, fpa: true },
+  'OP-60': { wc: 'WC-DBR-02', setup: 15, cycle: 38, operators: 2, insp: 240, scrap: 0.5, fpa: false }
+};
+const CENTRES = [
+  { value: 'WC-CNC-01', label: 'WC-CNC-01 \u00b7 Mazak HCN-5000', rate: 1450, qualifiedForBore: true },
+  { value: 'WC-CNC-04', label: 'WC-CNC-04 \u00b7 Doosan NHP-5000', rate: 1650, qualifiedForBore: true },
+  { value: 'WC-VMC-02', label: 'WC-VMC-02 \u00b7 Bharat VMC 850', rate: 980, qualifiedForBore: false },
+  { value: 'WC-DBR-02', label: 'WC-DBR-02 \u00b7 Deburr and wash bench', rate: 420, qualifiedForBore: false }
+];
+const FIELD_LABEL = { wc: 'work centre', setup: 'setup time', cycle: 'cycle time', operators: 'operators', insp: 'inspection frequency', scrap: 'scrap allowance', fpa: 'first-piece approval', note: 'change note' };
+const ORDER = ['wc', 'setup', 'cycle', 'operators', 'insp', 'scrap', 'fpa', 'note'];
+const M = () => window.MeridianDesignSystem_962c43 || {};
+const opOf = id => OPS.find(o => o.id === id);
+const centreOf = v => CENTRES.find(c => c.value === v) || CENTRES[0];
+const inr = n => '\u20b9' + Math.round(n).toLocaleString('en-IN');
+const mins = n => (Math.round(n * 10) / 10).toLocaleString('en-IN') + ' min';
+const S = v => String(v);
+
+class Component extends DCLogic {
+  state = {
+    committed: JSON.parse(JSON.stringify(COMMITTED)),  // canonical routing values
+    present: OPS.map(o => o.id),                       // operations still on the routing
+    withdrawn: null,                                   // { id, why, draft } — subject removed mid-edit
+    rev: 6,                                            // routing revision
+    revisedBy: null,                                   // who moved it under us
+    editing: null,                                     // { id, draft, baseRev }
+    saving: null,                                      // { id, values, req }
+    commitError: null,                                 // { id, why, stale }
+    success: null,                                     // { id, rev }
+    confirm: null,                                     // { reason: 'dismiss' | 'cancel' }
+    announcement: '',
+    commits: 0
+  };
+  req = 0;
+
+  policy(name, fallback) { return this.props[name] || fallback; }
+  surface() { return this.policy('surface', 'drawer'); }
+
+  draftFrom(c) {
+    return { wc: c.wc, setup: S(c.setup), cycle: S(c.cycle), operators: S(c.operators), insp: S(c.insp), scrap: S(c.scrap), fpa: !!c.fpa, note: '' };
+  }
+
+  // Dirty is DERIVED: committed values against draft values, field by field,
+  // plus any text in the change note (a field with no committed counterpart,
+  // which exists only for the commit). Never a touched flag (§20).
+  dirty() {
+    const e = this.state.editing;
+    if (!e) return [];
+    const c = this.state.committed[e.id], d = e.draft, out = [];
+    if (d.wc !== c.wc) out.push('wc');
+    if (d.setup.trim() !== S(c.setup)) out.push('setup');
+    if (d.cycle.trim() !== S(c.cycle)) out.push('cycle');
+    if (d.operators !== S(c.operators)) out.push('operators');
+    if (d.insp.trim() !== S(c.insp)) out.push('insp');
+    if (d.scrap.trim() !== S(c.scrap)) out.push('scrap');
+    if (d.fpa !== !!c.fpa) out.push('fpa');
+    if (d.note.trim() !== '') out.push('note');
+    return out;
+  }
+
+  // Validation runs over the whole draft in one pass, so cross-field rules read
+  // one snapshot (§09). It is only a gate on the commit, never on typing.
+  problems() {
+    const e = this.state.editing;
+    if (!e) return {};
+    const d = e.draft, op = opOf(e.id), p = {};
+    const whole = (v) => /^\d+$/.test(String(v).trim()) ? Number(String(v).trim()) : NaN;
+    const setup = whole(d.setup);
+    if (Number.isNaN(setup)) p.setup = 'Whole minutes.';
+    else if (setup < 5 || setup > 240) p.setup = 'Between 5 and 240 minutes.';
+    const cycle = whole(d.cycle);
+    if (Number.isNaN(cycle)) p.cycle = 'Whole seconds per piece.';
+    else if (cycle < 5 || cycle > 3600) p.cycle = 'Between 5 and 3,600 seconds.';
+    const insp = whole(d.insp);
+    if (Number.isNaN(insp)) p.insp = 'Whole pieces.';
+    else if (insp < 1 || insp > ROUTING.lot) p.insp = 'Between 1 and the lot of ' + ROUTING.lot + ' pieces.';
+    const scrap = /^\d+(\.\d)?$/.test(d.scrap.trim()) ? Number(d.scrap.trim()) : NaN;
+    if (Number.isNaN(scrap)) p.scrap = 'A percentage, one decimal at most.';
+    else if (scrap < 0 || scrap > 5) p.scrap = 'Between 0 and 5 per cent.';
+    // Cross-field: a loose scrap allowance has to be caught sooner.
+    if (!p.scrap && !p.insp && scrap > 2 && insp > 50) p.insp = 'A scrap allowance of ' + scrap + '% needs a check every 50 pieces or fewer. Currently every ' + insp + '.';
+    // Cross-field: an unqualified centre may run the bore only under
+    // first-piece approval.
+    if (op.bore && !centreOf(d.wc).qualifiedForBore && !d.fpa) p.fpa = d.wc + ' is not qualified for H7 bores. Quality must approve the first piece, or choose a qualified centre.';
+    if (this.dirty().length && d.note.trim().length < 15) p.note = 'Say what is changing and who asked \u2014 at least 15 characters. ' + d.note.trim().length + ' so far.';
+    return p;
+  }
+
+  focusField(key) { setTimeout(() => { const el = document.querySelector('[data-fld="' + key + '"]'); if (el) el.focus({ preventScroll: true }); }, 40); }
+  focusEntry(id) { setTimeout(() => { const el = document.querySelector('[data-edit-for="' + id + '"]'); if (el) el.focus({ preventScroll: true }); }, 40); }
+
+  // Entering editing seeds the draft FROM the committed values and records the
+  // revision it was opened against.
+  open = (id) => {
+    if (this.state.saving) return;
+    const e = this.state.editing;
+    // One draft boundary at a time: refused in words, with focus returned to
+    // the open subject (§18) — never a disabled control that announces nothing.
+    if (e && e.id !== id) {
+      this.setState({ announcement: e.id + ' is still open' + (this.dirty().length ? ' with unsaved changes' : '') + '. Save or discard it before editing ' + id + '.' });
+      this.focusField('wc');
+      return;
+    }
+    if (e && e.id === id) { this.focusField('wc'); return; }
+    const c = this.state.committed[id];
+    this.setState({
+      editing: { id, draft: this.draftFrom(c), baseRev: this.state.rev },
+      commitError: null, success: null, confirm: null,
+      announcement: 'Editing ' + id + ' \u00b7 ' + opOf(id).name + '. The routing still holds revision ' + this.state.rev + ' until you save.'
+    });
+    this.focusField('wc');
+  };
+
+  change = (key, value) => {
+    const e = this.state.editing;
+    if (!e) return;
+    this.setState({ editing: { id: e.id, baseRev: e.baseRev, draft: Object.assign({}, e.draft, { [key]: value }) } });
+  };
+
+  // Cancel restores the committed values by discarding the draft — the
+  // committed values were never written to.
+  discard = (why) => {
+    const e = this.state.editing;
+    if (!e) return;
+    const n = this.dirty().length;
+    this.setState({
+      editing: null, confirm: null, commitError: null,
+      announcement: (why === 'dismiss' ? 'Editing ' + e.id + ' dismissed. ' : 'Changes to ' + e.id + ' discarded. ') + (n ? n + ' changed ' + (n === 1 ? 'field was' : 'fields were') + ' thrown away; ' : '') + 'the routing still reads revision ' + this.state.rev + '.'
+    });
+    this.focusEntry(e.id);
+  };
+
+  cancel = () => {
+    if (this.state.saving) return;
+    if (this.dirty().length && this.policy('cancelWhenDirty', 'immediate') === 'confirm') { this.askConfirm('cancel'); return; }
+    this.discard('cancel');
+  };
+
+  // Escape, the scrim and the close control all arrive here. One rule, declared
+  // by dismissalPolicy — never a coin toss between commit and discard (§04).
+  onDismissAttempt = () => {
+    if (this.state.saving) return;
+    if (!this.state.editing) return;
+    if (!this.dirty().length) { this.discard('dismiss'); return; }
+    const policy = this.policy('dismissalPolicy', 'guard');
+    if (policy === 'discard') { this.discard('dismiss'); return; }
+    if (policy === 'block') { this.setState({ announcement: 'Escape and the scrim are inert while ' + this.state.editing.id + ' has unsaved changes. Save the changes or discard them.' }); return; }
+    this.askConfirm('dismiss');
+  };
+
+  askConfirm = (reason) => {
+    this.setState({ confirm: { reason }, announcement: 'Unsaved changes to ' + this.state.editing.id + '. Choose whether to keep editing or discard them.' });
+    setTimeout(() => { const el = document.querySelector('[data-keeps-editing="1"]'); if (el) el.focus({ preventScroll: true }); }, 40);
+  };
+  keepEditing = () => {
+    const e = this.state.editing;
+    this.setState({ confirm: null, announcement: 'Still editing ' + (e ? e.id : '') + '. Nothing was discarded.' });
+    this.focusField('wc');
+  };
+
+  save = () => {
+    const e = this.state.editing;
+    if (!e || this.state.saving) return;              // single-shot at the transition
+    const dirty = this.dirty();
+    if (!dirty.length) {
+      this.setState({ announcement: 'Nothing to save \u2014 ' + e.id + ' matches routing revision ' + this.state.rev + '.' });
+      return;
+    }
+    const p = this.problems();
+    const first = ORDER.find(k => p[k]);
+    if (first) {
+      this.setState({ announcement: e.id + ' was not saved: ' + Object.values(p).join(' ') + ' Everything you typed is still here.' });
+      this.focusField(first);
+      return;
+    }
+    const d = e.draft;
+    this.commit({ wc: d.wc, setup: Number(d.setup), cycle: Number(d.cycle), operators: Number(d.operators), insp: Number(d.insp), scrap: Number(d.scrap), fpa: !!d.fpa, note: d.note.trim() });
+  };
+
+  commit(values) {
+    const e = this.state.editing;
+    const req = ++this.req;
+    this.setState({ saving: { id: e.id, values, req }, commitError: null, announcement: 'Saving ' + e.id + ' to a new routing revision\u2026' });
+    // REPLACE: stands in for the routing-revision call —
+    //   POST /api/routings/RTG-7310-B/operations/{id} { ...values, baseRev }
+    // Canonical values are written only from its success (§20).
+    setTimeout(() => {
+      if (req !== this.req) return;                   // superseded by a newer commit
+      const cur = this.state.editing;
+      if (!cur || cur.id !== e.id) { this.setState({ saving: null }); return; }
+      if (!this.state.present.includes(e.id)) { this.setState({ saving: null }); return; }
+      if (this.props.commitFails) {
+        this.setState({
+          saving: null,
+          commitError: { id: e.id, stale: false, why: 'The routing service refused the commit \u2014 RTG-7310-B is checked out to Priya Iyer (tool room) for the die-change study.' },
+          announcement: e.id + ' was NOT saved. The routing still holds revision ' + this.state.rev + '; every figure you typed is still in the form.'
+        });
+        this.focusField('wc');
+        return;
+      }
+      if (cur.baseRev !== this.state.rev) {
+        this.setState({
+          saving: null,
+          commitError: { id: e.id, stale: true, why: 'You opened this operation against revision ' + cur.baseRev + ' and the routing is now at revision ' + this.state.rev + ', revised by ' + (this.state.revisedBy || 'someone else') + '. Committing would overwrite that revision blind.' },
+          announcement: e.id + ' was NOT saved: the routing moved to revision ' + this.state.rev + ' while you were editing. Your figures are kept.'
+        });
+        return;
+      }
+      const rev = this.state.rev + 1;
+      const committed = Object.assign({}, this.state.committed, { [e.id]: { wc: values.wc, setup: values.setup, cycle: values.cycle, operators: values.operators, insp: values.insp, scrap: values.scrap, fpa: values.fpa } });
+      const stay = this.policy('postCommitDisposition', 'close') === 'stay';
+      this.setState(s => ({
+        committed, rev, revisedBy: null, saving: null, commitError: null,
+        success: { id: e.id, rev },
+        commits: s.commits + 1,
+        editing: stay ? { id: e.id, baseRev: rev, draft: this.draftFrom(committed[e.id]) } : null,
+        announcement: e.id + ' saved as routing revision ' + rev + '. ' + (stay ? 'Still open, now clean against revision ' + rev + '.' : 'The form is closed and the routing table shows the new parameters.')
+      }));
+      if (stay) this.focusField('wc'); else this.focusEntry(e.id);
+    }, this.props.latency ?? 900);
+  }
+
+  retry = () => this.save();
+  takeRevision = () => {
+    const e = this.state.editing;
+    if (!e) return;
+    this.setState({
+      editing: { id: e.id, baseRev: this.state.rev, draft: this.draftFrom(this.state.committed[e.id]) },
+      commitError: null,
+      announcement: 'Your figures for ' + e.id + ' were discarded and the form reloaded from revision ' + this.state.rev + '.'
+    });
+    this.focusField('wc');
+  };
+  dismissSuccess = () => this.setState({ success: null });
+  dismissWithdrawn = () => this.setState({ withdrawn: null });
+
+  componentDidUpdate(prev) {
+    // Harness: process engineering deletes the operation being edited.
+    if (this.props.operationWithdrawn && !prev.operationWithdrawn) {
+      const e = this.state.editing;
+      if (!e) { this.setState({ announcement: 'Nothing open \u2014 open an operation, then turn the tweak on.' }); return; }
+      this.req++;                                       // orphan any commit in flight
+      this.setState(s => ({
+        present: s.present.filter(x => x !== e.id),
+        rev: s.rev + 1,
+        editing: null, saving: null, commitError: null, confirm: null, success: null,
+        withdrawn: { id: e.id, why: 'Removed from routing ' + ROUTING.id + ' at revision ' + (s.rev + 1) + ' by Priya Iyer (tool room) \u2014 the bore is now finished in one pass at OP-20.', draft: e.draft },
+        announcement: e.id + ' was removed from the routing while you were editing it. Your figures were not committed and cannot be \u2014 the operation they belonged to is gone.'
+      }));
+      return;
+    }
+    // Harness: the tool room commits its own revision while a draft is open.
+    if (this.props.revisedElsewhere && !prev.revisedElsewhere) {
+      if (!this.state.editing) { this.setState({ announcement: 'Nothing open \u2014 open an operation, then turn the tweak on.' }); return; }
+      const other = OPS.find(o => o.id !== this.state.editing.id).id;
+      const c = this.state.committed[other];
+      this.setState(s => ({
+        rev: s.rev + 1, revisedBy: 'Priya Iyer (tool room)',
+        committed: Object.assign({}, s.committed, { [other]: Object.assign({}, c, { setup: c.setup + 10 }) }),
+        announcement: 'Routing RTG-7310-B moved to revision ' + (s.rev + 1) + ' \u2014 ' + other + ' revised by Priya Iyer. Your draft is untouched; saving it will report the conflict.'
+      }));
+    }
+  }
+
+  componentDidMount() { this.setState({ announcement: 'Three operations on revision 6. Open one to change its parameters.' }); }
+
+  renderVals() {
+    const s = this.state, C = M(), e = s.editing;
+    const surface = this.surface();
+    const dirty = this.dirty();
+    const p = e ? this.problems() : {};
+    const busy = !!s.saving;
+    const btn = (props, label) => C.Button ? React.createElement(C.Button, props, label) : null;
+    const effect = (v) => {
+      const c = centreOf(v.wc);
+      const minutes = Number(v.setup) + (Number(v.cycle) * ROUTING.lot) / 60;
+      return Number.isFinite(minutes) ? mins(minutes) + ' \u00b7 ' + inr((minutes / 60) * c.rate) + ' at ' + inr(c.rate) + '/hr' : '\u2014';
+    };
+    const committedNow = e ? s.committed[e.id] : null;
+
+    return {
+      revLine: 'Routing ' + ROUTING.id + ' \u00b7 revision ' + s.rev + ' \u00b7 part ' + ROUTING.part + ' \u00b7 standard lot ' + ROUTING.lot + ' pcs',
+      editHeading: e
+        ? e.id + ' open for editing \u00b7 ' + (dirty.length ? dirty.length + ' changed ' + (dirty.length === 1 ? 'field' : 'fields') + ' held as a draft \u2014 the routing is unchanged' : 'no changes yet \u2014 the draft matches revision ' + s.rev)
+        : 'All three operations committed \u00b7 ' + (surface === 'inline' ? 'editing opens a panel below the table' : 'editing opens ' + (surface === 'dialog' ? 'a dialog' : 'a drawer')),
+      columns: [
+        { key: 'id', header: 'Op', width: '84px', mono: true },
+        { key: 'name', header: 'Operation', width: '186px' },
+        { key: 'wc', header: 'Work centre', mono: true, width: '134px' },
+        { key: 'setup', header: 'Setup', align: 'right', mono: true, width: '90px', render: (row) => s.committed[row.id].setup + ' min' },
+        { key: 'cycle', header: 'Cycle', align: 'right', mono: true, width: '104px', render: (row) => s.committed[row.id].cycle + ' s/pc' },
+        { key: 'operators', header: 'Operators', align: 'right', mono: true, width: '96px', render: (row) => S(s.committed[row.id].operators) },
+        { key: 'insp', header: 'Check every', align: 'right', mono: true, width: '112px', render: (row) => s.committed[row.id].insp + ' pcs' },
+        { key: 'scrap', header: 'Scrap', align: 'right', mono: true, width: '82px', render: (row) => s.committed[row.id].scrap + '%' },
+        { key: 'fpa', header: 'FPA', width: '78px', render: (row) => s.committed[row.id].fpa ? 'yes' : 'no' },
+        { key: 'state', header: 'Row', width: '112px', render: (row) => {
+            if (!C.Badge) return '';
+            if (s.saving && s.saving.id === row.id) return React.createElement(C.Badge, { tone: 'accent', size: 'sm', dot: true }, 'saving');
+            if (s.commitError && s.commitError.id === row.id) return React.createElement(C.Badge, { tone: 'critical', size: 'sm', dot: true }, 'not saved');
+            if (e && e.id === row.id) {
+              if (dirty.length && Object.keys(p).length) return React.createElement(C.Badge, { tone: 'critical', size: 'sm', dot: true }, 'invalid draft');
+              if (dirty.length) return React.createElement(C.Badge, { tone: 'warning', size: 'sm', dot: true }, 'unsaved draft');
+              return React.createElement(C.Badge, { tone: 'warning', size: 'sm', dot: true }, 'editing');
+            }
+            return React.createElement(C.Badge, { tone: 'neutral', size: 'sm' }, 'rev ' + s.rev);
+          } },
+        { key: 'actions', header: 'Actions', width: '132px', render: (row) => btn({
+            variant: 'ghost', size: 'sm', type: 'button', disabled: busy,
+            'aria-label': 'Edit the parameters of ' + row.id + ' ' + row.name, 'data-edit-for': row.id,
+            onClick: () => this.open(row.id)
+          }, e && e.id === row.id ? 'Editing' : 'Edit parameters') }
+      ],
+      rows: OPS.filter(o => s.present.includes(o.id)).map(o => Object.assign({}, o, { wc: s.committed[o.id].wc })),
+
+      surfaceTitle: e ? e.id + ' \u00b7 ' + opOf(e.id).name : '',
+      surfaceDescription: e ? ROUTING.part + ' \u00b7 routing ' + ROUTING.id + ' revision ' + e.baseRev + ' \u00b7 nothing here changes the routing until you save' : '',
+      drawerOpen: !!e && surface === 'drawer',
+      dialogOpen: !!e && surface === 'dialog',
+      inlineOpen: !!e && surface === 'inline',
+      dismissible: !(this.policy('dismissalPolicy', 'guard') === 'block' && dirty.length > 0),
+      onDismissAttempt: this.onDismissAttempt,
+
+      fields: e ? {
+        workCentres: CENTRES.map(c => ({ value: c.value, label: c.label })),
+        operatorOptions: ['1', '2', '3'],
+        wc: e.draft.wc, setup: e.draft.setup, cycle: e.draft.cycle, operators: e.draft.operators,
+        insp: e.draft.insp, scrap: e.draft.scrap, fpa: e.draft.fpa, note: e.draft.note,
+        onWc: (ev) => this.change('wc', ev.target.value),
+        onSetup: (ev) => this.change('setup', ev.target.value),
+        onCycle: (ev) => this.change('cycle', ev.target.value),
+        onOperators: (ev) => this.change('operators', ev.target.value),
+        onInsp: (ev) => this.change('insp', ev.target.value),
+        onScrap: (ev) => this.change('scrap', ev.target.value),
+        onFpa: (ev) => this.change('fpa', ev.target.checked),
+        onNote: (ev) => this.change('note', ev.target.value),
+        errWc: p.wc, errSetup: p.setup, errCycle: p.cycle, errOperators: p.operators,
+        errInsp: p.insp, errScrap: p.scrap, errFpa: p.fpa, errNote: p.note,
+        inspHint: 'One check every n pieces \u00b7 lot is ' + ROUTING.lot,
+        busy: busy,
+        baseRev: e.baseRev,
+        committedEffect: effect(committedNow),
+        draftEffect: effect(e.draft),
+        dirtySentence: dirty.length
+          ? dirty.length + ' changed ' + (dirty.length === 1 ? 'field' : 'fields') + ': ' + dirty.map(k => FIELD_LABEL[k]).join(', ') + '. The routing still holds revision ' + e.baseRev + ' \u2014 saving writes revision ' + (s.rev + 1) + '.'
+          : 'No changes yet. The draft matches revision ' + e.baseRev + ' exactly, so there is nothing to save and nothing to discard.'
+      } : null,
+
+      footerHint: e
+        ? (busy ? 'Committing \u2014 the routing changes only if this succeeds.'
+          : dirty.length
+            ? (Object.keys(p).length ? 'Correct the marked fields to save. Discarding does not require them to be valid.' : 'Save writes revision ' + (s.rev + 1) + ' with your change note. Discard restores revision ' + e.baseRev + '.')
+            : 'Nothing to save yet \u2014 change a parameter first.')
+        : '',
+      footerButtons: e ? [
+        btn({ key: 'cancel', variant: 'ghost', size: 'sm', type: 'button', disabled: busy, 'aria-label': 'Discard the changes to ' + e.id + ' and keep routing revision ' + e.baseRev, onClick: this.cancel }, dirty.length ? 'Discard changes' : 'Close'),
+        btn({ key: 'save', variant: 'primary', size: 'sm', type: 'button', disabled: busy || !dirty.length, 'aria-label': 'Save the changes to ' + e.id + ' as routing revision ' + (s.rev + 1), onClick: this.save }, busy ? 'Saving\u2026' : 'Save changes')
+      ] : null,
+      drawerFooter: e ? React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' } },
+        React.createElement('span', { key: 'h', style: { fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', lineHeight: 1.5 } },
+          busy ? 'Committing \u2014 the routing changes only if this succeeds.'
+            : dirty.length
+              ? (Object.keys(p).length ? 'Correct the marked fields to save. Discarding does not require them to be valid.' : 'Save writes revision ' + (s.rev + 1) + ' with your change note. Discard restores revision ' + e.baseRev + '.')
+              : 'Nothing to save yet \u2014 change a parameter first.'),
+        React.createElement('div', { key: 'b', style: { display: 'flex', gap: '8px', justifyContent: 'flex-end' } },
+          btn({ key: 'cancel', variant: 'ghost', size: 'sm', type: 'button', disabled: busy, 'aria-label': 'Discard the changes to ' + e.id + ' and keep routing revision ' + e.baseRev, onClick: this.cancel }, dirty.length ? 'Discard changes' : 'Close'),
+          btn({ key: 'save', variant: 'primary', size: 'sm', type: 'button', disabled: busy || !dirty.length, 'aria-label': 'Save the changes to ' + e.id + ' as routing revision ' + (s.rev + 1), onClick: this.save }, busy ? 'Saving\u2026' : 'Save changes'))
+      ) : null,
+
+      confirmOpen: !!(s.confirm && e),
+      confirmTitle: s.confirm && e ? 'Discard the changes to ' + e.id + '?' : '',
+      confirmDescription: s.confirm && e ? (s.confirm.reason === 'dismiss' ? 'You closed the form with unsaved changes.' : 'You asked to leave without saving.') : '',
+      confirmBody: s.confirm && e
+        ? dirty.length + ' changed ' + (dirty.length === 1 ? 'field' : 'fields') + ' \u2014 ' + dirty.map(k => FIELD_LABEL[k]).join(', ') + ' \u2014 have not been committed. Discarding them keeps routing revision ' + e.baseRev + ' exactly as it is; there is no undo afterwards.'
+        : '',
+      confirmFooter: s.confirm && e ? [
+        btn({ key: 'keep', variant: 'secondary', size: 'sm', type: 'button', 'data-keeps-editing': '1', onClick: this.keepEditing }, 'Keep editing'),
+        btn({ key: 'drop', variant: 'danger', size: 'sm', type: 'button', onClick: () => this.discard(s.confirm.reason) }, 'Discard ' + dirty.length + ' ' + (dirty.length === 1 ? 'change' : 'changes'))
+      ] : null,
+
+      notices: [
+        s.commitError ? {
+          key: 'err', tone: s.commitError.stale ? 'warning' : 'danger',
+          title: s.commitError.id + ' was not saved',
+          body: s.commitError.why + ' Nothing was committed: routing ' + ROUTING.id + ' still reads revision ' + (s.commitError.stale ? s.rev : e ? e.baseRev : s.rev) + ', and every figure you typed is still in the form. Retry sends what the form holds now.',
+          action: React.createElement('div', { style: { display: 'flex', gap: '8px' } },
+            btn({ key: 'r', variant: 'secondary', size: 'sm', type: 'button', disabled: busy, 'data-retry': '1', onClick: this.retry }, 'Retry saving ' + s.commitError.id),
+            s.commitError.stale ? btn({ key: 't', variant: 'ghost', size: 'sm', type: 'button', onClick: this.takeRevision }, 'Discard mine and reload revision ' + s.rev) : null)
+        } : null,
+        s.success ? {
+          key: 'ok', tone: 'success',
+          title: s.success.id + ' saved as routing revision ' + s.success.rev,
+          body: 'The routing table below now reads the committed parameters. The change note is attached to revision ' + s.success.rev + '.',
+          onDismiss: this.dismissSuccess
+        } : null,
+        s.withdrawn ? {
+          key: 'gone', tone: 'info',
+          title: s.withdrawn.id + ' is no longer on this routing',
+          body: s.withdrawn.why + ' Your figures (setup ' + s.withdrawn.draft.setup + ' min, cycle ' + s.withdrawn.draft.cycle + ' s/pc, check every ' + s.withdrawn.draft.insp + ' pcs) were not committed and cannot be \u2014 the operation they belonged to is gone.',
+          action: btn({ variant: 'ghost', size: 'sm', type: 'button', onClick: this.dismissWithdrawn }, 'Dismiss')
+        } : null
+      ].filter(Boolean),
+      hasNotices: !!(s.commitError || s.success || s.withdrawn),
+
+      saving: busy,
+      savingLabel: busy ? 'Committing ' + s.saving.id + ' to routing revision ' + (s.rev + 1) : '',
+      routingSummary: s.present.length + ' of ' + OPS.length + ' operations \u00b7 revision ' + s.rev + ' \u00b7 ' + s.commits + ' committed this session \u00b7 ' + effect({ wc: 'WC-CNC-04', setup: s.present.reduce((t, id) => t + s.committed[id].setup, 0), cycle: s.present.reduce((t, id) => t + s.committed[id].cycle, 0) }) + ' per lot, all operations',
+      announcement: s.announcement,
+
+      stateRows: [
+        { k: 'draft state', v: s.withdrawn ? 'subject withdrawn' : busy ? 'commit pending' : (s.commitError ? (s.commitError.stale ? 'commit failed (stale)' : 'commit failed') : (!e ? 'closed \u00b7 committed' : (dirty.length ? (Object.keys(p).length ? 'dirty \u00b7 invalid' : 'dirty \u00b7 valid') : 'clean'))) },
+        { k: 'open operation', v: e ? e.id : '\u2014' },
+        { k: 'dirty fields', v: dirty.length ? dirty.join(', ') : '\u2014 (derived by comparison)' },
+        { k: 'surface', v: surface },
+        { k: 'dismissal', v: this.policy('dismissalPolicy', 'guard') === 'guard' ? 'guard \u00b7 ask before discarding' : (this.policy('dismissalPolicy', 'guard') === 'discard' ? 'discard \u00b7 dismissal throws the draft away' : 'block \u00b7 Escape and scrim inert while dirty') },
+        { k: 'cancel', v: this.policy('cancelWhenDirty', 'immediate') === 'confirm' ? 'confirm when dirty' : 'immediate discard' },
+        { k: 'after commit', v: this.policy('postCommitDisposition', 'close') === 'stay' ? 'stay open, re-based' : 'close' },
+        { k: 'routing rev', v: S(s.rev) + (e && e.baseRev !== s.rev ? ' \u00b7 draft opened on ' + e.baseRev : '') },
+        { k: 'request', v: '#' + this.req + (busy ? ' \u00b7 in flight' : ' \u00b7 settled') },
+        { k: 'commits', v: S(s.commits) },
+        { k: 'operations', v: s.present.length + ' of ' + OPS.length + (s.withdrawn ? ' \u00b7 ' + s.withdrawn.id + ' withdrawn' : '') }
+      ],
+      committedText: JSON.stringify(e ? { rev: s.rev, [e.id]: s.committed[e.id] } : { rev: s.rev, note: 'nothing open \u2014 nothing to compare' }, null, 1),
+      draftText: e ? JSON.stringify({ baseRev: e.baseRev, draft: e.draft }, null, 1) : '{}'
+    };
+  }
+}
+
+</script>
+</body>
+</html>

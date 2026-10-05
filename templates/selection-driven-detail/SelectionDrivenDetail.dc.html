@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Selection-driven detail" description="Interaction pattern reference implementation, set in a manufacturing ERP — the press-shop tool crib: one current die selected in the list, its tool life fetched from MES into a coordinated detail region, with stale responses rejected, a documented rule for a die that leaves the crib, and actions that operate on the selected identity." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:1280px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/SelectionDrivenDetail.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+</div>
+<p style="margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note, the state inspector below the crib, and the five tweaks under <span style="font-family:var(--font-mono)">Demo harness</span> — exists to make the contract visible. The tool-life read is a timer standing in for the MES call; the comment above it says what to replace. The four tweaks under <span style="font-family:var(--font-mono)">Pattern properties</span> are not harness: <span style="font-family:var(--font-mono)">initialSelection</span>, <span style="font-family:var(--font-mono)">removalPolicy</span>, <span style="font-family:var(--font-mono)">loadingTreatment</span> and <span style="font-family:var(--font-mono)">presentation</span> are the §05 policies an adopting team must declare.</p>
+<p style="margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Pick a die: the crib row carries the selection, the panel carries the tool life, and selecting is never navigation — sort by strokes and the selection stays on the die, not on the row. Raise the latency and click three dies quickly to see stale responses rejected; set <span style="font-family:var(--font-mono)">Stale detail responses</span> to <span style="font-family:var(--font-mono)">accept</span> to watch the panel describe a die that is no longer selected. Turn on <span style="font-family:var(--font-mono)">Tool room issues the selected die</span>, or issue it yourself, to reach the removed-selection rule; turn on <span style="font-family:var(--font-mono)">Tool-life service is down</span> for detail failure, or <span style="font-family:var(--font-mono)">Costing withholds the refurbishment figure</span> for a response that is complete except for one field — which is labelled per field, not by failing the panel.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Press shop · tool crib · Chakan plant (PL-04) · shift A, 2026-09-07 (IST)</span>
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">Dies in the crib</h1>
+<p style="margin:0;max-width:80ch;color:var(--text-secondary);font-size:var(--text-sm);line-height:1.55">The crib list holds identity and crib status only. Stroke counts, inspection history and refurbishment spend live in MES and are read for the die currently being inspected.</p>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:24px">
+
+<sc-if value="{{ showCollection }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:14px">
+
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:var(--border-hairline)">
+<span style="font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty">{{ cribHeading }}</span>
+<sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" type="button" onClick="{{ onClearSelection }}" hint-size="150px,28px">{{ clearLabel }}</x-import>
+</sc-if>
+</div>
+<div id="crib-collection" role="group" aria-label="Dies in the crib — choose the die to inspect">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Table" caption="Dies in the press-shop tool crib" columns="{{ columns }}" rows="{{ rows }}" rowKey="die" onRowClick="{{ onRowClick }}" sort="{{ sort }}" onSortChange="{{ onSort }}" minWidth="720px" emptyMessage="{{ cribEmpty }}" hint-size="100%,420px"></x-import>
+</div>
+<div style="padding:12px 18px;border-top:var(--border-hairline);background:var(--surface-sunken)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ cribSummary }}</span>
+</div>
+</div>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:12px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:15px 17px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Selection &amp; detail state · remove on copy</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px 20px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="8">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:104px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+<div style="border-top:var(--border-hairline);padding-top:11px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Correspondence</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ correspondenceText }}</pre>
+</div>
+<sc-if value="{{ showMismatch }}" hint-placeholder-val="{{ false }}">
+<div style="padding:9px 11px;border:1px dashed var(--status-critical-solid);border-radius:var(--radius-sm);font-size:var(--text-2xs);line-height:1.55;color:var(--text-critical)">{{ mismatchNote }}</div>
+</sc-if>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">Selection is a die number, never a row position — sort the strokes column and watch it hold. Every tool-life read carries the request number that started it; a response whose number is not the current one is dropped (§20).</p>
+</div>
+
+</div>
+</sc-if>
+
+<sc-if value="{{ showDetailRegion }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1 1 420px;min-width:320px;max-width:560px;display:flex;flex-direction:column;gap:12px">
+<sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" type="button" iconLeft="arrow-left" onClick="{{ onBack }}" hint-size="150px,28px">Back to the crib</x-import>
+</sc-if>
+<div aria-live="polite" aria-atomic="false" style="display:flex;flex-direction:column;gap:12px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Card" title="{{ detailTitle }}" subtitle="{{ detailSubtitle }}" footer="{{ detailFooter }}" footerAlign="start" padding="md" headingLevel="{{ 2 }}" hint-size="100%,420px">
+
+<sc-if value="{{ showEmpty }}" hint-placeholder-val="{{ true }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.EmptyState" variant="{{ emptyVariant }}" title="{{ emptyTitle }}" size="sm" align="start" hint-size="100%,120px">{{ emptyBody }}</x-import>
+</sc-if>
+
+<sc-if value="{{ showSkeleton }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Skeleton" lines="{{ 7 }}" delay="{{ 200 }}" hint-size="100%,140px"></x-import>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ loadingNote }}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{ showRetained }}" hint-placeholder-val="{{ false }}">
+<div style="margin-bottom:12px;padding:8px 11px;border-radius:var(--radius-sm);background:var(--surface-sunken);font-size:var(--text-2xs);line-height:1.55;color:var(--text-secondary)">{{ retainedNote }}</div>
+</sc-if>
+
+<sc-if value="{{ showUnavailable }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="info" title="{{ unavailableTitle }}" live="on" size="sm" hint-size="100%,90px">{{ unavailableBody }}</x-import>
+</sc-if>
+
+<sc-if value="{{ showError }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="danger" title="{{ errorTitle }}" live="on" size="sm" action="{{ errorAction }}" hint-size="100%,110px">{{ errorBody }}</x-import>
+</sc-if>
+
+<sc-if value="{{ showFields }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:14px">
+<sc-if value="{{ showHold }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="warning" title="{{ holdTitle }}" size="sm" hint-size="100%,90px">{{ holdBody }}</x-import>
+</sc-if>
+<sc-if value="{{ showPartial }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="neutral" title="One field could not be read" live="on" size="sm" hint-size="100%,86px">{{ partialNote }}</x-import>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.DescriptionList" items="{{ detailFields }}" layout="columns" size="sm" divided="{{ true }}" termWidth="188px" responsive="{{ true }}" hint-size="100%,260px"></x-import>
+</div>
+</sc-if>
+
+</x-import>
+</div>
+<div role="status" aria-live="polite" style="min-height:19px;font-size:var(--text-xs);line-height:1.55;color:var(--text-secondary);text-wrap:pretty">{{ announcement }}</div>
+</div>
+</sc-if>
+
+</div>
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1340,&quot;height&quot;:940},&quot;initialSelection&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;first-item&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Selection on first load&quot;},&quot;removalPolicy&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;clear&quot;,&quot;select-nearest&quot;],&quot;default&quot;:&quot;clear&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;When the selected die leaves the crib&quot;},&quot;loadingTreatment&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;skeleton&quot;,&quot;retain-previous&quot;],&quot;default&quot;:&quot;skeleton&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Detail while a new selection loads&quot;},&quot;presentation&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;split&quot;,&quot;serialized&quot;],&quot;default&quot;:&quot;split&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Presentation&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:200,&quot;max&quot;:3000,&quot;step&quot;:100,&quot;default&quot;:700,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;MES read latency&quot;},&quot;serviceDown&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Tool-life service is down&quot;},&quot;partialContent&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Costing withholds the refurbishment figure&quot;},&quot;toolRoomIssues&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Tool room issues the selected die&quot;},&quot;staleAcceptance&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;reject&quot;,&quot;accept&quot;],&quot;default&quot;:&quot;reject&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Stale detail responses&quot;}}">
+// Press-shop tool crib, PL-04, shift A 2026-09-07 (IST). The crib list holds
+// identity and crib status; `life`-bearing fields stand in for the MES read.
+const DIES = [
+  { die: 'DIE-2207', part: 'BRK-4820-A', desc: 'Caliper bracket blanking die, LH', press: 'PR-03', ton: 800, strokes: 41200, interval: 60000, cavity: 2, bay: 'C-04', inspected: '2026-09-05 14:20', inspBy: 'Priya Iyer', refurb: 420000, status: 'available', hold: null },
+  { die: 'DIE-2211', part: 'PLT-6601', desc: 'Mounting plate forming die, 2.5 mm HR', press: 'PR-05', ton: 400, strokes: 58600, interval: 60000, cavity: 1, bay: 'C-06', inspected: '2026-09-06 09:05', inspBy: 'Priya Iyer', refurb: 268000, status: 'due grind', hold: null },
+  { die: 'DIE-2218', part: 'PLT-6604', desc: 'Heat shield blanking die, 0.8 mm SS', press: 'PR-07', ton: 250, strokes: 12400, interval: 50000, cavity: 4, bay: 'C-02', inspected: '2026-09-04 16:40', inspBy: 'Sandeep Kulkarni', refurb: 96000, status: 'available', hold: null },
+  { die: 'DIE-2223', part: 'BRK-4820-B', desc: 'Caliper bracket blanking die, RH', press: 'PR-03', ton: 800, strokes: 47900, interval: 60000, cavity: 2, bay: 'C-04', inspected: '2026-09-05 14:35', inspBy: 'Priya Iyer', refurb: 388000, status: 'available', hold: null },
+  { die: 'DIE-2230', part: 'HSG-3120', desc: 'Gear housing cover draw die', press: 'PR-08', ton: 630, strokes: 9800, interval: 45000, cavity: 1, bay: 'C-09', inspected: '2026-09-06 11:50', inspBy: 'Priya Iyer', refurb: 615000, status: 'on hold', hold: 'Crack indication on the draw punch radius at post-grind inspection. Priya Iyer has held the die pending a dye-penetrant check.' },
+  { die: 'DIE-2241', part: 'GSK-8801', desc: 'Manifold gasket blanking die, graphite', press: 'PR-02', ton: 160, strokes: 33100, interval: 40000, cavity: 6, bay: 'C-01', inspected: '2026-09-03 08:15', inspBy: 'Sandeep Kulkarni', refurb: 74000, status: 'available', hold: null },
+  { die: 'DIE-2247', part: 'SPR-5502', desc: 'Spring seat forming die', press: 'PR-05', ton: 400, strokes: 38700, interval: 40000, cavity: 2, bay: 'C-06', inspected: '2026-09-06 07:30', inspBy: 'Priya Iyer', refurb: 152000, status: 'due grind', hold: null },
+  { die: 'DIE-2252', part: 'MCH-2201', desc: 'Hub carrier trim die', press: 'PR-09', ton: 1000, strokes: 21500, interval: 70000, cavity: 1, bay: 'C-11', inspected: '2026-09-02 15:10', inspBy: 'Priya Iyer', refurb: 780000, status: 'available', hold: null },
+  { die: 'DIE-2260', part: 'WSH-0408', desc: 'Spring washer blanking die', press: 'PR-01', ton: 100, strokes: 96400, interval: 120000, cavity: 12, bay: 'C-01', inspected: '2026-08-29 10:45', inspBy: 'Sandeep Kulkarni', refurb: 41000, status: 'available', hold: null },
+  { die: 'DIE-2266', part: 'SEL-7702', desc: 'Seal retainer forming die', press: 'PR-04', ton: 315, strokes: 5200, interval: 50000, cavity: 4, bay: 'C-08', inspected: '2026-09-06 18:05', inspBy: 'Priya Iyer', refurb: 118000, status: 'on hold', hold: 'First-off approval outstanding — Shalini Rao has not signed the pattern approval after the last insert change.' }
+];
+const rupee = n => '\u20B9' + n.toLocaleString('en-IN');
+const num = n => n.toLocaleString('en-IN');
+const M = () => window.MeridianDesignSystem_962c43 || {};
+const find = id => DIES.find(d => d.die === id);
+
+class Component extends DCLogic {
+  state = {
+    crib: DIES.map(d => d.die),   // membership, by identity
+    selected: null,               // the current detail-driving selection, an identity
+    detail: null,                 // { die, data } — the die the panel is describing
+    loading: false,
+    error: null,                  // { die, why }
+    gone: null,                   // { die, why } — selection that left the crib
+    sort: { key: 'die', direction: 'asc' },
+    view: 'list',                 // serialized presentation only
+    announcement: '',
+    reads: 0,
+    stale: 0
+  };
+  req = 0;
+
+  policy(name, fallback) { return this.props[name] || fallback; }
+
+  sorted() {
+    const s = this.state.sort, dir = s.direction === 'desc' ? -1 : 1;
+    return this.state.crib.map(find).slice().sort((a, b) => {
+      const x = a[s.key], y = b[s.key];
+      if (typeof x === 'number') return (x - y) * dir;
+      return String(x).localeCompare(String(y)) * dir;
+    });
+  }
+
+  // Detail retrieval. Each read carries the request number that started it;
+  // only the current number may write detail state.
+  read(die) {
+    const id = ++this.req;
+    this.setState(s => ({
+      loading: true, error: null, gone: null, reads: s.reads + 1,
+      detail: this.policy('loadingTreatment', 'skeleton') === 'retain-previous' ? s.detail : null
+    }));
+    // REPLACE: stands in for the MES tool-life read —
+    //   GET /api/mes/dies/{die}/tool-life
+    // The response must be matched to the request that asked for it, or a slow
+    // answer will describe a die the user has already moved off (§20).
+    setTimeout(() => {
+      if (id !== this.req && this.policy('staleAcceptance', 'reject') === 'reject') {
+        this.setState(s => ({ stale: s.stale + 1 }));
+        return;
+      }
+      if (id !== this.req) this.setState(s => ({ stale: s.stale + 1 }));
+      if (!this.state.crib.includes(die)) return;   // it left while we waited
+      if (this.props.serviceDown) {
+        this.setState({
+          loading: false, detail: null,
+          error: { die, why: 'MES did not answer the tool-life read for ' + die + ' (gateway timeout, 30 s).' },
+          announcement: 'Tool life for ' + die + ' could not be read. The die is still selected.'
+        });
+        return;
+      }
+      // Partial content: MES answered, but the costing interface did not return
+      // the refurbishment figure. The fields that arrived are shown; the one
+      // that did not says so, per field (§10).
+      const d = Object.assign({}, find(die), this.props.partialContent ? { refurb: null } : null);
+      this.setState({
+        loading: false, error: null, detail: { die, data: d },
+        announcement: 'Tool life for ' + die + ' loaded \u2014 ' + num(Math.max(0, d.interval - d.strokes)) + ' strokes to the next grind.'
+      });
+    }, this.props.latency ?? 700);
+  }
+
+  // Selection is an interaction state, not navigation: no history entry, no
+  // route change. Identity is stored, never a row position.
+  select = (die) => {
+    if (!this.state.crib.includes(die)) return;
+    if (die === this.state.selected && !this.state.error) {
+      if (this.policy('presentation', 'split') === 'serialized') this.setState({ view: 'detail' });
+      return;
+    }
+    this.setState({
+      selected: die, gone: null,
+      view: this.policy('presentation', 'split') === 'serialized' ? 'detail' : 'list',
+      announcement: die + ' selected. Reading tool life\u2026'
+    });
+    this.read(die);
+  };
+
+  clear = () => {
+    this.req++;
+    this.setState({ selected: null, detail: null, loading: false, error: null, gone: null, view: 'list', announcement: 'Selection cleared. No die is being inspected.' });
+  };
+
+  // Serialized presentation: returning lands focus on the control for the die
+  // that is still selected, not at the top of the crib (§12, §15).
+  back = () => this.setState({ view: 'list' }, () => {
+    const die = this.state.selected;
+    if (!die) return;
+    const el = document.querySelector('#crib-collection input[name="crib-die"][value="' + die + '"]');
+    if (el) el.focus({ preventScroll: true });
+  });
+  retry = () => { if (this.state.selected) this.read(this.state.selected); };
+  changeSort = (sort) => this.setState({ sort });
+
+  // A die leaves the crib — issued, sent for grinding, or taken by another
+  // terminal. The documented rule decides what the selection becomes.
+  remove(die, why, announce) {
+    const order = this.sorted().map(d => d.die);
+    const at = order.indexOf(die);
+    const crib = this.state.crib.filter(d => d !== die);
+    const nearest = order.filter(d => d !== die)[Math.min(at, order.length - 2)] || null;
+    const replace = this.policy('removalPolicy', 'clear') === 'select-nearest' && nearest;
+    this.req++;
+    this.setState({
+      crib, loading: false, error: null, detail: null,
+      selected: replace ? nearest : null,
+      gone: replace ? null : { die, why },
+      view: this.policy('presentation', 'split') === 'serialized' && !replace ? 'list' : this.state.view,
+      announcement: announce + (replace ? ' ' + nearest + ' is now selected under the select-nearest rule.' : ' Nothing is selected; the panel says which die left and why.')
+    }, () => { if (replace) this.read(nearest); });
+  }
+
+  issue = () => { const d = this.state.selected; if (d) this.remove(d, 'Issued to ' + find(d).press + ' by the tool room.', d + ' has been issued to ' + find(d).press + ' and has left the crib.'); };
+  grind = () => { const d = this.state.selected; if (d) this.remove(d, 'Sent to the grinding bay by the tool room.', d + ' has been sent for grinding and has left the crib.'); };
+
+  componentDidMount() {
+    if (this.policy('initialSelection', 'none') === 'first-item') {
+      const first = this.sorted()[0];
+      if (first) { this.setState({ selected: first.die }); this.read(first.die); return; }
+    }
+    this.setState({ announcement: 'No die selected. Choose a die in the crib to read its tool life.' });
+  }
+
+  // Harness: the tool room issues the selected die from another terminal.
+  componentDidUpdate(prev) {
+    if (this.props.toolRoomIssues && !prev.toolRoomIssues) {
+      const d = this.state.selected;
+      if (!d) { this.setState({ announcement: 'Nothing selected \u2014 select a die first, then turn the tweak on.' }); return; }
+      this.remove(d, 'Issued to ' + find(d).press + ' from the tool-room terminal while you were inspecting it.', d + ' was issued to ' + find(d).press + ' by the tool room while you had it open.');
+    }
+    if (this.props.presentation !== prev.presentation) this.setState({ view: 'list' });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const C = M();
+    const rows = this.sorted();
+    const sel = s.selected && s.crib.includes(s.selected) ? s.selected : null;
+    const serialized = this.policy('presentation', 'split') === 'serialized';
+    const d = s.detail && s.detail.die === sel ? s.detail.data : null;
+    const retained = !!(s.loading && s.detail && s.detail.die !== sel);
+    const mismatch = !!(s.detail && sel && s.detail.die !== sel && !s.loading);
+    const err = s.error && s.error.die === sel ? s.error : null;
+    const btn = (props, label) => C.Button ? React.createElement(C.Button, props, label) : null;
+
+    return {
+      columns: [
+        { key: 'die', header: 'Die', width: '176px', sortable: true, render: (row) => C.Radio ? React.createElement(C.Radio, {
+            name: 'crib-die', value: row.die, checked: sel === row.die,
+            onChange: () => this.select(row.die),
+            label: React.createElement('span', { style: { fontFamily: 'var(--font-mono)' } }, row.die)
+          }) : row.die },
+        { key: 'part', header: 'Part', mono: true, width: '112px' },
+        { key: 'desc', header: 'Die type', wrap: true },
+        { key: 'press', header: 'Press', mono: true, width: '86px' },
+        { key: 'life', header: 'Strokes since grind', align: 'right', mono: true, width: '156px', sortable: true, render: (row) => num(row.strokes) + ' / ' + num(row.interval) },
+        { key: 'status', header: 'Crib status', width: '126px', render: (row) => C.Badge ? React.createElement(C.Badge, { tone: row.status === 'on hold' ? 'critical' : (row.status === 'due grind' ? 'warning' : 'success'), size: 'sm', dot: true }, row.status) : row.status }
+      ],
+      rows,
+      sort: s.sort, onSort: this.changeSort,
+      onRowClick: (row) => this.select(row.die),
+      cribEmpty: 'Every die has been issued or sent for grinding. The crib is empty.',
+      cribHeading: sel
+        ? 'Inspecting ' + sel + ' \u00b7 ' + s.crib.length + ' dies in the crib'
+        : 'No die selected \u00b7 ' + s.crib.length + ' dies in the crib',
+      hasSelection: !!sel,
+      clearLabel: sel ? 'Clear selection' : '',
+      onClearSelection: this.clear,
+      cribSummary: s.crib.length + ' dies \u00b7 ' + s.crib.map(find).filter(x => x.status === 'due grind').length + ' due grind \u00b7 ' + s.crib.map(find).filter(x => x.status === 'on hold').length + ' on hold \u00b7 selection is not navigation',
+
+      showCollection: !serialized || s.view === 'list',
+      showDetailRegion: !serialized || s.view === 'detail',
+      showBack: serialized && s.view === 'detail',
+      onBack: this.back,
+
+      detailTitle: sel ? sel + ' \u00b7 tool life' : 'Tool life',
+      detailSubtitle: sel
+        ? (d ? 'Part ' + d.part : (err ? 'Read failed \u2014 ' + sel + ' is still selected' : 'Reading from MES\u2026'))
+        : (s.gone ? s.gone.die + ' left the crib' : 'Nothing selected'),
+
+      showEmpty: !sel && !s.gone,
+      emptyVariant: 'first-run',
+      emptyTitle: 'No die selected',
+      emptyBody: 'Choose a die in the crib to read its stroke count, inspection history and refurbishment spend. Selecting a die does not move you off this screen.',
+
+      showSkeleton: s.loading && !retained,
+      loadingNote: 'Reading tool life for ' + (sel || '\u2014') + ' from MES \u00b7 request #' + this.req,
+
+      showRetained: retained,
+      retainedNote: s.detail ? 'Still showing ' + s.detail.die + '. Tool life for ' + sel + ' is being read \u2014 these figures are not yet ' + sel + '\u2019s.' : '',
+
+      showUnavailable: !!s.gone,
+      unavailableTitle: s.gone ? s.gone.die + ' is no longer in the crib' : '',
+      unavailableBody: s.gone ? s.gone.why + ' Its tool life is no longer shown, because nothing is selected. Choose another die to inspect.' : '',
+
+      showError: !!err,
+      errorTitle: err ? 'Tool life for ' + err.die + ' could not be read' : '',
+      errorBody: err ? err.why + ' The die is still selected and still in the crib; only the read failed. Retry, or choose another die.' : '',
+      errorAction: err ? btn({ variant: 'secondary', size: 'sm', type: 'button', onClick: this.retry }, 'Retry the read for ' + err.die) : null,
+
+      showFields: !!d && !s.loading,
+      showHold: !!(d && d.hold),
+      holdTitle: d && d.hold ? d.die + ' is on hold \u2014 it may not be issued' : '',
+      holdBody: d && d.hold ? d.hold : '',
+      detailFields: d ? [
+        { term: 'Die type', value: d.desc },
+        { term: 'Press / tonnage', value: d.press + ' \u00b7 ' + d.ton + ' T', mono: true },
+        { term: 'Strokes since last grind', value: num(d.strokes) + ' of ' + num(d.interval), mono: true },
+        { term: 'Strokes to next grind', value: num(Math.max(0, d.interval - d.strokes)), mono: true },
+        { term: 'Cavities', value: String(d.cavity), mono: true },
+        { term: 'Last inspection (IST)', value: d.inspected + ' \u00b7 ' + d.inspBy },
+        { term: 'Crib bay', value: d.bay, mono: true },
+        { term: 'Refurbishment to date', value: d.refurb === null ? 'Unavailable \u2014 costing did not answer' : rupee(d.refurb), mono: d.refurb !== null }
+      ] : [],
+      showPartial: !!(d && d.refurb === null),
+      partialNote: d && d.refurb === null ? 'Tool life for ' + d.die + ' is complete; the refurbishment figure did not come back from costing. Eight of nine fields are withheld by no one \u2014 only the missing one says so.' : '',
+
+      // Actions carry the selected identity in their labels and operate on it.
+      detailFooter: d && !s.loading ? [
+        btn({ key: 'issue', variant: 'primary', size: 'sm', type: 'button', disabled: !!d.hold, onClick: this.issue }, 'Issue ' + d.die + ' to ' + d.press),
+        btn({ key: 'grind', variant: 'secondary', size: 'sm', type: 'button', onClick: this.grind }, 'Send ' + d.die + ' for grinding')
+      ].filter(Boolean) : null,
+
+      announcement: s.announcement,
+
+      stateRows: [
+        { k: 'state', v: !sel ? (s.gone ? 'selection unavailable' : 'no selection') : (s.loading ? (retained ? 'loading \u00b7 previous retained' : 'loading') : (err ? 'detail failed' : (d ? 'detail available' : 'selection active'))) },
+        { k: 'selection', v: sel || '\u2014' },
+        { k: 'detail for', v: s.detail ? s.detail.die : '\u2014' },
+        { k: 'request', v: '#' + this.req + (s.loading ? ' \u00b7 in flight' : ' \u00b7 resolved') },
+        { k: 'stale drops', v: String(s.stale) },
+        { k: 'reads', v: String(s.reads) },
+        { k: 'on removal', v: this.policy('removalPolicy', 'clear') === 'select-nearest' ? 'select nearest' : 'clear selection' },
+        { k: 'while loading', v: this.policy('loadingTreatment', 'skeleton') === 'retain-previous' ? 'retain previous, labelled' : 'skeleton in place' },
+        { k: 'presentation', v: serialized ? 'serialized \u00b7 view = ' + s.view : 'side by side' },
+        { k: 'crib', v: s.crib.length + ' of ' + DIES.length + ' dies' }
+      ],
+      correspondenceText: JSON.stringify({ selection: sel, detailFor: s.detail ? s.detail.die : null, request: this.req, loading: s.loading }, null, 1),
+      showMismatch: mismatch,
+      mismatchNote: mismatch ? 'The panel is describing ' + s.detail.die + ' while ' + sel + ' is selected. This is what accepting a stale response does: nothing on screen is wrong-looking, and the planner reads one die\u2019s stroke count as another\u2019s. Set the tweak back to reject.' : ''
+    };
+  }
+}
+
+</script>
+</body>
+</html>

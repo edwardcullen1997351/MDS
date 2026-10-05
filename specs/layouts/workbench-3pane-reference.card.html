@@ -1,0 +1,42 @@
+<!-- @dsCard group="Specs · Layouts" viewport="1180x900" name="Workbench 3-Pane — reference implementation" subtitle="High-density manufacturing & planning workspace shell coordinating Horizon Navigator, Main Matrix, and Contextual Inspector" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Workbench 3-Pane — reference implementation</title><link rel="stylesheet" href="../../styles.css">
+<style>
+html,body{margin:0;height:100%}
+body{background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);display:flex;flex-direction:column}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;padding:16px 22px;border-bottom:var(--border-hairline);background:var(--surface-card);flex:none}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em;flex:1 1 auto;min-width:200px}
+.links{display:flex;flex-wrap:wrap;gap:14px;font-family:var(--font-mono);font-size:var(--text-2xs)}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+p{margin:0;flex:1 1 100%;max-width:88ch;color:var(--text-secondary);font-size:var(--text-xs);line-height:1.55;text-wrap:pretty}
+.demo-preview{flex:1 1 auto;display:grid;grid-template-rows:auto 1fr;padding:16px;background:var(--background-base);box-sizing:border-box}
+.preview-shell{display:grid;grid-template-columns:260px 1fr 340px;height:100%;border:1px solid var(--border-subtle);border-radius:8px;overflow:hidden;background:var(--surface-card)}
+.pane{padding:16px;box-sizing:border-box;overflow:auto}
+.pane-nav{background:var(--surface-subtle);border-right:1px solid var(--border-subtle)}
+.pane-center{background:var(--surface-card)}
+.pane-inspector{background:var(--surface-subtle);border-left:1px solid var(--border-subtle)}
+.pane-title{font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:12px}
+</style></head><body>
+<header>
+<span class="eyebrow">Reference implementation</span>
+<h1>Workbench 3-Pane Layout</h1>
+<div class="links"><a href="layouts.card.html">Layouts index</a></div>
+<p>The 3-pane responsive workbench shell coordinating daily manufacturing operations across corporate entities (Asclepius Wellness Pvt Ltd & Anantshriveda Pvt Ltd). Manages collapsible tracks: Horizon Navigator (Left), Main Time-Phased Execution Matrix (Center), and Contextual Record Inspector (Right), reflowing gracefully to off-canvas drawer and modal bottom sheet at ≤1024px or 200% zoom.</p>
+</header>
+<div class="demo-preview">
+  <div class="preview-shell">
+    <div class="pane pane-nav">
+      <div class="pane-title">1. Horizon & Hierarchy</div>
+      <p style="font-size:12px;color:var(--text-secondary)">Asclepius Food Plant F-119<br>Rolling 28-Day Shift Horizon</p>
+    </div>
+    <div class="pane pane-center">
+      <div class="pane-title">2. Time-Phased Operational Matrix</div>
+      <p style="font-size:12px;color:var(--text-secondary)">Bi-directional sticky schedule grid & BOM tree pegging</p>
+    </div>
+    <div class="pane pane-inspector">
+      <div class="pane-title">3. Contextual Inspector & STO Staging</div>
+      <p style="font-size:12px;color:var(--text-secondary)">Order Reschedule & Intercompany Allocation Drawer</p>
+    </div>
+  </div>
+</div>
+</body></html>

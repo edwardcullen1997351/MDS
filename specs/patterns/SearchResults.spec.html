@@ -1,0 +1,274 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Search results" subtitle="Full specification — one query state, one result set, and the difference between nothing found and nothing answered · manufacturing ERP reference" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Search results — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.mf{display:flex;flex-direction:column;gap:4px}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mi{height:28px;border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);display:flex;align-items:center;padding:0 8px;font-size:11px;color:var(--text-primary)}
+.mi.focus{border-color:var(--action-solid);box-shadow:0 0 0 2px var(--status-info-soft)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.mn{font-size:10px;color:var(--text-secondary)}
+.mb{align-self:flex-start;height:26px;padding:0 10px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:10px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-critical-soft);color:var(--text-critical)}
+.rows{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-card)}
+.rows div{display:flex;gap:10px;padding:5px 8px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);border-bottom:var(--border-subtle)}
+.rows div:last-child{border-bottom:none}
+.rows span:first-child{color:var(--text-primary);width:84px;flex:none}
+.mcount{font-size:10px;font-family:var(--font-mono);color:var(--text-tertiary)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Search results</h1>
+  <p class="lede">Submitting or changing a query and keeping the retrieved result set coordinated with it — including what the previous results mean while new ones are on their way, and the permanent difference between a search that found nothing and a search that did not happen.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: SearchField, List or Table</span><span>Reference implementation: <a href="search-results-reference.card.html">card</a> · <a href="../../templates/search-results/SearchResults.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — item master lookup for a short material</span><span>Sections included: 12 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>A planner types part of a part number and reads back a set of items. Two things are on screen — a query and a collection — and the whole difficulty is that they are retrieved at different moments. The pattern owns the correspondence between them: which query the displayed rows belong to, what happens to those rows while a newer query is being retrieved, what an empty collection means, and how a service that did not answer is told apart from an item master that answered and holds nothing.</p>
+    <p><strong>Use it when</strong> query entry and a retrieved collection form one coordinated interaction whose result state has a lifecycle — loading, results, none, failed.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>A lookup against a record set too large to present whole.</li><li>Search whose results are retrieved, paginated, or sorted by the service rather than in the page.</li><li>Any search that can fail, wait, or return nothing.</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>Renaming <code>SearchField</code>.</strong> The component owns the query value, clearing, and the submit split. The pattern begins where the query governs a result collection and its states.</li><li><strong>Choosing one value from suggestions.</strong> A listbox with a cursor and a selection contract is <code>Autocomplete</code>; nothing is retrieved <em>into the page</em> and there is no result set to keep coherent.</li><li><strong>Narrowing a set already in the page.</strong> Filtering a loaded collection with no request, no wait and no failure mode is a filter, not this.</li><li><strong>Starting a long job.</strong> A report the user waits minutes for, and returns to, is an asynchronous operation with its own progress and completion contract.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">Query entry</td><td><code>SearchField</code></td><td>Required. One query value. Whether <code>onSubmit</code> is present is the pattern's <code>trigger</code> decision (§05), not a styling choice.</td></tr>
+      <tr><td class="k">Result collection</td><td><code>Table</code> or <code>List</code> (with <code>ListItem</code>, or <code>Card</code> per result)</td><td>Required. Presents the result set that belongs to one query state. Its sort and selection are result-dependent state the pattern coordinates (§04).</td></tr>
+      <tr><td class="k">Retrieval indication</td><td><code>Skeleton</code> or <code>Table loading</code> · <code>Progress</code></td><td>Required whenever retrieval is perceptible. <code>Skeleton</code> where the result shape is known and nothing is being replaced; <code>Progress</code> where existing results stay on screen and the wait needs a signal that is not a false row.</td></tr>
+      <tr><td class="k">Zero matches</td><td><code>EmptyState variant="no-results"</code></td><td>Required wherever zero matches is reachable. The variant exists to keep this case apart from <code>first-run</code>: the collection is not empty, this query's slice of it is.</td></tr>
+      <tr><td class="k">Retrieval failure</td><td><code>Alert tone="danger"</code></td><td>Required wherever retrieval can fail. Carries the cause, the preserved query, and the retry. Never an <code>EmptyState</code>.</td></tr>
+      <tr><td class="k">Partitioning</td><td><code>Pagination</code></td><td>Optional. Its <code>page</code> is result-dependent state: it belongs to the query that produced the set, and dies with it.</td></tr>
+      <tr><td class="k">Status</td><td>Live region (<code>role="status"</code>)</td><td>Required. One polite statement per resolved retrieval — the count, the range shown, and any reset that was applied (§12).</td></tr>
+    </tbody></table>
+    <p>What the pattern owns is not this list but the pairing: one query state, one result set, one status statement, and the rule that the three never describe different queries at the same time.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>Entry.</strong> The pattern opens in a declared state: an initial prompt with no result set, or the full set under an <code>all-results</code> empty query (§05). A query restored from a URL or a draft is retrieved on arrival like any other.</li>
+      <li><strong>Query change.</strong> The user provides or edits the query. Under <code>as-you-type</code> this schedules a retrieval; under <code>on-submit</code> it changes nothing but the query state, which is then visibly ahead of the results.</li>
+      <li><strong>Initiation.</strong> A retrieval is issued for the current query, page 1, and the current sort. Page position from the previous query does not travel with it.</li>
+      <li><strong>Retrieval.</strong> The pair enters retrieving. Under <code>retain</code> the previous set stays, labelled as the previous query's; under <code>replace</code> it is withdrawn in favour of skeleton rows.</li>
+      <li><strong>Resolution.</strong> The retrieval resolves to results, zero matches, or failure. Only a response from the current request may write result state.</li>
+      <li><strong>Statement.</strong> The resolved outcome is announced politely, once, with the count and the range. Focus does not move.</li>
+      <li><strong>Within a result set.</strong> Paging and sorting are retrievals against the same query and re-enter step 4. They never rearrange one page and call it the set.</li>
+      <li><strong>Revision.</strong> The user edits the query and the sequence repeats; or clears it and returns to the state declared in step 1.</li>
+    </ol>
+    <p>Sequence matters in one place: the status statement is made from the resolved response, never from the request. Announcing at initiation states a count that is not yet known and, when the response is discarded as obsolete, a count that never becomes true.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Every displayed result set corresponds to a defined query state,</strong> and says which one. The set carries the query it was retrieved for; the count and the range are stated in terms of that query, not of what is currently in the field.</li>
+      <li><strong>Retrieval is a state of the pair, not a third screen.</strong> A search that is retrieving still has a query and — under <code>retain</code> — still has the previous results. Blanking the region on every keystroke destroys the reference the user was reading.</li>
+      <li><strong>Retained results are labelled, never re-captioned.</strong> While a newer query is in flight, the visible rows are the previous query's and are described as such. Leaving them under a count or a heading that names the new query is a false statement the user has no way to detect.</li>
+      <li><strong>Zero matches means the retrieval completed.</strong> The service answered and holds nothing for this query. Nothing else may produce this state.</li>
+      <li><strong>Failure is never zero matches.</strong> A retrieval that did not resolve says so, keeps the query, and offers retry (§10). The two states are permanently distinct because the user's next action differs: revise the query, or try again.</li>
+      <li><strong>Changing the query resets result-dependent state,</strong> and says that it did. Page position resets to the first page; a selection of rows that are not in the new set is dropped; a sort the user chose is a property of the query, not of the set, and survives.</li>
+      <li><strong>Paging and sorting are retrievals against the current query.</strong> Sorting the rows of one page of many tells the user they have ordered the result set when they have ordered a fragment of it.</li>
+      <li><strong>Only the current request may write result state.</strong> A response from a superseded query is discarded — not merged, not appended, not rendered for a frame.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="mf"><div class="mi focus">brake caliper</div></div><span class="mn">Retrieving items for “brake caliper”.</span><span class="mcount">6 items · showing 1–4 for “brake”</span><div class="rows"><div><span>BRK-4820-A</span><span>Brake caliper bracket, LH</span></div><div><span>BRK-4822-C</span><span>Brake pedal bracket assy</span></div></div></div><p class="why">The rows on screen still belong to “brake”, and the count says so. The planner can keep reading them and knows they are about to change.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="mf"><div class="mi focus">brake caliper</div></div><span class="mn">&nbsp;</span><span class="mcount">3 items for “brake caliper”</span><div class="rows"><div><span>BRK-4820-A</span><span>Brake caliper bracket, LH</span></div><div><span>BRK-4822-C</span><span>Brake pedal bracket assy</span></div></div></div><p class="why">The count has moved to the new query while the rows are still the old query's. A brake pedal bracket now appears to be a caliper match, and the planner has no way to know it is not.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+  <div class="body">
+    <p>Four choices belong to the application of the pattern. Each changes the behavioral contract, so each is declared rather than inherited from whatever the first implementation happened to do.</p>
+    <table><thead><tr><th>Property</th><th>Options</th><th>What it decides</th></tr></thead><tbody>
+      <tr><td class="k">trigger</td><td><code>on-submit</code> · <code>as-you-type</code></td><td>When a retrieval is issued. <code>on-submit</code> where retrieval is expensive, the query is long, or a wrong intermediate query is costly to read; <code>as-you-type</code> where the set is cheap and the user is narrowing by feel. <code>on-submit</code> creates the query-entered state (§08) and requires the pending statement that goes with it.</td></tr>
+      <tr><td class="k">debounce</td><td>A stated interval, in ms — <code>as-you-type</code> only</td><td>How long input must settle before a retrieval is issued. A value must be named: retrieving on every keystroke is not an option this pattern offers (§17). Zero is legitimate only where retrieval is local and synchronous, which is a filter, not this pattern.</td></tr>
+      <tr><td class="k">staleResults</td><td><code>retain</code> · <code>replace</code></td><td>What the previous result set does while a newer retrieval runs. <code>retain</code> keeps it, labelled, and is right when the user is comparing successive queries; <code>replace</code> withdraws it for skeletons, and is right when a stale set would be acted on by mistake.</td></tr>
+      <tr><td class="k">emptyQuery</td><td><code>prompt</code> · <code>all-results</code></td><td>What no query means. <code>prompt</code> retrieves nothing and states what is searchable; <code>all-results</code> treats it as a query for everything. Either is defensible; leaving it undeclared produces a clear control that sometimes empties the page and sometimes fills it.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <p>Pattern states are states of the query-and-results pair. Retrieval is orthogonal to the outcome currently on screen, which is why it is a column here rather than a row.</p>
+    <table><thead><tr><th>State</th><th>What is true</th><th>What is displayed</th></tr></thead><tbody>
+      <tr><td class="k">initial</td><td>No query has been retrieved. Under <code>all-results</code> this state does not exist.</td><td>The prompt: what is searched and how. No result region, no zero-match copy.</td></tr>
+      <tr><td class="k">query entered</td><td><code>on-submit</code> only: the query state is ahead of the result set.</td><td>The previous set, its own count, and one line saying the results are for the earlier query and how to retrieve this one.</td></tr>
+      <tr><td class="k">retrieving</td><td>A request is in flight for a known query. Held with whichever outcome is on screen — including none.</td><td><code>retain</code>: the previous set, labelled, plus an indication. <code>replace</code>, or nothing to retain: skeleton rows at result geometry.</td></tr>
+      <tr><td class="k">results</td><td>Resolved, one or more matches, page position valid.</td><td>The collection, the count and range for its query, and pagination if partitioned.</td></tr>
+      <tr><td class="k">no results</td><td>Resolved successfully, zero matches for this query.</td><td><code>no-results</code> empty state naming the query, with a way back (§14). No pagination.</td></tr>
+      <tr><td class="k">failed</td><td>The retrieval did not resolve. The query is intact; the last retrieved set, if any, is intact.</td><td>The failure alert and retry, above whatever was last retrieved — still labelled with its own query.</td></tr>
+    </tbody></table>
+    <p class="warn"><strong>Retrieving is not an outcome, and failed is not an outcome of the set.</strong> Modelling these six as one enum forces a choice between showing stale rows with no indication and blanking the region on every keystroke. Hold the outcome and the in-flight request as two facts; the six states above are their legal combinations.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Error handling</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Failure preserves the query</strong> — the characters, the caret, and the field's focus. A search that clears itself when the service is down makes the user type it again to find out the service is still down.</li>
+      <li><strong>Failure is stated as failure,</strong> with what did not answer and what the user can do. It never borrows the words, the glyph, or the component of zero matches.</li>
+      <li><strong>Retry operates on the query the user currently intends</strong> — the one in the field at the moment they retry, not the one that failed, if they have edited it since. A retry that replays a stale query answers a question the user has stopped asking.</li>
+      <li><strong>What was last retrieved survives,</strong> labelled with the query it belongs to. Discarding good rows because a newer request failed loses ground the user already gained.</li>
+      <li><strong>A failed page or sort retrieval keeps the result set and the position it had.</strong> The set does not silently become page 1, and the failure names the page that could not be retrieved.</li>
+      <li><strong>Repeated failure escalates in words, not in noise.</strong> One alert, its cause updated; not one alert per attempt.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="mi focus">BRK-4899</div><div class="ma">Item master (MES-IM) did not answer within 8 s. Your query is unchanged and nothing has been searched.</div><div class="mb">Retry “BRK-4899”</div></div><p class="why">Failure named, cause given, query kept, retry pointed at what the planner still wants. Nothing claims the part does not exist.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="mi">BRK-4899</div><span class="mn" style="text-align:center;padding:8px 0">No items found.<br><span class="mh">Try a different search.</span></span></div><p class="why">A service outage rendered as zero matches. The planner concludes the substitute is not in the item master and raises a part-creation request for an item that already exists.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Result updates are announced without moving focus.</strong> The caret stays in the field through every update; a search that sends focus to the results steals the next keystroke and makes narrowing impossible for anyone typing.</li>
+      <li><strong>One polite status per resolved retrieval,</strong> naming the query, the count, the range shown, and any reset applied. Announcing at initiation, or once per keystroke, is a live region no one can use.</li>
+      <li><strong>The result region carries <code>aria-busy</code> while retrieving,</strong> and its skeletons stay <code>aria-hidden</code>. The region makes the one announcement; placeholders make none.</li>
+      <li><strong>Zero matches announces politely; failure announces as an alert.</strong> The first is an outcome to read, the second interrupts because the user's model of what is on screen is now wrong.</li>
+      <li><strong>Keyboard focus stays predictable as the set changes.</strong> Focus on a page control that survives the update stays there; focus on a row that no longer exists moves to the result region's container, never to the document.</li>
+      <li><strong>The searchable scope is named where the query is entered,</strong> not only in the results heading — a user who arrives on the field alone must know what it searches.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="mi focus">brake calipe<span style="opacity:.6">|</span></div><span class="mn">role="status" · polite — “6 items match “brake”. Showing 1–4.”</span><span class="mh">Focus: search field. Results region aria-busy while retrieving.</span></div><p class="why">The planner keeps typing while the count is read out behind them. Nothing they do is interrupted by the results arriving.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="mi">brake calipe</div><span class="mn">focus → first result row</span><span class="mh">aria-live="assertive" — announced on every keystroke</span></div><p class="why">Focus jumps to the results, so the next characters go nowhere, and an assertive region interrupts itself faster than it can be read.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Zero-match copy names the query and supports revision.</strong> It says what was searched, that the search completed, and what a useful next query would be — a shorter prefix, a description word, a different scope.</li>
+      <li><strong>Zero matches never invites creation as if nothing existed.</strong> “Add your first item” is the <code>first-run</code> case; here 1,412 items exist and this query matched none of them. Where creating the record genuinely is the answer, it is named as the consequence — who to raise it with, and that it must exist before anyone plans against it.</li>
+      <li><strong>Failure copy describes failure.</strong> It names what did not answer, states that nothing was searched, and never asserts that no matching content exists.</li>
+      <li><strong>Counts state their query.</strong> “6 items match “brake”” rather than “6 results”, so a count read out of context cannot be attached to the wrong query.</li>
+      <li><strong>Status wording says what is happening to what.</strong> “Retrieving items for “brake caliper”” rather than “Loading”: the second is true of every wait in the product.</li>
+      <li><strong>The initial prompt states what is searchable,</strong> including how — part numbers whole and by prefix, descriptions by word — because a query shaped wrongly returns zero matches that read as an absence.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><span class="ml">No item matches “BRK-4899”</span><span class="mn">The item master answered and holds no active item for that part number. If the substitute exists physically, it has not been created in the item master — raise it with Priya Iyer in the tool room before planning against it.</span><div style="display:flex;gap:6px"><div class="mb">Search “BRK” instead</div></div></div><p class="why">Completion is explicit, the query is named, and the way forward is both a broader query and the real-world action, attributed to a person.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><span class="ml">No items yet</span><span class="mn">Get started by creating your first item.</span><div style="display:flex;gap:6px"><div class="mb">Create item</div></div></div><p class="why">First-run copy on a result set of 1,412 items. The planner is invited to create a part that already exists, three keystrokes away.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§17</span><h2>Performance</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The trigger is declared, not emergent</strong> (§05). Whether a keystroke costs a request is a decision with a cost owner.</li>
+      <li><strong>Under <code>as-you-type</code>, request frequency is controlled by a stated interval.</strong> Rapid editing must not produce a queue of retrievals whose responses interleave; the interval reduces them, and the request identity (§20) handles whatever still overlaps.</li>
+      <li><strong>A response from an obsolete query never replaces newer result state,</strong> however late it arrives. Latency ordering is not response ordering.</li>
+      <li><strong>Retrieval indication is delayed past the flicker threshold</strong> — roughly 300 ms. A skeleton that appears and vanishes in 120 ms reads as a fault in the page.</li>
+      <li><strong>The field is never blocked while retrieving.</strong> The user must be able to keep narrowing; a disabled search field during retrieval converts every slow response into a lost keystroke.</li>
+      <li><strong>Page and sort travel inside the request.</strong> A page retrieved with the wrong sort, or a sort applied to a page, is a coherence failure that presents as a data error.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+      <tr><td class="k">Empty query</td><td>Handled by the declared <code>emptyQuery</code> policy, identically whether the field was cleared, emptied by backspace, or never filled. Anything in flight stops being current.</td></tr>
+      <tr><td class="k">Whitespace-only query</td><td>Treated as empty. It is never sent as a query that matches everything by accident.</td></tr>
+      <tr><td class="k">Rapid query changes</td><td>The final settled query decides the result set. Intermediate queries produce no statement and no rendered set.</td></tr>
+      <tr><td class="k">Out-of-order responses</td><td>The obsolete response is discarded on arrival. Nothing about it reaches the result set, the count, or the live region.</td></tr>
+      <tr><td class="k">Query changed while a request is pending</td><td>The pending request ceases to be current at the moment the new one is issued — not when its response arrives. Under <code>retain</code> the visible set remains the last resolved one.</td></tr>
+      <tr><td class="k">Current page ceases to exist</td><td>Reset to the first page and state the reset. This covers both a new query with fewer pages and a re-retrieval of the same query whose set shrank underneath the user.</td></tr>
+      <tr><td class="k">Zero matches on a page beyond the first</td><td>Treated as a position failure, not as no results: the query has matches, this page does not. Reset, restate, and do not show zero-match copy.</td></tr>
+      <tr><td class="k">Selected row absent from the new set</td><td>Dropped from the selection, and the drop is stated with the count. A selection that survives invisibly is acted on by the next bulk action.</td></tr>
+      <tr><td class="k">Same query submitted again</td><td>A legitimate refresh under <code>on-submit</code> — re-retrieved, position preserved where it still exists. It is not a no-op, because the set may have changed.</td></tr>
+      <tr><td class="k">Very long or pasted query</td><td>Sent as entered, and the query in every statement is truncated for display only — never truncated before being sent.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Every request carries a monotonically increasing identity,</strong> and only a response whose identity is still current may write result state. This one rule closes the whole out-of-order class; nothing about latency, debouncing, or cancellation replaces it.</li>
+      <li><strong>Cancelling a request is not the same as invalidating it.</strong> Aborting the network call is an optimisation; the guard on write is the correctness measure, because an already-delivered response cannot be aborted.</li>
+      <li><strong>Keep the query the user is typing and the query the results belong to as two values.</strong> Their inequality <em>is</em> the query-entered and the retaining state; deriving either from a single string is what produces counts attached to the wrong rows.</li>
+      <li><strong>Hold the outcome and the in-flight request separately,</strong> as §08 requires. A single <code>status</code> enum that includes <code>loading</code> cannot express “retrieving, over the previous results”.</li>
+      <li><strong>The request key is query + page + sort,</strong> and the response is applied against that whole key. A page number stored beside a set retrieved under different terms is a stale coordinate.</li>
+      <li><strong>Announce from the response.</strong> The live-region text is derived from the resolved result set, so a discarded response cannot announce a count that was never displayed.</li>
+      <li><strong>Cancel the pending debounce on submit, on clear, and on unmount.</strong> A timer that fires after the user has left issues a retrieval whose response has nowhere to go.</li>
+      <li><strong>Derive pagination from the resolved total,</strong> never from the requested page. Clamping at resolution is what makes “the page no longer exists” a stated outcome instead of an empty table.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted"><strong>Omitted sections and why.</strong>
+§06 Variants — <code>on-submit</code> and <code>as-you-type</code>, and <code>retain</code> versus <code>replace</code>, are declared policies within one contract (§05); a search that navigates to a results page rather than updating one in place changes the destination, not the pattern.
+§07 Sizes — no coordinated sizing exists at the pattern level; <code>SearchField</code> already coordinates its own controls, and the collection follows its component's density.
+§09 Validation — a query is not judged for correctness. There is no acceptable or unacceptable query, only queries that match nothing (§08), which is an outcome rather than an error.
+§11 Input &amp; interaction modalities — every affordance is an ordinary control. The one cross-component responsibility the pattern adds, keeping focus in the field as results change, is a focus contract and is stated in §12.
+§13 Motion — results may fade in for continuity, but no motion carries pattern-owned meaning, and no transition may delay the §12 announcement or hold stale rows past their replacement.
+§15 Responsive — the interaction does not change with available space; the collection may reflow from <code>Table</code> to <code>List</code>, which is that component's concern.
+§16 Internationalization — collation, folding and locale-sensitive matching belong to the service being searched, and the pattern is direction-agnostic. Its one cross-cutting requirement, that a count always name its query, is stated in §14.
+§19 Anti-patterns — the refusals in §01, the labelling and coherence rules in §04, and the failure rules in §10 cover the recurring misuses.
+§21 Developer notes — the contract in §04, §05, §08 and §20 is the whole contract; the request key and the identity guard are the only technical requirements, and both are stated there.</p>
+</div></body></html>

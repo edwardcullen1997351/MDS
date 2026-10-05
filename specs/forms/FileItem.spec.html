@@ -1,0 +1,319 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="FileItem" subtitle="Full specification — one file’s identity, state and removal; every state is a prop" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>FileItem — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:5px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.omit{border-left:2px solid var(--border-strong);padding-left:12px;color:var(--text-tertiary);font-size:var(--text-xs)}
+a,a:hover{color:var(--text-link)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { FileItem, FileDropzone, Text, Badge, Button } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Queue(){
+  const [files,setFiles] = React.useState([
+    {id:1,name:'BRK-4820-A_rev-C.pdf',size:2438144,state:'complete',meta:'Sheet 1 of 2'},
+    {id:2,name:'BOM_BRK-4820-A_rev-C.csv',size:18944,state:'uploading',progress:64},
+    {id:3,name:'press-setup-notes.docx',size:31457280,state:'failed',error:'Over the 20 MB limit'},
+    {id:4,name:'fixture-photo-IMG_4471.jpg',size:870400,state:'queued'},
+  ]);
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:8,width:440}}>
+      {files.map(f=>(
+        <FileItem key={f.id} name={f.name} size={f.size} meta={f.meta} state={f.state}
+          progress={f.progress} error={f.error}
+          onRemove={()=>setFiles(l=>l.filter(x=>x.id!==f.id))}
+          onRetry={f.state==='failed'?()=>setFiles(l=>l.map(x=>x.id===f.id?{...x,state:'uploading',progress:0,error:undefined}:x)):undefined} />
+      ))}
+    </div>
+  );
+}
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>FileItem</h1>
+    <p className="lede">One file, named, sized, and honest about where it is. Everything on the row is a prop: the component runs no timer, starts no request and advances no bar by itself, so what an operator sees is exactly what the caller's queue believes — and a stalled upload looks stalled instead of looking busy.</p>
+    <div className="meta">
+      <span>components/forms/FileItem.jsx</span><span>window.MeridianDesignSystem_962c43.FileItem</span><span style={{color:'var(--text-primary)'}}>status: frozen 7 Sep 2026 · 0 open items</span><span>pairs with: FileDropzone</span><span>since: 1.29.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="A representation, not an uploader.">
+    <p>Every surface that accepts files needs one row per file, and every one of them had been re-invented: a name, a size, some indication of progress, and a way to get rid of it. FileItem is that row. It is the output end of the file capability — <code>FileDropzone</code> is the input end — and it is deliberately dumb, because the only thing that knows whether an upload is alive is the thing that started it.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Show a file that has been selected or attached','FileItem','This component.'],
+      ['Take files from the user','FileDropzone','Picking, dropping, validation.'],
+      ['Show progress of work that is not a file','Progress','A job, an import, a batch — no name, no size, no removal.'],
+      ['List many attachments with columns and sorting','Table','Twenty attachments with author and date is a table, not a stack of rows.'],
+      ['A removable user-chosen token','Tag, Chip','A file is not a filter.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> in a stack under a dropzone, and in read-only attachment lists on a released record (omit <code>onRemove</code> and it becomes a printed row).</li>
+      <li><strong>Do not use</strong> as a generic progress row. Without a file name and a size it is a <code>Progress</code> wearing the wrong clothes.</li>
+      <li><strong>Do not use</strong> more than about eight in a stack. Past that the list wants a <code>Table</code>.</li>
+    </ul>
+    <div className="demo"><Queue /></div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Name, facts, bar, actions — in that order down the row.">
+    <div className="demo"><FileItem name="BOM_BRK-4820-A_rev-C.csv" size={18944} state="uploading" progress={64} meta="Anjali Deshmukh" onRemove={()=>{}} style={{width:420}} /></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Container</strong> — <code>--radius-sm</code>, <code>--surface-card</code>, <code>--border-subtle</code>. A quiet box: the row is a fact, not a card, and a stack of eight must not look like a dashboard.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Name</strong> — <code>--font-mono</code> at 12 px, truncated with an ellipsis and repeated in <code>title</code>. Mono because <code>BRK-4820-A_rev-C.pdf</code> is an identifier, and because a column of file names should align.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Facts line</strong> — size, then <code>meta</code>, then the status word, 11 px tertiary, separated by <code>·</code>. Size first, because the size is what a rejected file is usually about.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Progress bar</strong> — 3 px, <code>--radius-pill</code>, on <code>--surface-track</code>, filled with <code>--action-solid</code>. Present only while <code>state="uploading"</code>, and <strong>determinate only</strong> (§03).</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Retry</strong> — a real <code>Button variant="secondary" size="sm"</code>, offered only when <code>state="failed"</code> and only when <code>onRetry</code> is passed.</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>Remove</strong> — an <code>IconButton icon="x" size="sm"</code>, whose label changes with state: “Cancel upload of …” while in flight, “Remove …” otherwise. Composed from the core controls so it inherits the density box, the hover tint and the focus ring.</span></div>
+      <div className="callout"><span className="cnum">7</span><span><strong>No thumbnail, no file-type glyph.</strong> The extension is in the name, and a folder of drawings all showing the same generic page icon buys nothing (§14).</span></div>
+    </div>
+    <T cols={['Region','Value','Token']} rows={[
+      ['Row padding','8 px 10 px','—'],
+      ['Corner','4 px','--radius-sm'],
+      ['Name','12 px mono, ellipsis','--font-mono · --text-xs'],
+      ['Facts line','11 px','--text-2xs · --text-tertiary'],
+      ['Bar','3 px','--surface-track · --action-solid · --radius-pill'],
+      ['Actions','sm controls','--control-h-sm via Button / IconButton'],
+      ['Failed row','critical border on critical soft','--status-critical-border · --status-critical-soft'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="State in, nothing out but two intents.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['name',<span className="t">string</span>,'—','Required. Also used in both action labels.'],
+      ['size',<span className="t">number</span>,'—','Bytes. Printed by the same formatBytes the dropzone uses for its cap.'],
+      ['state',<span className="t">'queued' | 'uploading' | 'complete' | 'failed'</span>,<span className="t">'complete'</span>,'Four, and no more. §06.'],
+      ['progress',<span className="t">number</span>,'—','0–100. Required when uploading; warns otherwise.'],
+      ['error',<span className="t">ReactNode</span>,'—','The reason, in the operator’s words. Replaces the status word on a failed row.'],
+      ['meta',<span className="t">ReactNode</span>,'—','One extra fact: revision, sheet count, who attached it. One, not three.'],
+      ['onRemove',<span className="t">() => void</span>,'—','Remove, or cancel in flight. Omit for a read-only attachment.'],
+      ['onRetry',<span className="t">() => void</span>,'—','Shown only when failed.'],
+      ['disabled',<span className="t">boolean</span>,<span className="t">false</span>,'Both actions inert — for a row on a record being saved.'],
+      ['style',<span className="t">CSSProperties</span>,'—','Layout only.'],
+    ]}/>
+    <p><strong>The bar is determinate or it is absent.</strong> There is no indeterminate mode, because an animated barber-pole is exactly as informative for a healthy upload as for one whose socket died four minutes ago. If you cannot measure progress, the honest state is <code>queued</code> — “we have it, we have not started” — and if you can, pass the number.</p>
+    <p><strong>There is no <code>url</code> or <code>href</code>.</strong> A completed attachment that can be opened is a <code>Link</code> in the caller's own row, or a <code>Table</code> with a link column; making the name clickable would give the row two competing targets and one ambiguous accessible name.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="No variant prop. Two forms, and the second is an absence.">
+    <T cols={['Form','Shape','Note']} rows={[
+      ['Editable row','onRemove, and onRetry when failed','The default. Under a dropzone, in a set the operator is still assembling.'],
+      ['Read-only row','no handlers at all','A released record\u2019s attachment list. The row keeps its name, size and meta and simply offers nothing — it is not a disabled row (§06), because nothing here is unavailable; there is just nothing to do.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="editable"><FileItem name="BRK-4820-A_rev-C.pdf" size={2438144} meta="Sheet 1 of 2" onRemove={()=>{}} style={{width:340}} /></Row>
+      <Row label="read-only"><FileItem name="BRK-4820-A_rev-B.pdf" size={2340000} meta="Superseded 2026-08-14 (IST)" style={{width:340}} /></Row>
+    </div>
+    <p><strong>There is no <code>variant</code> prop</strong>, and the difference above is not one: a row is editable when it is given something to do. Adding a variant would let a caller ask for a read-only row while still passing <code>onRemove</code>, which is two answers to one question.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="One. It follows density, not a prop.">
+    <p>There is no <code>size</code> prop. The row's height comes from its content and its actions, which are <code>sm</code> core controls reading <code>--control-h-sm</code> — so the row grows under <code>[data-density="expanded"]</code> and tightens under <code>compact</code> without anything to configure. A stack of files is a list, and lists in Meridian are sized by density.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Four, and the fourth has to say why.">
+    <T cols={['state','Row','Facts line','Actions']} rows={[
+      ['queued','subtle border on card','size · “Queued”','Remove'],
+      ['uploading','subtle border on card, 3 px bar','size · “64%”','Remove, labelled “Cancel upload of …”'],
+      ['complete','subtle border on card','size · meta','Remove'],
+      ['failed','critical border on --status-critical-soft, facts line in --text-critical','size · the error text','Retry, then Remove'],
+    ]}/>
+    <div className="demo col">
+      <Row label="queued"><FileItem name="fixture-photo-IMG_4471.jpg" size={870400} state="queued" onRemove={()=>{}} style={{width:340}} /></Row>
+      <Row label="uploading"><FileItem name="BOM_BRK-4820-A_rev-C.csv" size={18944} state="uploading" progress={64} onRemove={()=>{}} style={{width:340}} /></Row>
+      <Row label="complete"><FileItem name="BRK-4820-A_rev-C.pdf" size={2438144} meta="Sheet 1 of 2" onRemove={()=>{}} style={{width:340}} /></Row>
+      <Row label="failed"><FileItem name="press-setup-notes.docx" size={31457280} state="failed" error="Over the 20 MB limit" onRetry={()=>{}} onRemove={()=>{}} style={{width:340}} /></Row>
+      <Row label="read-only"><FileItem name="BRK-4820-A_rev-B.pdf" size={2340000} meta="Superseded 2026-08-14 (IST)" style={{width:340}} /></Row>
+    </div>
+    <p><strong>“Complete” prints nothing.</strong> A row that is simply there, with a size, is complete; a green tick on every attachment turns a four-file list into a wall of confirmation. The word is reserved for the three states that are not the resting one — and even then it is one word, in the facts line, not a <code>Badge</code>.</p>
+    <p className="warn"><strong>A failed row must carry <code>error</code>.</strong> “Failed” alone tells an operator nothing they can act on, and the row is the only place the reason fits — the surface-level Alert is about the batch, not this file.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Two ordinary buttons, in the order they read.">
+    <T cols={['Key','Behaviour','Note']} rows={[
+      ['Tab','Retry, then Remove — DOM order, left to right.','Two ordinary tab stops per row. A read-only row has none.'],
+      ['Enter / Space','Activates the focused control.','Button and IconButton behaviour, unchanged.'],
+      ['Arrow keys','Nothing.','Deliberate — a file list is not a composite widget (see below).'],
+      ['Delete / Backspace','Nothing.','The row is not focusable, so there is nothing to press it on; a list-wide delete key would need a selection model this component does not have.'],
+    ]}/>
+    <ul>
+      <li><strong>No roving tabindex, and the row itself is not focusable.</strong> A stack of files is a form value, not a grid: making each row a tab stop with arrow-key traversal would add a widget contract to something that is really four labelled buttons, and would put the row between the operator and the two controls they actually want.</li>
+      <li><strong>Retry comes before Remove</strong> in the DOM as well as on screen, so the recovering action is reached first on a failed row.</li>
+      <li><strong>Focus after removal is not this component's</strong> — the row unmounts, and only the list knows what comes next. The <a href="../composite/FileUpload.spec.html">FileUpload</a> composite owns it (its §08).</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="A progressbar that means it, and two named actions.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Progress semantics (4.1.2)','role="progressbar" with aria-valuenow / valuemin / valuemax and aria-label "Uploading <name>", present only while uploading. A bar with no valuenow is announced as busy forever.'],
+      ['Status changes (4.1.3)','The percentage and the error text sit in a role="status" span, so a screen-reader user hears the row settle without having to poll it. Polite, because a queue of four files would otherwise interrupt continuously.'],
+      ['Action names (2.4.6)','Both actions include the file name: "Cancel upload of BOM_BRK-4820-A_rev-C.csv", "Remove BRK-4820-A_rev-C.pdf". A list of eight rows each offering "Remove" is unusable by voice or by tab.'],
+      ['Cancel vs remove','The same control, and a different name, because the consequence differs: one stops work in flight, the other detaches a file that is already there.'],
+      ['Focus (2.4.7)','Retry and Remove are Button and IconButton, so the system focus ring applies unchanged. This was a defect at first write — hand-rolled buttons had no ring at all.'],
+      ['Failure is not colour alone (1.4.1)','A failed row changes border, fill AND text — and the error sentence is the actual cue.'],
+      ['Name legibility','The name is truncated visually but complete in title and in the accessible name of both actions, so nothing is lost to the ellipsis.'],
+      ['Target size (2.5.8)','sm controls at --control-h-sm; the row itself is not a target.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="One width transition, and it is the only one.">
+    <T cols={['Change','Duration','Property']} rows={[
+      ['Bar fill','fast','width'],
+      ['Row appearance / removal','—','none — see below'],
+    ]}/>
+    <p><strong>The bar is the system's one sanctioned <code>width</code> transition.</strong> Meridian animates opacity, transform, colour and shadow only; a progress fill is the documented exception, because the width <em>is</em> the value and transforming a scaled bar distorts its ends. It is a short <code>--duration-fast</code> ease so a 15%-per-tick jump reads as movement rather than a flicker.</p>
+    <p><strong>Rows do not animate in or out.</strong> Files arrive in batches, and four rows sliding in at once is motion for its own sake — worse, a row that fades out on remove is still on screen when the operator looks for confirmation that it is gone.</p>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="The name is the file's, the error is yours.">
+    <T cols={['Slot','Job','Write','Not']} rows={[
+      ['name','The file name as it is','BRK-4820-A_rev-C.pdf','Drawing (revised) · Attachment 1'],
+      ['meta','One extra fact','Sheet 1 of 2 · Anjali Deshmukh · 2026-09-04 (IST)','A second copy of the size'],
+      ['error','The rule and the number','Over the 20 MB limit','Error · Upload failed · 413'],
+      ['error, network','What to do next','MES did not answer. Retry, or attach it after release.','Something went wrong'],
+    ]}/>
+    <ul>
+      <li><strong>Never rename the file.</strong> The operator recognises the name they chose, and a prettified label breaks the match with what is on their disk.</li>
+      <li><strong>One <code>meta</code> fact.</strong> Three facts and a size turn an 11 px line into a paragraph nobody reads.</li>
+      <li><strong>Dates in <code>meta</code> are ISO with the zone</strong> — <code>2026-09-04 (IST)</code> — like every other timestamp in the system.</li>
+      <li><strong>No “100%”.</strong> Completion is the absence of the bar.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="The name truncates; nothing else moves.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','Full width. The name truncates from the right — never wraps to two lines, because a wrapped 40-character file name is taller than the row it describes. Actions stay on the right; expanded density gives them a 34 px box.'],
+      ['tablet ≥ 600','As authored.'],
+      ['desktop ≥ 1024','As authored. The stack stays as wide as the form field above it, so the dropzone and its results share an edge.'],
+      ['ultrawide ≥ 1600','Cap with the form. A 900 px row separates the file name from its own remove button.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Drive <code>state</code> and <code>progress</code> from your queue.</li>
+        <li>Write <code>error</code> as the reason.</li>
+        <li>Pass <code>onRemove</code> only where removal is allowed.</li>
+        <li>Let <code>onRemove</code> cancel in flight.</li>
+        <li>Keep the file's own name.</li>
+        <li>Move to a <code>Table</code> past eight files.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>An indeterminate or fake-advancing bar.</li>
+        <li><code>state="uploading"</code> with no <code>progress</code>.</li>
+        <li>“Failed” with no reason.</li>
+        <li>A tick on every completed row.</li>
+        <li>Three <code>meta</code> facts.</li>
+        <li>A disabled row as a read-only row — omit the handlers instead.</li>
+        <li>Making the name a link.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this component invites.</strong> A bar that animates on its own while nothing is being transferred. Because <code>progress</code> is a prop, a caller that forgets to update it leaves a row at 40% forever — which is the correct, visible outcome. A component that filled the bar on a timer would have shown 100% and a completed attachment that does not exist.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="What ships in 1.29.0, and the one defect closed at first review.">
+    <ul>
+      <li><strong>Retry and Remove are <code>Button</code> and <code>IconButton</code></strong>, not hand-rolled elements. They were hand-rolled in the first cut: no focus ring, no density box, and a typographic <code>×</code> where the iconography guideline calls for a Lucide glyph. Composing the core controls fixed all three at once, and is the rule — a control inside a form component is a core control.</li>
+      <li><strong><code>formatBytes</code> is imported from <code>FileDropzone.jsx</code></strong>, so the cap in a hint and the size on a row can never disagree.</li>
+      <li><strong>The bar renders only while uploading</strong>, and its width is clamped to 0–100 — a queue reporting 104% draws a full bar rather than overflowing its track.</li>
+      <li><strong>The facts line is one flex row of spans</strong>, so an absent size or absent <code>meta</code> collapses without leaving a stray separator.</li>
+      <li><strong>The name truncates with <code>overflow:hidden</code> + <code>text-overflow:ellipsis</code> + <code>white-space:nowrap</code></strong> and carries <code>title</code>. The flex child holding it sets <code>min-width:0</code>, without which flexbox refuses to shrink it and the actions leave the row.</li>
+      <li><strong>One console warning:</strong> <code>state="uploading"</code> with no <code>progress</code>.</li>
+      <li><strong>Tokens consumed:</strong></li>
+    </ul>
+    <div className="tokenlist">
+      <span>--surface-card</span><span>--surface-track</span><span>--border-subtle</span><span>--status-critical-soft</span><span>--status-critical-border</span><span>--text-critical</span><span>--action-solid</span><span>--radius-sm</span><span>--radius-pill</span><span>--font-mono</span><span>--text-xs · --text-2xs</span><span>--text-primary · --text-tertiary · --text-disabled</span><span>--space-3</span><span>--duration-fast · --ease-out</span><span>--control-h-sm (via Button, IconButton)</span>
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="The queue that drives it.">
+    <pre>{`import { FileItem } from '@meridian/ds';
+
+// one entry per file; the row is a pure function of this
+// { id, name, size, state, progress, error, meta }
+
+async function upload(entry) {
+  set(entry.id, { state: 'uploading', progress: 0 });
+  try {
+    await put(entry.file, p => set(entry.id, { progress: p }));   // real bytes, not a timer
+    set(entry.id, { state: 'complete', progress: undefined });
+  } catch (e) {
+    set(entry.id, { state: 'failed', error: describe(e) });        // the reason, not the code
+  }
+}
+
+<FileItem name={f.name} size={f.size} meta={f.meta}
+  state={f.state} progress={f.progress} error={f.error}
+  onRemove={() => f.state === 'uploading' ? abort(f.id) : detach(f.id)}
+  onRetry={f.state === 'failed' ? () => upload(f) : undefined} />`}</pre>
+    <ul>
+      <li><strong><code>onRemove</code> is one intent with two implementations.</strong> While uploading it must abort the request (an <code>AbortController</code> per entry) as well as drop the row; a row that disappears while its bytes keep flowing is the worst outcome available here.</li>
+      <li><strong><code>progress</code> must come from real bytes</strong> — <code>XMLHttpRequest.upload.onprogress</code>, or a <code>fetch</code> with a progress-reporting stream. Do not interpolate it on a timer to look smooth.</li>
+      <li><strong>Translate errors before they reach the row.</strong> <code>413</code> becomes “Over the 20 MB limit”; a network abort becomes “MES did not answer. Retry, or attach it after release.”</li>
+      <li><strong>Testing.</strong> <code>getByRole('progressbar')</code> and assert <code>aria-valuenow</code> tracks <code>progress</code>; assert the remove control is named “Cancel upload of …” while uploading and “Remove …” otherwise; assert Retry appears only when <code>failed</code> <em>and</em> <code>onRetry</code> is passed; assert the console warning for <code>uploading</code> without <code>progress</code>.</li>
+      <li><strong>Lint.</strong> Flag <code>state="uploading"</code> with a literal or absent <code>progress</code>, <code>state="failed"</code> with no <code>error</code>, and <code>disabled</code> used on a row that has no handlers (that is a read-only row, which needs no <code>disabled</code>).</li>
+      <li><strong>Closed as decided — no thumbnail, ever, and no <code>preview</code> prop.</strong> It was considered as an opt-in and refused: a preview needs an object URL created per row and revoked on unmount, which makes a pure representation own a resource; and in this plant the attachments are drawings, BOM CSVs and the occasional photo, so a preview column would be a 40 px empty box on most rows and a 40 px indistinguishable grey rectangle on the rest. The name carries the extension, which is what an operator actually matches against their own disk. A surface that genuinely needs a gallery is building a gallery, not a file list.</li>
+      <li><strong>Closed as decided — the row keeps its own 3 px bar.</strong> It does not compose <code>Progress</code>, and it should not: <code>Progress</code> §07 refuses to lend its tokens sideways, and its smallest form is a component-scale bar with its own label and value semantics, where this is a hairline inside a row that already has both. Should <code>Progress</code> ever gain a genuine <code>inline</code> size, adopting it here is an additive, invisible change — worth doing, but not something this component is waiting for.</li>
+      <li><strong>Frozen 7 Sep 2026.</strong> API closed: <code>name</code>, <code>size</code>, <code>state</code>, <code>progress</code>, <code>error</code>, <code>meta</code>, <code>onRemove</code>, <code>onRetry</code>, <code>disabled</code>, <code>style</code>. Four states and no fifth; a determinate bar or none; no <code>url</code>, no <code>preview</code>. The one change since 1.29.0 was internal — Retry and Remove became real <code>Button</code> and <code>IconButton</code> instances (§13).</li>
+    </ul>
+  </Sec>
+
+</div>);}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

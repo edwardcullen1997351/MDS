@@ -1,0 +1,21 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x780" name="Conditional input — reference implementation" subtitle="The working composition behind the spec, set in a manufacturing ERP — switch the unavailability and retention policies with the tweaks" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Conditional input — reference implementation</title><link rel="stylesheet" href="../../styles.css">
+<style>
+html,body{margin:0;height:100%}
+body{background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);display:flex;flex-direction:column}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;padding:16px 22px;border-bottom:var(--border-hairline);background:var(--surface-card);flex:none}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em;flex:1 1 auto;min-width:200px}
+.links{display:flex;flex-wrap:wrap;gap:14px;font-family:var(--font-mono);font-size:var(--text-2xs)}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+p{margin:0;flex:1 1 100%;max-width:88ch;color:var(--text-secondary);font-size:var(--text-xs);line-height:1.55;text-wrap:pretty}
+iframe{flex:1 1 auto;width:100%;border:0;display:block;min-height:0}
+</style></head><body>
+<header>
+<span class="eyebrow">Reference implementation</span>
+<h1>Conditional input</h1>
+<div class="links"><a href="../../specs/patterns/ConditionalInput.spec.html">Specification §01–§21</a><a href="../../templates/conditional-input/ConditionalInput.dc.html">Open standalone</a><a href="patterns.card.html">Patterns index</a></div>
+<p>Live, on Meridian's own components, dispositioning a nonconforming lot at final inspection. Five dependents behind three controllers, including a chain — SMS asks for a mobile number only while the supervisor notification is on. Choose Scrap to see two dependents transition in one pass; set a 60-day hold under Use as-is then switch to Scrap to watch a valid value be re-judged under the shorter disposition window; turn the notification off while focus sits in the mobile number to see focus land back on the controller. Open standalone to reach the tweaks for the <span style="font-family:var(--font-mono)">unavailability</span>, <span style="font-family:var(--font-mono)">retention</span> and <span style="font-family:var(--font-mono)">requiredness</span> policies — under optional requiredness an applicable dependent still validates its format but never blocks the disposition.</p>
+</header>
+<iframe src="../../templates/conditional-input/ConditionalInput.dc.html" title="Conditional input reference implementation"></iframe>
+</body></html>

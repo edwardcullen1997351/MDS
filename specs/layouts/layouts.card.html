@@ -1,0 +1,142 @@
+<!-- @dsCard group="Specs · Layouts" viewport="900x560" name="Layouts index" subtitle="The register of Layout Templates — empty until the first one ships all three artifacts" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Layout templates — index</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:28px}
+.wrap{max-width:860px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-3xl);font-weight:var(--weight-light);letter-spacing:-0.02em}
+p{margin:0;max-width:78ch;color:var(--text-secondary);text-wrap:pretty}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}
+a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+.rule{margin:20px 0 0;border-top:var(--border-width) solid var(--border-strong)}
+.empty{margin:20px 0 0;padding:22px 24px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:10px}
+.empty h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+.block{margin:26px 0 0}
+.block h2{margin:0 0 10px;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+.item{display:grid;grid-template-columns:150px minmax(0,1fr);gap:24px;padding:16px 0;border-bottom:var(--border-hairline)}
+.item:last-of-type{border-bottom:none}
+.head{display:flex;flex-direction:column;gap:6px}
+h3{margin:0;font-size:var(--text-sm);font-weight:var(--weight-semibold)}
+.parts{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:8px;min-width:0}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px;color:var(--text-secondary);max-width:78ch}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+.secs{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+.s{font-family:var(--font-mono);font-size:var(--text-2xs);padding:1px 6px;border-radius:var(--radius-xs);background:var(--surface-sunken);color:var(--text-secondary)}
+.s.off{background:transparent;border:var(--border-hairline);color:var(--text-tertiary)}
+.s.req{background:var(--status-success-soft);color:var(--text-success)}
+.legend{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:14px;margin-top:20px;border-top:var(--border-hairline);line-height:1.8}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+@media (max-width:700px){.item{grid-template-columns:1fr;gap:10px}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Layout templates</span>
+<h1>Layouts index</h1>
+<p>A Layout Template is a standardized arrangement of regions for a whole screen or a major area of one. It owns the frame — which regions exist, what each is for, how space is divided, which region scrolls, how the arrangement restructures as space changes — and nothing that sits inside a region. Each layout ships three artifacts: a specification under <code>specs/layouts/</code>, a working reference implementation under <code>templates/&lt;slug&gt;/</code> named <code>Layout · &lt;Label&gt;</code> with its regions filled at realistic volume, and a reference card in this group. Every scenario is set in the same works — Suryodaya Autocomp Ltd, Chakan plant (PL-04), Pune, in rupees and IST. See the <a href="../../guidelines/layout-template-spec-standard.card.html">layout template spec standard</a> for the section set, the include/omit tests, and what every layout must ship; a contract about sequencing and commit over time belongs in <a href="../patterns/patterns.card.html">patterns</a>, and a fixed assembly with an API in <a href="../composite/composite.card.html">composite</a>.</p>
+<div class="rule"></div>
+
+<div class="block" style="margin-top:20px">
+  <div class="item">
+    <div class="head"><h3><a href="SingleColumn.spec.html">Single column</a></h3><span class="parts">Reference: raising a maintenance work request on press line P-2</span><span class="parts">Container, Stack, Box, Surface, Spacer, Divider, Heading, Text</span></div>
+    <div class="body">
+      <ul>
+        <li><strong>Owns</strong> five regions in one vertical order — page, optional header, primary content, optional action, optional subordinate supplementary — one page region guttered once, one rhythm for every section boundary, bounded or fluid measure with alignment, heading levels that carry hierarchy instead of spacing, landmarks only where warranted, and an anchored action region that reserves its height rather than covering the last field.</li>
+        <li><strong>Refuses</strong> a second column introduced at a breakpoint, reading content stretched because the space exists, required content demoted to the supplementary region, spacing standing in for heading level, nested page regions, a scroll container of its own, and any state — a frame that must remember a collapsed region has outgrown this template.</li>
+      </ul>
+      <div class="secs">
+        <span class="s req">§01</span><span class="s req">§02</span><span class="s">§03</span><span class="s off">§04</span><span class="s off">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s req">§08</span><span class="s off">§09</span><span class="s off">§10</span><span class="s req">§11</span><span class="s req">§12</span><span class="s req">§13</span><span class="s off">§14</span>
+      </div>
+      <p class="parts">Reference implementation: <a href="single-column-reference.card.html">card</a> · <a href="../../templates/single-column/SingleColumn.dc.html">standalone</a> · do/don't pairs in §02, §11 · status: frozen 8 Sep 2026 · 0 open items</p>
+    </div>
+  </div>
+  <div class="item">
+    <div class="head"><h3><a href="Sidebar.spec.html">Sidebar</a></h3><span class="parts">Reference: incoming inspection of lot LOT-2609-118</span><span class="parts">Grid, GridItem, Container, Surface, Divider, Stack, Box · Drawer at constrained widths</span></div>
+    <div class="body">
+      <ul>
+        <li><strong>Owns</strong> a narrower contextual region kept continuously beside a dominant flexible one — side and document order together, a fixed/bounded or proportional track, persistence with a collapsed state the frame itself holds, a usable-width floor on the main region expressed as the grid's own <code>minmax</code>, relocation before or after the main region (or into a <code>Drawer</code>) when that floor is reached, a toggle that reports expanded state and names the region it controls, and collapse motion along the region's own axis.</li>
+        <li><strong>Refuses</strong> a sidebar that exists to fill horizontal space, a main region compressed to preserve the split, a lateral collection whose selection drives the other region, two independent lateral regions in one bucket, collapsed as a shipped default, a region reachable only by scrolling past the main one, navigation chrome on reference content, and any assumption that the sidebar is navigation.</li>
+      </ul>
+      <div class="secs">
+        <span class="s req">§01</span><span class="s req">§02</span><span class="s">§03</span><span class="s off">§04</span><span class="s off">§05</span><span class="s">§06</span><span class="s off">§07</span><span class="s req">§08</span><span class="s">§09</span><span class="s off">§10</span><span class="s req">§11</span><span class="s req">§12</span><span class="s req">§13</span><span class="s off">§14</span>
+      </div>
+      <p class="parts">Reference implementation: <a href="sidebar-reference.card.html">card</a> · <a href="../../templates/sidebar/Sidebar.dc.html">standalone</a> · do/don't pairs in §02, §11 · status: frozen 8 Sep 2026 · 0 open items</p>
+    </div>
+  </div>
+  <div class="item">
+    <div class="head"><h3><a href="HolyGrail.spec.html">Holy grail</a></h3><span class="parts">Reference: press-shop work order release, week 2026-W37</span><span class="parts">Grid, GridItem, Container, Surface, Box, Stack, Divider · Drawer at constrained widths</span></div>
+    <div class="body">
+      <ul>
+        <li><strong>Owns</strong> a dominant centre between two lateral regions with independent purposes, optionally under a top region and over a bottom one — two lateral tracks sized separately, a declared usable-width floor on the centre expressed as the grid's own <code>minmax</code>, per-region persistence and collapse the frame itself holds, displacement in semantic-priority order (the less-used side leaves first, then both) by stacking or into a <code>Drawer</code>, a document order that is the reading order rather than the visual sweep, named landmarks and a bypass past a leading region, and collapse motion on one region at a time.</li>
+        <li><strong>Refuses</strong> three columns because three content groups exist, the same supplementary role on both sides, a second lateral region invented for balance, global plus local navigation treated as this frame, a lateral collection whose selection replaces the centre, the centre compressed to keep both sides, lateral regions wider together than the centre, both sides collapsed by default, and a side reachable only by scrolling past the centre.</li>
+      </ul>
+      <div class="secs">
+        <span class="s req">§01</span><span class="s req">§02</span><span class="s">§03</span><span class="s off">§04</span><span class="s off">§05</span><span class="s">§06</span><span class="s off">§07</span><span class="s req">§08</span><span class="s">§09</span><span class="s">§10</span><span class="s req">§11</span><span class="s req">§12</span><span class="s req">§13</span><span class="s off">§14</span>
+      </div>
+      <p class="parts">Reference implementation: <a href="holy-grail-reference.card.html">card</a> · <a href="../../templates/holy-grail/HolyGrail.dc.html">standalone</a> · do/don't pairs in §02, §11 · status: frozen 8 Sep 2026 · 0 open items</p>
+    </div>
+  </div>
+  <div class="item">
+    <div class="head"><h3><a href="SplitView.spec.html">Split view</a></h3><span class="parts">Reference: routing change ECN-2026-0412, HSG-3360-B</span><span class="parts">Grid, GridItem, Box, Surface, Stack, Divider · pane-specific Toolbar · Tabs in the sequential form</span></div>
+    <div class="body">
+      <ul>
+        <li><strong>Owns</strong> two substantial work surfaces held side by side in one workspace — orientation and ratio as declared properties with three named ratios and no others, a required boundary that separates without implying a control, per-pane or workspace scroll chosen once, a functional minimum per pane written into the track's <code>minmax</code>, conversion to an explicit pane switch when neither minimum can hold, an active-pane state that restores each pane's scroll and never loses an uncommitted draft, and pane headings bound to pane contents.</li>
+        <li><strong>Refuses</strong> a pane that only shows the other's selection, two unrelated modules that merely fit beside one another, a reference strip dressed as a pane, a boundary that implies a splitter the system does not ship, arbitrary ratios promoted to named variants, panes ordered differently from each other, a workspace commit placed inside one pane, and both panes squeezed below usability to keep the shape.</li>
+      </ul>
+      <div class="secs">
+        <span class="s req">§01</span><span class="s req">§02</span><span class="s">§03</span><span class="s off">§04</span><span class="s">§05</span><span class="s">§06</span><span class="s off">§07</span><span class="s req">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s req">§11</span><span class="s req">§12</span><span class="s req">§13</span><span class="s off">§14</span>
+      </div>
+      <p class="parts">Reference implementation: <a href="split-view-reference.card.html">card</a> · <a href="../../templates/split-view/SplitView.dc.html">standalone</a> · do/don't pairs in §02, §11 · status: frozen 8 Sep 2026 · 0 open items</p>
+    </div>
+  </div>
+  <div class="item">
+    <div class="head"><h3><a href="MasterDetail.spec.html">Master-detail</a></h3><span class="parts">Reference: delivery expediting, open PO lines past promise at PL-04</span><span class="parts">Grid, GridItem, Stack, Surface, Box, Divider · SearchField, Select, Table, Pagination · DescriptionList, EmptyState, Skeleton, Alert, Button</span></div>
+    <div class="body">
+      <ul>
+        <li><strong>Owns</strong> a collection held beside the one member being worked — a one-directional selection relationship in which the collection drives the detail and never the reverse, a collection region that owns its position (query, filter, sort, page, scroll) and a detail region that owns its member, a required boundary that implies no splitter, collection and detail widths with an initial-selection policy and a stated persistence across collection operations, four layout states deciding whether region 3 is populated at all, focus that never follows selection plus a deliberate route across the boundary, and a sequential form whose return restores position, refinement and selection.</li>
+        <li><strong>Refuses</strong> two peer objects compared in it, a selection that needs no persistent adjacent surface, member content forced into a pane it cannot fit, a detail region that collapses when nothing is selected, a heading that names the region's role instead of its member, a collection reconfigured from inside the detail, a bulk-selected set conflated with the detail-driving selection, focus dragged into the detail on every selection change, and a nested second master-detail.</li>
+      </ul>
+      <div class="secs">
+        <span class="s req">§01</span><span class="s req">§02</span><span class="s">§03</span><span class="s off">§04</span><span class="s off">§05</span><span class="s">§06</span><span class="s">§07</span><span class="s req">§08</span><span class="s off">§09</span><span class="s off">§10</span><span class="s req">§11</span><span class="s req">§12</span><span class="s req">§13</span><span class="s off">§14</span>
+      </div>
+      <p class="parts">Reference implementation: <a href="master-detail-reference.card.html">card</a> · <a href="../../templates/master-detail/MasterDetail.dc.html">standalone</a> · do/don't pairs in §02, §07, §11 · status: frozen 8 Sep 2026 · 0 open items</p>
+    </div>
+  </div>
+  <div class="item">
+    <div class="head"><h3><a href="Dashboard.spec.html">Dashboard</a></h3><span class="parts">Reference: shift-handover screen, PL-04, 07:15 (IST)</span><span class="parts">Grid, GridItem, Card, Surface, Stack, Container · Table, DescriptionList, Select, Badge · Skeleton, Alert, EmptyState</span></div>
+    <div class="body">
+      <ul>
+        <li><strong>Owns</strong> the simultaneous overview of several independently meaningful modules — a header whose shared controls really do scope the grid, a module grid that distributes prominence through column count, per-module span and one authored order, modules that each carry a real heading, their own period and scope and their own local actions, a first viewport that must earn its place, spans that reduce through an intermediate form to a single ordered stream, and one document order that the visual reflow may never contradict.</li>
+        <li><strong>Refuses</strong> any page of cards called a dashboard, sequential content or a stepwise task in a grid, a screen where one collection is plainly the task surface, equal prominence for everything, modules that only mean something together, a whole-dashboard loading or error state because one read failed, header controls that govern only some modules, and modules that grow into screens.</li>
+      </ul>
+      <div class="secs">
+        <span class="s req">§01</span><span class="s req">§02</span><span class="s">§03</span><span class="s off">§04</span><span class="s off">§05</span><span class="s off">§06</span><span class="s off">§07</span><span class="s req">§08</span><span class="s off">§09</span><span class="s">§10</span><span class="s req">§11</span><span class="s req">§12</span><span class="s req">§13</span><span class="s off">§14</span>
+      </div>
+      <p class="parts">Reference implementation: <a href="dashboard-reference.card.html">card</a> · <a href="../../templates/dashboard/Dashboard.dc.html">standalone</a> · do/don't pairs in §02, §10, §11 · status: frozen 8 Sep 2026 · 0 open items</p>
+    </div>
+  </div>
+  <div class="item">
+    <div class="head"><h3><a href="CollectionWorkspace.spec.html">Collection workspace</a></h3><span class="parts">Reference: gauge and instrument calibration register, PL-04</span><span class="parts">Container, Stack, Surface, Grid · Toolbar, SearchField, Select, Drawer · Table, List, Tree, SortableCollection, Pagination, Checkbox · Skeleton, EmptyState, Alert</span></div>
+    <div class="body">
+      <ul>
+        <li><strong>Owns</strong> one collection as the whole work surface — collection-scoped, refinement-scoped and selection-scoped controls each in their own region so scope is read from position, control placement and pagination placement as declared properties, a conditional selection region that appears without displacing what is being read, five structural states that decide which region occupies the workspace (loading, empty, no-matches, selection active, collection-level failure), identity-keyed selection surviving refinement and paging, predictable focus order as regions come and go, and controls that stack ahead of the collection when space is short.</li>
+        <li><strong>Refuses</strong> separate table, list, card-grid or gallery templates derived from the collection component, selection that structurally drives a visible detail region, several independent modules, three action scopes merged into one strip, a bulk region that displaces or covers the collection, one empty state doing duty for both empty and no-matches, blanked controls during a load or a stale collection during a failure, refinement that silently clears selection, and controls interleaved with items.</li>
+      </ul>
+      <div class="secs">
+        <span class="s req">§01</span><span class="s req">§02</span><span class="s">§03</span><span class="s off">§04</span><span class="s off">§05</span><span class="s">§06</span><span class="s">§07</span><span class="s req">§08</span><span class="s off">§09</span><span class="s off">§10</span><span class="s req">§11</span><span class="s req">§12</span><span class="s req">§13</span><span class="s off">§14</span>
+      </div>
+      <p class="parts">Reference implementation: <a href="collection-workspace-reference.card.html">card</a> · <a href="../../templates/collection-workspace/CollectionWorkspace.dc.html">standalone</a> · do/don't pairs in §02, §11 · status: frozen 8 Sep 2026 · 0 open items</p>
+    </div>
+  </div>
+</div>
+
+<div class="block">
+  <h2>The section set every entry is written against</h2>
+  <div class="secs">
+    <span class="s req">§01 Purpose</span><span class="s req">§02 Anatomy</span><span class="s">§03 Properties</span><span class="s">§04 Variants</span><span class="s">§05 Sizes</span><span class="s">§06 States</span><span class="s">§07 Keyboard</span><span class="s req">§08 Accessibility</span><span class="s">§09 Motion</span><span class="s">§10 Content rules</span><span class="s req">§11 Responsive</span><span class="s req">§12 Anti-patterns</span><span class="s req">§13 Implementation notes</span><span class="s">§14 Developer notes</span>
+  </div>
+  <p style="margin-top:10px">Green is unconditional — six sections present in every accepted layout. Filled = included; outlined = omitted, with the reason stated at the foot of that spec. The other eight are admitted only when the layout itself defines them, never because a component inside a region does. Numbers are stable identifiers and never renumber, so <code>§11 Responsive</code> means the same thing in every layout spec.</p>
+</div>
+
+<p class="legend">This page is the register of accepted Layout Templates · Seven layouts written · Section set and include/omit tests: <a href="../../guidelines/layout-template-spec-standard.card.html">layout template spec standard</a></p>
+</div>
+</body></html>

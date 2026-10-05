@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Confirmed action" description="Interaction pattern reference implementation, set in a manufacturing ERP — cancelling a released work order mid-run: initiation kept apart from commitment, the consequence stated in pieces and rupees, a target snapshot revalidated before execution, cancellation with no side effects, and failure that never reads as success." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:1180px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/ConfirmedAction.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+</div>
+<p style="margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note, the state inspector, and the five tweaks under <span style="font-family:var(--font-mono)">Demo harness</span> — exists to make the contract visible. Cancellation of the work order is a timer standing in for the MES call; the comment above it says what to replace. The four tweaks under <span style="font-family:var(--font-mono)">Pattern properties</span> are not harness: <span style="font-family:var(--font-mono)">acknowledgement</span>, <span style="font-family:var(--font-mono)">dismissal</span>, <span style="font-family:var(--font-mono)">targetRevalidation</span> and <span style="font-family:var(--font-mono)">completionFeedback</span> are the §05 policies an adopting team must declare.</p>
+<p style="margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Two actions, deliberately unlike each other: <span style="font-family:var(--font-mono)">Hold the line</span> is reversible and confirms nothing — it acts and offers an undo. <span style="font-family:var(--font-mono)">Cancel the work order</span> is consequential and confirms, stating the WIP, the balance and the reservation it will strand. Open the confirmation and turn on <span style="font-family:var(--font-mono)">The line books 300 more pieces</span> or <span style="font-family:var(--font-mono)">MES closes the work order</span> to change the target under an open dialog; <span style="font-family:var(--font-mono)">Cancellation fails in MES</span> gives you a failure after confirmation, and <span style="font-family:var(--font-mono)">The reply from MES is lost</span> an outcome that is honestly unknown.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Production control · released work order · Chakan plant (PL-04) · shift B, 2026-09-07 (IST)</span>
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">{{ woHeading }}</h1>
+<p style="margin:0;max-width:80ch;color:var(--text-secondary);font-size:var(--text-sm);line-height:1.55">Running on press PR-03 under Sandeep Kulkarni. Cancelling a released order strands what has already been made and releases the material reserved against it — which is why it is confirmed and holding the line is not.</p>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px;align-items:start">
+
+<div style="display:flex;flex-direction:column;gap:16px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);padding:20px 22px">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+<span style="font-family:var(--font-mono);font-size:var(--text-sm);color:var(--text-primary)">{{ wo }}</span>
+{{ statusBadge }}
+</div>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.DescriptionList" items="{{ woFields }}" layout="columns" size="sm" divided="{{ true }}" termWidth="186px" responsive="{{ true }}" hint-size="100%,260px"></x-import>
+
+<sc-if value="{{ showOutcome }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ outcomeTone }}" title="{{ outcomeTitle }}" live="on" size="sm" action="{{ outcomeAction }}" hint-size="100%,110px">{{ outcomeBody }}</x-import>
+</sc-if>
+
+<sc-if value="{{ pending }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Progress" variant="bar" size="sm" label="{{ pendingLabel }}" delay="{{ 150 }}" hint-size="100%,20px"></x-import>
+</sc-if>
+
+<div style="display:flex;flex-wrap:wrap;gap:10px;padding-top:4px;border-top:var(--border-hairline);margin-top:2px">
+{{ actionButtons }}
+</div>
+<div role="status" aria-live="polite" style="min-height:19px;font-size:var(--text-xs);line-height:1.55;color:var(--text-secondary);text-wrap:pretty">{{ announcement }}</div>
+</div>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:12px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:16px 18px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Confirmation &amp; operation state · remove on copy</span>
+<div style="display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="8">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:112px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+<div style="border-top:var(--border-hairline);padding-top:11px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Target captured when the dialog opened</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ snapshotText }}</pre>
+</div>
+<div style="border-top:var(--border-hairline);padding-top:11px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Live target now</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ liveText }}</pre>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">Opening the dialog executes nothing: it captures the target and the figures the operator is being shown. Confirming revalidates the live target against that capture before anything is sent (§04, §20).</p>
+</div>
+</div>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Dialog" open="{{ confirmOpen }}" title="{{ confirmTitle }}" description="{{ confirmDescription }}" tone="danger" width="md" dismissible="{{ dismissible }}" initialFocus="{{ declineRef }}" onClose="{{ onDismiss }}" footer="{{ confirmFooter }}" hint-size="100%,0px">
+<div style="display:flex;flex-direction:column;gap:14px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="warning" title="{{ consequenceTitle }}" size="sm" hint-size="100%,110px">{{ consequenceBody }}</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.DescriptionList" items="{{ snapshotFields }}" layout="columns" size="sm" termWidth="176px" responsive="{{ true }}" hint-size="100%,150px"></x-import>
+<sc-if value="{{ showDrift }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="danger" title="{{ driftTitle }}" live="on" size="sm" hint-size="100%,110px">{{ driftBody }}</x-import>
+</sc-if>
+<sc-if value="{{ showAck }}" hint-placeholder-val="{{ false }}">
+<div style="padding-top:2px">{{ ackControl }}</div>
+</sc-if>
+</div>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Snackbar" open="{{ snackOpen }}" message="{{ snackMessage }}" action="{{ snackAction }}" onDismiss="{{ onSnackDismiss }}" duration="{{ 6000 }}" scope="page" placement="floating" size="sm" hint-size="100%,0px"></x-import>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1240,&quot;height&quot;:900},&quot;acknowledgement&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;checkbox&quot;,&quot;typed&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Extra acknowledgement before confirming&quot;},&quot;dismissal&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dismissible&quot;,&quot;explicit&quot;],&quot;default&quot;:&quot;dismissible&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Non-action dismissal&quot;},&quot;targetRevalidation&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;block&quot;,&quot;proceed&quot;],&quot;default&quot;:&quot;block&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;If the target moved while open&quot;},&quot;completionFeedback&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;alert&quot;,&quot;toast&quot;],&quot;default&quot;:&quot;alert&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Success feedback&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:200,&quot;max&quot;:3000,&quot;step&quot;:100,&quot;default&quot;:1100,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;MES cancellation latency&quot;},&quot;operationFails&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Cancellation fails in MES&quot;},&quot;responseLost&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;The reply from MES is lost&quot;},&quot;lineBooksMore&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;The line books 300 more pieces&quot;},&quot;mesCloses&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;MES closes the work order&quot;}}">
+// Released work order on PR-03, PL-04, shift B 2026-09-07 (IST). `produced`
+// and `status` move as the line reports; everything else is fixed at release.
+const WO = {
+  wo: 'WO-2026-4471', part: 'BRK-4820-A', desc: 'Caliper bracket, LH \u2014 blanked and pierced',
+  press: 'PR-03', shift: 'B', supervisor: 'Sandeep Kulkarni', planner: 'Anjali Deshmukh',
+  released: 4800, pack: 200, rate: 18.5, matValue: 262000, customer: 'Assembly line 2 \u00b7 SO-19822',
+  releasedAt: '2026-09-07 06:00'
+};
+const rupee = n => '\u20B9' + Math.round(n).toLocaleString('en-IN');
+const num = n => Number(n).toLocaleString('en-IN');
+const M = () => window.MeridianDesignSystem_962c43 || {};
+
+class Component extends DCLogic {
+  state = {
+    typed: '',                // typed-reference gate, when that policy is set
+    produced: 3150,           // pieces reported by the line
+    status: 'running',        // running | held | cancelled
+    confirm: null,            // { action, snapshot } — confirmation state only
+    ack: false,
+    operation: null,          // { action, target, req } while executing
+    outcome: null,            // { action, ok, why }
+    drift: null,              // { kind, was, now } — target moved under the dialog
+    snack: null,              // { message, undo }
+    announcement: '',
+    attempts: 0
+  };
+  req = 0;
+  // Initial focus lands on the decline control, never on the destructive
+  // confirm: a keypress already in flight must not be able to commit (§12).
+  declineRef = React.createRef();
+
+  // Focus returns to the control that opened the confirmation.
+  focusInitiator() { setTimeout(() => { const el = document.querySelector('[data-initiates="cancel-wo"]'); if (el) el.focus({ preventScroll: true }); }, 30); }
+
+  policy(n, f) { return this.props[n] || f; }
+  liveTarget() { return { wo: WO.wo, produced: this.state.produced, balance: WO.released - this.state.produced, status: this.state.status }; }
+
+  // Opening the confirmation captures the target and the figures the operator
+  // is being shown. It executes nothing (§04).
+  openConfirm = () => {
+    if (this.state.operation) return;
+    this.setState({ confirm: { action: 'cancel-wo', snapshot: this.liveTarget() }, ack: false, typed: '', drift: null, outcome: null, announcement: 'Confirmation open. ' + WO.wo + ' is still running \u2014 nothing has been cancelled.' });
+    // Focus enters the dialog on the decline control (§12). The Dialog's own
+    // initialFocus is kept as well; this makes it certain in every mount.
+    setTimeout(() => {
+      const el = (this.declineRef.current) || document.querySelector('[data-declines="cancel-wo"]');
+      if (el) el.focus({ preventScroll: true });
+    }, 40);
+  };
+
+  // Cancellation is side-effect free: the captured target is discarded.
+  dismiss = (how) => {
+    if (!this.state.confirm) return;
+    this.setState({ confirm: null, ack: false, typed: '', drift: null, announcement: (how === 'escape' ? 'Confirmation dismissed' : 'Cancellation not confirmed') + '. ' + WO.wo + ' is unchanged \u2014 ' + num(this.state.produced) + ' pieces made, ' + num(WO.released - this.state.produced) + ' still to run.' });
+    this.focusInitiator();
+  };
+
+  confirm = () => {
+    const c = this.state.confirm;
+    if (!c || this.state.operation) return;   // single-shot at the transition
+    const live = this.liveTarget();
+    // Revalidate the live target against what the operator was shown.
+    if (live.status !== c.snapshot.status) {
+      this.setState({ drift: { kind: 'status', was: c.snapshot.status, now: live.status }, announcement: WO.wo + ' is no longer ' + c.snapshot.status + ' \u2014 it is now ' + live.status + '. Nothing was cancelled.' });
+      return;
+    }
+    if (live.produced !== c.snapshot.produced && this.policy('targetRevalidation', 'block') === 'block') {
+      this.setState({ drift: { kind: 'produced', was: c.snapshot.produced, now: live.produced }, confirm: { action: c.action, snapshot: live }, ack: false, typed: '', announcement: 'The figures changed while the confirmation was open. Your acknowledgement was cleared \u2014 it was given about the old numbers. Nothing was cancelled.' });
+      return;
+    }
+    this.execute(c.action, live);
+  };
+
+  execute(action, target) {
+    const req = ++this.req;
+    this.setState(s => ({ operation: { action, target, req }, confirm: null, ack: false, typed: '', drift: null, outcome: null, attempts: s.attempts + 1, announcement: 'Cancelling ' + WO.wo + ' in MES\u2026' }));
+    // REPLACE: stands in for the work-order cancellation call —
+    //   POST /api/work-orders/WO-2026-4471/cancel { producedAtConfirm }
+    // Only this response may change the order's status (§20).
+    setTimeout(() => {
+      if (req !== this.req) return;
+      if (this.props.responseLost) {
+        this.setState({
+          operation: null,
+          outcome: { action, ok: false, unknown: true, why: 'No reply from MES within 30 s. The cancellation may or may not have been accepted \u2014 this screen cannot tell.' },
+          announcement: 'The outcome of cancelling ' + WO.wo + ' is unknown. Check the order in MES before acting on it.'
+        });
+        setTimeout(() => { const el = document.querySelector('[data-retry="cancel-wo"]'); if (el) el.focus({ preventScroll: true }); }, 30);
+        return;
+      }
+      if (this.props.operationFails) {
+        this.setState({
+          operation: null,
+          outcome: { action, ok: false, why: 'MES refused the cancellation \u2014 the shift B production report for PR-03 is open and must be posted first (error MES-4412).' },
+          announcement: WO.wo + ' was NOT cancelled. It is still running on PR-03.'
+        });
+        // The dialog is long gone; focus goes to the one control that can act
+        // on the failure (§12).
+        setTimeout(() => { const el = document.querySelector('[data-retry="cancel-wo"]'); if (el) el.focus({ preventScroll: true }); }, 30);
+        return;
+      }
+      this.setState({
+        operation: null, status: 'cancelled',
+        outcome: { action, ok: true, why: null },
+        snack: this.policy('completionFeedback', 'alert') === 'toast' ? { message: WO.wo + ' cancelled \u2014 ' + num(target.produced) + ' pieces to disposition', undo: false } : null,
+        announcement: WO.wo + ' cancelled. ' + num(target.produced) + ' pieces are now WIP awaiting disposition and the material reservation of ' + rupee(WO.matValue * (target.balance / WO.released)) + ' has been released.'
+      });
+    }, this.props.latency ?? 1100);
+  }
+
+  retry = () => { const o = this.state.outcome; if (o && !o.ok) { if (this.state.status !== 'running') { this.setState({ outcome: { action: o.action, ok: false, why: 'The order is now ' + this.state.status + '. Retrying would act on a different order state \u2014 open the confirmation again to see the current figures.' } }); return; } this.openConfirm(); } };
+
+  // Low-consequence, reversible: acts immediately, offers an undo. Kept here
+  // deliberately as the counter-example to §01.
+  hold = () => {
+    if (this.state.status !== 'running') return;
+    this.setState({ status: 'held', snack: { message: 'PR-03 held for ' + WO.wo, undo: true }, announcement: 'PR-03 held. No confirmation was asked, because holding is reversible and nothing is stranded.' });
+  };
+  undoHold = () => this.setState({ status: 'running', snack: null, announcement: 'Hold removed. PR-03 is running again.' });
+  dismissSnack = () => this.setState({ snack: null });
+
+  componentDidUpdate(prev) {
+    // Harness: the line books more pieces while the confirmation is open.
+    if (this.props.lineBooksMore && !prev.lineBooksMore) {
+      this.setState(s => ({ produced: Math.min(WO.released, s.produced + 300), announcement: 'The line reported 300 more pieces on ' + WO.wo + '.' }));
+    }
+    // Harness: MES closes the order out from under the confirmation.
+    if (this.props.mesCloses && !prev.mesCloses) {
+      this.setState({ status: 'cancelled', announcement: WO.wo + ' was closed in MES by Anjali Deshmukh. Any open confirmation now refers to an order that no longer accepts the action.' });
+    }
+  }
+
+  componentDidMount() { this.setState({ announcement: WO.wo + ' is running. ' + num(this.state.produced) + ' of ' + num(WO.released) + ' pieces made.' }); }
+
+  renderVals() {
+    const s = this.state;
+    const C = M();
+    const btn = (props, label) => C.Button ? React.createElement(C.Button, props, label) : null;
+    const c = s.confirm;
+    const live = this.liveTarget();
+    const snap = c ? c.snapshot : null;
+    const ackPolicy = this.policy('acknowledgement', 'none');
+    const typedOk = s.typed.trim().toUpperCase() === WO.wo;
+    const ackDone = ackPolicy === 'none' || (ackPolicy === 'typed' ? typedOk : s.ack);
+    const balance = WO.released - s.produced;
+    const wip = s.produced * WO.rate;
+
+    return {
+      wo: WO.wo,
+      woHeading: 'Work order ' + WO.wo + ' \u00b7 ' + WO.part,
+      statusBadge: C.Badge ? React.createElement(C.Badge, { tone: s.status === 'cancelled' ? 'critical' : (s.status === 'held' ? 'warning' : 'success'), size: 'sm', dot: true }, s.status) : null,
+      woFields: [
+        { term: 'Part', value: WO.part + ' \u00b7 ' + WO.desc },
+        { term: 'Released quantity', value: num(WO.released) + ' NOS', mono: true },
+        { term: 'Produced so far', value: num(s.produced) + ' NOS \u00b7 ' + rupee(wip) + ' of WIP', mono: true },
+        { term: 'Balance to run', value: num(balance) + ' NOS', mono: true },
+        { term: 'Press / shift', value: WO.press + ' \u00b7 shift ' + WO.shift + ' \u00b7 ' + WO.supervisor },
+        { term: 'Material reserved', value: rupee(WO.matValue), mono: true },
+        { term: 'Committed to', value: WO.customer },
+        { term: 'Released (IST)', value: WO.releasedAt, mono: true }
+      ],
+
+      actionButtons: [
+        btn({ key: 'cancel', variant: 'danger', size: 'md', type: 'button', 'data-initiates': 'cancel-wo', disabled: s.status !== 'running' || !!s.operation, onClick: this.openConfirm }, 'Cancel work order ' + WO.wo),
+        btn({ key: 'hold', variant: 'secondary', size: 'md', type: 'button', disabled: s.status !== 'running' || !!s.operation, onClick: this.hold }, 'Hold the line'),
+      ].filter(Boolean),
+
+      pending: !!s.operation,
+      pendingLabel: s.operation ? 'Cancelling ' + WO.wo + ' \u2014 ' + num(s.operation.target.produced) + ' pieces made, ' + num(s.operation.target.balance) + ' cancelled' : '',
+
+      showOutcome: !!s.outcome,
+      outcomeTone: s.outcome ? (s.outcome.ok ? 'success' : (s.outcome.unknown ? 'warning' : 'danger')) : 'info',
+      outcomeTitle: s.outcome ? (s.outcome.ok ? WO.wo + ' cancelled' : (s.outcome.unknown ? 'It is not known whether ' + WO.wo + ' was cancelled' : WO.wo + ' was not cancelled')) : '',
+      outcomeBody: s.outcome ? (s.outcome.ok
+        ? num(s.produced) + ' pieces (' + rupee(wip) + ') are WIP awaiting disposition by Meera Nair, the ' + num(balance) + '-piece balance is cancelled, and the material reservation against ' + WO.customer + ' is released.'
+        : (s.outcome.unknown
+          ? s.outcome.why + ' Do not confirm again yet: check ' + WO.wo + ' in MES (production control \u2192 work orders) or ask ' + WO.supervisor + ' on the line. This screen still shows the order as ' + s.status + ' because that is the last state it can vouch for.'
+          : s.outcome.why + ' The order is still running on ' + WO.press + ' and nothing was stranded. Confirm again when the report is posted.')) : '',
+      outcomeAction: s.outcome && !s.outcome.ok
+        ? btn({ variant: 'secondary', size: 'sm', type: 'button', 'data-retry': 'cancel-wo', onClick: this.retry }, s.outcome.unknown ? 'Re-read ' + WO.wo + ' and confirm again' : 'Try cancelling ' + WO.wo + ' again')
+        : null,
+
+      confirmOpen: !!c,
+      dismissible: this.policy('dismissal', 'dismissible') === 'dismissible',
+      onDismiss: () => this.dismiss('escape'),
+      declineRef: this.declineRef,
+      confirmTitle: 'Cancel work order ' + WO.wo + '?',
+      confirmDescription: snap ? 'Cancelling stops the remaining ' + num(snap.balance) + ' pieces and cannot be undone from this screen. The ' + num(snap.produced) + ' pieces already made stay in WIP and must be dispositioned separately.' : '',
+      consequenceTitle: snap ? num(snap.produced) + ' pieces (' + rupee(snap.produced * WO.rate) + ') will be stranded as WIP' : '',
+      consequenceBody: snap ? 'The ' + num(snap.balance) + '-piece balance is cancelled and ' + rupee(WO.matValue * (snap.balance / WO.released)) + ' of reserved material is released. ' + WO.customer + ' goes short by ' + num(snap.balance) + ' pieces until a new order is released.' : '',
+      snapshotFields: snap ? [
+        { term: 'Work order', value: snap.wo, mono: true },
+        { term: 'Produced (kept as WIP)', value: num(snap.produced) + ' NOS', mono: true },
+        { term: 'Balance (cancelled)', value: num(snap.balance) + ' NOS', mono: true },
+        { term: 'Line supervisor', value: WO.supervisor }
+      ] : [],
+
+      showDrift: !!s.drift,
+      driftTitle: s.drift ? (s.drift.kind === 'produced' ? 'The figures moved while this was open' : 'This order is no longer running') : '',
+      driftBody: s.drift ? (s.drift.kind === 'produced'
+        ? 'The line reported more pieces: ' + num(s.drift.was) + ' when this opened, ' + num(s.drift.now) + ' now. Nothing was cancelled. The figures above have been refreshed \u2014 confirm again if they are still what you intend.'
+        : WO.wo + ' is now ' + s.drift.now + ', not ' + s.drift.was + '. The cancellation was not sent, and no other order was substituted for it. Close this and read the order again.') : '',
+
+      showAck: ackPolicy !== 'none',
+      ackControl: ackPolicy === 'typed' && C.Field ? React.createElement(C.Field, {
+        label: 'Type the work-order number to enable the cancellation',
+        hint: 'Enter ' + WO.wo + ' exactly.',
+        error: s.typed.trim() && !typedOk ? 'That is not ' + WO.wo + '.' : undefined
+      }, React.createElement(C.Input, {
+        value: s.typed, size: 'sm', mono: true, placeholder: WO.wo,
+        onChange: (e) => this.setState({ typed: e.target.value })
+      })) : (ackPolicy === 'checkbox' && C.Checkbox ? React.createElement(C.Checkbox, {
+        label: 'I have told ' + WO.supervisor + ' that PR-03 is stopping',
+        description: 'The line is mid-run; the supervisor decides what happens to the ' + (snap ? num(snap.produced) : '') + ' pieces on the floor.',
+        checked: s.ack, onChange: (e) => this.setState({ ack: e.target.checked })
+      }) : null),
+
+      confirmFooter: c ? [
+        btn({ key: 'no', variant: 'ghost', size: 'sm', type: 'button', ref: this.declineRef, 'data-declines': 'cancel-wo', onClick: () => this.dismiss('button') }, 'Keep running'),
+        btn({ key: 'yes', variant: 'danger', size: 'sm', type: 'button', disabled: !ackDone, onClick: this.confirm }, 'Cancel ' + num(snap ? snap.balance : 0) + ' pieces and close ' + WO.wo)
+      ].filter(Boolean) : null,
+
+      snackOpen: !!s.snack,
+      snackMessage: s.snack ? s.snack.message : '',
+      snackAction: s.snack && s.snack.undo ? btn({ variant: 'link', size: 'sm', type: 'button', onClick: this.undoHold }, 'Undo') : null,
+      onSnackDismiss: this.dismissSnack,
+
+      announcement: s.announcement,
+
+      stateRows: [
+        { k: 'state', v: s.operation ? 'confirmed and pending' : (c ? (s.drift ? 'confirmation open \u00b7 target drifted' : 'confirmation open') : (s.outcome ? (s.outcome.ok ? 'completed' : (s.outcome.unknown ? 'outcome unknown' : 'failed')) : 'idle')) },
+        { k: 'order status', v: s.status },
+        { k: 'executed', v: s.operation ? 'in flight' : (s.outcome && s.outcome.ok ? 'yes, once' : (s.outcome && s.outcome.unknown ? 'unknown \u2014 sent, no reply' : 'no')) },
+        { k: 'attempts', v: String(s.attempts) },
+        { k: 'acknowledgement', v: ackPolicy === 'none' ? 'not required' : (ackPolicy === 'typed' ? (typedOk ? 'reference typed' : 'reference required, not typed') : (s.ack ? 'given' : 'required, not given')) },
+        { k: 'dismissal', v: this.policy('dismissal', 'dismissible') === 'dismissible' ? 'Esc and scrim allowed' : 'explicit buttons only' },
+        { k: 'revalidation', v: this.policy('targetRevalidation', 'block') === 'block' ? 'block if the target moved' : 'proceed on the live target' },
+        { k: 'completion', v: this.policy('completionFeedback', 'alert') === 'toast' ? 'snackbar' : 'alert in place' },
+        { k: 'request', v: '#' + this.req + (s.operation ? ' \u00b7 in flight' : ' \u00b7 settled') }
+      ],
+      snapshotText: snap ? JSON.stringify(snap, null, 1) : (s.operation ? JSON.stringify(s.operation.target, null, 1) : '\u2014 nothing captured; the dialog is closed \u2014'),
+      liveText: JSON.stringify(live, null, 1)
+    };
+  }
+}
+
+</script>
+</body>
+</html>

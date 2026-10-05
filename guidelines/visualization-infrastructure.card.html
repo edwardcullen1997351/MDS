@@ -1,0 +1,217 @@
+<!-- @dsCard group="Governance" viewport="1020x4400" name="Visualization infrastructure" subtitle="The ten shared systems powering the data visualization layer — bounds, scales, axes, legends, labels, annotations, references, colors, interactions, and states" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Shared Visualization Infrastructure</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:32px}
+.wrap{max-width:1040px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0;max-width:78ch;color:var(--text-secondary);text-wrap:pretty}
+.rules{margin:24px 0 16px;padding:20px 22px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:12px}
+.rules.arch{border-left:2px solid var(--action-solid)}
+.rules.a11y{border-left:2px solid var(--status-success-solid)}
+.rules h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+p{margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:82ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:34px 0 14px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec{display:grid;grid-template-columns:220px minmax(0,1fr);gap:28px;padding:22px 0;border-bottom:var(--border-hairline)}
+.sec:last-child{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:7px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.body{display:flex;flex-direction:column;gap:12px;min-width:0}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:normal;word-break:normal}
+.badge{align-self:flex-start;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);padding:2px 8px;border-radius:var(--radius-full);white-space:nowrap;background:var(--surface-sunken);color:var(--text-secondary)}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:4px}
+.pair div{padding:12px 14px;background:var(--surface-sunken);border-radius:var(--radius-sm)}
+.pair h4{margin:0 0 4px;font-size:var(--text-xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-regular)}
+.sig{margin-top:40px;padding-top:14px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:12px}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Governance · Architecture Standard</span>
+<h1>Shared Visualization Infrastructure</h1>
+<p class="lede">The Meridian data visualization layer rests on ten shared infrastructure systems. Rather than having individual charts (Bar, Line, Area, Scatter, Heatmap, Donut, Timeline) independently reinvent coordinate math, scale mapping, tick intervals, legend swatches, keyboard traversal, and accessible table fallbacks, these ten systems are specified once as common infrastructure and consumed across all chart implementations.</p>
+
+<div class="rules arch">
+  <h2>The Ten Infrastructure Systems</h2>
+  <p>Every chart in this design system is an assembly of these shared systems, configured for a specific analytical geometry:</p>
+  <table>
+    <thead><tr><th>Infrastructure</th><th>Responsibility</th><th>Consumers</th><th>Source / Scaffolding</th><th>Accessibility & Responsive Baseline</th></tr></thead>
+    <tbody>
+      <tr><td class="k">1. Plot Region</td><td>Establishes drawing bounds, clipping, coordinate space, margins, and 6-level layer stacking.</td><td>All systems</td><td>Visualization-native; composed inside Box, Container, Surface where useful.</td><td>Preserve readable plotting dimensions; support zoom without loss of essential data.</td></tr>
+      <tr><td class="k">2. Scale</td><td>Maps data domains to position, length, area, angle, color, opacity, or symbol channels.</td><td>All systems</td><td>Visualization-native (<code>viz-core.js</code>).</td><td>Encoding remains semantically valid under responsive changes; scale transforms communicated.</td></tr>
+      <tr><td class="k">3. Axis</td><td>Explains positional scales through ticks, labels, units, and baseline guides.</td><td>Bar, Line, Area, Scatter, Distribution, Heatmap, Range, Gantt</td><td>Visualization-native using Text typography conventions.</td><td>Text readable at zoom; tick decimation must not remove critical zero/threshold reference values.</td></tr>
+      <tr><td class="k">4. Legend</td><td>Explains non-positional visual encodings (categorical swatches, continuous ramps, threshold steps).</td><td>Most systems</td><td>Visualization-native, composed with Text, Stack, ChipGroup where filtering is required.</td><td>Keyboard operation when interactive; never rely solely on color; reflow and wrap responsively.</td></tr>
+      <tr><td class="k">5. Label</td><td>Directly identifies marks, values, groups, or regions with collision avoidance.</td><td>All systems as applicable</td><td>Visualization-native typography drawing on Text conventions.</td><td>Collision strategy required; critical labels cannot disappear solely because viewport shrinks.</td></tr>
+      <tr><td class="k">6. Annotation</td><td>Adds explanatory text, callouts, or highlights tied to data points or regions.</td><td>Most systems</td><td>Visualization-native plus Text, Popover where interactive.</td><td>Reading order and target association must be available non-visually (ARIA labelledby/describedby).</td></tr>
+      <tr><td class="k">7. Reference Indicator</td><td>Represents baselines, thresholds, targets, tolerance bands, and control limits (UCL/LCL).</td><td>Cartesian systems, Heatmap, GeoMap</td><td>Visualization-native guides and shaded tolerance bands.</td><td>Meaning cannot depend solely on stroke/color; reference text must explicitly identify semantics.</td></tr>
+      <tr><td class="k">8. Color Encoding</td><td>Standardizes categorical (<code>--viz-1…6</code>), sequential, diverging, and semantic status palettes.</td><td>All color-encoding systems</td><td>Visualization-native tokens & SVG pattern defs.</td><td>Perceptual ordering, color-vision deficiency verification, and non-color pattern redundancy.</td></tr>
+      <tr><td class="k">9. Data Interaction</td><td>Standardizes inspection (hover/focus) vs operation (selection, filtering, brushing, zooming).</td><td>Interactive systems</td><td>Visualization-native plus Tooltip, Popover, Toolbar, and Interaction Patterns.</td><td>Keyboard/pointer equivalence; visible focus; non-dragging alternatives for brush/zoom; minimum targets.</td></tr>
+      <tr><td class="k">10. Visualization State</td><td>Standardizes loading, empty, error, partial/degraded data, and unavailable states.</td><td>All systems</td><td>Skeleton, EmptyState, Alert, Progress, Tooltip as appropriate.</td><td>State changes announced; distinguish numeric 0 from null; preserve context during streaming.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="rules a11y">
+  <h2>Global Accessibility & WCAG Baseline</h2>
+  <ul>
+    <li><strong>Programmatic Name & Description:</strong> Every visualization container must have a programmatically available accessible name (via <code>aria-label</code> or <code>aria-labelledby</code>) and, where complex, a concise structural description in an SVG <code>&lt;desc&gt;</code> element detailing chart type, domain range, and high-level trend.</li>
+    <li><strong>Multi-Channel Redundancy:</strong> Exact or essential information cannot exist exclusively in color, hover state, geometry, animation, or spatial proximity. Categorical colors are paired with SVG hatching patterns or point glyphs.</li>
+    <li><strong>Accessible Marks & Focus:</strong> Interactive marks carry <code>role="graphics-symbol"</code>, accessible labels, visible keyboard focus rings (2px offset, <code>--focus-ring</code>), and roving tabindex navigation.</li>
+    <li><strong>Contrast Ratios:</strong> Text labels meet WCAG 1.4.3 (≥ 4.5:1 against surfaces); essential graphical elements (bars, lines, baselines, reference limits) meet WCAG 1.4.11 (≥ 3:1).</li>
+    <li><strong>Non-Dragging Alternatives (WCAG 2.2 2.5.7):</strong> Dragging-based brushing, interval selection, or pan operations must provide non-dragging equivalents (step buttons, range sliders, or numeric input bounds).</li>
+    <li><strong>Minimum Target Sizes (WCAG 2.2 2.5.8):</strong> Pointer targets for discrete data points must provide at least 24×24px hit bounds (recommended 44×44px touch targets).</li>
+    <li><strong>Accessible Data Table Fallback:</strong> Dense visualizations must expose an alternate structured HTML <code>&lt;table&gt;</code> with programmatic header-to-cell relationships (<code>scope="col"</code>, <code>scope="row"</code>) toggleable via <kbd>Alt+F11</kbd> or a visible action button.</li>
+    <li><strong>Two-Dimensional Reflow (WCAG 1.4.10):</strong> At high zoom (up to 400%), visualization-specific spatial content (maps, multi-axis matrices, heatmaps) is explicitly recognized under WCAG as content where two-dimensional scrolling is permitted to preserve spatial meaning.</li>
+  </ul>
+</div>
+
+<div class="groupline"><h2>Detailed System Specifications</h2><span>10 Common Infrastructure Blocks</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">01</span><h3>Plot Region</h3><span class="badge">Canvas & Bounds</span></div>
+  <div class="body">
+    <p>The Plot Region establishes the geometric bounding box, margin reservations, coordinate mapping functions, and layer stacking ladder for rendering visual elements.</p>
+    <ul>
+      <li><strong>Margin Allocation:</strong> Top/Right/Bottom/Left margins reserve space for axis tick labels, titles, and legends to prevent label clipping across container resizes.</li>
+      <li><strong>6-Level Stacking Hierarchy:</strong>
+        <ol style="margin:4px 0 0;padding-left:18px;font-family:var(--font-mono);font-size:var(--text-xs)">
+          <li>Layer 0: Background Canvas & Surface Fill</li>
+          <li>Layer 1: Gridlines & Shaded Threshold Tolerance Bands</li>
+          <li>Layer 2: Series Marks, Bar Fills, Area Shapes & Paths</li>
+          <li>Layer 3: Reference Baselines, Targets & Control Limits (UCL/LCL)</li>
+          <li>Layer 4: Data Annotations, Callouts & Active Hover Crosshairs</li>
+          <li>Layer 5: Tooltip Inspection Cards & Popover Flyouts (z-index: 20+)</li>
+        </ol>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">02</span><h3>Scale Engine</h3><span class="badge">Mathematical Mapping</span></div>
+  <div class="body">
+    <p>The Scale Engine transforms raw domain values into output visual channels (X/Y coordinates, bar lengths, circle radii, angles, opacities). All scales are mathematical functions provided by <code>viz-core.js</code>.</p>
+    <ul>
+      <li><strong>Categorical / Band Scale:</strong> Maps discrete categories to evenly spaced bands with configurable inner/outer padding.</li>
+      <li><strong>Linear Scale:</strong> Maps continuous numerical domains to Cartesian lengths with zero-baseline preservation options.</li>
+      <li><strong>Logarithmic Scale:</strong> Maps wide-dynamic-range quantitative values (e.g. vibration frequencies 10Hz to 100,000Hz) using logarithmic power steps.</li>
+      <li><strong>Temporal Scale:</strong> Maps ISO 8601 timestamps to linear time ranges in Indian Standard Time (IST).</li>
+      <li><strong>Sequential & Diverging Scales:</strong> Maps quantitative metrics to continuous color ramps or multi-hue diverging ramps around a center threshold.</li>
+      <li><strong>Area (Sqrt) Scale:</strong> Calculates bubble/circle radius using square-root scaling (<code>r = √(value)</code>) to ensure visual circle <em>area</em> remains proportional to magnitude.</li>
+    </ul>
+    <div class="pair">
+      <div><h4>Linear Radius (Anti-pattern)</h4><p>Doubling the value doubles the radius, causing a 400% increase in perceived circle area. Falsifies data.</p></div>
+      <div><h4>Square-Root Radius (Standard)</h4><p>Radius scales by square root of value so circle surface area directly represents proportional quantity.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">03</span><h3>Axis</h3><span class="badge">Scale Explanation</span></div>
+  <div class="body">
+    <p>An Axis is not a chart. Its sole job is to explain a positional scale to human readers through ticks, gridlines, labels, and units of measure.</p>
+    <ul>
+      <li><strong>Nice Tick Generation:</strong> Calculates human-readable tick intervals based on powers of 10, 2, and 5 (e.g., 0, 20, 40, 60, 80, 100).</li>
+      <li><strong>Label Formatting:</strong> Consistently formats currency (<code>₹2,50,000</code> in <code>en-IN</code>), percentages (<code>84.2%</code>), and units (<code>ppm</code>, <code>°C</code>, <code>mm/s</code>).</li>
+      <li><strong>Responsive Tick Decimation:</strong> When container width shrinks, ticks thin by an integer factor (every 2nd or 3rd tick) while preserving the zero baseline and peak values.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">04</span><h3>Legend</h3><span class="badge">Encoding Guide</span></div>
+  <div class="body">
+    <p>A Legend documents non-positional visual encodings. It maps colors, stroke dashes, and symbols to data series or value thresholds.</p>
+    <ul>
+      <li><strong>Categorical Swatches:</strong> Renders series color chips alongside series names and non-color symbols. Clicking a swatch toggles series isolation (dimming non-selected series to 0.25 opacity).</li>
+      <li><strong>Continuous Gradient Ramps:</strong> Renders horizontal or vertical color bars with min/mid/max values for heatmaps and choropleth matrices.</li>
+      <li><strong>Keyboard Accessibility:</strong> Legend buttons are focusable via Tab, support Enter/Space activation, and announce selection states via <code>aria-pressed</code>.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">05</span><h3>Label</h3><span class="badge">Direct Identification</span></div>
+  <div class="body">
+    <p>The Label system directly identifies marks, bar tips, endpoints, and data slices without forcing users to hover.</p>
+    <ul>
+      <li><strong>Collision Strategy:</strong> When labels overlap, the system executes an automated hierarchy: (1) stagger vertically/horizontally, (2) thin non-critical labels, (3) fallback to endpoint-only labels.</li>
+      <li><strong>Contrast Integrity:</strong> Direct labels placed inside colored marks automatically adjust text color (white on dark series, primary ink on light series) to guarantee 4.5:1 contrast.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">06</span><h3>Annotation</h3><span class="badge">Contextual Callout</span></div>
+  <div class="body">
+    <p>Annotations add explanatory text, callout pins, or highlighted range banners tied to specific data coordinates (e.g. *“Die Change at 11:30 IST”* or *“Tool Room Maintenance Window”*).</p>
+    <ul>
+      <li><strong>Spatial Anchoring:</strong> Anchors to data coordinates rather than absolute pixel coordinates, ensuring annotations track correctly across responsive resizing.</li>
+      <li><strong>Non-Visual Exposure:</strong> Annotations are programmatically associated with target data marks via <code>aria-describedby</code>, ensuring screen readers announce the annotation when the mark is focused.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">07</span><h3>Reference Indicator</h3><span class="badge">Benchmarks & Limits</span></div>
+  <div class="body">
+    <p>Reference Indicators represent baselines, static targets, historical averages, Upper/Lower Control Limits (UCL/LCL), and shaded tolerance bands.</p>
+    <ul>
+      <li><strong>Semantic Status Lines:</strong> Reference lines carry explicit semantic tones (<code>danger</code> for ceiling breaches, <code>success</code> for targets, <code>neutral</code> for baselines) with 1.5px dashed strokes.</li>
+      <li><strong>Tolerance Bands:</strong> Shaded rectangular zones (<code>--status-critical-soft</code>, <code>--status-warning-soft</code>) spanning value ranges on Layer 1 behind visual marks.</li>
+      <li><strong>Labelled Intent:</strong> Every reference line must render an explicit text label (e.g., *“Max Permissible Vibration: 4.5 mm/s”*); lines with unexplained numbers are forbidden.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">08</span><h3>Color Encoding</h3><span class="badge">Palette & Hatching</span></div>
+  <div class="body">
+    <p>The Color Encoding system standardizes categorical, sequential, diverging, and status hues while guaranteeing accessibility in monochrome environments.</p>
+    <ul>
+      <li><strong>Categorical Series:</strong> Strict adherence to the 6-step categorical series <code>--viz-1</code> through <code>--viz-6</code>. Series beyond 6 categories must be grouped into an "Other" bucket or transformed to a Table.</li>
+      <li><strong>Multi-Channel Pattern Hatching:</strong> Every categorical hue is paired with a distinct SVG pattern preset (diagonal stripes, stippled dots, crosshatch, horizontal bars, diamond mesh).</li>
+      <li><strong>Color-Vision Deficiency Verification:</strong> Tested and verified against Deuteranopia, Protanopia, and Tritanopia.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">09</span><h3>Data Interaction</h3><span class="badge">Inspection vs Operation</span></div>
+  <div class="body">
+    <p>Data Interaction separates read-only inspection (hover/focus data readouts) from transactional operations (selection, filtering, brushing, drill-down).</p>
+    <ul>
+      <li><strong>Inspection vs Operation:</strong> Hovering or focusing a point reveals inspection data via Tooltip; clicking or pressing Enter/Space selects or filters. Essential data is never hidden solely behind hover.</li>
+      <li><strong>Keyboard Roving Tabindex:</strong> The chart container is a single Tab stop. Arrow keys (<kbd>←</kbd>/<kbd>→</kbd>/<kbd>↑</kbd>/<kbd>↓</kbd>) navigate marks sequentially; <kbd>Home</kbd>/<kbd>End</kbd> jump to boundaries; <kbd>Esc</kbd> dismisses inspection.</li>
+      <li><strong>Non-Dragging Alternatives (WCAG 2.2):</strong> Brushing or range zooming affordances must provide companion step buttons, range sliders, or numeric input bounds.</li>
+      <li><strong>Minimum Target Hit-Area:</strong> Discrete data points implement an invisible expanded hit bounding box (minimum 24×24px, 44×44px for touch).</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">10</span><h3>Visualization State</h3><span class="badge">Lifecycle & Telemetry</span></div>
+  <div class="body">
+    <p>The Visualization State system standardizes asynchronous and operational lifecycle conditions across all chart types.</p>
+    <ul>
+      <li><strong>Loading Skeleton:</strong> Employs <code>mer-skeleton-sweep</code> animation with proportional placeholder bars/lines while applying <code>aria-busy="true"</code>.</li>
+      <li><strong>Empty State vs Numeric Zero:</strong> Explicitly distinguishes an empty dataset (missing telemetry records) from a valid numeric reading of 0 (e.g. zero downtime hours). Empty states display an icon and message without drawing misleading zero-value marks.</li>
+      <li><strong>Degraded / Partial Stream:</strong> When telemetry feeds drop packets, missing intervals render as broken dashed paths with a warning badge, preventing false linear interpolation through machine downtime.</li>
+      <li><strong>Error & Retry:</strong> Network or parser failures present an in-situ recovery banner with a retry action button.</li>
+    </ul>
+  </div>
+</div>
+
+<p class="sig">Applies to: All Data Visualization Systems & Charts · Built upon <a href="foundations-overview.card.html">Foundations</a> &amp; <a href="data-visualization-spec-standard.card.html">Data Visualization Spec Standard</a> · Consumed via <code>components/data/viz-core.js</code> · Scenario Context: <strong>Suryodaya Autocomp Ltd (Chakan PL-04, Pune)</strong></p>
+</div>
+</body></html>

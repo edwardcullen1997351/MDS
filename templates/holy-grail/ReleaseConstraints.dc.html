@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><script src="./ds-base.js"></script></helmet>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 5 }}" hint-size="100%,100%">
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<h2 style="margin:0;font-size:var(--text-sm);font-weight:var(--weight-semibold)">Capacity and material</h2>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">Shift A · 2026-09-08 (IST) · from MES 09:40</span>
+</div>
+
+<sc-if value="{{ overloaded }}" hint-placeholder-val="{{ true }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="warning" size="sm" title="P-3 is loaded past the shift" hint-size="100%,80px">{{ overloadNote }}</x-import>
+</sc-if>
+
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ lines }}" as="row" hint-placeholder-count="4">
+<div style="display:flex;flex-direction:column;gap:5px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+<span style="font-size:var(--text-xs);color:var(--text-primary)">{{ row.line }}</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ row.figure }}</span>
+</div>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Progress" value="{{ row.pct }}" size="sm" aria-label="{{ row.aria }}" hint-size="100%,6px"></x-import>
+<span style="font-size:var(--text-2xs);color:var(--text-tertiary)">{{ row.note }}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:8px;border-top:var(--border-hairline);padding-top:14px">
+<h3 style="margin:0;font-size:var(--text-xs);font-weight:var(--weight-semibold)">Material holding a release back</h3>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.List" variant="divided" size="sm" label="Material shortages" hint-size="100%,220px">
+<sc-for list="{{ shortages }}" as="s" hint-placeholder-count="3">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.ListItem" title="{{ s.part }}" description="{{ s.supplier }}" meta="{{ s.short }}" hint-size="100%,64px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ s.eta }} · blocks {{ s.blocks }}</span>
+</x-import>
+</sc-for>
+</x-import>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:8px;border-top:var(--border-hairline);padding-top:14px">
+<h3 style="margin:0;font-size:var(--text-xs);font-weight:var(--weight-semibold)">What this selection would do</h3>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.DescriptionList" items="{{ impact }}" layout="stacked" size="sm" divided="{{ true }}" hint-size="100%,150px"></x-import>
+</div>
+
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty">A release over ₹5,00,000 of standard cost, a release onto a line already past 100%, or a release with material short needs Shalini Rao, press-shop head, to countersign before MES accepts the sequence.</p>
+
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:340,&quot;height&quot;:720},&quot;load&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;any[]&quot;},&quot;shortages&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;any[]&quot;},&quot;selection&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;Record&lt;string, any&gt;&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const load = this.props.load || [];
+    const sel = this.props.selection || { count: 0, mins: 0, short: 0, value: '\u20b90' };
+    const lines = load.map((l) => {
+      const pct = Math.round((l.used / l.capacity) * 100);
+      return {
+        line: l.line,
+        pct: Math.min(pct, 100),
+        aria: l.line + ' loaded ' + pct + '% of the shift',
+        figure: l.used.toLocaleString('en-IN') + ' / ' + l.capacity.toLocaleString('en-IN') + ' min \u00b7 ' + pct + '%',
+        note: pct > 100 ? (l.used - l.capacity) + ' min over the shift \u00b7 ' + l.note : l.note,
+      };
+    });
+    const over = load.filter((l) => l.used > l.capacity);
+    const reasons = [];
+    if (sel.count) {
+      if ((sel.valueNum || 0) > 500000) reasons.push(sel.value + ' over the \u20b95,00,000 threshold');
+      if ((sel.overLines || []).length) reasons.push((sel.overLines || []).join(', ') + ' already past 100%');
+      if (sel.short) reasons.push(sel.short + ' order' + (sel.short > 1 ? 's' : '') + ' short of material');
+    }
+    return {
+      lines,
+      shortages: this.props.shortages || [],
+      overloaded: over.length > 0,
+      overloadNote: over.length
+        ? over[0].used - over[0].capacity + ' minutes past 1,200 before anything new is released, and the 70-minute die change at 14:00 (IST) is already counted in. Move a P-3 order to B shift or to P-2 before releasing.'
+        : '',
+      impact: [
+        { term: 'Work orders', value: sel.count ? String(sel.count) : 'none selected' },
+        { term: 'Press-minutes added', value: sel.count ? sel.mins.toLocaleString('en-IN') + ' min' : '—', mono: true },
+        { term: 'Standard cost', value: sel.count ? sel.value : '—', mono: true },
+        { term: 'Short of material', value: sel.count ? (sel.short ? sel.short + ' of ' + sel.count + ' orders' : 'none') : '—' },
+        { term: 'Countersignature', value: !sel.count ? '\u2014' : reasons.length ? 'Shalini Rao \u2014 ' + reasons.join('; ') : 'not required' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

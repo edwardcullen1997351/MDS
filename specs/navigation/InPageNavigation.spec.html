@@ -1,0 +1,405 @@
+<!-- @dsCard group="Specs · Navigation" viewport="1120x760" name="In-Page Navigation" subtitle="Single-Page Section Navigation System — anchor links, scrollspy intersection tracking, header offsets, and deep-linking" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>In-Page Navigation — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:68ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:74ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:76ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-direction:column;gap:16px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:120px;padding-top:6px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+
+/* Mock InPage Styles */
+.mock-inpage-layout{display:grid;grid-template-columns:220px 1fr;gap:24px;background:var(--background-page);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;height:380px}
+.mock-inpage-nav{padding:16px;border-right:var(--border-hairline);background:var(--surface-card);display:flex;flex-direction:column;gap:12px;overflow-y:auto}
+.mock-inpage-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:2px}
+.mock-inpage-link{display:block;padding:6px 10px;border-radius:var(--radius-xs);font-size:var(--text-xs);color:var(--text-secondary);text-decoration:none;border-left:2px solid transparent;transition:all 0.12s ease;cursor:pointer}
+.mock-inpage-link:hover{background:var(--surface-sunken);color:var(--text-primary)}
+.mock-inpage-link.active{border-left-color:var(--action-solid);background:var(--surface-sunken);color:var(--action-solid);font-weight:var(--weight-semibold)}
+.mock-inpage-link.lvl-3{padding-left:20px;font-size:11px}
+.mock-inpage-content{padding:20px 24px;overflow-y:scroll;display:flex;flex-direction:column;gap:28px;scroll-behavior:smooth}
+.mock-article-section{display:flex;flex-direction:column;gap:8px;scroll-margin-top:12px}
+.mock-article-section h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);color:var(--text-primary)}
+.mock-article-section p{margin:0;font-size:var(--text-xs);color:var(--text-secondary);line-height:1.6}
+
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.mock-inpage-layout{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Button, IconButton, Badge, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section id={`sec-${n}`}>
+    <div className="sec-head">
+      <span className="num">§{n}</span>
+      <h2>{title}</h2>
+      {note && <div className="sec-note">{note}</div>}
+    </div>
+    <div className="body">{children}</div>
+  </section>
+);
+
+const DOC_SECTIONS = [
+  { id: 'spec-overview', title: '1. Machine Specifications & CNC Model', level: 2, snippet: 'Dual-spindle 8-axis turning center equipped with Fanuc 31i-B5 CNC controller, 4500 RPM main spindle, and 12-station servo turret for Chakan PL-04 high-precision gear machining.' },
+  { id: 'safety-loto', title: '2. Safety Interlocks & LOTO Protocol', level: 2, snippet: 'Mandatory lockout-tagout (LOTO) procedure prior to entering enclosure. Dual optical safety curtains and hydraulic pressure bleed-down check before maintenance work.' },
+  { id: 'daily-preflight', title: '2.1 Daily Shift Pre-flight Inspection', level: 3, snippet: 'Shift A & Shift B operator checklist: verify way lube reservoir pressure (3.2 bar), coolant refractometer reading (8.5% concentration), and hydraulic filter differential.' },
+  { id: 'tooling-offsets', title: '3. Tooling Geometry & Chuck Calibration', level: 2, snippet: 'Hydraulic 3-jaw chuck pressure calibration set to 24 kN. Touch probe tool eye datum verification for radial (X) and axial (Z) offsets within ±0.003 mm tolerance.' },
+  { id: 'spindle-fft', title: '4. Spindle Vibration & FFT Spectrum', level: 2, snippet: 'Online accelerometer FFT telemetry monitoring bearing frequency harmonics (BPFO/BPFI). Warning threshold set at 1.8 mm/s RMS; critical auto-trip at 3.5 mm/s RMS.' },
+  { id: 'emergency-rca', title: '5. Emergency Shutdown & Failure RCA', level: 2, snippet: 'Protocol for uncommanded axis collision or servo overload. Immediate E-stop trigger, log export to Suryodaya Maintenance Portal, and Shift Incharge sign-off.' }
+];
+
+function InteractiveInPageDemo() {
+  const [activeId, setActiveId] = React.useState('spec-overview');
+  const [variant, setVariant] = React.useState('sidebar'); // sidebar | floating-rail | compact-menu
+  const contentRef = React.useRef(null);
+
+  const scrollToSection = (id) => {
+    setActiveId(id);
+    const el = document.getElementById(`doc-${id}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleScroll = () => {
+    if (!contentRef.current) return;
+    const container = contentRef.current;
+    const scrollPos = container.scrollTop + 40;
+
+    for (let i = DOC_SECTIONS.length - 1; i >= 0; i--) {
+      const el = document.getElementById(`doc-${DOC_SECTIONS[i].id}`);
+      if (el && el.offsetTop <= scrollPos) {
+        setActiveId(DOC_SECTIONS[i].id);
+        break;
+      }
+    }
+  };
+
+  return (
+    <div className="demo">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px',borderBottom:'var(--border-hairline)',paddingBottom:'12px'}}>
+        <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
+          <span className="eyebrow">Interactive Rig</span>
+          <Badge tone="info">DOC-MCH-CNC-04</Badge>
+          <span style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+            Active Section: <strong>#{activeId}</strong>
+          </span>
+        </div>
+        <div style={{display:'flex',gap:'4px'}}>
+          {['sidebar', 'floating-rail', 'compact-menu'].map(v => (
+            <button
+              key={v}
+              onClick={() => setVariant(v)}
+              style={{
+                padding:'4px 8px',
+                borderRadius:'var(--radius-xs)',
+                border:'var(--border-hairline)',
+                background: variant === v ? 'var(--action-solid)' : 'var(--surface-card)',
+                color: variant === v ? '#fff' : 'var(--text-secondary)',
+                fontFamily:'var(--font-mono)',
+                fontSize:'var(--text-2xs)',
+                cursor:'pointer'
+              }}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Simulated Document Layout with In-Page Navigation */}
+      <div className="mock-inpage-layout" style={{gridTemplateColumns: variant === 'compact-menu' ? '1fr' : (variant === 'floating-rail' ? '180px 1fr' : '240px 1fr')}}>
+        {/* Navigation Sidebar */}
+        <nav aria-label="On this page" className="mock-inpage-nav">
+          <div style={{fontSize:'var(--text-2xs)',fontFamily:'var(--font-mono)',textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)',fontWeight:'var(--weight-semibold)'}}>
+            On This Page
+          </div>
+          <ul className="mock-inpage-list">
+            {DOC_SECTIONS.map((sec) => (
+              <li key={sec.id}>
+                <a
+                  href={`#${sec.id}`}
+                  onClick={(e) => { e.preventDefault(); scrollToSection(sec.id); }}
+                  className={`mock-inpage-link ${sec.level === 3 ? 'lvl-3' : ''} ${activeId === sec.id ? 'active' : ''}`}
+                  aria-current={activeId === sec.id ? 'location' : undefined}
+                >
+                  {sec.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* Scrollable Document Body */}
+        <div className="mock-inpage-content" ref={contentRef} onScroll={handleScroll}>
+          <div style={{borderBottom:'var(--border-hairline)',paddingBottom:'12px'}}>
+            <div className="eyebrow">Operating Manual & Maintenance Standard</div>
+            <h2 style={{margin:'4px 0 0 0',fontSize:'var(--text-xl)'}}>Line 2 CNC Turning Center (PL-04)</h2>
+            <div style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)',marginTop:'4px'}}>
+              Document Owner: Plant Maintenance · Chakan PL-04 · Rev 4.2 (2026)
+            </div>
+          </div>
+
+          {DOC_SECTIONS.map((sec) => (
+            <div key={sec.id} id={`doc-${sec.id}`} className="mock-article-section">
+              <h3>{sec.title}</h3>
+              <p>{sec.snippet}</p>
+              <p style={{color:'var(--text-tertiary)'}}>
+                Standard adherence strictly enforced per ISO 9001 / IATF 16949 quality guidelines for Suryodaya automotive components.
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div className="page">
+      <div className="masthead">
+        <div className="eyebrow">Meridian Design System · Navigation Architecture · System 10 of 10</div>
+        <h1>In-Page Navigation</h1>
+        <p className="lede">
+          Provides direct navigation to named sections within a single page or continuous document view. Standardizes anchor targeting, scrollspy intersection tracking, header offset compensation, deep-link persistence, and non-disruptive keyboard reading models.
+        </p>
+        <div className="meta">
+          <span>SPEC: MDS-NAV-INPAGE-10</span>
+          <span>STATUS: FROZEN (0 OPEN ITEMS)</span>
+          <span>CATEGORY: NAV-SYSTEM</span>
+          <span>W3C: ARIA-CURRENT="LOCATION" / LANDMARK PATTERN</span>
+          <span>ENTERPRISE: CHAKAN PL-04</span>
+        </div>
+      </div>
+
+      {/* §01 Purpose & Intent */}
+      <Sec n="01" title="Purpose & Intent" note="Why In-Page Navigation exists and its architectural boundaries.">
+        <p>
+          <strong>In-Page Navigation</strong> (also known as Table of Contents, On-This-Page, or Anchor Navigation) provides rapid random-access jumping to named landmark sections within a single, continuous document or sprawling view. It maintains deep-link parity with browser URL fragments (e.g. <code>#safety-loto</code>) and provides real-time visual telemetry of the user's reading position via IntersectionObserver scrollspy without replacing view DOM contents.
+        </p>
+        <ul>
+          <li><strong>Continuous View Navigation:</strong> Operates entirely within the current document context without unmounting or replacing sibling content panes.</li>
+          <li><strong>Scrollspy Visual Telemetry:</strong> Automatically highlights the currently visible section in the navigation menu as the user scrolls.</li>
+          <li><strong>Deep-Link Parity:</strong> Synchronizes target anchors with URL hash fragments for bookmarking and external sharing.</li>
+          <li><strong>Non-Disruptive Focus:</strong> Scrolling updates visual and accessibility position markers without moving the user's active keyboard focus.</li>
+        </ul>
+      </Sec>
+
+      {/* §02 Anatomy & Composition */}
+      <Sec n="02" title="Anatomy & Composition" note="Required structural, link list, and section target elements.">
+        <table>
+          <thead>
+            <tr><th>Element</th><th>Requirement</th><th>Semantics / Role</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td className="k">InPageNav (Root)</td><td>Required</td><td><code>&lt;nav aria-label="On this page"&gt;</code></td><td>Navigation landmark distinguishing in-page links from global/local navigation.</td></tr>
+            <tr><td className="k">Heading / Title</td><td>Optional</td><td><code>&lt;div&gt;</code> / <code>&lt;h2&gt;</code></td><td>Section heading text (e.g. <em>"On This Page"</em>, <em>"Table of Contents"</em>).</td></tr>
+            <tr><td className="k">Link List</td><td>Required</td><td><code>&lt;ul&gt;</code></td><td>Unordered list containing navigation items with nested levels.</td></tr>
+            <tr><td className="k">Section Link</td><td>Required</td><td><code>&lt;li&gt; &gt; &lt;a href="#id"&gt;</code></td><td>Anchor link targeting a specific element ID in the main content.</td></tr>
+            <tr><td className="k">Active Marker / Indicator</td><td>Optional</td><td><code>::before</code> / <code>&lt;div&gt;</code></td><td>Visual accent indicator (border stroke, highlight pill) marking active section.</td></tr>
+          </tbody>
+        </table>
+      </Sec>
+
+      {/* §03 Properties & Design Tokens */}
+      <Sec n="03" title="Properties & Design Tokens" note="MDS design token bindings for typography, borders, and active highlights.">
+        <div className="tokenlist">
+          <div><code>--surface-card</code>: Navigation rail container fill</div>
+          <div><code>--surface-sunken</code>: Active link item background</div>
+          <div><code>--action-solid</code>: Active section indicator stroke & text</div>
+          <div><code>--border-hairline</code>: Rail separator stroke</div>
+          <div><code>--text-secondary</code>: Inactive section link color</div>
+          <div><code>--text-primary</code>: Hover state text color</div>
+          <div><code>--font-mono</code>: Section numbers and hash anchors</div>
+        </div>
+      </Sec>
+
+      {/* §04 Variants */}
+      <Sec n="04" title="Variants" note="Supported structural presentations.">
+        <table>
+          <thead>
+            <tr><th>Variant Key</th><th>Layout</th><th>Use Case</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="k">sidebar</td>
+              <td>Dedicated left or right rail with hierarchical indent levels (h2, h3).</td>
+              <td>Long documentation, operating manuals, engineering specifications, plant policies.</td>
+            </tr>
+            <tr>
+              <td className="k">floating-rail</td>
+              <td>Sticky right-hand floating table of contents.</td>
+              <td>Blog articles, equipment audit summaries, release notes, changelogs.</td>
+            </tr>
+            <tr>
+              <td className="k">compact-menu</td>
+              <td>Collapsible dropdown or horizontal sticky pill strip.</td>
+              <td>Mobile views, tablet inspection terminals, narrow modal dialogs.</td>
+            </tr>
+          </tbody>
+        </table>
+      </Sec>
+
+      {/* §05 Sizes & Density */}
+      <Sec n="05" title="Sizes & Density" note="Component dimensions across viewports.">
+        <table>
+          <thead>
+            <tr><th>Size</th><th>Link Padding</th><th>Font Size</th><th>Indentation (Level 3)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td className="k">sm</td><td>4px 8px</td><td>11px</td><td>14px</td></tr>
+            <tr><td className="k">md (default)</td><td>6px 10px</td><td>12px</td><td>18px</td></tr>
+            <tr><td className="k">lg</td><td>10px 14px</td><td>14px</td><td>24px</td></tr>
+          </tbody>
+        </table>
+      </Sec>
+
+      {/* §06 States & Interactions */}
+      <Sec n="06" title="States & Interactions" note="Link states and scroll tracking behavior.">
+        <div className="demo">
+          <div className="staterow">
+            <span className="lbl">Default:</span>
+            <span style={{color:'var(--text-secondary)'}}>Subtle gray text, transparent left border.</span>
+          </div>
+          <div className="staterow">
+            <span className="lbl">Hover:</span>
+            <span style={{color:'var(--text-primary)',fontWeight:'var(--weight-semibold)'}}>Sunken background highlight, darker text.</span>
+          </div>
+          <div className="staterow">
+            <span className="lbl">Active / Current:</span>
+            <span style={{color:'var(--action-solid)',fontWeight:'var(--weight-semibold)'}}>2px solid <code>--action-solid</code> left border, <code>aria-current="location"</code>.</span>
+          </div>
+          <div className="staterow">
+            <span className="lbl">Focus-Visible:</span>
+            <span style={{color:'var(--text-primary)'}}>2px focus outline with 2px offset.</span>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §07 Keyboard Navigation */}
+      <Sec n="07" title="Keyboard Navigation" note="Anchor jump and document reading flow.">
+        <ul>
+          <li><kbd>Tab</kbd> / <kbd>Shift + Tab</kbd>: Move through anchor links in the TOC rail.</li>
+          <li><kbd>Enter</kbd>: Jump viewport to target section and set programmatic focus to target heading.</li>
+          <li><kbd>PageDown</kbd> / <kbd>PageUp</kbd> / <kbd>ArrowDown</kbd> / <kbd>ArrowUp</kbd>: Native continuous document scrolling without TOC focus interference.</li>
+        </ul>
+      </Sec>
+
+      {/* §08 Accessibility & Screen Readers */}
+      <Sec n="08" title="Accessibility & Screen Readers" note="WCAG 2.2 AA/AAA compliance.">
+        <ul>
+          <li><strong>Distinct Landmark:</strong> Must use <code>&lt;nav aria-label="On this page"&gt;</code> to clearly distinguish from primary/local navigation regions.</li>
+          <li><strong>Location Identification:</strong> The actively visible section link carries <code>aria-current="location"</code>.</li>
+          <li><strong>Heading Targets:</strong> Section targets must have valid <code>id</code> attributes and <code>tabIndex="-1"</code> if focus is moved programmatically.</li>
+          <li><strong>Fixed Header Offset:</strong> Content sections must use CSS <code>scroll-margin-top</code> to prevent target headings from hiding behind sticky app headers.</li>
+        </ul>
+      </Sec>
+
+      {/* §09 Motion & Transitions */}
+      <Sec n="09" title="Motion & Transitions" note="Smooth scrolling and highlight shifts.">
+        <p>
+          Anchor jumps trigger smooth scrolling (<code>scroll-behavior: smooth</code>). Active border marker shifts with <code>150ms cubic-bezier(0,0,0.2,1)</code> transition. In <code>prefers-reduced-motion: reduce</code> mode, smooth scroll defaults to instant jumping (<code>auto</code>).
+        </p>
+      </Sec>
+
+      {/* §10 Content Rules & Internationalization */}
+      <Sec n="10" title="Content Rules & Internationalization" note="Title synchronization and multilingual rules.">
+        <ul>
+          <li><strong>Label Parity:</strong> The anchor link label must match or closely abbreviate the visible section heading (e.g. <em>"Safety Interlocks"</em> for <em>"2. Safety Interlocks & LOTO Protocol"</em>).</li>
+          <li><strong>Unique IDs:</strong> Section IDs must be lower-kebab-case, deterministic, and unique across the DOM (e.g. <code>#spindle-fft</code>).</li>
+        </ul>
+      </Sec>
+
+      {/* §11 Responsive Design & Touch */}
+      <Sec n="11" title="Responsive Design & Touch" note="Collapsible TOC on constrained screens.">
+        <p>
+          On viewports below 1024px, the TOC rail collapses into a compact top-of-page accordion or sticky bottom bar, keeping document body content full-width. Touch targets maintain minimum 40px hit heights.
+        </p>
+      </Sec>
+
+      {/* §12 Anti-patterns & Usage Boundaries */}
+      <Sec n="12" title="Anti-patterns & Boundaries" note="Where NOT to use In-Page Navigation.">
+        <div className="two">
+          <div className="pane do">
+            <h3>Do</h3>
+            <ul>
+              <li>Use for long, continuous documents, specifications, manuals, and reports.</li>
+              <li>Include <code>scroll-margin-top</code> to account for sticky top bars.</li>
+              <li>Support URL hash deep linking for sharing specific document paragraphs.</li>
+            </ul>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <ul>
+              <li>Do NOT use for switching among isolated peer view panels (use <strong>Tab Navigation</strong>).</li>
+              <li>Do NOT move keyboard focus when the user scrolls the page (scrollspy must only update visual/ARIA state).</li>
+              <li>Do NOT omit semantic heading tags (<code>h2</code>, <code>h3</code>) in the main article body.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §13 Implementation Details */}
+      <Sec n="13" title="Implementation Details" note="Interactive Reference Rig with Live Scrollspy.">
+        <InteractiveInPageDemo />
+      </Sec>
+
+      {/* §14 Developer Notes */}
+      <Sec n="14" title="Developer Notes" note="API contracts and props specification.">
+        <pre>{`interface InPageSection {
+  id: string;
+  title: string;
+  level?: 2 | 3;
+}
+
+interface InPageNavigationProps {
+  sections: InPageSection[];
+  activeId?: string;
+  onSectionClick?: (sectionId: string) => void;
+  variant?: 'sidebar' | 'floating-rail' | 'compact-menu';
+  size?: 'sm' | 'md' | 'lg';
+  headerOffset?: number;
+  smoothScroll?: boolean;
+  ariaLabel?: string;
+  className?: string;
+}`}</pre>
+      </Sec>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script></body></html>

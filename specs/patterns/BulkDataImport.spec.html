@@ -1,0 +1,329 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Bulk data import" subtitle="Full specification — a file as the transaction: declared column mapping, a dry run whose verdict is what commits, and partial acceptance as the normal outcome · manufacturing ERP reference" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Bulk data import — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mh{font-size:10px;color:var(--text-tertiary);line-height:1.5}
+.mn{font-size:10px;color:var(--text-secondary);line-height:1.5}
+.mb{align-self:flex-start;height:26px;padding:0 10px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:10px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.mb.q{background:var(--surface-sunken);color:var(--text-primary);border:var(--border-hairline)}
+.mb.off{background:var(--surface-sunken);color:var(--text-disabled);border:var(--border-hairline)}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-warning-soft);color:var(--text-warning)}
+.ma.bad{background:var(--status-critical-soft);color:var(--text-critical)}
+.ma.ok{background:var(--status-success-soft);color:var(--text-success)}
+.rows{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-card)}
+.rows div{display:flex;align-items:center;gap:8px;padding:5px 8px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);border-bottom:var(--border-subtle)}
+.rows div:last-child{border-bottom:none}
+.rows span.id{color:var(--text-primary);width:64px;flex:none}
+.map{display:flex;flex-direction:column;gap:4px}
+.map div{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary)}
+.map span.f{color:var(--text-primary);width:74px;flex:none}
+.map span.ar{color:var(--text-tertiary)}
+.map span.bad{color:var(--text-critical)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Bulk data import</h1>
+  <p class="lede">A file that is not evidence for a record but the transaction itself. The columns must be mapped to fields before anything can be judged, the judgement must happen before anything is written, and the usual outcome is neither success nor failure but partial acceptance — some rows in, some handed back for correction.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: FileUpload, Table, Select, Button, Alert, Progress</span><span>Reference: item-master import at PL-04</span><span>Sections included: 14 of 21</span><span style="color:var(--text-primary)">status: frozen 8 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>Deccan Machine Supply sends a catalogue extract: 500 rows of parts Suryodaya has agreed to buy, to be created in the PL-04 item master. Nobody typed them and nobody chose them — they arrived. Before a single row can be created, three things must be settled that no file can settle for itself: which of the supplier's columns is the part number and which is the unit of measure, whether a row naming a part that already exists is an update or a refusal, and what happens to the rows that break a rule. The answer that survives contact with a plant is: map the columns, judge every row without writing anything, show the verdict, and let the planner commit it knowing 412 will be created and 88 handed back.</p>
+    <p><strong>Use it when</strong> a file is the transaction — its rows become records — and the correspondence between the file and the system has to be established and verified before anything is written.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>An item-master, BOM, routing or supplier-price load from a file whose shape the system does not control.</li><li>Any import where rows can be individually rejected and the remainder is still worth committing.</li><li>A load where a row may collide with an existing record, and insert-versus-update is a real decision.</li><li>A recurring feed a planner runs monthly, where last month's mapping should not have to be rediscovered.</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>Files that substantiate a record.</strong> A calibration certificate, an inspection photograph — the record is typed and the file proves it. That is <a href="EvidenceAttachment.spec.html">evidence attachment</a>, and its gate is the set's status, not a row verdict.</li><li><strong>Selection, upload, progress and retry of the file.</strong> Owned entirely by <a href="../composite/FileUpload.spec.html"><code>FileUpload</code></a> and <a href="../forms/FileItem.spec.html"><code>FileItem</code></a>. This pattern begins when the bytes have arrived and says nothing about how they got there.</li><li><strong>One operation over records the user picked.</strong> That is <a href="BulkSelectionAction.spec.html">bulk selection and action</a>: its targets are stable identities already in a collection, chosen deliberately. Import rows have no identity until they are created, were never chosen, and are addressed by line number — which that pattern rightly forbids.</li><li><strong>An import that failed because the service was down.</strong> The outage, the retry and what survives it are <a href="RecoverableFailure.spec.html">recoverable failure</a>. Rows refused <em>by rule</em> are this pattern's normal output, not a failure at all.</li><li><strong>A few records typed in a grid.</strong> If the user is entering the data, it is <a href="ValidatedSubmission.spec.html">validated submission</a> over a collection of fields.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">The file</td><td><code>FileUpload</code></td><td>Required, exactly one, and the only thing this specification says about it: it owns selection, refusal, per-file progress, cancel and retry. This pattern begins at the point its entry reports <code>complete</code>. A set of several files is several imports.</td></tr>
+      <tr><td class="k">The mapping</td><td><code>Select</code> per target field, in a <code>Table</code> or a <code>DescriptionList</code></td><td>Required whenever the file's column names are not guaranteed. One row per <em>target field</em>, never per source column: the fields are what the system needs, and a field with nothing mapped to it is the thing the user must see. An unmapped source column is stated, not hidden.</td></tr>
+      <tr><td class="k">The verdict</td><td><code>Table</code></td><td>Required. Rows with their line numbers, their disposition (create · update · reject) and, for a reject, the rule that refused it. This is what the commit acts on.</td></tr>
+      <tr><td class="k">The counts</td><td>Text, beside the commit</td><td>Required. "412 to create · 0 to update · 88 rejected, of 500 rows" — stated before the commit, in the file's own units, so the commit's consequence is legible without reading the table.</td></tr>
+      <tr><td class="k">The commit</td><td><code>Button</code></td><td>Required. Its label carries the number it will write — "Create 412 parts" — never "Import" or "Confirm". Single-shot; a second activation is refused by the state transition, not by the disabled attribute alone.</td></tr>
+      <tr><td class="k">Progress of the write</td><td><code>Progress</code></td><td>Required where the write is long enough to notice, in rows: "creating 180 of 412". Never an unmeasured spinner over a 500-row load.</td></tr>
+      <tr><td class="k">The outcome</td><td><code>Alert</code></td><td>Required, persistent. Names what was created, what was not, and where the rejects are. A toast is refused here: it takes the only record of 88 rejected rows with it when it expires.</td></tr>
+      <tr><td class="k">The rejects</td><td><code>Button</code> that downloads, or a <code>Table</code></td><td>Required per <code>rejectDelivery</code> (§05). A reject list the user cannot take away is a list they must retype from the screen.</td></tr>
+    </tbody></table>
+    <p class="warn"><strong>The mapping table is keyed by target field, not by source column.</strong> Listing the supplier's columns and asking "what is this?" reads naturally and fails the moment a required field has no column at all — the row that should exist is simply absent, and nothing tells the user. Keyed by field, an unmapped required field is a visible empty row that blocks the dry run.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>Arrive.</strong> The file is selected or dropped and uploads. Nothing about the import exists yet; the mapping and the verdict are both absent, not empty.</li>
+      <li><strong>Read the shape.</strong> The header row and a sample are parsed. The file's columns become known, and under <code>mappingSource: inferred-confirmable</code> a proposed mapping is offered — proposed, and marked as such.</li>
+      <li><strong>Map.</strong> Every required target field is bound to a column, by the user or by confirming the proposal. Unmapped required fields are named; unmapped source columns are stated as ignored, so nothing is silently dropped.</li>
+      <li><strong>Dry run.</strong> Every row is judged against the mapping and the system's rules. <em>Nothing is written.</em> Each row resolves to create, update or reject-with-a-reason, and the counts follow from that.</li>
+      <li><strong>Read the verdict.</strong> The planner sees the counts, can read the rejected rows and their reasons, and decides. This is the pattern's centre: the decision is taken on a judgement of the whole file, not on a hope.</li>
+      <li><strong>Commit.</strong> The dry run's verdict is what commits — the same rows, the same dispositions. Under <code>commitScope: accept-valid-rows</code> the rejects are left behind; under <code>all-or-nothing</code> a single reject means the commit is not offered at all.</li>
+      <li><strong>Resolve.</strong> Created, partially created, failed, or unknown (§10). The rejects are delivered per <code>rejectDelivery</code>.</li>
+      <li><strong>Correct and re-import.</strong> The user fixes the reject file and starts again at step 1. The corrected file is a new import, not a resumption of this one — and under <code>insert-only</code> the rows already created must not be created twice.</li>
+    </ol>
+    <p><strong>The branch that matters</strong> is between steps 4 and 6: the mapping changing, or the underlying data changing, after a dry run. A verdict computed against a different mapping than the one now on screen is arithmetic about a file that no longer exists — resolved by <code>previewStaleness</code> (§05), and never by committing anyway.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Contract</th><th>Rule</th></tr></thead><tbody>
+      <tr><td class="k">Nothing is written before the commit</td><td>The dry run is a pure judgement: no records created, no sequences consumed, no partial state left if the user walks away. This is the pattern's central guarantee, and the reason a planner will run it on a file they do not trust.</td></tr>
+      <tr><td class="k">The verdict is the transaction</td><td>The commit sends the dispositions the dry run produced, not a re-judgement at write time. What the counts promised is what is attempted. Where the service must re-validate, a row it now refuses is reported as a commit-time reject (§10) and never silently dropped from the total.</td></tr>
+      <tr><td class="k">The mapping gates the dry run</td><td>The dry run is unavailable until every required field is bound, with the missing fields named beside the control. A judgement over an incomplete mapping would reject every row for the wrong reason.</td></tr>
+      <tr><td class="k">The dry run gates the commit</td><td>No verdict, no commit — and a verdict that no longer matches the mapping is no verdict (<code>previewStaleness</code>).</td></tr>
+      <tr><td class="k">Rejection is not failure</td><td>A rejected row is a judgement about data. It uses validation's vocabulary, not failure's: it is reported per row with the rule that refused it, and it never colours the whole import as an error.</td></tr>
+      <tr><td class="k">One import at a time</td><td>The commit is guarded by the state transition itself. Two commits of one file create 824 parts, and the second one's duplicates are indistinguishable from the first one's successes.</td></tr>
+      <tr><td class="k">The rejects survive the outcome</td><td>The reject set remains available after the import resolves, until the user leaves or starts another. It is the only artifact from which the next attempt can be built.</td></tr>
+    </tbody></table>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><span class="mn">500 rows read · <strong>412 to create · 88 rejected</strong></span><div class="mb">Create 412 parts</div><span class="mh">88 rows will not be created. Download them, correct them, and import again.</span></div><p class="why">The consequence is stated as a number before the press, so the planner commits to something specific.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><span class="mn">brk-catalogue-sep.csv uploaded</span><div class="mb">Import</div><span class="mh">&nbsp;</span></div><p class="why">Nothing has been judged. The planner presses Import and finds out what happened to 500 parts afterwards, which is the failure this pattern exists to prevent.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Options</th><th>What it decides</th></tr></thead><tbody>
+      <tr><td class="k">existingRecords</td><td><code>insert-only</code> · <code>upsert</code> · <code>refuse-file</code></td><td>What a row naming a record that already exists means. <code>insert-only</code>: rejected with that reason, and the existing record is untouched — the safe default for a master-data load. <code>upsert</code>: an update, which must be shown as its own disposition and its own count, because "412 imported" hiding 60 overwrites of live item-master data is the most expensive ambiguity in this pattern. <code>refuse-file</code>: a collision means the file is wrong and the whole import stops — correct where the file is supposed to be new parts only.</td></tr>
+      <tr><td class="k">commitScope</td><td><code>accept-valid-rows</code> · <code>all-or-nothing</code></td><td>Whether a file with rejects can be committed in part. <code>accept-valid-rows</code>: the normal choice for master data, where 412 parts are useful today. <code>all-or-nothing</code>: required where the rows are interdependent — a BOM whose components are meaningless without their parent — and then the commit is not merely disabled but absent, with the reason stated.</td></tr>
+      <tr><td class="k">mappingSource</td><td><code>inferred-confirmable</code> · <code>explicit</code></td><td>Whether the system proposes a mapping. <code>inferred-confirmable</code> proposes from header names and requires confirmation — never silently applied, because a wrong inference is invisible and writes the supplier's list price into the standard cost field. <code>explicit</code> asks for every field, correct where columns are unnamed or untrustworthy.</td></tr>
+      <tr><td class="k">previewStaleness</td><td><code>refuse</code> · <code>re-run</code></td><td>What happens when the mapping changes after a dry run. <code>refuse</code> discards the verdict and requires a new dry run, stating why. <code>re-run</code> re-judges automatically, acceptable only where the dry run is cheap. Committing a stale verdict is not an option, and no third value offers it.</td></tr>
+      <tr><td class="k">rejectDelivery</td><td><code>download-file</code> · <code>on-screen-list</code></td><td>How rejected rows reach the person who must fix them. <code>download-file</code> returns the original rows with a reason column added, so the correction happens where the data lives. <code>on-screen-list</code> suits small files. Above about twenty rejects, on-screen alone is a transcription exercise.</td></tr>
+    </tbody></table>
+    <p><strong>All five are reachable as tweaks in the reference implementation</strong>, every §08 state is reachable there, and so are the §18 boundaries — the unmapped required field, the collision, the stale verdict, the duplicate line within the file, and the file whose every row is rejected. That is what lets this spec claim zero open items.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <table><thead><tr><th>State</th><th>What is true</th><th>Commit</th></tr></thead><tbody>
+      <tr><td class="k">no file</td><td>Nothing has arrived. The mapping and verdict are absent, not empty.</td><td>Absent</td></tr>
+      <tr><td class="k">reading</td><td>The file is uploaded and its shape is being parsed.</td><td>Absent</td></tr>
+      <tr><td class="k">unmappable</td><td>Parsed, but a required field has no candidate column at all.</td><td>Absent — the file, not the mapping, is wrong</td></tr>
+      <tr><td class="k">mapping incomplete</td><td>Some required fields are unbound.</td><td>Absent; the dry run is blocked with the fields named</td></tr>
+      <tr><td class="k">mapped, not judged</td><td>Every required field is bound. No verdict exists.</td><td>Blocked — "Check 500 rows" is the only forward action</td></tr>
+      <tr><td class="k">judging</td><td>The dry run is running over the rows.</td><td>Blocked, with progress in rows</td></tr>
+      <tr><td class="k">judged</td><td>A verdict exists and matches the current mapping. The counts are known.</td><td>Allowed, labelled with its count</td></tr>
+      <tr><td class="k">verdict stale</td><td>The mapping changed after the verdict.</td><td>Blocked or re-running, per <code>previewStaleness</code> — never allowed</td></tr>
+      <tr><td class="k">judged, nothing acceptable</td><td>Every row was rejected.</td><td>Absent, with one file-level explanation (§18)</td></tr>
+      <tr><td class="k">committing</td><td>The write is running over the verdict's rows.</td><td>Guarded against a second activation</td></tr>
+      <tr><td class="k">committed</td><td>Every row in scope was written.</td><td>Done; rejects still available</td></tr>
+      <tr><td class="k">partially committed</td><td>Some rows written, some refused at commit time.</td><td>A success with a remainder — see below</td></tr>
+      <tr><td class="k">commit failed</td><td>Nothing was written; the file, mapping and verdict all survive.</td><td>Offered again over the same verdict</td></tr>
+      <tr><td class="k">outcome unknown</td><td>The write left and nothing came back.</td><td>Neither claimed — see §10</td></tr>
+    </tbody></table>
+    <p class="warn"><strong>Partial acceptance is a success with a remainder, not a partial failure.</strong> This is the distinction from <a href="BulkSelectionAction.spec.html">bulk selection and action</a>, where the user chose every target and anything unresolved is a broken promise. Here the file was never trusted: 412 of 500 is the expected shape of the answer, the 88 are data to correct rather than work to retry, and the outcome is worded accordingly — <code>success</code> with the remainder named, not <code>danger</code>.</p>
+    <p><strong>The verdict holds the mapping it was computed under</strong>, not a flag saying it is fresh. Staleness is then an inequality the interface can assert on every render, and no handler has to remember to invalidate anything.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§09</span><h2>Validation</h2></div>
+  <div class="body">
+    <p>Three levels, deliberately separate. Merging any two of them produces a message the user cannot act on.</p>
+    <table><thead><tr><th>Level</th><th>Judged when</th><th>Reported where</th></tr></thead><tbody>
+      <tr><td class="k">File level</td><td>On parse, before any mapping.</td><td>One <code>Alert</code> about the file: not a delimited file at all, no header row, zero data rows, a required field with no possible column. The row table is absent, because there is nothing to judge.</td></tr>
+      <tr><td class="k">Mapping level</td><td>As the mapping is edited.</td><td>Beside the mapping control it concerns: a required field unbound, one column bound to two fields, a column whose sampled values cannot be the field's type ("UOM contains <code>Nos</code>, <code>NOS</code>, <code>PCS</code> — 3 values not in the unit-of-measure master"). Reported before the dry run, because a dry run over a wrong mapping rejects 500 rows for the wrong reason.</td></tr>
+      <tr><td class="k">Row level</td><td>In the dry run, per row.</td><td>On the row, with the rule that refused it and the value that broke it. Never aggregated into a file-level message, and never counted without being individually readable.</td></tr>
+    </tbody></table>
+    <ul>
+      <li><strong>A row's reason names the rule, the value and the line.</strong> "Line 87 — cost centre CC-4412 is closed for period 2026-09" is correctable; "Invalid row" sends a planner to a 500-row spreadsheet with no idea what to look for.</li>
+      <li><strong>Every row is judged, not the first failure.</strong> Stopping at the first bad row means eleven more attempts to discover eleven more problems. The whole file is judged in one pass and every reason returned.</li>
+      <li><strong>A row with several problems reports all of them.</strong> One correction pass should fix the row completely.</li>
+      <li><strong>Type coercion is declared, not silent.</strong> If <code>1,250.00</code> is read as a rupee amount and <code>Nos</code> is mapped to the unit <code>NOS</code>, the interface says so at mapping level; a coercion the user cannot see is a data-quality incident waiting for a month-end.</li>
+      <li><strong>Sampled validation is labelled as sampled.</strong> Where the mapping check reads only the first N rows, it says so — the guarantee is about those rows, and the dry run is what covers the file.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="rows"><div><span class="id">line 87</span>cost centre CC-4412 closed for 2026-09</div><div><span class="id">line 91</span>part BRK-4820-A already in the item master</div><div><span class="id">line 92</span>unit “EA” not in the UOM master</div></div></div><p class="why">Each row carries the rule and the value, so the correction is mechanical.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma bad">88 rows are invalid. Please check your file and try again.</div></div><p class="why">Eighty-eight problems and no way to find one of them. The planner's only route is to guess, re-import, and guess again.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Error handling</h2></div>
+  <div class="body">
+    <p>A rejected row is not in this section — it is §09. What belongs here is everything that goes wrong for reasons the file did not cause, and this pattern's own obligation is narrow: say what was written, because unlike every other pattern here a partial write leaves records in the system that the user never individually chose.</p>
+    <table><thead><tr><th>Failure</th><th>What is guaranteed</th></tr></thead><tbody>
+      <tr><td class="k">The dry run fails</td><td>Nothing was going to be written anyway, so nothing is lost: the file, the mapping and the counts-so-far survive, and the dry run is offered again. It must never fall back to committing unjudged.</td></tr>
+      <tr><td class="k">The commit fails wholly</td><td>Nothing was written. The verdict remains valid and the commit is offered again over the same verdict — not a fresh dry run, unless <code>previewStaleness</code> says the underlying data may have moved.</td></tr>
+      <tr><td class="k">The commit fails part-way</td><td>The interface states the line the write reached and which rows were created, and offers a resume over the remainder only. A blind retry over the whole verdict re-creates everything before that line. Where the service cannot say how far it got, this becomes an unknown outcome.</td></tr>
+      <tr><td class="k">Rows refused at commit time</td><td>Reported as their own set, distinct from the dry run's rejects, because their existence means the dry run's judgement was overtaken — a part created by someone else in the intervening minute. They join the reject delivery with that reason.</td></tr>
+      <tr><td class="k">The outcome is unknown</td><td>Neither success nor failure is claimed, no count is asserted, and no retry is offered. The interface names where the truth is — "check the item master for parts created after 14:20 (IST) before importing again" — because a retry on an unknown outcome is a coin flip between 412 parts and 824.</td></tr>
+      <tr><td class="k">The user leaves mid-commit</td><td>The write is server-side and continues; the interface must have said so before the press. A dry run abandoned mid-flight costs nothing, and the difference between the two is worth stating.</td></tr>
+    </tbody></table>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma">The write stopped after line 180. <strong>167 parts were created</strong>; 245 rows were not attempted.<br><span class="mh">MES did not answer.</span></div><div class="mb q">Resume from line 181</div></div><p class="why">The remainder is named and the resume is scoped to it, so nothing is created twice.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma bad">Import failed.</div><div class="mb">Retry</div></div><p class="why">167 parts exist. Retry creates them again, and the item master now has duplicate part numbers nobody ordered.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The counts are text, not only a chart or a colour band.</strong> "412 to create, 88 rejected, of 500 rows" is the verdict; a green bar with a red segment is decoration over it.</li>
+      <li><strong>Each phase transition is announced politely and names its result</strong> — "500 rows read, 12 columns found", "Check complete: 412 to create, 88 rejected" — because the visible change is a table appearing somewhere below the fold.</li>
+      <li><strong>The blocked commit carries its reason in adjacent text,</strong> never a tooltip and never silence: "Run the check first", "88 rows must be corrected before this file can be imported".</li>
+      <li><strong>Each mapping control is a labelled field naming its target,</strong> and a mapping problem is associated with that control rather than reported in a list elsewhere.</li>
+      <li><strong>A rejected row's reason is in the row,</strong> readable in reading order with the line number, not conveyed by row colour alone.</li>
+      <li><strong>Progress is announced in rows at intervals,</strong> not per row — a 500-row write announcing each one is a live region nobody can use.</li>
+      <li><strong>Focus after the dry run goes to the verdict,</strong> and after the commit to the outcome. Both are new information the user must read before the next decision; focus left on the button that ran means a screen-reader user is told nothing happened.</li>
+      <li><strong>The reject download is a labelled control naming what it delivers</strong> — "Download 88 rejected rows (CSV)" — since its consequence is a file, not a view change.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The commit names its number and its object.</strong> "Create 412 parts", not "Import" — the count is the commitment, and a label without it invites the press before the verdict is read.</li>
+      <li><strong>Counts are always stated against the file's total.</strong> "412 of 500 rows" rather than "412 rows", so a partial verdict can never be mistaken for the whole file.</li>
+      <li><strong>Dispositions are named in the system's verbs,</strong> not the file's: create, update, reject. "Processed" and "handled" hide the one distinction that matters under <code>upsert</code>.</li>
+      <li><strong>An update is called an update, and counted separately.</strong> Under <code>upsert</code>, "60 existing parts will be updated" appears beside "352 will be created" — never merged into a single figure.</li>
+      <li><strong>Rejection wording is about the data, not the person.</strong> "Unit 'EA' is not in the unit-of-measure master" states a fact about line 92; "you entered an invalid unit" accuses a planner of a supplier's spreadsheet.</li>
+      <li><strong>The outcome states what was created, what was not, and where the rejects are</strong> — three facts, in that order, in one persistent message.</li>
+      <li><strong>Nothing is called a success while rows are outstanding.</strong> "412 parts created · 88 rows returned for correction" is the honest form; "Import complete" is read as "the file is in".</li>
+      <li><strong>The mapping proposal is labelled as a proposal.</strong> "Matched by column name — check before running" makes an inference visible; a pre-filled select with no such line is read as fact.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma ok"><strong>412 parts created in the item master.</strong><br>88 rows were returned for correction.</div><div class="mb q">Download 88 rejected rows (CSV)</div></div><p class="why">Both halves are stated with their counts, and the remainder has a route.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma ok">Import complete ✓</div><span class="mh">500 rows processed</span></div><p class="why">"Processed" covers 412 creations and 88 refusals equally, and the planner leaves believing the catalogue is loaded.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§17</span><h2>Performance</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The verdict table is paginated or windowed; the counts are not.</strong> Counts are over every row, always. Rendering 500 rows to state a number is a page that stalls before it informs — and the counts are what the decision needs.</li>
+      <li><strong>Rejects are the default view of the verdict.</strong> They are what the user must act on; the accepted rows are confirmation. A verdict that opens on 412 successes buries the 88.</li>
+      <li><strong>The dry run reports progress in rows if it is not instant,</strong> and stays cancellable. Cancelling costs nothing, which is a property worth having on a 50,000-row file.</li>
+      <li><strong>Row-level results are applied as they arrive where the response streams them,</strong> so a long dry run shows real progress; the verdict is still announced once, complete.</li>
+      <li><strong>Above roughly 5,000 rows, the dry run belongs to the server</strong> and the file is not held in the browser. The contract is unchanged — a verdict before a write — but the verdict becomes a resource with an identity, and the commit references it rather than resending the rows.</li>
+      <li><strong>The reject file is generated from the verdict, not by re-parsing the upload.</strong> It must carry the original row exactly as supplied plus a reason column, so a corrected re-import is the same file with cells changed.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+      <tr><td class="k">A required field has no candidate column</td><td>File-level, not mapping-level: the file cannot be imported as it stands. Name the field and what it needs, and do not offer a mapping the user cannot complete.</td></tr>
+      <tr><td class="k">A source column maps to nothing</td><td>Stated explicitly as ignored, with its name. Silence here is how a supplier's minimum-order-quantity column is dropped for six months without anyone noticing.</td></tr>
+      <tr><td class="k">Two rows collide with each other</td><td>Within-file duplicates are rejected as such, naming both lines — "line 91 duplicates line 40 (BRK-4820-A)". Distinct from a collision with an existing record, which is <code>existingRecords</code>, and the two reasons are never merged.</td></tr>
+      <tr><td class="k">A row collides with an existing record</td><td>Resolved by <code>existingRecords</code>, and always visible as its own disposition and count. An update must never be reported inside a creation figure.</td></tr>
+      <tr><td class="k">The mapping changes after the dry run</td><td><code>previewStaleness</code>: the verdict is discarded and re-run, or discarded and the commit blocked with the reason. Never committed as-is.</td></tr>
+      <tr><td class="k">The underlying data changes after the dry run</td><td>The verdict is a judgement at a moment. Rows the service now refuses are commit-time rejects (§10), reported as such and joined to the reject delivery — not silently subtracted from the count.</td></tr>
+      <tr><td class="k">Every row is rejected</td><td>One file-level statement of the dominant cause, with the rows still individually readable. Four hundred instances of "cost centre closed for 2026-09" is one problem, and stating it once is the difference between a fix and a scroll.</td></tr>
+      <tr><td class="k">The file is enormous or has thousands of columns</td><td>Refused at file level with the limit stated in the file's own units, before any parse. A limit discovered by a frozen tab is not a limit.</td></tr>
+      <tr><td class="k">The same file imported twice</td><td>Not blocked — a re-import after correction is the normal recovery route. Protection comes from <code>existingRecords</code>: under <code>insert-only</code> the already-created rows reject as collisions, which is the correct and legible outcome.</td></tr>
+      <tr><td class="k">A second file arrives mid-import</td><td>One import at a time. The new file either replaces the whole import — with the current verdict explicitly discarded — or is refused until this one resolves. It never merges into the set.</td></tr>
+      <tr><td class="k">The user leaves with a verdict uncommitted</td><td>Nothing was written and nothing needs cleaning up; the pattern may say so on the way out. This is the cheapest exit in the system and users should be told it is safe.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§19</span><h2>Anti-patterns</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Importing on upload.</strong> The bytes arriving is not a decision. An import that starts writing when a file is dropped has removed the only step that made it safe.</li>
+      <li><strong>A verdict that is only a count.</strong> "88 rows will be rejected" with no way to see which is a number the user must act on and cannot.</li>
+      <li><strong>Silent inference.</strong> A pre-filled mapping presented as fact, where a wrong guess writes the supplier's list price into standard cost across 412 parts.</li>
+      <li><strong>Rejects rendered on screen only, at volume.</strong> Above about twenty rows this is a transcription exercise, and the corrected file gets rebuilt by hand.</li>
+      <li><strong>Committing a stale verdict.</strong> Arithmetic about a mapping the user has since changed, presented as a promise.</li>
+      <li><strong>"Import complete" over a partial acceptance.</strong> The single most damaging sentence in this pattern: the planner stops, and 88 parts are missing from the master until someone notices at a goods receipt.</li>
+      <li><strong>Rejection styled as failure.</strong> A red page over 88 rows of ordinary data problems trains planners to distrust a working import — and hides the real failures when they come.</li>
+      <li><strong>Blind retry after a partial write.</strong> Covered in §10 because it is the most expensive mistake available here: duplicate master data, created deliberately by the interface.</li>
+      <li><strong>One progress bar for parse, judge and write.</strong> Three phases with different consequences — one of which writes — shown as one indeterminate spinner the user cannot interpret or safely interrupt.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Hold the verdict as an object carrying the mapping it was computed under</strong> — <code>{ mappingHash, rows, counts, at }</code>. Staleness is then an inequality the render can assert, not a flag someone must remember to clear. This one decision closes the whole stale-commit class.</li>
+      <li><strong>Key rows by line number, and say so.</strong> This is the one pattern where positional identity is correct, because the row has no other identity until it is created. Every message states the line, and the reject file preserves the original ordering so the numbers still mean something in the user's spreadsheet.</li>
+      <li><strong>The mapping is a map from target field to source column,</strong> never the reverse. The direction of the data structure is the direction of the UI, and it is what makes an unmapped required field representable at all.</li>
+      <li><strong>Derive the counts from the rows; never maintain them alongside.</strong> A count that can disagree with the table under it is the defect users report as "the import lied".</li>
+      <li><strong>Judge in one pass and return every reason per row,</strong> as an array. A single <code>error</code> string per row forces a second import to discover the second problem.</li>
+      <li><strong>The commit sends the verdict's identity or its dispositions, not the file again.</strong> Re-uploading at commit invites a different parse — and a different answer — than the one the user approved.</li>
+      <li><strong>Guard the commit with the state transition,</strong> a phase field that refuses a second entry, not with the button's disabled attribute. A double-press across a slow render is otherwise 824 parts.</li>
+      <li><strong>Keep three phase results separate in state</strong> — parse, verdict, commit outcome. One <code>status</code> enum spanning them cannot express "committed 167, then failed", which §10 requires.</li>
+      <li><strong>Build the reject file from the retained original rows</strong> plus a reason column, and generate it client-side from the verdict where the file is in the browser. Asking the server to reconstruct rejects it never stored is how the reason column becomes "see log".</li>
+      <li><strong>Make the dry run cancellable and side-effect-free in fact, not by convention.</strong> If the endpoint that judges also reserves numbers, it is not a dry run, and the pattern's central guarantee is gone.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted"><strong>Omitted, per the interaction pattern spec standard — the numbers never renumber.</strong>
+§06 Variants — insert-only, upsert and refuse-file are declared policies of one contract (§05), not different patterns; a wizard and a single-page import are presentations of the same sequence.
+§07 Sizes — no coordinated sizing exists at the pattern level.
+§11 Input &amp; interaction modalities — file selection, drop, keyboard picking and cancellation are owned by <a href="../composite/FileUpload.spec.html">FileUpload</a> and <a href="../forms/FileItem.spec.html">FileItem</a>; the pattern's cross-component obligations are the focus and announcement rules in §12.
+§13 Motion — the phases are states, not choreography, and no motion may delay the verdict or outcome announcement.
+§15 Responsive — the verdict table reflows and the mapping stacks, but the contract does not change with available space.
+§16 Internationalization — number, date and decimal parsing per column belongs to the mapping's declared coercion (§09), and the pattern's own requirement is only that a coercion is stated rather than silent.
+§21 Developer notes — the contract in §04, §08 and §20 is the whole contract; there is no API surface beyond the §05 policies.</p>
+</div>
+</body></html>

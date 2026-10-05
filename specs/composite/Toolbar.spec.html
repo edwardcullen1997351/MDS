@@ -1,0 +1,292 @@
+<!-- @dsCard group="Specs · Composite" viewport="1080x900" name="Toolbar" subtitle="Full specification — the action surface: group boundary, one tab stop, overflow relationship, aggregate disabled" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Toolbar — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:118px}
+.staterow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:14px 0 0}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Toolbar, Button, IconButton, ButtonGroup, SegmentedControl, Divider, Menu, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Spec(){
+/* The compiled bundle lags a same-turn component by one compile; without this
+   an undefined export throws inside render and blanks the whole document. */
+if (!Toolbar) return <div className="page"><div className="masthead"><span className="eyebrow">Composite · Component specification</span><h1>Toolbar</h1><p className="lede">The design-system bundle has not been recompiled with <code>components/composite/Toolbar.jsx</code> yet — reload once it has.</p></div></div>;
+const [view,setView] = React.useState('edit');
+const [align,setAlign] = React.useState('left');
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Composite · Component specification</span>
+    <h1>Toolbar</h1>
+    <p className="lede">A persistent, semantically related set of actions or controls that operate on one context, presented as a single operable action surface.</p>
+    <div className="meta">
+      <span>Status · stable</span>
+      <span>Primitives · Box, Divider</span>
+      <span>Core · Button, IconButton, ButtonGroup, SegmentedControl, Menu</span>
+      <span>Follows · Composite spec standard</span>
+    </div>
+  </div>
+
+  <Sec n="§01" title="Purpose" note="Why the composition exists at all">
+    <p>Toolbar standardizes a persistent collection of actions or controls that all operate on the same context — a document, a chart, a selection, a canvas. It exists so that the recurring decisions around action ordering, grouping, focus behaviour, accessible naming and constrained-space handling are made once, in the system, rather than re-argued per screen.</p>
+    <ul>
+      <li><strong>It must represent an action surface, not arbitrary horizontal content.</strong> The test is whether every control in it acts on the same thing. If two controls act on different contexts, they belong to two surfaces.</li>
+      <li><strong>Why a composite rather than a Stack of buttons.</strong> Placing buttons in a row gets the picture and none of the contract: a row has no group boundary, no accessible name, four tab stops instead of one, no notion of which action survives when space runs out, and no way to make the whole surface unavailable at once. Those four things are what this component owns.</li>
+    </ul>
+    <div className="demo col">
+      <Toolbar label="Document actions" size="sm">
+        <Button variant="ghost" iconLeft="save">Save</Button>
+        <ButtonGroup label="History" variant="ghost">
+          <IconButton icon="undo-2" label="Undo" />
+          <IconButton icon="redo-2" label="Redo" />
+        </ButtonGroup>
+        <Divider />
+        <SegmentedControl label="View" value={view} onChange={setView} options={[{value:'edit',label:'Edit'},{value:'read',label:'Read'}]} />
+        <Divider />
+        <Button variant="ghost" iconLeft="share-2">Share</Button>
+        <Menu label="More document actions" items={['Duplicate','Version history','divider',{label:'Delete',icon:'trash-2',tone:'critical'}]} trigger={<IconButton icon="ellipsis" label="More document actions" />} />
+      </Toolbar>
+    </div>
+  </Sec>
+
+  <Sec n="§02" title="Anatomy" note="Required container, plus what may legitimately sit in it">
+    <ul>
+      <li><strong>1 · Toolbar container — required.</strong> Establishes the semantic boundary and carries the accessible name. Nothing else in the anatomy is meaningful without it.</li>
+      <li><strong>2 · Interactive controls — one or more, required.</strong> <code>Button</code> and <code>IconButton</code> are the actionable contents. A toolbar with no controls is not a toolbar.</li>
+      <li><strong>3 · <code>ButtonGroup</code> — optional.</strong> Collects controls that are variants of one operation (undo/redo, zoom in/out) into one joined control.</li>
+      <li><strong>4 · <code>SegmentedControl</code> — optional.</strong> Permitted where a mutually exclusive control genuinely belongs to the same action context (a view mode for the thing the toolbar acts on). Not a general dropdown substitute.</li>
+      <li><strong>5 · <code>Divider</code> — optional.</strong> Visually separates meaningful action groups. It carries no semantics: it may only mark a grouping that already exists in the action order.</li>
+      <li><strong>6 · <code>Menu</code> — optional.</strong> Access to lower-priority actions, either authored directly or produced by the overflow policy.</li>
+    </ul>
+    <p>Relationship rules: controls appear in logical action order; a <code>Divider</code> is only valid between two groups, never leading or trailing (the composite drops a rule that ends up at an edge); and a <code>Menu</code> that holds overflow sits last on the axis.</p>
+  </Sec>
+
+  <Sec n="§03" title="Properties" note="Composite-level API — everything else belongs to the children">
+    <T cols={['Prop','Type','Default','Meaning']} rows={[
+      ['label','string','—','Required accessible name — what this set of controls acts on. A toolbar role with no name is announced as an unlabelled group of controls.'],
+      ['size',"'sm' | 'md'","'md'",'Coordinated control height for the whole surface (§05). Pushed to any child that does not set its own.'],
+      ['orientation',"'horizontal' | 'vertical'","'horizontal'",'Layout axis, and with it the arrow-key axis (§07). The meaning of the surface does not change with the axis.'],
+      ['disabled','boolean','false','Aggregate disabled state for the whole surface (§06). Not a way to disable one action.'],
+      ['overflow',"'none' | 'menu'","'none'",'Standardized responsive overflow (§11). Horizontal only.'],
+      ['overflowLabel','string',"'More actions'",'Accessible name of the overflow trigger and its menu.'],
+    ]} />
+    <p>Deliberately absent: no <code>variant</code>. A toolbar has one appearance; everything about a single action (icon, tone, loading, its own <code>disabled</code>) remains that control's API.</p>
+    <div className="callout"><span className="cnum">!</span><p><code>data-priority="high"</code> on a child pins it against overflow. It is an attribute rather than a prop because it is a hint about the child's place in this surface, not part of <code>Button</code>'s contract.</p></div>
+  </Sec>
+
+  <Sec n="§05" title="Sizes" note="One height rhythm, set once">
+    <Row label="sm · 28px">
+      <Toolbar label="Row actions, small" size="sm">
+        <Button variant="ghost" iconLeft="pencil">Edit</Button>
+        <ButtonGroup label="History" variant="ghost">
+          <IconButton icon="undo-2" label="Undo" />
+          <IconButton icon="redo-2" label="Redo" />
+        </ButtonGroup>
+        <Divider />
+        <IconButton icon="trash-2" label="Delete" />
+      </Toolbar>
+    </Row>
+    <Row label="md · 34px">
+      <Toolbar label="Row actions, default">
+        <Button variant="ghost" iconLeft="pencil">Edit</Button>
+        <ButtonGroup label="History" variant="ghost">
+          <IconButton icon="undo-2" label="Undo" />
+          <IconButton icon="redo-2" label="Redo" />
+        </ButtonGroup>
+        <Divider />
+        <IconButton icon="trash-2" label="Delete" />
+      </Toolbar>
+    </Row>
+    <ul>
+      <li><strong>Two sizes, set once on the composite.</strong> <code>sm</code> for toolbars attached to a row, a card header or a dense panel; <code>md</code> for a standalone surface. Every child that does not set its own <code>size</code> takes the toolbar's.</li>
+      <li><strong>Why the composite coordinates it rather than the controls.</strong> A toolbar is one horizontal rhythm: a single child left at its own default puts a 34px control beside 28px ones, and the row stops reading as one surface. That failure is invisible in code review and obvious on screen, which is exactly the kind of decision a composite should absorb.</li>
+      <li><strong>There is no <code>lg</code>.</strong> <code>SegmentedControl</code> and <code>Menu</code> stop at <code>md</code>, so an <code>lg</code> toolbar could not size its own anatomy; and a 40px control row reads as a header, not a toolbar.</li>
+      <li><strong>A child may still override.</strong> An explicit <code>size</code> on a control wins — for the rare pinned primary that is deliberately larger — and the composite does not fight it.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§06" title="States" note="Only states the composition owns">
+    <Row label="Aggregate disabled">
+      <Toolbar label="Selection actions" size="sm" disabled>
+        <Button variant="ghost" iconLeft="copy">Copy</Button>
+        <Button variant="ghost" iconLeft="scissors">Cut</Button>
+        <Divider />
+        <IconButton icon="trash-2" label="Delete" />
+      </Toolbar>
+    </Row>
+    <ul>
+      <li><strong>Aggregate disabled.</strong> Owned by the composite, because it describes the context rather than any action: nothing is selected, the document is read-only, the connection is down. Rendered as a native <code>&lt;fieldset disabled&gt;</code> so the platform disables the whole subtree, including nested groups and segmented controls.</li>
+      <li><strong>The visible/overflowed relationship.</strong> When <code>overflow="menu"</code> is set, the composite owns which actions are directly presented and which are reached through the menu — no child can know that.</li>
+      <li><strong>Everything else is not the composite's.</strong> Hover, active, focus, loading, selected and per-control disabled belong to <code>Button</code>, <code>IconButton</code>, <code>SegmentedControl</code> and <code>Menu</code>, and the toolbar must not override them.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§07" title="Keyboard" note="Created by the composition; child activation untouched">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab','Enters the surface at one stop, and leaves it. The toolbar is a single tab stop — a roving tabindex, not five stops.'],
+      ['← →','Move between controls in a horizontal toolbar. Movement only: a control is never activated on the way past.'],
+      ['↑ ↓','The same, in a vertical toolbar.'],
+      ['Home / End','First and last control. Movement does not wrap — a wrap in a toolbar reads as a failed keypress, since nothing about the surface implies a ring.'],
+      ['Enter / Space','The focused control\u2019s own activation, unchanged.'],
+    ]} />
+    <ul>
+      <li><strong>Keyboard order corresponds to visual order</strong> because both are DOM order. The composite never reorders visually.</li>
+      <li><strong>A group counts as one stop.</strong> <code>ButtonGroup</code> children are individual stops (each is its own action); a <code>SegmentedControl</code> is one stop — its checked option — because it answers one question.</li>
+      <li><strong>The main axis belongs to the toolbar; the cross axis stays with the child.</strong> A <code>SegmentedControl</code> is a native radio group, and radios claim all four arrows. Inside a horizontal toolbar, ← → move out of it along the surface, while ↑ ↓ still change its value natively. This is the one keyboard rule the composition invents, and it is the reason §07 is included at all.</li>
+      <li><strong><code>Menu</code> keyboard behaviour remains owned by <code>Menu</code></strong> — the trigger is one toolbar stop; everything after it opens is the menu's contract.</li>
+    </ul>
+    <div className="demo col">
+      <Toolbar label="Text formatting" size="sm">
+        <ButtonGroup label="Style" variant="ghost">
+          <IconButton icon="bold" label="Bold" />
+          <IconButton icon="italic" label="Italic" />
+          <IconButton icon="underline" label="Underline" />
+        </ButtonGroup>
+        <Divider />
+        <SegmentedControl label="Alignment" iconOnly value={align} onChange={setAlign} options={[{value:'left',label:'Align left',icon:'align-left'},{value:'center',label:'Align centre',icon:'align-center'},{value:'right',label:'Align right',icon:'align-right'}]} />
+        <Divider />
+        <Button variant="ghost" iconLeft="link">Link</Button>
+      </Toolbar>
+      <Text size="xs" tone="tertiary">Tab in, then ← → across the whole surface; ↑ ↓ inside the alignment control.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="§08" title="Accessibility" note="Relationships created by the composition">
+    <ul>
+      <li><strong>Toolbar semantics are exposed where the platform supports them</strong> — <code>role="toolbar"</code>, plus <code>aria-orientation="vertical"</code> when the axis is not the default.</li>
+      <li><strong>An accessible name is required.</strong> A collection of otherwise ambiguous controls ("More", an ellipsis, three glyphs) is only interpretable through the name of what it acts on.</li>
+      <li><strong><code>IconButton</code> keeps its own naming obligation.</strong> The group name says what the surface acts on; it does not name the individual actions, and one does not substitute for the other.</li>
+      <li><strong>Visual grouping must match logical grouping.</strong> A <code>Divider</code> that splits a run that is not actually two groups, or a <code>ButtonGroup</code> around unrelated actions, creates an announced relationship that does not exist.</li>
+      <li><strong>Disabled controls follow the children's contracts.</strong> The composite does not remove disabled actions from the DOM, retint them, or make them focusable-but-inert; aggregate disabled works through the native fieldset so the platform stays the source of truth.</li>
+    </ul>
+    <div className="warn"><p>The single tab stop is an accessibility improvement only if the arrow contract actually works. A roving tabindex with no working arrows is worse than five tab stops, because the remaining controls become unreachable.</p></div>
+  </Sec>
+
+  <Sec n="§10" title="Content rules" note="What keeps the surface interpretable">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Include only controls that operate within one coherent context.</li>
+        <li>Order by importance and frequency: the actions people reach for first come first.</li>
+        <li>Keep directly exposed actions few — roughly five to seven; past that, group or overflow.</li>
+        <li>Use a <code>Divider</code> only where a real grouping already exists in the order.</li>
+        <li>Give icon-only actions established icon meanings and accessible names.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li>Mix contexts — actions on the document beside actions on the app.</li>
+        <li>Order actions by how they happen to fit.</li>
+        <li>Expose fifteen actions because the row is wide.</li>
+        <li>Use rules to make decorative clusters.</li>
+        <li>Invent a glyph for an action whose icon nobody would recognise — that action needs a label.</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="§11" title="Responsive" note="Standardized overflow, not wrapping">
+    <div className="demo col">
+      <div style={{width:248}}>
+        <Toolbar label="Chart actions" size="sm" overflow="menu">
+          <IconButton icon="refresh-cw" label="Refresh" data-priority="high" />
+          <IconButton icon="download" label="Export" data-priority="high" />
+          <Divider />
+          <Button variant="ghost" iconLeft="filter">Filter</Button>
+          <Button variant="ghost" iconLeft="columns-3">Columns</Button>
+          <Button variant="ghost" iconLeft="settings-2">Settings</Button>
+        </Toolbar>
+      </div>
+      <Text size="xs" tone="tertiary">Same toolbar, 248px container: the trailing low-priority actions moved into the overflow menu; the two pinned ones did not.</Text>
+    </div>
+    <ul>
+      <li><strong>Actions move into a Menu when space cannot hold the full surface.</strong> Measured on the container, not the viewport, since a toolbar's space is set by the panel it sits in.</li>
+      <li><strong>High priority survives low priority.</strong> Collapse runs from the trailing end and skips anything marked <code>data-priority="high"</code>.</li>
+      <li><strong>Transformation must not change meaning or availability.</strong> The action is the same action, with the same label, icon and handler, in a different presentation — it never becomes unavailable or renamed because the panel narrowed.</li>
+      <li><strong>Wrapping is not the answer here.</strong> A wrapped toolbar breaks the perceived grouping — the second line reads as a second surface — so the composite does not wrap.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§12" title="Anti-patterns" note="Plausible and consequential misuse">
+    <ul>
+      <li><strong>As a generic container for unrelated controls.</strong> Announces a relationship that does not exist and makes ordering arbitrary.</li>
+      <li><strong>As application navigation.</strong> Navigation moves you; a toolbar acts on what you are looking at. Use a nav landmark or <code>Tabs</code>.</li>
+      <li><strong>To achieve horizontal alignment.</strong> If you want a row, use <code>Stack direction="row" gap="8"</code> — taking the toolbar role for layout costs you a false group and a roving tabindex.</li>
+      <li><strong>The same action both directly and inside overflow.</strong> Two simultaneously operable controls for one action is a duplicate, not a convenience. Permitted only for a defined transitional state.</li>
+      <li><strong>Arbitrary content because there is room.</strong> A status string, an avatar, a search field dropped into the spare space turns an action surface into a header.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§13" title="Implementation notes" note="Constraints not visible from the API">
+    <ul>
+      <li><strong>The composite coordinates; the controls activate.</strong> It sets <code>tabIndex</code>, handles the axis arrows and decides visibility. It never intercepts clicks, rewrites handlers or restyles a control's states.</li>
+      <li><strong>DOM order is logical action order</strong> — the roving tabindex is computed from a DOM query, so any visual reordering would silently reorder the keyboard too.</li>
+      <li><strong>Action identity is stable across presentations.</strong> The overflow row is built from the same child's label, icon, disabled flag and handler, so moving between direct and menu presentation does not change what the action is.</li>
+      <li><strong>Overflow must not produce duplicate operable controls.</strong> A collapsed child is hidden (<code>display:none</code>), not merely visually clipped, so exactly one control exists for each action at any moment.</li>
+      <li><strong>Only flattenable controls collapse.</strong> A lettered <code>Button</code> and an <code>IconButton</code> have a one-row equivalent; a <code>ButtonGroup</code>, <code>SegmentedControl</code> or <code>Menu</code> does not, so those stay visible and the surface collapses around them. The test reads the child's props and flattens text out of its subtree — never component identity, and never a bare-string child, since an editor wrapper, an i18n wrapper or a <code>&lt;strong&gt;</code> all legitimately sit between a control and its words. A test that demands a raw string empties the candidate list silently, and a silently empty candidate list is an overflow policy that does nothing.</li>
+      <li><strong>Clipping is conditional on collapse being possible.</strong> The surface only clips when at least one action can move to the menu; otherwise it must be allowed to overflow visibly, because hiding an action with no menu to reach it would break §11's promise that availability never changes.</li>
+      <li><strong>The fit is measured, not calculated.</strong> Each pass compares the surface's <code>scrollWidth</code> to its <code>clientWidth</code> and collapses one more trailing action until it fits — so loaded fonts, a <code>size</code> change and a density change need no arithmetic. A real container-width change resets to everything-shown and re-converges, because an action that fits must come back rather than stay in the menu.</li>
+      <li><strong>The surface clips rather than spills</strong> — <code>overflow: clip</code> with a 4px clip margin, so a focus ring at the edge still draws.</li>
+      <li><strong>Stops are recomputed every render</strong>, because a collapse, a newly disabled action or a changed selection inside a <code>SegmentedControl</code> all move them. The single stop is published against <em>every</em> focusable descendant, not just the stop list: a <code>SegmentedControl</code>'s unchecked radios are not stops, and left at their default they would quietly give the surface three tab stops.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--toolbar-background','--toolbar-border','--toolbar-radius','--toolbar-padding','--toolbar-gap'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <p className="omitted">Omitted, per the composite spec standard: §04 Variants (one appearance) · §09 Motion (overflow is a layout change, not a communicated transition; no composite-owned motion) · §14 Developer notes (§03 and §13 fully define the contract).</p>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

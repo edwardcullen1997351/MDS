@@ -1,0 +1,438 @@
+<!-- @dsCard group="Specs · Navigation" viewport="1120x760" name="Local Navigation" subtitle="L2 Navigation System — section and workspace wayfinding, grouping models, and hierarchical scoping" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Local Navigation — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:68ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:74ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:76ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-direction:column;gap:16px}
+.demo-row{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:120px;padding-top:6px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.badge-tier{display:inline-block;padding:2px 8px;font-family:var(--font-mono);font-size:var(--text-2xs);letter-spacing:var(--tracking-caps);text-transform:uppercase;border-radius:var(--radius-full);background:var(--status-info-soft);color:var(--status-info-solid)}
+
+/* Mock UI Local Nav preview styles */
+.mock-local-nav{width:230px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;box-shadow:var(--shadow-xs);padding:10px 0}
+.mock-local-hdr{padding:4px 14px 8px;font-size:var(--text-xs);font-weight:var(--weight-semibold);border-bottom:var(--border-subtle);color:var(--text-primary);display:flex;align-items:center;justify-content:space-between}
+.mock-local-grp-title{font-size:10px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);padding:10px 14px 4px;font-weight:var(--weight-semibold)}
+.mock-local-list{list-style:none;margin:0;padding:0 6px;display:flex;flex-direction:column;gap:1px}
+.mock-local-item{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-radius:var(--radius-sm);font-size:var(--text-xs);color:var(--text-secondary);text-decoration:none;cursor:pointer;transition:background 0.12s ease}
+.mock-local-item:hover{background:var(--surface-sunken);color:var(--text-primary)}
+.mock-local-item.current{background:var(--status-info-soft);color:var(--text-link);font-weight:var(--weight-medium)}
+.mock-local-item.ancestor{font-weight:var(--weight-medium);color:var(--text-primary)}
+.mock-local-item.disabled{opacity:0.4;cursor:not-allowed}
+.mock-local-sub{padding-left:14px;list-style:none;margin:0;display:flex;flex-direction:column;gap:1px}
+.mock-local-badge{font-size:10px;padding:1px 6px;border-radius:10px;background:var(--surface-sunken);font-family:var(--font-mono)}
+.mock-local-item.current .mock-local-badge{background:var(--action-solid);color:#fff}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Button, IconButton, Badge, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const QUALITY_GROUPS = [
+  {
+    group: 'Inspections',
+    items: [
+      { id: 'incoming', label: 'Incoming Material', badge: '5', href: '#incoming' },
+      { id: 'in-process', label: 'In-Process Checks', href: '#in-process' },
+      { id: 'final', label: 'Final Release', badge: '1', href: '#final' },
+    ]
+  },
+  {
+    group: 'Dispositions & Audits',
+    items: [
+      { id: 'ncr', label: 'NC Reports (NCR)', badge: '8', href: '#ncr' },
+      { id: 'vendor-claims', label: 'Vendor Rejections', href: '#vendor-claims' },
+      { id: 'calibration', label: 'Gauge Calibration', href: '#calibration' },
+      { id: 'audit-log', label: 'ISO Audit Trail', href: '#audit-log', disabled: true, disabledReason: 'Audit access restricted to Quality Lead' },
+    ]
+  }
+];
+
+function LocalNavDemo(){
+  const [active, setActive] = React.useState('ncr');
+
+  return (
+    <div className="demo">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <Text size="xs" weight="medium">Interactive Demonstration — Local Navigation (L2 Quality & NCs Workspace)</Text>
+      </div>
+      <div className="demo-row">
+        <nav aria-label="Quality Module Local Navigation" className="mock-local-nav">
+          <div className="mock-local-hdr">
+            <span>Quality & NCs</span>
+            <span style={{fontSize:10,fontFamily:'var(--font-mono)',color:'var(--text-tertiary)'}}>L2 NAV</span>
+          </div>
+
+          {QUALITY_GROUPS.map((grp, idx) => (
+            <div key={idx}>
+              <div className="mock-local-grp-title">{grp.group}</div>
+              <ul className="mock-local-list">
+                {grp.items.map(item => (
+                  <li key={item.id}>
+                    <a
+                      href={item.href}
+                      aria-current={active === item.id ? 'page' : undefined}
+                      aria-disabled={item.disabled ? 'true' : undefined}
+                      title={item.disabled ? item.disabledReason : item.label}
+                      className={`mock-local-item ${active === item.id ? 'current' : ''} ${item.disabled ? 'disabled' : ''}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (!item.disabled) setActive(item.id);
+                      }}
+                    >
+                      <span>{item.label}</span>
+                      {item.badge ? <span className="mock-local-badge">{item.badge}</span> : null}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+
+        <div style={{flex:1,minWidth:280,background:'var(--surface-sunken)',padding:18,borderRadius:'var(--radius-md)',border:'var(--border-hairline)'}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>
+            Active Workspace Scope
+          </Text>
+          <div style={{marginTop:8,fontFamily:'var(--font-mono)',fontSize:'var(--text-sm)',color:'var(--text-primary)'}}>
+            Module: <strong>/quality/{active}</strong>
+          </div>
+          <p style={{marginTop:8,fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+            Current View: <strong>{QUALITY_GROUPS.flatMap(g=>g.items).find(i=>i.id===active)?.label}</strong>. Local Navigation structures the secondary destination spaces within one plant module without altering the parent Global Navigation anchor.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Spec(){
+  return (
+    <div className="page">
+      <div className="masthead">
+        <span className="eyebrow">Navigation System · System specification</span>
+        <h1>Local Navigation</h1>
+        <p className="lede">Provides structured navigation among destinations belonging to the current major section, workspace, or functional area (L2). It groups related operational workspaces, communicates sub-domain orientation, and coordinates child views under an active top-level global domain.</p>
+        <div className="meta">
+          <span>specs/navigation/LocalNavigation.spec.html</span>
+          <span className="badge-tier">Tier: L2 Navigation System</span>
+          <span style={{color:'var(--text-primary)'}}>status: frozen 8 Sep 2026 · 0 open items</span>
+          <span>setting: Suryodaya Autocomp Ltd (PL-04, Chakan)</span>
+        </div>
+      </div>
+
+      <Sec n="01" title="Purpose" note="Sub-domain wayfinding and workspace coordination.">
+        <p>Local Navigation provides structured movement among destinations within a single selected functional domain (e.g. within <em>Quality & NCs</em>: Incoming Material, In-Process Checks, NC Reports, Vendor Claims, Gauge Calibration). It divides complex operational modules into logical workspace clusters without cluttering the global application shell.</p>
+        <T cols={['You need to…','Use this system','Instead of…','Why']} rows={[
+          ['Navigate workspaces within the active module (L2)','Local Navigation','Global Navigation','Global navigation holds high-level plant domains; local navigation organizes work inside one domain.'],
+          ['Switch views inside a single record or work order (L3)','Tabs','Local Navigation','Tabs switch sibling views of one entity in-place; local nav switches between distinct workspace lists and tools.'],
+          ['Explore arbitrary recursive directory or asset trees','Tree Navigation','Local Navigation','Local navigation is strictly shallow (flat or 2-level grouped); recursive trees belong to Tree Nav.'],
+          ['Re-orient to parent hierarchy trail','Breadcrumb','Local Navigation','Breadcrumb shows the lineage path back to root; local navigation provides peer workspace choices.']
+        ]} />
+        <div className="two" style={{marginTop:8}}>
+          <div className="pane do">
+            <h3>Do</h3>
+            <ul>
+              <li>Use Local Navigation for the 4–12 workspaces belonging to an active plant module.</li>
+              <li>Organize items into categorized groups with clear semantic group headings.</li>
+              <li>Maintain distinct accessible names for the local <code>&lt;nav&gt;</code> landmark.</li>
+            </ul>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <ul>
+              <li>Don't reproduce the entire application architecture inside local nav.</li>
+              <li>Don't make group headings clickable links that also act as expand/collapse triggers.</li>
+              <li>Don't nest local navigation beyond 2 levels of hierarchy.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="02" title="Anatomy" note="Structural zones, group containers, and item slots.">
+        <p>The Local Navigation system comprises a scoped container, module title header, destination group headers, primary workspace item rows, optional subordinate items, and badge counters.</p>
+        <LocalNavDemo />
+        <div style={{marginTop:12}}>
+          <T cols={['Structural Slot','Element','Role','Requirement']} rows={[
+            ['Local Nav Container','<nav> landmark','Encloses the local navigation region with an accessible name.','Mandatory'],
+            ['Module Title Header','<div> / <h2>','Identifies the parent module context (e.g. Quality & NCs).','Optional'],
+            ['Destination Group','<div> / <section>','Categorical cluster of related workspaces (e.g. Inspections).','Optional'],
+            ['Group Heading','<div> (non-interactive)','Semantic category title; descriptive label, never a link.','Conditional'],
+            ['Destination List','<ul>','List of local workspace links.','Mandatory'],
+            ['Destination Item','<li> > <a>','Individual workspace link with label, icon, and badge.','Mandatory'],
+            ['Current Indicator','Background pill / border','Highlights the active workspace (paired with aria-current="page").','Mandatory'],
+            ['Badge / Count','<Badge>','Displays open items or pending approvals within that workspace.','Optional'],
+            ['Collapsible Subordinate Group','<ul> in <Accordion>','Expandable sub-tree for sub-module views (max 1 level deep).','Optional']
+          ]} />
+        </div>
+      </Sec>
+
+      <Sec n="03" title="Properties" note="Public API, grouping schema, and refused configurations.">
+        <p>The system is configured via flat items or categorized group structures:</p>
+        <pre>{`interface LocalNavItem {
+  id: string;                     // Unique workspace route identifier
+  label: string;                  // Destination label (noun, max 24 chars)
+  href: string;                   // Route URL
+  icon?: string;                  // Optional semantic icon
+  badge?: string | number;        // Badge counter (e.g. 8 open NCRs)
+  disabled?: boolean;             // Role restriction flag
+  disabledReason?: string;        // Tooltip explanation
+  children?: LocalNavItem[];      // Optional sub-items (max 1 nested level)
+}
+
+interface LocalNavGroup {
+  group: string;                  // Group category title (e.g. "Inspections")
+  items: LocalNavItem[];          // Items within this category
+}
+
+interface LocalNavProps {
+  items: LocalNavItem[] | LocalNavGroup[]; // Flat or grouped items array
+  activeId: string;               // Currently active workspace ID
+  title?: string;                 // Section/Module title (e.g. "Quality & NCs")
+  variant?: 'flat' | 'grouped' | 'accordion'; // Presentation structure
+  density?: 'compact' | 'comfortable' | 'expanded';
+  LinkComponent?: React.ComponentType<any>;
+  onNavigate?: (item: LocalNavItem, event: React.MouseEvent) => void;
+  label?: string;                 // Accessible landmark label (default: "[Title] Navigation")
+}`}</pre>
+        <div className="warn" style={{marginTop:8}}>
+          <p><strong>Refused Properties:</strong> No arbitrary deeply recursive nesting props; no interactive action buttons or filter dropdowns inside destination lists; no dual-role group headers that act as both parent links and collapsible headers.</p>
+        </div>
+      </Sec>
+
+      <Sec n="04" title="Variants" note="Presentation forms: Flat, Grouped, and Accordion.">
+        <p>Local Navigation supports three standardized organizational variants:</p>
+        <T cols={['Variant','Structure','Optimal Scope','Use Case']} rows={[
+          ['Flat List','Single un-grouped <ul>','3–6 items','Compact modules with a single unified list of workspaces.'],
+          ['Grouped List','Category headings + <ul> lists','6–12 items','Standard operational modules (e.g. Quality: Inspections vs Dispositions).'],
+          ['Accordion Groups','Expandable category accordions','8–16 items','Dense multi-sub-domain modules where operators focus on one category at a time.']
+        ]} />
+      </Sec>
+
+      <Sec n="05" title="Sizes" note="Widths, row heights, and rhythmic padding.">
+        <p>Local navigation dimensions align with layout sidebars and master-detail panes:</p>
+        <T cols={['Metric','Token / Value','Application']} rows={[
+          ['Container Width','200px – 240px','Standard secondary navigation sidebar or sub-pane.'],
+          ['Row Height (Compact)','32px (--control-h-sm)','Dense desktop workstation queues.'],
+          ['Row Height (Comfortable)','36px / 40px (--control-h-md)','Standard operational default.'],
+          ['Row Height (Expanded)','44px / 48px (--control-h-lg)','Touch terminals and tablet floor devices.'],
+          ['Nested Indent Step','16px (--space-4)','Subordinate child items offset under an active parent node.']
+        ]} />
+      </Sec>
+
+      <Sec n="06" title="States" note="Item visual states, ancestor propagation, and contrast.">
+        <p>States strictly distinguish between the exact current page, ancestor nodes, and interactive hover/focus:</p>
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          <Row label="Rest / Default">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>Resting state with text-secondary color.</span>
+          </Row>
+          <Row label="Hover">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-primary)',background:'var(--surface-sunken)',padding:'4px 10px',borderRadius:'var(--radius-sm)'}}>Subtle background tint with text-primary contrast.</span>
+          </Row>
+          <Row label="Focus-Visible">
+            <span style={{fontSize:'var(--text-xs)',outline:'2px solid var(--action-solid)',outlineOffset:1,padding:'4px 10px',borderRadius:'var(--radius-sm)'}}>High-visibility blue outline around item bounding box.</span>
+          </Row>
+          <Row label="Current (Active)">
+            <span style={{fontSize:'var(--text-xs)',background:'var(--status-info-soft)',color:'var(--text-link)',fontWeight:'var(--weight-medium)',padding:'4px 10px',borderRadius:'var(--radius-sm)'}}>Soft-blue active pill with aria-current="page".</span>
+          </Row>
+          <Row label="Ancestor Active">
+            <span style={{fontSize:'var(--text-xs)',fontWeight:'var(--weight-medium)',color:'var(--text-primary)',padding:'4px 10px'}}>Weight-medium text and open group expansion when a deep child is selected.</span>
+          </Row>
+          <Row label="Unavailable / Disabled">
+            <span style={{fontSize:'var(--text-xs)',opacity:0.4,padding:'4px 10px'}}>Muted opacity with tooltip explaining permission limits.</span>
+          </Row>
+        </div>
+      </Sec>
+
+      <Sec n="07" title="Keyboard" note="Landmark navigation and arrow roving.">
+        <p>Keyboard operators can seamlessly traverse local navigation:</p>
+        <T cols={['Key / Shortcut','Action','Behavior']} rows={[
+          ['F6 / Alt+F6','Landmark Cycle','Jumps focus between Global Nav, Local Nav, and Main Content canvas.'],
+          ['Tab / Shift+Tab','Linear Focus','Moves sequentially into and out of the local navigation region.'],
+          ['Arrow Up / Down','Roving Traversal','Moves focus rapidly across destination links.'],
+          ['Arrow Right / Left','Expand / Collapse','Expands or collapses accordion sub-groups.'],
+          ['Enter / Space','Activate','Navigates to the selected workspace or toggles group accordion.'],
+          ['Escape','Dismiss Drawer','Closes mobile flyout drawer when in responsive drawer mode.']
+        ]} />
+      </Sec>
+
+      <Sec n="08" title="Accessibility" note="Landmark names, aria-current, and WCAG criteria.">
+        <p>Local navigation must be uniquely identifiable to assistive technologies:</p>
+        <ul>
+          <li><strong>Distinct Landmark Labeling:</strong> Must use <code>&lt;nav aria-label="Quality Module Navigation"&gt;</code> so screen reader users can distinguish it from the primary global navigation landmark.</li>
+          <li><strong>Current Destination:</strong> The active link must carry <code>aria-current="page"</code>.</li>
+          <li><strong>Collapsible Group ARIA:</strong> Accordion group headers must carry <code>aria-expanded="true|false"</code> and <code>aria-controls="group-list-id"</code>.</li>
+          <li><strong>Non-Interactive Headings:</strong> Static category titles must use <code>&lt;div role="presentation"&gt;</code> or <code>&lt;h3&gt;</code> without anchor wrapping.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="09" title="Motion" note="Accordion and drawer slide transitions.">
+        <p>Smooth transitions that communicate state changes without causing visual distraction:</p>
+        <T cols={['Transition','Property','Duration Token','Easing']} rows={[
+          ['Accordion Group Height Reveal','max-height, opacity','160ms (--duration-quick)','cubic-bezier(0.2, 0, 0, 1)'],
+          ['Active Pill State Transition','background-color, color','120ms (--duration-instant)','ease-out'],
+          ['Off-Canvas Drawer Slide','transform (translateX)','200ms (--duration-moderate)','cubic-bezier(0, 0, 0.2, 1)'],
+          ['Reduced Motion Override','all transitions','0ms (Instant)','prefers-reduced-motion: reduce']
+        ]} />
+      </Sec>
+
+      <Sec n="10" title="Content Rules" note="Labeling standards, category nouns, and plant taxonomy.">
+        <p>Labels describe workspaces and sets of records, maintaining parallel grammatical structures:</p>
+        <T cols={['Correct Destination Label (Noun)','Incorrect Phrasing (Verb/Action)','Rationale']} rows={[
+          ['NC Reports (NCR)','Log Nonconformance','Local nav represents the workspace/ledger; action buttons live on the page.'],
+          ['Incoming Material','Inspect Incoming Parts','The destination hosts the queue of incoming vendor batches.'],
+          ['Gauge Calibration','Calibrate Tooling','The workspace holds the registry of instruments and calibration certificates.'],
+          ['Vendor Rejections','Return Defective Lot','The workspace tracks debit notes and supplier RMA claims.']
+        ]} />
+        <ul style={{marginTop:8}}>
+          <li><strong>Parallel Terminology:</strong> Keep all sibling labels in the same grammatical form (all nouns or noun phrases).</li>
+          <li><strong>Length:</strong> 1–3 words, maximum 24 characters to prevent horizontal wrapping in standard sidebars.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="11" title="Responsive" note="Drawer transitions and narrow viewports.">
+        <p>On constrained viewports, Local Navigation transforms gracefully while preserving exact architectural parity:</p>
+        <T cols={['Viewport Width','Breakpoint','Presentation Form']} rows={[
+          ['Desktop (≥1024px)','Wide Screen','Persistent secondary sidebar column or integrated master-detail left pane.'],
+          ['Tablet (768px–1023px)','Medium Screen','Collapsible off-canvas drawer or top horizontal secondary bar.'],
+          ['Mobile (<768px)','Narrow Screen','Off-canvas modal drawer revealed via section menu trigger; active workspace title pinned in sub-header.']
+        ]} />
+      </Sec>
+
+      <Sec n="12" title="Anti-patterns" note="Common mistakes and architectural traps.">
+        <div className="two">
+          <div className="pane dont">
+            <h3>Anti-Patterns (Never Do)</h3>
+            <ul>
+              <li><strong>Global Nav Replication:</strong> Copying global plant links into the local sidebar.</li>
+              <li><strong>Arbitrary Deep Nesting:</strong> Exposing 3+ levels of nesting inside local navigation.</li>
+              <li><strong>Clickable Ambiguous Headings:</strong> Making category headers links that also toggle submenus.</li>
+              <li><strong>Filter Pollution:</strong> Placing status filters (e.g. "Only Open", "High Priority") in local nav.</li>
+            </ul>
+          </div>
+          <div className="pane do">
+            <h3>Standard Corrections</h3>
+            <ul>
+              <li>Keep Local Nav strictly scoped to the active L1 parent module.</li>
+              <li>Limit depth to 2 levels; handle deeper records with master-detail lists or breadcrumbs.</li>
+              <li>Make group headings static text, with discrete disclosure chevrons if collapsible.</li>
+              <li>Place filters in the workspace data table toolbar, not in navigation.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="13" title="Implementation Notes" note="Parent-route binding, scroll preservation, and tokens.">
+        <p>Implementation requirements for robust framework integration:</p>
+        <ul>
+          <li><strong>Module Binding:</strong> Local navigation is dynamically bound to the current L1 module route prefix (e.g. <code>/quality/*</code>).</li>
+          <li><strong>Scroll Preservation:</strong> Independent scroll containers preserve their scroll offset during in-module navigation.</li>
+          <li><strong>Z-Index Layering:</strong> Secondary sidebar operates on <code>--z-index-nav: 100</code>; drawer modals on <code>--z-index-drawer: 200</code>.</li>
+        </ul>
+        <div style={{marginTop:8}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>Tokens Consumed</Text>
+          <div className="tokenlist" style={{marginTop:6}}>
+            <code>--surface-card</code>
+            <code>--surface-sunken</code>
+            <code>--border-hairline</code>
+            <code>--border-subtle</code>
+            <code>--action-solid</code>
+            <code>--status-info-soft</code>
+            <code>--text-primary</code>
+            <code>--text-secondary</code>
+            <code>--text-tertiary</code>
+            <code>--text-link</code>
+            <code>--radius-sm</code>
+            <code>--control-h-md</code>
+            <code>--space-3</code>
+            <code>--space-4</code>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="14" title="Developer Notes" note="Route mapping, parent resolution, and test assertions.">
+        <p>Router integration and test assertions for consuming teams:</p>
+        <pre>{`// Example: Nested Module Routing Integration
+import { LocalNavigation } from '@meridian/design-system';
+import { useLocation, NavLink } from 'react-router-dom';
+
+export function QualityModuleNav() {
+  const location = useLocation();
+  // Resolve sub-route ID (e.g. /quality/ncr -> 'ncr')
+  const activeId = location.pathname.split('/')[2] || 'incoming';
+
+  return (
+    <LocalNavigation
+      title="Quality & NCs"
+      items={QUALITY_GROUPS}
+      activeId={activeId}
+      variant="grouped"
+      LinkComponent={NavLink}
+    />
+  );
+}`}</pre>
+        <div style={{marginTop:12}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>Test Assertions</Text>
+          <ul>
+            <li>Assert that the local navigation landmark has a descriptive, distinct <code>aria-label</code> (e.g. <code>"Quality Module Navigation"</code>).</li>
+            <li>Assert that exactly one workspace link receives <code>aria-current="page"</code> matching the active route.</li>
+            <li>Assert that group headings are non-interactive semantic elements and not nested inside anchor tags.</li>
+          </ul>
+        </div>
+      </Sec>
+
+      <div style={{marginTop:36,paddingTop:12,borderTop:'var(--border-hairline)',fontFamily:'var(--font-mono)',fontSize:'var(--text-2xs)',color:'var(--text-tertiary)'}}>
+        Applies to: L2 Local Navigation System · Governance: <a href="../../guidelines/navigation-spec-standard.card.html">Navigation System specification standard</a> · Sections §01–§14 frozen · Parent: <a href="GlobalNavigation.spec.html">Global Navigation</a> · Siblings: <a href="Tabs.spec.html">Tabs</a>, <a href="Breadcrumb.spec.html">Breadcrumb</a>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

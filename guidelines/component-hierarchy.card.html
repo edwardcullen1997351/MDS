@@ -1,0 +1,178 @@
+<!-- @dsCard group="Governance" viewport="1000x1750" name="3-Tier Component Hierarchy" subtitle="The three canonical tiers of classification: Primitives, Components (5 Functional Domains), and Composites" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>3-Tier Component Hierarchy</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;padding:28px 32px;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.wrap{max-width:980px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 6px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0 0 20px;max-width:82ch;color:var(--text-secondary);text-wrap:pretty}
+.rule-banner{padding:14px 18px;border-left:2px solid var(--action-solid);background:var(--surface-card);border-radius:var(--radius-md);margin-bottom:24px;border:var(--border-hairline);border-left:3px solid var(--action-solid)}
+.rule-banner h2{margin:0 0 4px;font-size:var(--text-sm);font-weight:var(--weight-semibold);color:var(--text-primary)}
+.rule-banner p{margin:0;font-size:var(--text-xs);color:var(--text-secondary);max-width:86ch}
+.hierarchy-diagram{display:grid;grid-template-columns:repeat(3, 1fr);gap:16px;margin:20px 0 28px}
+.tier-card{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.tier-badge{align-self:flex-start;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);padding:2px 8px;border-radius:var(--radius-full);background:var(--surface-sunken);color:var(--text-secondary)}
+.tier-card h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+.tier-card p{margin:0;font-size:var(--text-xs);color:var(--text-secondary);line-height:1.5}
+.tier-card .tag-list{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.tag{font-family:var(--font-mono);font-size:var(--text-2xs);padding:2px 6px;background:var(--surface-sunken);border-radius:var(--radius-sm);color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs);margin:16px 0 28px}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+td code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:28px 0 12px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px}
+.pane h4{margin:0 0 6px;font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--text-primary)}
+.pane ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:5px;font-size:var(--text-xs);color:var(--text-secondary)}
+.sig{margin-top:36px;padding-top:14px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6}
+a{color:var(--text-link);text-decoration:none}a:hover{color:var(--action-solid-hover)}
+@media (max-width:760px){.hierarchy-diagram{grid-template-columns:1fr}.sec-grid{grid-template-columns:1fr}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Governance · Taxonomy standard</span>
+<h1>3-Tier Component Hierarchy</h1>
+<p class="lede">Meridian structures its UI inventory into <strong>three discrete classifications</strong> to resolve the tension between structural complexity (how an element is composed) and functional domain (what job an element performs). Every export in the library belongs unequivocally to one of these three tiers.</p>
+
+<div class="rule-banner">
+  <h2>The Classification Law</h2>
+  <p><strong>Never mix structural tiers with functional concerns.</strong> <em>Primitives</em> (layout/foundations) and <em>Composites</em> (multi-part assemblies) represent structural tiers. The 5 functional domains (<em>Core, Forms, Feedback, Navigation, Data</em>) are sub-categories that sit strictly within <strong>Tier 2: Components</strong>.</p>
+</div>
+
+<div class="hierarchy-diagram">
+  <div class="tier-card">
+    <span class="tier-badge">Tier 1</span>
+    <h3>Primitives</h3>
+    <p>Token consumers &amp; layout frame. Pure structural abstractions with no interactive states, no keyboard contracts, and no business logic.</p>
+    <div class="tag-list">
+      <span class="tag">Box</span>
+      <span class="tag">Stack</span>
+      <span class="tag">Grid</span>
+      <span class="tag">Container</span>
+      <span class="tag">Surface</span>
+      <span class="tag">Text</span>
+      <span class="tag">Heading</span>
+      <span class="tag">Divider</span>
+      <span class="tag">Spacer</span>
+      <span class="tag">Image</span>
+      <span class="tag">AspectRatio</span>
+    </div>
+  </div>
+
+  <div class="tier-card" style="border-top: 2px solid var(--action-solid)">
+    <span class="tier-badge" style="background:var(--status-info-soft);color:var(--text-accent)">Tier 2</span>
+    <h3>Components</h3>
+    <p>Single-purpose building blocks. Discrete UI controls with designed states, keyboard navigation, and full 14-section specifications across 5 functional domains.</p>
+    <div class="tag-list">
+      <span class="tag">Core</span>
+      <span class="tag">Forms</span>
+      <span class="tag">Feedback</span>
+      <span class="tag">Navigation</span>
+      <span class="tag">Data</span>
+    </div>
+  </div>
+
+  <div class="tier-card">
+    <span class="tier-badge">Tier 3</span>
+    <h3>Composites</h3>
+    <p>Multi-part assemblies &amp; workflows. Standardized compounds combining multiple Tier 2 components with synchronized state and cross-field logic.</p>
+    <div class="tag-list">
+      <span class="tag">DateRangePicker</span>
+      <span class="tag">DateTimePicker</span>
+      <span class="tag">FileUpload</span>
+      <span class="tag">ScopePicker</span>
+      <span class="tag">SearchField</span>
+      <span class="tag">SortableCollection</span>
+      <span class="tag">SplitButton</span>
+      <span class="tag">Toolbar</span>
+    </div>
+  </div>
+</div>
+
+<div class="groupline"><h2>Tier Comparison &amp; Specification Requirements</h2><span>Rules of Governance</span></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tier</th>
+      <th>Primary Responsibility</th>
+      <th>Specification Contract</th>
+      <th>Interactive States &amp; ARIA</th>
+      <th>Consumer Rules</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Tier 1: Primitives</strong></td>
+      <td>Geometry, layout rhythm, surface styling, typography scale mapping.</td>
+      <td><code>.d.ts</code> prop types, <code>.prompt.md</code>, token scale validations in <code>scale.js</code>. No 14-section spec (<a href="primitives-policy.card.html">policy</a>).</td>
+      <td>None (except <code>Surface interactive</code> hover tint). No keyboard navigation, no ARIA roles.</td>
+      <td>Reach for primitives before <code>div</code>. Pass token names, never raw px/hex values.</td>
+    </tr>
+    <tr>
+      <td><strong>Tier 2: Components</strong></td>
+      <td>Single-purpose controls across Core, Forms, Feedback, Navigation, and Data.</td>
+      <td>Full 14-section spec (<code>.spec.html</code>) required before freezing. API is closed.</td>
+      <td>Four states always designed (rest, hover, press, focus). Full keyboard and ARIA compliance.</td>
+      <td>Never fork or hand-roll custom styling. Use semantic tokens and props.</td>
+    </tr>
+    <tr>
+      <td><strong>Tier 3: Composites</strong></td>
+      <td>Multi-component assemblies, multi-field synchronisation, compound workflows.</td>
+      <td>14-section conditional standard (<a href="composite-spec-standard.card.html">composite standard</a>) documenting only what composition adds.</td>
+      <td>Coordinates state across constituent Tier 2 children; owns cross-control focus movement.</td>
+      <td>Use when 2+ components recur together with coordinated sizing or shared state.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="groupline"><h2>The Five Functional Sub-Domains of Tier 2</h2><span>Components Tier Breakdown</span></div>
+
+<div class="sec-grid">
+  <div class="pane">
+    <h4>1. Core &amp; General</h4>
+    <ul>
+      <li><strong>Role:</strong> Fundamental interactive units and markers.</li>
+      <li><strong>Members:</strong> <code>Button</code>, <code>IconButton</code>, <code>ButtonGroup</code>, <code>Avatar</code>, <code>AvatarGroup</code>, <code>Badge</code>, <code>Chip</code>, <code>Tag</code>, <code>Card</code>, <code>Link</code>, <code>SegmentedControl</code>, <code>Fieldset</code>, <code>Icon</code>.</li>
+    </ul>
+  </div>
+  <div class="pane">
+    <h4>2. Forms</h4>
+    <ul>
+      <li><strong>Role:</strong> Data capture, selection, range adjustment, and text entry.</li>
+      <li><strong>Members:</strong> <code>Input</code>, <code>Textarea</code>, <code>Select</code>, <code>Checkbox</code>, <code>CheckboxGroup</code>, <code>Radio</code>, <code>RadioGroup</code>, <code>Switch</code>, <code>Slider</code>, <code>RangeSlider</code>, <code>DatePicker</code>, <code>TimeField</code>, <code>Autocomplete</code>, <code>Combobox</code>, <code>MultiCombobox</code>, <code>FileDropzone</code>, <code>FileItem</code>.</li>
+    </ul>
+  </div>
+  <div class="pane">
+    <h4>3. Feedback &amp; Overlays</h4>
+    <ul>
+      <li><strong>Role:</strong> Alerting, confirmation gates, transient notifications, contextual popovers.</li>
+      <li><strong>Members:</strong> <code>Alert</code>, <code>Dialog</code>, <code>Drawer</code>, <code>Popover</code>, <code>Tooltip</code>, <code>Toast</code>, <code>Snackbar</code>, <code>Progress</code>.</li>
+    </ul>
+  </div>
+  <div class="pane">
+    <h4>4. Navigation</h4>
+    <ul>
+      <li><strong>Role:</strong> Wayfinding, hierarchy switching, pagination, and multi-step progressions.</li>
+      <li><strong>Members:</strong> <code>Tabs</code>, <code>Breadcrumb</code>, <code>Menu</code>, <code>Pagination</code>, <code>StepNavigation</code>, <code>SequentialNavigation</code>, <code>GlobalNavigation</code>, <code>LocalNavigation</code>, <code>InPageNavigation</code>, <code>TreeNavigation</code>, <code>ScopeNavigation</code>.</li>
+    </ul>
+  </div>
+  <div class="pane" style="grid-column: 1 / -1">
+    <h4>5. Data &amp; Visualization</h4>
+    <ul>
+      <li><strong>Role:</strong> Tabular listings, hierarchical trees, record summaries, and quantitative telemetry.</li>
+      <li><strong>Members:</strong> <code>Table</code>, <code>List</code>, <code>DescriptionList</code>, <code>Tree</code>, <code>EmptyState</code>, <code>Skeleton</code>, <code>BarChart</code>, <code>LineChart</code>, <code>AreaChart</code>, <code>PieChart</code>, <code>Heatmap</code>, <code>GeoMap</code>, <code>GanttChart</code>, <code>ScatterPlot</code>, <code>Treemap</code>, <code>NetworkDiagram</code>, <code>ParallelCoordinates</code>, <code>DistributionPlot</code>, <code>RangeChart</code>, <code>SankeyDiagram</code>, <code>TreeDiagram</code>.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sig">
+  <span>Meridian Design System · Governance &amp; Taxonomy Standard</span><br>
+  <span>Cross-references: <a href="primitives-policy.card.html">Primitives Policy</a> · <a href="core-spec-standard.card.html">Component Spec Standard</a> · <a href="composite-spec-standard.card.html">Composite Spec Standard</a> · <a href="composition-rules.card.html">Composition Rules</a></span>
+</div>
+</div>
+</body></html>

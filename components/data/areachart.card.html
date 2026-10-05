@@ -1,0 +1,795 @@
+<!-- @dsCard group="Components" viewport="1080x900" name="AreaChart — accumulated magnitude & composition" subtitle="Single, stacked, normalized, diverging, and stream variants — accessible hatch patterns, boundary strokes, and roving focus" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AreaChart — Meridian Design System</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: var(--background-page);
+      padding: 24px;
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+    }
+    .header-bar {
+      margin-bottom: 20px;
+    }
+    .header-title {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      margin: 0 0 4px 0;
+      letter-spacing: var(--tracking-tight);
+    }
+    .header-sub {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin: 0;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      margin-bottom: 24px;
+      font-size: var(--text-xs);
+    }
+    .controls label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+    }
+    .controls select, .controls button {
+      font-family: inherit;
+      font-size: inherit;
+      padding: 4px 8px;
+      border-radius: var(--radius-xs);
+      border: var(--border-hairline);
+      background: var(--surface-sunken);
+      color: var(--text-primary);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .grid-full {
+      grid-column: 1 / -1;
+    }
+    .chart-box {
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-xs);
+      position: relative;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    /* Core AreaChart Component Styles */
+    .mds-area-chart {
+      position: relative;
+      font-family: var(--font-sans);
+      outline: none;
+    }
+    .mds-area-chart:focus-visible {
+      outline: 2px solid var(--action-solid, #2563eb);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+    .mds-area-chart__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .mds-area-chart__title {
+      margin: 0 0 2px 0;
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--text-primary);
+    }
+    .mds-area-chart__subtitle {
+      margin: 0;
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+    }
+    .mds-area-chart__table-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 7px;
+      font-size: 11px;
+      font-family: inherit;
+      background: var(--surface-sunken);
+      border: var(--border-hairline);
+      border-radius: var(--radius-xs);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .mds-area-chart__table-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+    .mds-area-chart__legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+      font-size: var(--text-xs);
+    }
+    .mds-area-chart__legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      padding: 2px 4px;
+      border-radius: var(--radius-xs);
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: opacity 150ms ease;
+    }
+    .mds-area-chart__legend-item:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+    .mds-area-chart__legend-item--dimmed {
+      opacity: 0.35;
+    }
+    .mds-area-chart__legend-swatch {
+      width: 14px;
+      height: 10px;
+      border-radius: 2px;
+      display: inline-block;
+      border: 1px solid rgba(0,0,0,0.15);
+    }
+    .mds-area-chart__svg {
+      overflow: visible;
+      display: block;
+    }
+    .mds-area-chart__gridline line {
+      stroke: var(--border-subtle, #e2e8f0);
+      stroke-dasharray: 2 2;
+    }
+    .mds-area-chart__axis text {
+      font-size: 10px;
+      font-family: var(--font-mono, monospace);
+      fill: var(--text-tertiary, #94a3b8);
+    }
+    .mds-area-chart__ref-label {
+      font-size: 10px;
+      font-weight: var(--weight-medium);
+      font-family: var(--font-mono, monospace);
+    }
+    .mds-area-chart__tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: var(--surface-card, #ffffff);
+      border: var(--border-hairline);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-md);
+      padding: 10px 12px;
+      font-size: var(--text-xs);
+      z-index: 50;
+      min-width: 170px;
+    }
+    .mds-area-chart__tooltip-header {
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: var(--border-hairline);
+      color: var(--text-primary);
+    }
+    .mds-area-chart__tooltip-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
+      color: var(--text-secondary);
+    }
+    .mds-area-chart__tooltip-swatch {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .mds-area-chart__tooltip-val {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-weight: var(--weight-medium);
+      color: var(--text-primary);
+    }
+    .mds-area-chart__tooltip-row--total {
+      margin-top: 6px;
+      padding-top: 5px;
+      border-top: var(--border-hairline);
+      font-weight: var(--weight-bold);
+      color: var(--text-primary);
+    }
+    .mds-area-chart__modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .mds-area-chart__modal {
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      width: 90%;
+      max-width: 680px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+    }
+    .mds-area-chart__modal-header {
+      padding: 14px 18px;
+      border-bottom: var(--border-hairline);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mds-area-chart__modal-header h4 {
+      margin: 0;
+      font-size: var(--text-sm);
+    }
+    .mds-area-chart__modal-close {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+    .mds-area-chart__modal-body {
+      padding: 16px 18px;
+      overflow-y: auto;
+    }
+    .mds-area-chart__data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-xs);
+    }
+    .mds-area-chart__data-table th, .mds-area-chart__data-table td {
+      padding: 8px 10px;
+      border-bottom: var(--border-hairline);
+      text-align: left;
+    }
+    .mds-area-chart__data-table th {
+      background: var(--surface-sunken);
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+    }
+    .mds-area-chart__table-share {
+      color: var(--text-tertiary);
+      font-size: 11px;
+    }
+    .mds-area-chart__sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useMemo } = React;
+
+    // Color Palette Tokens
+    const VIZ_COLORS = [
+      'var(--viz-1, #2563eb)',
+      'var(--viz-2, #0d9488)',
+      'var(--viz-3, #d97706)',
+      'var(--viz-4, #7c3aed)',
+      'var(--viz-5, #db2777)',
+      'var(--viz-6, #4b5563)',
+    ];
+
+    const PATTERN_PRESETS = [
+      { id: 'pat-diagonal', name: 'Diagonal Lines', transform: 'rotate(45 0 0)', strokeWidth: 1.5 },
+      { id: 'pat-dots', name: 'Stippled Dots', type: 'circle', r: 1.2 },
+      { id: 'pat-cross', name: 'Crosshatch', strokeWidth: 1 },
+      { id: 'pat-horizontal', name: 'Horizontal Stripe', strokeWidth: 1.5 },
+      { id: 'pat-vertical', name: 'Vertical Stripe', strokeWidth: 1.5 },
+      { id: 'pat-mesh', name: 'Diamond Mesh', transform: 'rotate(45 0 0)', strokeWidth: 1 }
+    ];
+
+    // Manufacturing ERP Datasets (Suryodaya Autocomp Ltd — Chakan PL-04, Pune)
+
+    // 1. Single Area: Total Electrical Energy Consumption (kWh) across Shift A/B/C
+    const ENERGY_CONSUMPTION_DATA = [
+      { time: '06:00', kwh: 120 },
+      { time: '08:00', kwh: 340 },
+      { time: '10:00', kwh: 480 },
+      { time: '12:00', kwh: 510 },
+      { time: '14:00', kwh: 460 },
+      { time: '16:00', kwh: 380 },
+      { time: '18:00', kwh: 420 },
+      { time: '20:00', kwh: 390 },
+      { time: '22:00', kwh: 260 },
+      { time: '00:00', kwh: 180 },
+      { time: '02:00', kwh: 140 },
+      { time: '04:00', kwh: 110 }
+    ];
+
+    // 2. Stacked Area: Scrap Breakdown by Machine Cell (kg/hr)
+    const SCRAP_BREAKDOWN_DATA = [
+      { time: '06:00', blanking: 12, stamping: 24, heatTreat: 8, cnc: 5 },
+      { time: '08:00', blanking: 18, stamping: 42, heatTreat: 14, cnc: 9 },
+      { time: '10:00', blanking: 25, stamping: 58, heatTreat: 19, cnc: 14 },
+      { time: '12:00', blanking: 20, stamping: 49, heatTreat: 16, cnc: 11 },
+      { time: '14:00', blanking: 22, stamping: 52, heatTreat: 18, cnc: 12 },
+      { time: '16:00', blanking: 28, stamping: 64, heatTreat: 22, cnc: 16 },
+      { time: '18:00', blanking: 19, stamping: 45, heatTreat: 15, cnc: 10 },
+      { time: '20:00', blanking: 15, stamping: 38, heatTreat: 12, cnc: 8 }
+    ];
+
+    // 3. 100% Normalized Area: Press Shop Downtime Cause Composition (%)
+    const DOWNTIME_COMPOSITION_DATA = [
+      { shift: 'Shift A-1', mechanical: 35, electrical: 20, dieChange: 30, shortage: 15 },
+      { shift: 'Shift A-2', mechanical: 40, electrical: 25, dieChange: 20, shortage: 15 },
+      { shift: 'Shift B-1', mechanical: 25, electrical: 35, dieChange: 25, shortage: 15 },
+      { shift: 'Shift B-2', mechanical: 20, electrical: 40, dieChange: 30, shortage: 10 },
+      { shift: 'Shift C-1', mechanical: 45, electrical: 15, dieChange: 25, shortage: 15 },
+      { shift: 'Shift C-2', mechanical: 30, electrical: 30, dieChange: 25, shortage: 15 }
+    ];
+
+    // 4. Diverging Area: Continuous Carburizing Furnace Quench Delta (°C from 850°C setpoint)
+    const QUENCH_DELTA_DATA = [
+      { step: '01:00', upperDeviation: 8, lowerDeviation: 0 },
+      { step: '02:00', upperDeviation: 14, lowerDeviation: 0 },
+      { step: '03:00', upperDeviation: 5, lowerDeviation: 0 },
+      { step: '04:00', upperDeviation: 0, lowerDeviation: -6 },
+      { step: '05:00', upperDeviation: 0, lowerDeviation: -15 },
+      { step: '06:00', upperDeviation: 0, lowerDeviation: -11 },
+      { step: '07:00', upperDeviation: 7, lowerDeviation: 0 },
+      { step: '08:00', upperDeviation: 12, lowerDeviation: 0 }
+    ];
+
+    // Helper math functions for in-card demo
+    function formatViz(val, unit = '') {
+      if (val == null || isNaN(val)) return '—';
+      const n = Number(val).toLocaleString('en-IN');
+      return unit ? `${n} ${unit}` : n;
+    }
+
+    function createSmoothAreaPath(upper, lower) {
+      if (!upper || upper.length === 0) return '';
+      let up = `M ${upper[0].x} ${upper[0].y}`;
+      for (let i = 0; i < upper.length - 1; i++) {
+        const p1 = upper[i];
+        const p2 = upper[i + 1];
+        const cx = (p1.x + p2.x) / 2;
+        up += ` C ${cx} ${p1.y}, ${cx} ${p2.y}, ${p2.x} ${p2.y}`;
+      }
+      const lastL = lower[lower.length - 1];
+      let low = ` L ${lastL.x} ${lastL.y}`;
+      for (let i = lower.length - 1; i > 0; i--) {
+        const p1 = lower[i];
+        const p2 = lower[i - 1];
+        const cx = (p1.x + p2.x) / 2;
+        low += ` C ${cx} ${p1.y}, ${cx} ${p2.y}, ${p2.x} ${p2.y}`;
+      }
+      return `${up}${low} Z`;
+    }
+
+    function DemoAreaChart({
+      title,
+      subtitle,
+      data,
+      series,
+      xKey,
+      yKey,
+      variant = 'stacked',
+      unit = '',
+      curve = 'monotone',
+      enablePatterns = true,
+      referenceLines = []
+    }) {
+      const [activeIdx, setActiveIdx] = useState(-1);
+      const [isolated, setIsolated] = useState(null);
+      const [showModal, setShowModal] = useState(false);
+
+      const width = 480;
+      const height = 240;
+      const margins = { top: 16, right: 20, bottom: 32, left: 48 };
+      const plotWidth = width - margins.left - margins.right;
+      const plotHeight = height - margins.top - margins.bottom;
+
+      const activeSeries = useMemo(() => {
+        if (isolated) return series.filter(s => s.key === isolated);
+        return series;
+      }, [series, isolated]);
+
+      // Stacking math
+      const { stackedLayers, maxY, minY } = useMemo(() => {
+        const n = data.length;
+        const m = activeSeries.length;
+        const layers = activeSeries.map(() => []);
+
+        let maxVal = -Infinity;
+        let minVal = 0;
+
+        for (let i = 0; i < n; i++) {
+          const row = data[i];
+          const rawVals = activeSeries.map(s => Number(row[s.key] || 0));
+          const total = rawVals.reduce((a, b) => a + Math.abs(b), 0);
+
+          if (variant === 'normalized') {
+            let cum = 0;
+            activeSeries.forEach((s, sIdx) => {
+              const val = rawVals[sIdx];
+              const share = total > 0 ? (val / total) * 100 : 0;
+              const y0 = cum;
+              const y1 = cum + share;
+              cum = y1;
+              layers[sIdx].push({ y0, y1, val, share, raw: val });
+            });
+            maxVal = 100;
+            minVal = 0;
+          } else if (variant === 'diverging') {
+            activeSeries.forEach((s, sIdx) => {
+              const val = rawVals[sIdx];
+              const y0 = 0;
+              const y1 = val;
+              if (y1 > maxVal) maxVal = y1;
+              if (y1 < minVal) minVal = y1;
+              layers[sIdx].push({ y0, y1, val, share: 0, raw: val });
+            });
+          } else if (variant === 'stream') {
+            let cum = -total / 2;
+            activeSeries.forEach((s, sIdx) => {
+              const val = rawVals[sIdx];
+              const y0 = cum;
+              const y1 = cum + val;
+              cum = y1;
+              if (y1 > maxVal) maxVal = y1;
+              if (y0 < minVal) minVal = y0;
+              layers[sIdx].push({ y0, y1, val, share: total > 0 ? (val / total) * 100 : 0, raw: val });
+            });
+          } else {
+            // standard stacked / single
+            let cum = 0;
+            activeSeries.forEach((s, sIdx) => {
+              const val = rawVals[sIdx];
+              const y0 = cum;
+              const y1 = cum + val;
+              cum = y1;
+              if (y1 > maxVal) maxVal = y1;
+              layers[sIdx].push({ y0, y1, val, share: total > 0 ? (val / total) * 100 : 0, raw: val });
+            });
+          }
+        }
+
+        const topPad = (maxVal - minVal) * 0.08 || 5;
+        return {
+          stackedLayers: layers,
+          maxY: maxVal + topPad,
+          minY: minVal < 0 ? minVal - topPad : 0
+        };
+      }, [data, activeSeries, variant]);
+
+      // Scale projection
+      const scaleX = (idx) => (idx / (data.length - 1 || 1)) * plotWidth;
+      const scaleY = (val) => {
+        const ratio = (val - minY) / (maxY - minY || 1);
+        return plotHeight - ratio * plotHeight;
+      };
+
+      const paths = useMemo(() => {
+        return stackedLayers.map((pts, sIdx) => {
+          const upper = pts.map((p, i) => ({ x: scaleX(i), y: scaleY(p.y1) }));
+          const lower = pts.map((p, i) => ({ x: scaleX(i), y: scaleY(p.y0) }));
+          const d = createSmoothAreaPath(upper, lower);
+          return { sIdx, def: activeSeries[sIdx], d, upper, lower };
+        });
+      }, [stackedLayers, activeSeries, minY, maxY, plotWidth, plotHeight]);
+
+      const activeDatum = activeIdx >= 0 ? data[activeIdx] : null;
+      const activeXPos = activeIdx >= 0 ? scaleX(activeIdx) : 0;
+
+      return (
+        <div className="chart-box" tabIndex={0} onKeyDown={(e) => {
+          if (e.key === 'ArrowRight') { e.preventDefault(); setActiveIdx((activeIdx + 1) % data.length); }
+          if (e.key === 'ArrowLeft') { e.preventDefault(); setActiveIdx((activeIdx - 1 + data.length) % data.length); }
+          if (e.key === 'F11' && e.altKey) { e.preventDefault(); setShowModal(p => !p); }
+        }}>
+          <div className="mds-area-chart__header">
+            <div>
+              <h3 className="mds-area-chart__title">{title}</h3>
+              <p className="mds-area-chart__subtitle">{subtitle}</p>
+            </div>
+            <button className="mds-area-chart__table-btn" onClick={() => setShowModal(true)}>
+              Table (Alt+F11)
+            </button>
+          </div>
+
+          {series.length > 1 && (
+            <div className="mds-area-chart__legend">
+              {series.map((s, idx) => (
+                <button
+                  key={s.key}
+                  className={`mds-area-chart__legend-item ${isolated && isolated !== s.key ? 'mds-area-chart__legend-item--dimmed' : ''}`}
+                  onClick={() => setIsolated(isolated === s.key ? null : s.key)}
+                >
+                  <span className="mds-area-chart__legend-swatch" style={{ backgroundColor: s.color }} />
+                  <span>{s.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <svg
+            width="100%"
+            height={height}
+            viewBox={`0 0 ${width} ${height}`}
+            className="mds-area-chart__svg"
+            onMouseMove={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const mouseX = ((e.clientX - rect.left) / rect.width) * width - margins.left;
+              const idx = Math.max(0, Math.min(data.length - 1, Math.round((mouseX / plotWidth) * (data.length - 1))));
+              setActiveIdx(idx);
+            }}
+            onMouseLeave={() => setActiveIdx(-1)}
+          >
+            <defs>
+              {PATTERN_PRESETS.map(pat => (
+                <pattern key={pat.id} id={pat.id} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform={pat.transform || ''}>
+                  {pat.type === 'circle' ? (
+                    <circle cx="4" cy="4" r="1.2" fill="rgba(255,255,255,0.4)" />
+                  ) : (
+                    <line x1="0" y1="4" x2="8" y2="4" stroke="rgba(255,255,255,0.35)" strokeWidth="1.2" />
+                  )}
+                </pattern>
+              ))}
+            </defs>
+
+            <g transform={`translate(${margins.left}, ${margins.top})`}>
+              {/* Gridlines */}
+              {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
+                const yVal = minY + ratio * (maxY - minY);
+                const yPos = scaleY(yVal);
+                return (
+                  <g key={i} className="mds-area-chart__gridline">
+                    <line x1="0" y1={yPos} x2={plotWidth} y2={yPos} />
+                    <text x="-8" y={yPos + 3} textAnchor="end" style={{ fontSize: '9px', fill: 'var(--text-tertiary)' }}>
+                      {variant === 'normalized' ? `${yVal.toFixed(0)}%` : formatViz(yVal, unit)}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Area Layers */}
+              {paths.map(layer => (
+                <g key={layer.def.key}>
+                  <path d={layer.d} fill={layer.def.color} opacity="0.82" />
+                  {enablePatterns && layer.def.pattern && (
+                    <path d={layer.d} fill={`url(#${layer.def.pattern})`} opacity="0.6" />
+                  )}
+                  <path
+                    d={`M ${layer.upper.map(p => `${p.x} ${p.y}`).join(' L ')}`}
+                    fill="none"
+                    stroke={layer.def.color}
+                    strokeWidth="2"
+                  />
+                </g>
+              ))}
+
+              {/* Reference Lines */}
+              {referenceLines.map((ref, i) => {
+                const yPos = scaleY(ref.y);
+                return (
+                  <g key={i}>
+                    <line x1="0" y1={yPos} x2={plotWidth} y2={yPos} stroke={ref.color} strokeDasharray="4 3" strokeWidth="1.5" />
+                    <text x={plotWidth - 4} y={yPos - 4} textAnchor="end" fill={ref.color} style={{ fontSize: '9px', fontWeight: 'bold' }}>
+                      {ref.label} ({formatViz(ref.y, unit)})
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Crosshair */}
+              {activeIdx >= 0 && (
+                <g>
+                  <line x1={activeXPos} y1="0" x2={activeXPos} y2={plotHeight} stroke="var(--border-strong)" strokeDasharray="3 3" />
+                  {paths.map(layer => {
+                    const pt = layer.upper[activeIdx];
+                    if (!pt) return null;
+                    return (
+                      <circle key={layer.def.key} cx={activeXPos} cy={pt.y} r="4.5" fill="#fff" stroke={layer.def.color} strokeWidth="2" />
+                    );
+                  })}
+                </g>
+              )}
+
+              {/* X Axis Ticks */}
+              {data.map((d, i) => {
+                if (i % Math.ceil(data.length / 6) !== 0 && i !== data.length - 1) return null;
+                const xPos = scaleX(i);
+                return (
+                  <text key={i} x={xPos} y={plotHeight + 18} textAnchor="middle" style={{ fontSize: '10px', fill: 'var(--text-tertiary)' }}>
+                    {d[xKey]}
+                  </text>
+                );
+              })}
+            </g>
+          </svg>
+
+          {/* Tooltip */}
+          {activeIdx >= 0 && activeDatum && (
+            <div className="mds-area-chart__tooltip" style={{ left: Math.min(activeXPos + 60, width - 180), top: 50 }}>
+              <div className="mds-area-chart__tooltip-header">
+                <strong>{activeDatum[xKey]}</strong>
+              </div>
+              <div className="mds-area-chart__tooltip-body">
+                {activeSeries.map((s, sIdx) => {
+                  const pt = stackedLayers[sIdx][activeIdx];
+                  return (
+                    <div key={s.key} className="mds-area-chart__tooltip-row">
+                      <span className="mds-area-chart__tooltip-swatch" style={{ backgroundColor: s.color }} />
+                      <span>{s.label}:</span>
+                      <span className="mds-area-chart__tooltip-val">
+                        {formatViz(pt.raw, unit)}
+                        {variant === 'normalized' && ` (${pt.share.toFixed(1)}%)`}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Modal Data Table */}
+          {showModal && (
+            <div className="mds-area-chart__modal-backdrop" onClick={() => setShowModal(false)}>
+              <div className="mds-area-chart__modal" onClick={e => e.stopPropagation()}>
+                <div className="mds-area-chart__modal-header">
+                  <h4>{title} — Tabular Telemetry</h4>
+                  <button className="mds-area-chart__modal-close" onClick={() => setShowModal(false)}>✕</button>
+                </div>
+                <div className="mds-area-chart__modal-body">
+                  <table className="mds-area-chart__data-table">
+                    <thead>
+                      <tr>
+                        <th>Interval ({xKey})</th>
+                        {activeSeries.map(s => <th key={s.key}>{s.label} ({unit})</th>)}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.map((row, rIdx) => (
+                        <tr key={rIdx}>
+                          <td>{row[xKey]}</td>
+                          {activeSeries.map(s => <td key={s.key}>{formatViz(row[s.key], unit)}</td>)}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function App() {
+      const [enablePatterns, setEnablePatterns] = useState(true);
+
+      return (
+        <div>
+          <div className="header-bar">
+            <h1 className="header-title">AreaChart Component Showcase</h1>
+            <p className="header-sub">
+              Suryodaya Autocomp Ltd (Chakan PL-04, Pune) — Production & Telemetry Visualizations
+            </p>
+          </div>
+
+          <div className="controls">
+            <label>
+              <input
+                type="checkbox"
+                checked={enablePatterns}
+                onChange={e => setEnablePatterns(e.target.checked)}
+              />
+              Enable Accessible Hatch Patterns (WCAG 1.4.1 Non-Color Differentiation)
+            </label>
+            <span style={{ color: 'var(--text-tertiary)' }}>·</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Keyboard: <kbd>←</kbd> / <kbd>→</kbd> inspect points, <kbd>Alt+F11</kbd> accessible data table</span>
+          </div>
+
+          <div className="grid">
+            {/* 1. Single Area */}
+            <DemoAreaChart
+              title="Electrical Energy Consumption"
+              subtitle="Press Shop Line 1 — Cumulative Hourly Draw (Shift A/B/C)"
+              data={ENERGY_CONSUMPTION_DATA}
+              series={[{ key: 'kwh', label: 'Draw', color: 'var(--viz-1, #2563eb)', pattern: 'pat-diagonal' }]}
+              xKey="time"
+              variant="single"
+              unit="kWh"
+              enablePatterns={enablePatterns}
+              referenceLines={[{ y: 500, label: 'Grid Peak Threshold', color: 'var(--status-critical-solid, #ef4444)' }]}
+            />
+
+            {/* 2. Stacked Area */}
+            <DemoAreaChart
+              title="Scrap Generation Breakdown"
+              subtitle="Press Shop Cells — Accumulated Material Loss (kg/hr)"
+              data={SCRAP_BREAKDOWN_DATA}
+              series={[
+                { key: 'blanking', label: 'Blanking', color: 'var(--viz-1, #2563eb)', pattern: 'pat-diagonal' },
+                { key: 'stamping', label: 'Stamping', color: 'var(--viz-2, #0d9488)', pattern: 'pat-dots' },
+                { key: 'heatTreat', label: 'Heat Treatment', color: 'var(--viz-3, #d97706)', pattern: 'pat-cross' },
+                { key: 'cnc', label: 'CNC Finishing', color: 'var(--viz-4, #7c3aed)', pattern: 'pat-mesh' }
+              ]}
+              xKey="time"
+              variant="stacked"
+              unit="kg"
+              enablePatterns={enablePatterns}
+            />
+
+            {/* 3. 100% Normalized Area */}
+            <DemoAreaChart
+              title="Downtime Cause Composition"
+              subtitle="100% Proportional Share across Shifts"
+              data={DOWNTIME_COMPOSITION_DATA}
+              series={[
+                { key: 'mechanical', label: 'Mechanical Failure', color: 'var(--viz-1, #2563eb)', pattern: 'pat-diagonal' },
+                { key: 'electrical', label: 'Electrical Tripping', color: 'var(--viz-2, #0d9488)', pattern: 'pat-dots' },
+                { key: 'dieChange', label: 'Die Changeover', color: 'var(--viz-3, #d97706)', pattern: 'pat-cross' },
+                { key: 'shortage', label: 'Raw Material Delay', color: 'var(--viz-5, #db2777)', pattern: 'pat-horizontal' }
+              ]}
+              xKey="shift"
+              variant="normalized"
+              unit="%"
+              enablePatterns={enablePatterns}
+            />
+
+            {/* 4. Diverging Area */}
+            <DemoAreaChart
+              title="Furnace Quench Thermal Flux"
+              subtitle="Continuous Carburizing CCF-02 Quench Delta (°C from 850°C)"
+              data={QUENCH_DELTA_DATA}
+              series={[
+                { key: 'upperDeviation', label: 'Above Setpoint (+°C)', color: 'var(--status-critical-solid, #ef4444)', pattern: 'pat-diagonal' },
+                { key: 'lowerDeviation', label: 'Below Setpoint (-°C)', color: 'var(--viz-1, #2563eb)', pattern: 'pat-dots' }
+              ]}
+              xKey="step"
+              variant="diverging"
+              unit="°C"
+              enablePatterns={enablePatterns}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

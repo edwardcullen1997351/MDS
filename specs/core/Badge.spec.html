@@ -1,0 +1,360 @@
+<!-- @dsCard group="Specs · Core" viewport="1080x760" name="Badge" subtitle="Full specification — the system-derived status label: purpose, tones, anatomy, a11y, motion" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Badge — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:118px}
+.staterow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.rows{display:grid;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden}
+.rows>div{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:9px 14px;border-bottom:var(--border-subtle);font-size:var(--text-xs)}
+.rows>div:last-child{border-bottom:none}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Badge, Tag, Button, Text, Icon } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Spec(){
+const lines = [['Line 3 · Assembly','success','Running'],['Line 1 · Paint','warning','Degraded'],['Line 7 · Packing','critical','Down'],['Line 2 · Assembly','neutral','Idle']];
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Core · Component specification</span>
+    <h1>Badge</h1>
+    <p className="lede">A small label stating a condition <em>the system</em> determined, in a colour that carries meaning. Badge is the exact counterpart to <code>Tag</code>: the badge's word comes from a fixed set the design owns — Running, Overdue, Draft — so a tone can be applied to it honestly. A tag's text comes from the data, so it is monochrome. That is also why a badge is never focusable and never removable: nobody dismisses a machine being down.</p>
+    <div className="meta">
+      <span>components/core/Badge.jsx</span><span>window.MeridianDesignSystem_962c43.Badge</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 0 open items</span><span>since: 1.0.0 · hardened 1.8.0</span><span>28 tokens · 4 density-scoped</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="State a condition, in one word, at a glance.">
+    <p>A badge answers "what is the state of this thing?" for a row, a record or a header — and answers it in a colour that survives being scanned a hundred times down a table. It is read, never operated. If the label is not one of a handful of words the system itself assigns, it is not a badge.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Show a condition the system determined','Badge','This component.'],
+      ['Show a value from the data or the user','Tag','"part:PN-7749" is a value nobody can vouch for a colour on. Tag is monochrome and removable.'],
+      ['Show a count or quantity','Badge','A number in a border is a badge. Cap it with max (§10).'],
+      ['Pin a count to a control','— (pattern)','An overlay count on an icon button is a wrapper + an aria-hidden mark + a hidden label, because the number must reach the HOST control’s accessible name. Never a positioned Badge (§12).'],
+      ['Let the user dismiss it','Tag','An × means the user applied it. Status is not dismissible.'],
+      ['Offer an action','Button','A badge is a noun; it has no verb and no press.'],
+      ['Navigate somewhere','Link','A badge that routes is a link wearing a border.'],
+      ['Announce something that just happened','Toast','A badge does not interrupt and is not announced on change (§09).'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> for a status cell in a table, a state beside a record title, a version or environment marker, an unread or open-items count, "Beta" on a nav item.</li>
+      <li><strong>Use</strong> when the set of words is closed and enumerable — you can list every value it will ever take.</li>
+      <li><strong>Do not use</strong> for text the user typed or the data supplied; that is <code>Tag</code>, and colour on it would be an assertion.</li>
+      <li><strong>Do not use</strong> as decoration. A tone with no condition behind it spends the system's only semantic colour on nothing.</li>
+    </ul>
+    <div className="demo col">
+      <div className="rows">
+        {lines.map(([name,tone,state])=>(
+          <div key={name}><Text size="xs">{name}</Text><Badge tone={tone} dot>{state}</Badge></div>
+        ))}
+      </div>
+      <Text size="xs" tone="tertiary">Four rows, four states, scannable by colour alone at any list length. Compare: <Tag label="site:tilburg" /> — a value, not a condition.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Four parts, and only the label is required.">
+    <div className="demo">
+      <div style={{display:'flex',flexDirection:'column',gap:10,minWidth:280,flex:1}}>
+        {[['1','Label — one or two words from the system\u2019s own vocabulary, sans, --weight-medium, sentence case. Single line by construction; a badge that wraps has stopped being one mark.'],
+          ['2','Container — 22px (md) or 18px (sm), --badge-radius (--radius-xs), a hairline of the tone\u2019s border on the tone\u2019s soft background. Squarer than Tag on purpose: printed label, not control.'],
+          ['3','Dot (optional) — 6px, the tone\u2019s solid colour. Raises the tone from a tint to a mark, for status read down a column.'],
+          ['4','Icon (optional) — a leading glyph, --icon-mark / --icon-xs, inheriting the label colour. Alternative to the dot, never both.'],
+          ['5','No focus ring, no hover, no shadow, no elevation — there is nothing to operate and nothing to lift.']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:12,alignItems:'flex-start'}}>
+        <Badge>Idle</Badge>
+        <Badge tone="success" dot>Running</Badge>
+        <Badge tone="warning" icon="triangle-alert">Degraded</Badge>
+        <Badge tone="accent" max={99}>{348}</Badge>
+      </div>
+    </div>
+    <p>The colour is carried three ways at once — background tint, border, and text — so the badge holds up on a card, on a sunken surface, and in a dense table row without a shadow to separate it. The dot exists because a tint alone loses its edge at <code>sm</code>, and status columns are read at <code>sm</code>.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Six props. There is no interactive one.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['children','ReactNode','—','The label. One or two words, or a number.'],
+      ['tone','\u2018neutral\u2019 | \u2018accent\u2019 | \u2018success\u2019 | \u2018warning\u2019 | \u2018critical\u2019','neutral','The meaning (§04). \u2018danger\u2019 still resolves — it shipped first — but \u2018critical\u2019 is the documented name and matches the token layer.'],
+      ['size','\u2018sm\u2019 | \u2018md\u2019','md','18px / 22px (§05).'],
+      ['dot','boolean','false','Leading 6px mark in the tone\u2019s solid colour. Mutually exclusive with icon.'],
+      ['icon','string','—','Leading Lucide 0.469.0 glyph. Mutually exclusive with dot.'],
+      ['max','number','—','Count ceiling: a numeric label above it renders \u201cmax+\u201d and keeps the true value in aria-label and title.'],
+      ['aria-label','string','—','Required when there is no text — a dot-only or icon-only badge is colour-only meaning (§08).'],
+      ['style · className · data-*','—','—','Pass through to the span. Layout only: overriding colour defeats the point.'],
+    ]}/>
+    <p className="warn">There is no <code>onClick</code>, no <code>href</code>, no <code>onRemove</code>, and no <code>variant</code>. Passing a handler anyway logs a warning naming the component you wanted — <code>Button</code>, <code>Link</code> or <code>Tag</code> — because a clickable badge is the single most common misuse and it is invisible in review.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Five tones. The tone IS the variant.">
+    <p>Badge has no shape or fill variants — one treatment, five meanings. Adding an outline or solid variant would mean the same condition rendering two ways in one product, and the badge's whole value is that "Down" looks identical everywhere it appears.</p>
+    <T cols={['Tone','Means','Use for','Never for']} rows={[
+      ['neutral','No judgement. Metadata.','Version, environment, Draft, Idle, Archived, counts with no urgency.','A problem. Grey hides it.'],
+      ['accent','The active or current thing.','Current plan, selected variant, Beta, New.','Success. Accent is "this one", not "it worked".'],
+      ['success','Healthy, complete, passing.','Running, Paid, Deployed, Resolved.','A finished thing that failed. Completion is not success.'],
+      ['warning','Degraded but working; needs attention soon.','Degraded, Expiring, Pending review, Backordered.','A hard failure. Warning under-reports Down.'],
+      ['critical','Failed, blocked, past due.','Down, Failed, Overdue, Rejected.','Anything routine. Spend it and the colour stops working.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="md · dot">{['neutral','accent','success','warning','critical'].map(t=><Badge key={t} tone={t} dot>{({neutral:'Idle',accent:'Beta',success:'Running',warning:'Degraded',critical:'Down'})[t]}</Badge>)}</Row>
+      <Row label="md · icon"><Badge icon="git-commit-horizontal">v2.4.1</Badge><Badge tone="accent" icon="sparkles">New</Badge><Badge tone="success" icon="check">Deployed</Badge><Badge tone="warning" icon="triangle-alert">Expiring</Badge><Badge tone="critical" icon="octagon-x">Failed</Badge></Row>
+      <Row label="md · plain">{['neutral','accent','success','warning','critical'].map(t=><Badge key={t} tone={t}>{t}</Badge>)}</Row>
+    </div>
+    <p>Use one convention per surface: dots down a status column, icons in a header where there is room, plain in a dense table. Mixing all three in one view makes the badges look like different components.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two, and the difference is the density around it.">
+    <T cols={['Size','Height','Label','Dot / icon','Use']} rows={[
+      ['sm','18px','--text-2xs','6px / 11px','Table cells, inside 28px controls, beside a Text size="xs", nav items.'],
+      ['md','22px','--text-xs','6px / 14px','Default. Record headers, cards, panels, detail pages.'],
+    ]}/>
+    <div className="demo">
+      <Row label="sm"><Badge size="sm" tone="success" dot>Running</Badge><Badge size="sm" tone="warning" icon="triangle-alert">Degraded</Badge><Badge size="sm">v2.4.1</Badge><Badge size="sm" tone="accent" max={99}>{348}</Badge></Row>
+      <Row label="md"><Badge tone="success" dot>Running</Badge><Badge tone="warning" icon="triangle-alert">Degraded</Badge><Badge>v2.4.1</Badge><Badge tone="accent" max={99}>{348}</Badge></Row>
+    </div>
+    <p>The dot does not shrink between them — 6px is already the smallest mark that reads as a filled circle rather than a dark pixel, so only the box and the type step down. Both heights are token-driven (<code>--badge-height-sm</code> / <code>--badge-height-md</code>) and re-map with <code>[data-density]</code> — 16/20px compact, 22/26px expanded — so a badge is never taller than the row holding it. Unlike Tag they do <em>not</em> rise under a coarse pointer (§11).</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="One. That is the specification.">
+    <T cols={['State','Treatment','Why']} rows={[
+      ['Rest','The tone\u2019s background, border and foreground.','The only state a badge has.'],
+      ['Hover','None.','Nothing happens on click, so nothing may respond to the cursor.'],
+      ['Focus','None. Not focusable, not a tab stop.','A tab stop that does nothing is an obstacle between the user and the next control.'],
+      ['Active · pressed','None.','Not applicable — see §03.'],
+      ['Disabled','None. There is no disabled badge.','A status cannot be unavailable. If the record is inactive, the status is "Archived" — a value, not a greyed-out one.'],
+      ['Loading','None. Render nothing, or a skeleton in the cell.','A badge whose tone is not yet known must not guess neutral; neutral means "no judgement", which is itself a claim.'],
+    ]}/>
+    <p>Everything a badge can express, it expresses through <code>tone</code> and its label. When a designer asks for a badge state, the answer is almost always a different tone or a different word.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="No interaction model, by design.">
+    <T cols={['Key','Where','Does']} rows={[
+      ['Tab','anywhere','Skips it. A <span> with no tabindex.'],
+      ['Enter · Space','on a badge','Nothing — a badge cannot hold focus.'],
+      ['Delete','on a badge','Nothing. Status is not dismissible; that is Tag.'],
+      ['Any','a badge inside a link, row or button','Handled entirely by the ancestor. The badge is part of that control\u2019s accessible name and contributes no stop of its own.'],
+    ]}/>
+    <p>The last row is the case that matters in practice: badges live inside things that <em>are</em> operable — a table row, a nav item, a card link. Because the badge adds no tab stop and no handlers, "Line 7 · Packing, Down" reads as one control with one name. A badge that took focus would split every such row into two stops and read the status twice.</p>
+    <div className="demo col">
+      <Text size="xs" tone="tertiary">Tab through this — there are two stops, not four.</Text>
+      <div className="rows">
+        {[['Line 7 · Packing','critical','Down'],['Line 3 · Assembly','success','Running']].map(([n,t,s])=>(
+          <div key={n} style={{cursor:'pointer'}} tabIndex={0}><Text size="xs">{n}</Text><Badge tone={t} dot>{s}</Badge></div>
+        ))}
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="A name, a contrast ratio, and no colour-only meaning.">
+    <ul>
+      <li><strong>Colour is never the only carrier.</strong> Every badge has a word. A red dot alone is a 1.4.1 failure, and it is also unusable — "Down" and "Degraded" are one hue apart to most people and identical to some.</li>
+      <li><strong>A dot- or icon-only badge must be named.</strong> Passing no children without <code>aria-label</code> logs a warning; the label is the fix, <code>aria-label="Down"</code> is the concession where a status column has no room for text.</li>
+      <li><strong>Foreground meets 4.5:1 on its own tint.</strong> Each tone's <code>--badge-*-foreground</code> is the <code>--text-*</code> ramp value, verified against <code>--status-*-soft</code>, not against the page — badges sit on cards, sunken surfaces and selected rows.</li>
+      <li><strong>The border is load-bearing</strong> and meets 3:1 against the surface. Under forced colours it is pinned to <code>CanvasText</code> and the dot with it, so the badge keeps its shape and its mark; the five tones collapse to one appearance there, which is survivable only because the word is always present.</li>
+      <li><strong>Capped counts keep their real value.</strong> <code>max={'{99}'}</code> renders "99+" but publishes <code>aria-label="348"</code> and a matching <code>title</code>, because "99 plus open items" is not what the user was told.</li>
+      <li><strong>Numbers are tabular.</strong> A numeric label switches to <code>tabular-nums</code>, so counts down a column do not jitter as digits change.</li>
+      <li><strong>Never <code>role="status"</code> on a badge.</strong> A live region that re-announces on every re-render turns a status column into a screen-reader storm. Announce a change once, deliberately, from the owning view (§14).</li>
+      <li><strong>The dot and the icon are <code>aria-hidden</code>.</strong> They are the same information as the word, and a doubled announcement reads as two states.</li>
+      <li><strong>No badge is ever the only place a state appears</strong> in a workflow the user must act on. It marks state; the action lives in a control with a name.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="None. Not colour, not entry, not the dot.">
+    <T cols={['Moment','Motion','Why']} rows={[
+      ['Tone change','None. The new tone paints in one frame.','A crossfade between success and critical passes through a colour that means neither. The state changed; the label must be right immediately.'],
+      ['Appear','None.','Badges arrive with their row. Twenty rows of staggered badges is a page that looks broken while loading.'],
+      ['Remove','None.','It goes with its row.'],
+      ['Dot','No pulse, no blink.','A pulsing dot claims live monitoring the product usually cannot back, and it draws the eye away from whatever the user was reading. If liveness matters, timestamp it.'],
+      ['Reduced motion','Nothing to disable.','There was never any motion to begin with.'],
+    ]}/>
+    <p>Badge is the one component in Meridian with no <code>transition</code> at all — not even <code>--transition-control</code>, which every other control carries for hover. This is deliberate and it is the reason the component reads as printed rather than interactive: nothing about it responds to the pointer, so nothing about it needs to ease.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="One or two words, from your own fixed list.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Adjectives and past participles:</strong> Running, Paid, Overdue, Archived, Failed.</li>
+        <li><strong>Sentence case,</strong> always. "In review", not "In Review".</li>
+        <li><strong>One vocabulary per product.</strong> Enumerate the words once; "Down" and "Offline" must not both exist.</li>
+        <li><strong>Cap counts</strong> with <code>max</code> — a five-digit badge widens the column it lives in.</li>
+        <li><strong>Match the tone to the word,</strong> not to the emotion of the surrounding page.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>Verbs.</strong> "Retry" is a button. "Retrying" is a badge.</li>
+        <li><strong>Sentences or reasons.</strong> "Failed — upstream timeout" belongs in the row, a tooltip or a detail panel.</li>
+        <li><strong>Punctuation, ALL CAPS, or emoji.</strong> The type ramp already sets the register.</li>
+        <li><strong>Data values.</strong> "PN-7749", "tilburg", a person's name — <code>Tag</code>.</li>
+        <li><strong>Redundancy with the column head.</strong> Under "Status", the badge says "Running", not "Status: running".</li>
+        <li><strong>Two badges to say one thing.</strong> "Late" + "Overdue" is one state and one badge.</li>
+      </ul></div>
+    </div>
+    <p>The practical test for a proposed badge label: can you write the complete list of words this badge will ever show? If not, the text is data and the component is <code>Tag</code>.</p>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="It does not respond. That is the feature.">
+    <ul>
+      <li><strong>Fixed height, no wrap, no truncation.</strong> A badge is a mark: <code>white-space: nowrap</code> and a short label mean it is the same size in a 320px cell and a 1600px header. If it does not fit, the label is too long — shorten the word, don't shrink the badge.</li>
+      <li><strong>Density, yes; touch, no.</strong> Heights follow <code>[data-density]</code>, because a badge lives inside rows that re-map. They do <em>not</em> rise under <code>@media (pointer:coarse)</code> the way Tag's do — a 44px status label on a phone is 44px of nothing to press.</li>
+      <li><strong>Drop the dot before the word.</strong> Under pressure, <code>size="sm"</code> and no dot; never a dot with the label removed, which leaves colour alone carrying the state.</li>
+      <li><strong>In a narrow status column,</strong> keep the badge and let the neighbouring text truncate. The state is the scannable thing; the name can be read in the row.</li>
+      <li><strong>Never stack badges vertically</strong> to fit. Two badges in one cell means the row has two states — reconsider the model, or show one and put the rest in the detail.</li>
+      <li><strong>Inside dense tables use <code>sm</code> uniformly.</strong> Mixed sizes down a column read as mixed importance.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,1fr) auto',gap:'0 12px',maxWidth:260,border:'var(--border-hairline)',borderRadius:'var(--radius-sm)',padding:'8px 10px'}}>
+        {[['Assembly line 3 — north hall','success','Running'],['Packing line 7 — dock B annexe','critical','Down']].map(([n,t,s])=>(
+          <React.Fragment key={n}>
+            <Text size="xs" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',minWidth:0}}>{n}</Text>
+            <Badge size="sm" tone={t} dot>{s}</Badge>
+          </React.Fragment>
+        ))}
+      </div>
+      <Text size="xs" tone="tertiary">260px wide: the name truncates, the badge never does.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Mostly one: making the badge do something.">
+    <div className="two">
+      <div className="pane dont"><h3>Badge ≠ control</h3><ul>
+        <li><strong>A clickable badge.</strong> No focus ring, no keyboard path, no name — an inaccessible button that looks like a label. Warned in dev.</li>
+        <li><strong>A removable badge.</strong> The × means the user put it there. Status they cannot dismiss.</li>
+        <li><strong>A badge as a filter chip.</strong> Coloured, pressable, plural — that is <code>Tag</code>, and the colour would be meaningless.</li>
+        <li><strong>A badge as a tab or a nav item.</strong> Wrap the badge in the control; do not make the badge the control.</li>
+        <li><strong>A badge absolutely-positioned on an icon.</strong> The count has to reach the <em>host control's</em> accessible name, which a span in a corner cannot do — build the overlay pattern (§01), not a moved badge.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Also don't</h3><ul>
+        <li><strong>Decorative tones.</strong> Green because the card felt empty spends the system's only semantic colour.</li>
+        <li><strong>Five badges on one record.</strong> Past two, nothing is prominent and the row is a colour swatch.</li>
+        <li><strong>Inventing tones</strong> ("info", "purple"). Five is the ramp; a sixth means the model is wrong.</li>
+        <li><strong>Overriding colour via <code>style</code>.</strong> A one-off orange badge un-teaches every other badge in the product.</li>
+        <li><strong>A badge as a headline.</strong> Scaling it up with <code>style</code> makes it a heading with a border.</li>
+        <li><strong>A pulsing "Live" dot.</strong> Motion the badge does not have, promising liveness it cannot prove.</li>
+      </ul></div>
+    </div>
+    <p className="warn">The recurring request is a "soft interactive" badge — hover tint, click to filter the table by that status. Build it as a pressable <code>Tag</code> in the filter bar and leave the badge in the cell reading state. Two components, two jobs; a cell that is both a status and a control is a cell nobody can predict.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="What hardened in 1.8.0.">
+    <ul>
+      <li><strong>Geometry moved into tokens</strong> (<code>--badge-height-*</code>, <code>--badge-padding-*</code>, <code>--badge-gap-*</code>, <code>--badge-dot-size</code>). Previously hard-coded numbers in the JSX, which meant a product could not re-densify badges with the rest of the system. Heights and padding then moved again in 1.8.1, into the <code>[data-density]</code> scopes — they cannot live in <code>components.css</code> as well, because <code>:root</code> there and <code>[data-density="compact"]</code> have equal specificity and the later file wins.</li>
+      <li><strong>No coarse-pointer block was added,</strong> unlike Tag's. Recorded here because the omission is a decision, not an oversight: the component is non-interactive and must stay the same size on touch.</li>
+      <li><strong><code>data-badge</code> and <code>data-badge-dot</code> are rendered</strong> as the only styling hooks the component exposes — they exist so the forced-colours block in <code>base.css</code> can reach inline styles it otherwise could not, and are a stable test selector as a side effect.</li>
+      <li><strong><code>tone="critical"</code> is now the name</strong>, matching <code>--badge-critical-*</code> and every other component. <code>danger</code> is aliased in the tone map and will not be removed — it is in product code — but it no longer appears in the types' first position or in any doc.</li>
+      <li><strong>Unnamed badges warn.</strong> No text and no <code>aria-label</code>/<code>aria-labelledby</code> logs a 1.4.1 explanation rather than rendering a silent coloured dot.</li>
+      <li><strong>Interactive props warn.</strong> <code>onClick</code> or <code>href</code> names the component the caller wanted. The props are not <em>blocked</em> — a spread of row props would break — but they are impossible to ship unnoticed.</li>
+      <li><strong><code>dot</code> and <code>icon</code> together</strong> warns and renders the dot only; two status marks in one badge is never intended.</li>
+      <li><strong><code>max</code> added</strong> for counts: numeric children above the ceiling render <code>max+</code> while <code>aria-label</code> and <code>title</code> carry the true number. Non-numeric children ignore <code>max</code> entirely.</li>
+      <li><strong>Numeric labels get <code>tabular-nums</code></strong> so a count column does not shift as digits change.</li>
+      <li><strong>The dot is <code>aria-hidden</code></strong>; it was previously an unlabelled span, which some screen readers announced as a blank item before the word.</li>
+      <li><strong>Still zero transitions and zero state hooks.</strong> The component holds no <code>useState</code> at all — it is the cheapest component in the system, and it renders in a table of a thousand rows.</li>
+    </ul>
+    <p className="warn"><strong>Resolved in 1.8.1</strong> — the four items this spec was frozen with, closed:<br/>
+      <strong>1 · Density is wired.</strong> <code>--badge-height-*</code> and <code>--badge-padding-*</code> moved out of <code>components.css</code> and into the three <code>[data-density]</code> scopes, so a badge shortens with the row it sits in: 16/20px compact, 18/22px comfortable, 22/26px expanded. Type size does not move at any setting — <code>--text-2xs</code> / <code>--text-xs</code> throughout — because density in Meridian changes air, never legibility. Still no coarse-pointer block: a badge is not a target.<br/>
+      <strong>2 · Forced colours are handled and documented.</strong> Opened under Windows High Contrast: as expected, all five tones collapse to one appearance, and the dot vanished entirely — a forced background erased it. <code>base.css</code> now pins the badge border and the dot to <code>CanvasText</code>, so the badge stays an object and keeps its mark; the tones legitimately do not survive, and the label is what distinguishes them. This is the reason every badge has a word.<br/>
+      <strong>3 · The overlay count is a documented pattern, and deliberately not a component.</strong> It was built, reviewed and pulled: one call site, and it is Badge geometry plus absolute positioning, which is not enough to earn a place in the system. The pattern is a wrapper with <code>position: relative</code>, an <code>aria-hidden</code> mark pinned to the corner, and a visually-hidden label carrying the count in words — because the number must reach the <em>host control's</em> announcement. That requirement is also the reason it can never be a Badge prop (§12). The first product that needs it twice proves the shape.<br/>
+      <strong>4 · §06 no longer cites a component that does not exist.</strong> The answer to an unknown state is a placeholder box at the badge's own dimensions on <code>--surface-sunken</code>, with <code>aria-busy</code> on the loading region — never one announcement per shape. A <code>Skeleton</code> primitive was built alongside this and pulled for the same reason as the overlay count: it is a <code>Box</code> with a sweep, and nothing in the system yet needs a shape vocabulary for it.</p>
+    <div className="tokenlist">
+      {['--badge-radius','--badge-gap-sm','--badge-gap-md','--badge-dot-size','--badge-height-sm \u2020','--badge-height-md \u2020','--badge-padding-sm \u2020','--badge-padding-md \u2020','--badge-neutral-background','--badge-neutral-foreground','--badge-neutral-border','--badge-neutral-dot','--badge-accent-background','--badge-accent-foreground','--badge-accent-border','--badge-accent-dot','--badge-success-background','--badge-success-foreground','--badge-success-border','--badge-success-dot','--badge-warning-background','--badge-warning-foreground','--badge-warning-border','--badge-warning-dot','--badge-critical-background','--badge-critical-foreground','--badge-critical-border','--badge-critical-dot'].map(t=><span key={t}>{t}</span>)}
+    </div>
+    <Text size="xs" tone="tertiary">† defined in the three <code className="mono">[data-density]</code> scopes, not in <code className="mono">components.css</code>.</Text>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Wiring it into a product.">
+    <pre>{`import { Badge } from '@meridian/core';
+
+// One map, one place. The vocabulary is the contract — if a new
+// state appears in the API, it fails loudly here rather than
+// falling through to a neutral badge that means "no judgement".
+const STATE = {
+  running:  ['success',  'Running'],
+  degraded: ['warning',  'Degraded'],
+  down:     ['critical', 'Down'],
+  idle:     ['neutral',  'Idle'],
+};
+
+function StatusBadge({ state, size = 'sm' }) {
+  const entry = STATE[state];
+  if (!entry) { console.error('unmapped state', state); return null; }
+  const [tone, label] = entry;
+  return <Badge tone={tone} size={size} dot>{label}</Badge>;
+}
+
+// Counts: cap the label, never the value.
+<Badge tone="accent" max={99}>{openItems}</Badge>
+
+// Inside a control — the badge adds no tab stop and becomes
+// part of the row's accessible name.
+<a href={row.href}>{row.name} <StatusBadge state={row.state} /></a>
+
+// Announcing a change is the VIEW's job, once, not the badge's.
+// role="status" on the badge re-announces on every render.
+<span role="status" aria-live="polite" className="sr-only">
+  {\`Line 7 is now \${STATE[row.state][1]}\`}
+</span>`}</pre>
+    <ul>
+      <li><strong>Wrap it once per product.</strong> A <code>StatusBadge</code> that owns the state→tone map is the only way the vocabulary stays closed; scattered <code>tone=</code> literals drift within a quarter.</li>
+      <li><strong>Fail on unmapped states.</strong> A default of neutral silently reports "no judgement" about a machine that may be on fire.</li>
+      <li><strong>Do not put <code>role="status"</code> on the badge.</strong> Own the announcement in the view, keyed on the change, so it fires once.</li>
+      <li><strong>Pass <code>size="sm"</code> from the table,</strong> not from each cell, so a density change is one edit.</li>
+      <li><strong>Style overrides are layout only</strong> — margin, alignment, <code>gridArea</code>. Colour comes from <code>tone</code> or the badge stops meaning anything.</li>
+      <li><strong>Testing hooks:</strong> badges are <code>span</code>s with no role, found by text (<code>getByText('Down')</code>) or by <code>aria-label</code> for dot-only and capped-count badges. Assert the <em>label</em>, not the colour — the tone map is what you are testing.</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

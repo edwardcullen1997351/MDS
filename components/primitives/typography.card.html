@@ -1,0 +1,48 @@
+<!-- @dsCard group="Components" viewport="760x360" name="Primitives — type & media" subtitle="Heading, Text, Image, AspectRatio" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Type primitives</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--background-page);padding:20px;font-family:var(--font-sans)}.lbl{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold)}</style></head><body><div id="root"></div>
+<script type="text/babel">
+/* IIFE, and it is not stylistic. A top-level `const` in a classic
+   <script type="text/babel"> is transpiled to `var`, which creates an OWN
+   PROPERTY on window — so destructuring `Image` off the namespace replaced the
+   DOM `Image` constructor for the whole page. `new Image()` then threw
+   "Cannot destructure property 'src' of 'undefined'", which broke every
+   screenshot and export of this card (html-to-image news up an Image to inline
+   media) and left `Icon` permanently invisible: its glyph probe news an Image
+   inside a Promise executor, so the throw REJECTED instead of resolving and
+   the status never left 'pending'. This card renders no Icons, so nothing
+   looked wrong — the failure was reserved for whoever added one.
+
+   Function scope keeps the bindings off window entirely, which also fixes the
+   `Text` collision here (window.Text is otherwise the React component, and
+   `node instanceof Text` is then false for every real text node). */
+(() => {
+const { Heading, Text, Stack, Image, Divider, Grid } = window.MeridianDesignSystem_962c43;
+function Demo(){return (
+  <Stack direction="row" gap={6} align="flex-start">
+    <Stack gap={3} style={{flex:1,minWidth:0}}>
+      <Heading level={1}>Work orders</Heading>
+      <Heading level={3} size="md" tone="secondary">Downtime by cause</Heading>
+      <Text measure="prose" tone="secondary">Body copy sits at 14px with normal leading and a 68ch measure, so a paragraph never runs longer than the eye can track back.</Text>
+      <Divider tone="subtle" />
+      <Stack direction="row" gap={3}>
+        <Text family="mono" numeric size="sm">WO-88431</Text>
+        <Text size="sm" tone="tertiary">Line 3</Text>
+        <Text size="sm" tone="critical">Down 12m</Text>
+      </Stack>
+      <Text caps tone="tertiary">Micro label</Text>
+      <Text size="sm" truncate style={{maxWidth:260}}>Truncated single line that runs past the width it was given</Text>
+    </Stack>
+    <Stack gap={3} style={{width:240}}>
+      <Image ratio="video" placeholder="line 3 camera" />
+      <Image ratio="square" placeholder="operator avatar" radius="pill" style={{width:64}} />
+    </Stack>
+  </Stack>
+);}
+ReactDOM.createRoot(document.getElementById("root")).render(<Demo />);
+})();
+</script></body></html>

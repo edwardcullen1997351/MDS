@@ -1,0 +1,98 @@
+<!-- @dsCard group="Components" viewport="1000x780" name="Tree — the nested collection" subtitle="Hierarchy, expansion separate from selection, one tab stop" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Tree</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--background-page);padding:20px;font-family:var(--font-sans)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Tree, Card, Badge, Text, DescriptionList, Icon } = window.MeridianDesignSystem_962c43;
+
+const ASSETS = [{ id:'PL-04', label:'Chakan plant (PL-04)', icon:'factory', children:[
+  { id:'PRESS', label:'Press shop', icon:'layers', meta:'4 assets', children:[
+    { id:'PRS-4120', label:'PRS-4120 · 630 T press', icon:'cpu', meta:'82 %', trailing:<Badge tone="success">Running</Badge> },
+    { id:'PRS-4121', label:'PRS-4121 · 400 T press', icon:'cpu', meta:'0 %', trailing:<Badge tone="warning">Changeover</Badge> },
+    { id:'PRS-4122', label:'PRS-4122 · 250 T press', icon:'cpu', meta:'71 %', trailing:<Badge tone="success">Running</Badge> },
+    { id:'PRS-4123', label:'PRS-4123 · 250 T press', icon:'cpu', meta:'—', trailing:<Badge tone="danger">Down</Badge>, disabled:true },
+  ]},
+  { id:'WELD', label:'Weld shop', icon:'layers', meta:'6 assets', hasChildren:true },
+  { id:'ASSY', label:'Assembly', icon:'layers', meta:'2 lines', children:[
+    { id:'ASSY-1', label:'Assembly 1', icon:'workflow', meta:'shift B', children:[
+      { id:'ASSY-1-ST3', label:'Station 3 · caliper fit', icon:'wrench', meta:'44 s' },
+      { id:'ASSY-1-ST4', label:'Station 4 · bleed & test', icon:'gauge', meta:'52 s' },
+    ]},
+    { id:'ASSY-2', label:'Assembly 2', icon:'workflow', meta:'idle' },
+  ]},
+]}];
+
+const BOM = [{ id:'BRK-4820-A', label:'BRK-4820-A · brake caliper assy', icon:'component', meta:'1 ea', children:[
+  { id:'BRK-4820-HSG', label:'BRK-4820-HSG · housing, cast', icon:'box', meta:'1 ea', children:[
+    { id:'RAW-GG25', label:'RAW-GG25 · grey iron casting', icon:'circle', meta:'3.4 kg' },
+  ]},
+  { id:'BRK-4820-PST', label:'BRK-4820-PST · piston, 54 mm', icon:'box', meta:'2 ea' },
+  { id:'SEAL-2207-SK', label:'SEAL-2207-SK · seal kit', icon:'box', meta:'1 set', children:[
+    { id:'ORING-38', label:'O-ring, 38 × 3 NBR', icon:'circle', meta:'2 ea' },
+    { id:'ORING-54', label:'O-ring, 54 × 3 NBR', icon:'circle', meta:'2 ea' },
+  ]},
+  { id:'FAST-M10', label:'FAST-M10-45 · bolt, M10 × 45', icon:'circle', meta:'4 ea' },
+]}];
+
+const DETAIL = {
+  'PRS-4120': [['Asset','PRS-4120'],['Line','Press shop'],['OEE, shift B','82 %'],['Next PM','2026-09-14 (IST)']],
+  'PRS-4121': [['Asset','PRS-4121'],['Line','Press shop'],['State','Changeover · PN-7742 → PN-7749'],['Owner','Shalini Rao']],
+};
+
+function Demo(){
+  const [open, setOpen] = React.useState(['PL-04','PRESS','ASSY']);
+  const [sel, setSel] = React.useState(['PRS-4120']);
+  const [loading, setLoading] = React.useState([]);
+  const [scope, setScope] = React.useState(['SEAL-2207-SK','ORING-38','ORING-54']);
+
+  const onExpand = (ids) => {
+    if (ids.includes('WELD') && !open.includes('WELD')) {
+      setLoading(['WELD']);
+      setTimeout(() => setLoading([]), 1400);
+    }
+    setOpen(ids);
+  };
+  const rows = DETAIL[sel[0]] || [['Asset', sel[0] || '—']];
+
+  return (
+  <div style={{display:'flex',flexDirection:'column',gap:16}}>
+    <div className="grid">
+      <Card title="Plant assets · single selection" headingLevel={2} padding="sm">
+        <Tree label="Plant assets · Chakan (PL-04)" selection="single"
+          items={ASSETS} expandedIds={open} onExpandedChange={onExpand}
+          selectedIds={sel} onSelectionChange={setSel} loadingIds={loading} />
+      </Card>
+      <Card title={sel[0] ? sel[0] : 'Nothing selected'} headingLevel={2} padding="sm">
+        <DescriptionList items={rows.map(([term,value])=>({term,value}))} />
+        <Text size="xs" tone="tertiary" style={{marginTop:12,display:'block'}}>Selection drives the pane; the tree carries no row commands, because a treeitem cannot hold a control.</Text>
+      </Card>
+    </div>
+    <div className="grid">
+      <Card title="BOM · multiple, cascading" headingLevel={2} padding="sm">
+        <Tree label="BOM · BRK-4820-A" size="sm" selection="multiple" cascade
+          items={BOM} defaultExpandedIds={['BRK-4820-A','SEAL-2207-SK']}
+          selectedIds={scope} onSelectionChange={setScope} />
+        <Text size="xs" tone="tertiary" style={{marginTop:10,display:'block'}}>{scope.length} of 8 lines in the change scope. A parent with some children chosen draws a dash.</Text>
+      </Card>
+      <Card title="Browse · no selection, no guides" headingLevel={2} padding="sm">
+        <Tree label="Routing · BRK-4820-A" size="sm" guides={false}
+          items={[{ id:'R', label:'Routing 001 · 4 operations', icon:'route', children:[
+            { id:'OP10', label:'OP10 · Cast clean', icon:'circle-dot', meta:'12 min' },
+            { id:'OP20', label:'OP20 · Bore & face', icon:'circle-dot', meta:'8 min', children:[
+              { id:'OP20-T', label:'Tooling · TL-8830', icon:'wrench', meta:'Priya Iyer' },
+            ]},
+            { id:'OP30', label:'OP30 · Assemble', icon:'circle-dot', meta:'14 min' },
+            { id:'OP40', label:'OP40 · Leak test', icon:'circle-dot', meta:'6 min' },
+          ]}]}
+          defaultExpandedIds={['R']} onActivate={(n)=>console.log('activate', n.id)} />
+        <Text size="xs" tone="tertiary" style={{marginTop:10,display:'block'}}>A browse tree: a press toggles the branch, Enter activates. Guides off — two levels need no rules.</Text>
+      </Card>
+    </div>
+    <Text size="xs" tone="tertiary">One tab stop for the whole tree. ↑↓ walk visible rows, → expands then descends, ← collapses then climbs, Home/End jump, <code>*</code> opens the focused level's siblings, letters jump by label. Expansion and selection are separate props: collapsing a branch never deselects it.</Text>
+  </div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

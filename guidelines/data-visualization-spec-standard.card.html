@@ -1,0 +1,212 @@
+<!-- @dsCard group="Governance" viewport="980x3900" name="Data visualization spec standard" subtitle="The fourteen sections a Data Visualization specification contains — visual encoding, scale contracts, marks, accessibility, and cognitive legibility" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Data Visualization System specification standard</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:32px}
+.wrap{max-width:1000px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0;max-width:76ch;color:var(--text-secondary);text-wrap:pretty}
+.rules{margin:24px 0 12px;padding:20px 22px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:10px}
+.rules.ships{margin:12px 0 32px;border-left:2px solid var(--status-info-solid)}
+.rules h2{margin:0 0 2px;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+p{margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:80ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:30px 0 12px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding:20px 0;border-bottom:var(--border-hairline)}
+.sec:last-child{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:7px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.badge{align-self:flex-start;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);padding:2px 8px;border-radius:var(--radius-full);white-space:nowrap}
+.req{background:var(--status-success-soft);color:var(--text-success)}
+.cond{background:var(--surface-sunken);color:var(--text-secondary)}
+.body{display:flex;flex-direction:column;gap:10px;min-width:0}
+.test{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:baseline}
+.test .t{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+.test p{color:var(--text-secondary)}
+.never{color:var(--text-tertiary)}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:2px}
+.pair div{padding:12px 14px;background:var(--surface-sunken);border-radius:var(--radius-sm)}
+.pair h4{margin:0 0 4px;font-size:var(--text-xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-regular)}
+.shape{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);background:var(--surface-sunken);border-radius:var(--radius-sm);padding:8px 10px}
+.sig{margin-top:36px;padding-top:12px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:12px}.test{grid-template-columns:1fr;gap:2px}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Governance · Authoring standard</span>
+<h1>Data Visualization System specification standard</h1>
+<p class="lede">A Data Visualization System is an architectural and graphical framework for encoding quantitative, temporal, categorical, and relational data into communicative visual structures — bar charts, line graphs, sparklines, area charts, donut charts, scatter matrices, heatmaps, gauges, and multi-metric analytics canvases. It owns visual mark encoding, scale mapping, color series assignment, threshold limits, interactive crosshairs, accessible data alternatives, and dense numerical typography. Its specification documents visualization-specific contracts only — establishing strict visual integrity, accessibility compliance, and cognitive legibility without duplicating atomic controls. This page fixes the fourteen sections a Data Visualization specification contains, their order and stable numbering, and what each section must answer.</p>
+
+<div class="rules">
+  <h2>How to apply it</h2>
+  <ul>
+    <li><strong>All fourteen sections are defined; numbers are stable identifiers.</strong> Like <a href="core-spec-standard.card.html">Core Components</a>, <a href="layout-template-spec-standard.card.html">Layout Templates</a>, and <a href="navigation-spec-standard.card.html">Navigation Systems</a>, sections §01 through §14 appear in exact ascending order. A cross-reference such as <code>§07 Keyboard</code> or <code>§08 Accessibility</code> retains the exact same meaning across all system specifications and is never renumbered.</li>
+    <li><strong>Visual integrity and truthfulness over decoration.</strong> Data visualization is an analytical tool, not illustration. Every mark, axis, tick, threshold, and hue must convey verifiable data. Zero-baselines on magnitude charts, proportional geometry, unclipped scales, and non-distorting aspect ratios are mandatory system rules.</li>
+    <li><strong>Color is never the sole information carrier.</strong> Every visualization must satisfy multi-channel encoding (patterns, stroke styles, point glyphs, direct labels) and meet WCAG 1.4.11 (minimum 3:1 graphical contrast) and WCAG 1.4.3 (minimum 4.5:1 text/label contrast). Colors strictly adhere to the six-step categorical series <code>--viz-1</code> through <code>--viz-6</code> and designated semantic status tokens.</li>
+    <li><strong>Equivalence of accessible data representation.</strong> Every graphic must provide an equivalent programmatic representation — an accessible DOM data table fallback, descriptive chart summaries (<code>&lt;desc&gt;</code> / <code>aria-roledescription="chart"</code>), live region updates, and keyboard focus traversal across discrete data points.</li>
+    <li><strong>Real manufacturing ERP scenarios.</strong> All reference metrics, examples, scales, and labels reflect the fixed plant setting: <strong>Suryodaya Autocomp Ltd — Chakan plant (PL-04), Pune</strong> — real industrial KPIs: Overall Equipment Effectiveness (OEE), CNC spindle vibration (mm/s), furnace annealing temperatures (°C), press shop scrap rates, rejection PPM, Shift A/B/C output, rupees formatted in <code>en-IN</code> (<code>₹2,50,000</code>, <code>₹1.5L</code>).</li>
+  </ul>
+</div>
+
+<div class="rules ships">
+  <h2>What every data visualization specification ships</h2>
+  <p>A Data Visualization specification carries a status stamp in its masthead (<code>status: frozen &lt;date&gt; · N open items</code>) and is accompanied by a functional reference implementation:</p>
+  <ul>
+    <li><strong>1 · The specification.</strong> <code>specs/data-viz/&lt;Visualization&gt;.spec.html</code> — sections §01–§14 in order, documenting the visual encodings, scale algorithms, geometry tables, palette assignments, keyboard traversal rules, and accessibility requirements.</li>
+    <li><strong>2 · Live reference implementation.</strong> Interactive working chart built with real system tokens and rendering primitives (SVG/Canvas), wired to realistic plant data at full volume (e.g. 24-hour machine telemetry, 30-day rejection trends, multi-line shift comparisons).</li>
+    <li><strong>3 · Do/Don't visual pairs.</strong> Placed directly inside the sections whose rules they demonstrate (e.g. §01 Purpose, §06 States, §08 Accessibility, §10 Content rules, §12 Anti-patterns) with concise analytical rationale.</li>
+  </ul>
+</div>
+
+<div class="groupline"><h2>The fourteen</h2><span>All present, in ascending order, in every Data Visualization System specification</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§01</span><h3>Purpose</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the analytical question the visualization answers, the cognitive task it supports (comparison, trend/time-series, part-to-whole, distribution, correlation, deviation, or target tracking), the data shape it requires, and when an alternative visualization or tabular format must be chosen instead.</p>
+    <div class="test"><span class="t">Must answer</span><p>Which analytical task it solves; required data dimensionality (single metric, continuous time series, multi-category distribution); minimum and maximum data points supported; chart selection routing table ("You want to analyze... / Use this chart / Instead of... / Why"); and when NOT to visualize (e.g. fewer than 3 data points where a KPI Stat or DescriptionList is clearer).</p></div>
+    <div class="test"><span class="t">Shape</span><p>Prose, analytical category badge (Trend, Comparison, Distribution, Composition, Flow), dimensionality table, and a comparison table.</p></div>
+    <div class="pair">
+      <div><h4>Do</h4><p>"Use a Line Chart with continuous time scale to show 24-hour CNC spindle vibration trends and detect anomalous spike patterns."</p></div>
+      <div><h4>Don't</h4><p>"Use a Line Chart to compare static rejection counts across 4 discrete plant workshops." Discrete categories without continuous sequence require a Bar Chart.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§02</span><h3>Anatomy</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines all structural zones, graphical marks, coordinate grids, guide elements, legends, tooltips, and background containers that compose the visualization.</p>
+    <div class="test"><span class="t">Must answer</span><p>All structural regions: Chart Container / Frame, Plot Area (data canvas), X/Y Quantitative and Categorical Axes, Axis Baseline, Major/Minor Gridlines, Tick Marks & Labels, Series Marks (bars, paths/lines, area fills, scatter dots, arcs/wedges), Reference Lines (targets, means, specification limits), Threshold Bands (upper/lower control limits, tolerance zones), Data Callout Annotations, Legend Container & Swatches, Crosshair Cursor & Hover Line, Floating Data Tooltip, and Hidden Accessible Data Table container.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Diagram or numbered structural callouts over a live chart instance, followed by an Anatomy Slot table detailing part name, role, visual element type (SVG element / Canvas layer), and token assignments.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§03</span><h3>Properties</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the public configuration API, data contract schema, scale parameters, dimension mappings, formatting accessors, and interaction callbacks exposed by the visualization component.</p>
+    <div class="test"><span class="t">Must answer</span><p>Data schema contract (array of data objects with typed keys), scale definitions (<code>linear</code>, <code>time</code>, <code>band</code>, <code>log</code>, <code>ordinal</code>), domain bounds (<code>[min, max]</code> or auto-padding), dimension accessors (<code>xKey</code>, <code>yKey</code>, <code>seriesKey</code>), visual channel encodings (color, stroke style, point shape), reference line configurations (threshold value, label, semantic tone), legend placement, tooltip formatters, and event handlers (<code>onPointHover</code>, <code>onSeriesSelect</code>, <code>onBrushZoom</code>). Explicitly documents refused properties (e.g. 3D perspective tilts, arbitrary raw hex color injections that bypass design tokens, unstructured arbitrary HTML strings in tooltips).</p></div>
+    <div class="test"><span class="t">Shape</span><p>TypeScript prop interface, data item schema table, and dedicated refusal notes explaining why excluded capabilities are withheld to protect visual truth.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§04</span><h3>Variants</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the standardized analytical sub-types and visual layout modes supported by the chart abstraction, with explicit use-case rules for each.</p>
+    <div class="test"><span class="t">Must answer</span><p>Standardized structural variants: for Bar Charts (Clustered, Stacked, 100% Normalized, Horizontal, Diverging); for Line Charts (Standard Multi-Series, Stepped/Step-After, Area-Filled, Sparkline / Micro-Trend); for Donut/Gauge Charts (Full Donut, Semi-Circle Gauge, Threshold Arc). Clarifies what constitutes a legitimate analytical variant versus an invalid decorative variant.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Variant comparison table detailing layout characteristics, cognitive workload, maximum supported series count, and live preview rows for each variant.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§05</span><h3>Sizes</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines standard aspect ratios, container sizing classes, geometric stroke thicknesses, marker dimensions, margin budgets, and label spacing rhythms across densities.</p>
+    <div class="test"><span class="t">Must answer</span><p>Standard rendering heights and aspect ratios (<code>sparkline</code>: 64×24px, <code>compact-card</code>: 280×160px / 16:9, <code>standard-card</code>: 440×260px, <code>analytical-full</code>: 800×420px / 2:1); margin allocations (top/right/bottom/left padding for axis tick labels); line stroke widths (<code>1.5px</code> background series, <code>2px</code> primary series, <code>3px</code> focused/active series); point radii (<code>3px</code> rest, <code>5px</code> hover, <code>6px</code> selected); bar corner radii (<code>--radius-xs</code> on outer caps, square at baseline); and density behavior under <code>compact</code>, <code>comfortable</code>, and <code>expanded</code>.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Geometry dimension table using semantic tokens (<code>--viz-stroke-*</code>, <code>--space-*</code>, <code>--radius-*</code>), container size matrix, and margin reservation guide.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§06</span><h3>States</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines visual states for individual data marks, series, whole-chart containers, interactive crosshairs, and data thresholds, with token mappings and contrast ratios.</p>
+    <div class="test"><span class="t">Must answer</span><p>Graphic element states: <code>rest / default</code>, <code>hover / pointer-tracking</code>, <code>selected / pinned</code>, <code>dimmed / de-emphasized</code> (unselected series reduced to <code>opacity: 0.25</code> during series isolate mode), <code>out-of-spec / breach</code> (highlighted with <code>--status-critical-solid</code> when exceeding control limits); Whole-chart states: <code>initial loading / skeleton shimmer</code>, <code>empty / zero data</code> (distinguishing zero numeric value from missing null records), <code>partial / degraded feed</code>, and <code>data error / fetch failed</code>. Minimum 3:1 graphical contrast against chart background and 4.5:1 for data labels.</p></div>
+    <div class="test"><span class="t">Shape</span><p>State transition matrix, opacity token assignments, and live renderings of all mark states and container states with contrast verification.</p></div>
+    <div class="pair">
+      <div><h4>Do</h4><p>"Render missing data as a broken dashed line with explicit 'No Telemetry' badge in tooltip, distinguishing it from a genuine 0.00 mm/s vibration reading."</p></div>
+      <div><h4>Don't</h4><p>"Drop null data points to the Y=0 baseline or interpolate through missing periods without visual break." That falsifies machine downtime as active zero-vibration operation.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§07</span><h3>Keyboard</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines keyboard navigation patterns, focus management, mark-to-mark traversal, shortcut keys, and tabular view toggling across chart data points.</p>
+    <div class="test"><span class="t">Must answer</span><p>Single Tab-stop entry to the chart container; spatial and sequential mark traversal (<kbd>Arrow Left / Right</kbd> to move between chronological data points along the X-axis, <kbd>Arrow Up / Down</kbd> to switch between active series in multi-line/stacked charts); <kbd>Enter</kbd> / <kbd>Space</kbd> to pin active tooltip or trigger drill-down route; <kbd>Home</kbd> / <kbd>End</kbd> to jump directly to first or last data point; <kbd>Esc</kbd> to dismiss pinned tooltip or clear series isolation; and global shortcut (<kbd>Alt + F11</kbd> or focusable action button) to immediately swap between graphical chart view and accessible tabular data grid view.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Key-to-action table, roving tabindex architecture within SVG/DOM elements, and focus ring geometry specifications (2px offset ring, <code>--focus-ring</code>).</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§08</span><h3>Accessibility</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the accessibility contract: WAI-ARIA graphics module semantics, non-color-only encoding channels, color blindness safe palettes, screen reader summaries, and WCAG compliance.</p>
+    <div class="test"><span class="t">Must answer</span><p>WAI-ARIA landmark & semantics (<code>role="region" aria-label="Line 2 Press OEE Trend Chart"</code>, container <code>role="graphics-document" aria-roledescription="line chart"</code>, child marks <code>role="graphics-symbol" aria-label="Shift B: 84.2% OEE at 14:00 IST"</code>); high-level chart summary in <code>&lt;desc&gt;</code> element (stating chart type, axes, time range, min/max values, and overall trend); multi-channel encoding requirements (combining categorical hues <code>--viz-1</code>..<code>--viz-6</code> with distinct dashed stroke patterns and point glyphs: circle, square, triangle, diamond); color blindness verification (tested against Protanopia, Deuteranopia, Tritanopia); and live region announcements on live data stream refresh (WCAG 1.1.1, 1.3.1, 1.4.1, 1.4.3, 1.4.11, 4.1.2, 4.1.3).</p></div>
+    <div class="test"><span class="t">Shape</span><p>WCAG compliance table with rule references, complete SVG ARIA markup example, color blindness simulation checks, and screen reader output transcript.</p></div>
+    <div class="pair">
+      <div><h4>Do</h4><p>"Pair color hues with distinct point shapes (circles for Shift A, diamonds for Shift B) and dashed lines for secondary series to ensure legibility in monochrome."</p></div>
+      <div><h4>Don't</h4><p>"Distinguish four adjacent lines using four solid stroke colors alone with identical 2px solid lines." In monochrome or color vision deficiency, the lines cannot be distinguished.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§09</span><h3>Motion</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines data transition choreography, path interpolation, bar expansion easing, hover crosshair tracking, and reduced-motion fallbacks.</p>
+    <div class="test"><span class="t">Must answer</span><p>Initial entry animation duration (e.g. <code>250ms cubic-bezier(0.2,0,0,1)</code> for progressive path drawing or bar height growth); data update / filter transition interpolation (<code>180ms ease-out</code> smoothly morphing points and lines to new Y coordinates without jumping); hover crosshair glide; tooltip position smoothing; and mandatory <code>prefers-reduced-motion: reduce</code> behavior (instantaneous render with 0ms transition duration, no progressive drawing, immediate crosshair snaps).</p></div>
+    <div class="test"><span class="t">Shape</span><p>Motion specification table listing Animation Type, Duration Token, Timing Function, Interpolation Rule, and Reduced Motion override.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§10</span><h3>Content rules</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines numerical formatting standards, Indian currency representation, units of measure, date/time formatting in IST, axis label truncation, and tooltip copy hierarchy.</p>
+    <div class="test"><span class="t">Must answer</span><p>Numeric formatting rules (always use <code>en-IN</code> locale for Indian Rupees: <code>₹2,50,000</code>; compact unit formatting: <code>₹1.2L</code> / <code>₹4.5Cr</code>; percentages formatted with one decimal <code>87.4%</code>; PPM formatted as integer <code>140 ppm</code>; temperature <code>°C</code>; vibration <code>mm/s</code>); date/time formatting (ISO <code>YYYY-MM-DD</code>, 24-hour time <code>14:30 IST</code>, Shift identifiers: <code>Shift A (06:00–14:00 IST)</code>); Axis label formatting (max 12 characters per tick before abbreviation, never vertical 90° text; use 45° angle or decimation); Tooltip content hierarchy (Header: Dimension/Timestamp, Body: Metric name + Formatted value with units, Footer: Benchmark / Variance delta <code>+3.2% vs Target</code>); and zero/null messaging copy.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Number and currency formatting table, string truncation constraint table, and tooltip layout copy anatomy diagram using real shop-floor metrics.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§11</span><h3>Responsive</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines how the visualization adapts across container widths and device viewports, including axis tick decimation, label rotation, legend wrapping, and touch tooltips.</p>
+    <div class="test"><span class="t">Must answer</span><p>Desktop (≥1024px: full axis tick resolution, side-by-side legends, floating hover tooltips), Tablet (768px–1023px: tick decimation by factor of 2, horizontal legend wrapped below plot, 45° angled date labels), Mobile (&lt;768px: tick decimation to start/middle/end points only, hidden non-essential gridlines, touch-driven scrubbing crosshair with fixed bottom data bar or modal sheet instead of floating tooltip), touch target minimums (44×44px hit-area per data point), and container-query-driven micro-chart fallbacks (e.g. converting full chart into sparkline + stat pill in narrow card widgets &lt;240px).</p></div>
+    <div class="test"><span class="t">Shape</span><p>Breakpoint adaptation matrix with container threshold triggers, layout restructure rules, and mobile viewport preview diagram.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§12</span><h3>Anti-patterns</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Identifies visual chart misuses, mathematical misrepresentations, misleading scale distortions, and cognitive anti-patterns that falsify data or confuse operators.</p>
+    <div class="test"><span class="t">Must answer</span><p>Explicit visualization anti-patterns: truncating the Y-axis baseline above zero on bar charts (exaggerating minor variances); utilizing 3D perspective charts (distorting volume and angle perception); dual non-zero Y-axes with unsynchronized scales (falsely implying correlation); using pie/donut charts for more than 5 categories or with slices &lt;5%; using arbitrary non-token rainbow palettes; animating charts continuously on a loop (creating cognitive distraction); unlabelled axis units; omitting accessible data tables.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Do / Don't two-column guidance with realistic manufacturing plant consequence callout (e.g. truncated axis on scrap rate making a normal 0.2% variance look like a catastrophic line failure, causing false line stoppage).</p></div>
+    <div class="pair">
+      <div><h4>Do</h4><p>"Always start the Y-axis at zero (0%) for Bar and Area magnitude charts to preserve accurate proportional visual weight."</p></div>
+      <div><h4>Don't</h4><p>"Truncate the Y-axis baseline to 80% on a scrap rate bar chart to make a 2% variation fill the full vertical height." That misleads plant leadership on true defect proportion.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§13</span><h3>Implementation notes</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines rendering engine decisions (SVG vs Canvas vs WebGL), scale algorithms, coordinate systems, label collision detection, z-index layering, and design tokens consumed.</p>
+    <div class="test"><span class="t">Must answer</span><p>Rendering threshold guideline (SVG for &lt;1,000 data points with accessible DOM elements; Canvas for 1,000–50,000 continuous time-series telemetry; WebGL for dense heatmaps); scale calculation and rounding algorithms; label collision avoidance logic (hiding overlapping labels, automatic tick thinning); layer stacking order (Background &lt; Gridlines &lt; Reference Bands &lt; Series Marks &lt; Target Reference Lines &lt; Active Crosshair &lt; Pinned Marks &lt; Tooltip); event throttling (16ms <code>requestAnimationFrame</code> for pointer tracking); and complete token consumption inventory.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Layer stacking hierarchy diagram, rendering selection decision matrix, and categorized token consumption list (<code>--viz-1</code>..<code>--viz-6</code>, surface, border, typography, motion tokens).</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§14</span><h3>Developer notes</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines framework integration patterns, reactive data binding, export capabilities (CSV, SVG, PNG), automated chart testing recipes, and specification freeze status.</p>
+    <div class="test"><span class="t">Must answer</span><p>Framework integration code sample with typed data input; real-time data streaming subscription pattern (buffering incoming WebSocket points without re-rendering the entire SVG tree); data export hooks (<code>exportCSV()</code>, <code>exportPNG()</code>); unit and visual regression testing assertions (verifying scale domains, ARIA tree validity, keyboard arrow navigation, contrast ratios); and open/closed governance item registry with freeze date.</p></div>
+    <div class="test"><span class="t">Shape</span><p>TypeScript integration example, data stream hook snippet, test assertion list, and status/open-item registry table.</p></div>
+  </div>
+</div>
+
+<p class="sig">Applies to: Data Visualization System specifications (<code>specs/data-viz</code>) · Core Components keep <a href="core-spec-standard.card.html">their own section set</a> · Composite Components keep <a href="composite-spec-standard.card.html">theirs</a> · Layout Templates keep <a href="layout-template-spec-standard.card.html">theirs</a> · Navigation Systems keep <a href="navigation-spec-standard.card.html">theirs</a> · Interaction Patterns keep <a href="interaction-pattern-spec-standard.card.html">theirs</a> · Sections are numbered §01–§14 and never renumbered</p>
+</div>
+</body></html>

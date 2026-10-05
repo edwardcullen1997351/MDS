@@ -1,0 +1,186 @@
+.ds-date-range-picker {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface-card, #FFFFFF);
+  border: 1px solid var(--color-neutral-200, #E5E7EB);
+  border-radius: var(--radius-lg, 8px);
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
+  font-family: var(--font-family-sans, system-ui, sans-serif);
+  padding: var(--spacing-4, 16px);
+  width: 320px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.ds-date-range-presets {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  padding-bottom: var(--spacing-3, 12px);
+  border-bottom: 1px solid var(--color-neutral-200, #E5E7EB);
+  margin-bottom: var(--spacing-3, 12px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ds-date-range-presets > button,
+.ds-date-range-presets > * {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
+.ds-date-range-inputs {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: var(--spacing-4, 16px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ds-date-range-inputs > .ds-field {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.ds-date-range-inputs .ds-input-container {
+  width: 100%;
+}
+
+.ds-date-range-separator {
+  color: var(--color-neutral-600, #4B5563);
+  font-weight: var(--font-weight-medium, 500);
+  padding-bottom: 6px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.ds-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-3, 12px);
+  padding: 0 2px;
+}
+
+.ds-calendar-title {
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-neutral-900, #111827);
+  user-select: none;
+}
+
+.ds-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ds-calendar-day-header {
+  font-size: var(--font-size-xs, 12px);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-neutral-600, #4B5563);
+  padding-bottom: var(--spacing-2, 8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.ds-calendar-day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 34px;
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-neutral-800, #1F2937);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+  transition: background-color var(--duration-fast, 150ms) ease;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.ds-calendar-day:hover {
+  background-color: var(--color-neutral-100, #F3F4F6);
+}
+
+.ds-calendar-day--selected {
+  background-color: var(--color-brand-600, #2563EB) !important;
+  color: #FFFFFF !important;
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.ds-calendar-day--in-range {
+  background-color: var(--color-brand-50, #EFF6FF);
+  color: var(--color-brand-700, #1D4ED8);
+  border-radius: 0;
+}
+
+.ds-calendar-day--today {
+  border: 1px solid var(--color-brand-500, #3B82F6);
+}
+
+.ds-calendar-day:disabled {
+  color: var(--color-neutral-300, #D1D5DB);
+  cursor: not-allowed;
+}
+
+.ds-date-range-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-3, 12px);
+  margin-top: var(--spacing-4, 16px);
+  padding-top: var(--spacing-3, 12px);
+  border-top: 1px solid var(--color-neutral-200, #E5E7EB);
+}
+
+.ds-date-range-picker--invalid {
+  border-color: var(--color-error-500, #EF4444);
+}
+
+.ds-date-range-error {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-error-600, #DC2626);
+  font-weight: var(--font-weight-medium, 500);
+  margin: 0 0 var(--spacing-3, 12px) 0;
+  line-height: 1.4;
+}
+
+.ds-date-range-helper {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-neutral-600, #4B5563);
+  margin: 0 0 var(--spacing-3, 12px) 0;
+  line-height: 1.4;
+}
+
+@media (max-width: 340px) {
+  .ds-date-range-picker {
+    padding: var(--spacing-2, 8px);
+  }
+
+  .ds-date-range-inputs {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .ds-date-range-separator {
+    text-align: center;
+    padding-bottom: 0;
+  }
+
+  .ds-calendar-day {
+    height: 30px;
+  }
+}

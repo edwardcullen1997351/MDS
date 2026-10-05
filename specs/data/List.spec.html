@@ -1,0 +1,323 @@
+<!-- @dsCard group="Specs · Data" viewport="1080x760" name="List" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content, responsive, anti-patterns" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>List — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.demo.plain{background:transparent;border:none;box-shadow:none;padding:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:104px;padding-top:4px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.grid2{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { List, ListItem, Card, Icon, Avatar, Badge, IconButton, Button, Text, Menu } = window.MeridianDesignSystem_962c43;
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{flex:1,minWidth:0}}>{children}</div></div>;
+const ACT = [
+  ['clipboard-list','WO-88431 released to Assembly 3','2,000 pcs · m.osei · 12 min ago'],
+  ['repeat','Changeover completed on Pack 1','PN-7742 → PN-7749 · 38 min ago'],
+  ['wrench','PM order closed on PKG-6014','maintenance · 3 h ago'],
+];
+const Activity = ({size,variant}) => (
+  <List label="Recent activity" size={size} variant={variant}>
+    {ACT.map(([i,t,m])=><ListItem key={t} leading={<Icon name={i} size="xs" />} title={t} meta={m} />)}
+  </List>
+);
+
+const SAMPLE = "import { List, ListItem, Icon, IconButton } from '@meridian/ds';\n\n<Card title=\"Recent activity\" headingLevel={2} padding=\"sm\">\n  <List label=\"Recent activity\">\n    {events.map((e) => (\n      <ListItem\n        key={e.id}\n        leading={<Icon name={e.icon} size=\"xs\" />}\n        title={e.text}\n        href={e.url}                    /* the TITLE links, not the row */\n        meta={e.actor + ' · ' + e.when}\n        actions={<IconButton icon=\"ellipsis\" label=\"Row actions\" size=\"sm\" />}\n      />\n    ))}\n  </List>\n</Card>\n\n// The region sequence Table and EmptyState already define\nif (loading)         return <Skeleton lines={4} />;\nif (!events.length)  return <EmptyState variant=\"cleared\" size=\"sm\" title=\"Nothing logged this shift\" />;";
+const KEYS = "// A row that navigates: the TITLE is the link, never the row\n<ListItem title=\"WO-88431 released\" href=\"/wo/88431\" meta=\"12 min ago\" />\n\n// A row with commands: they live in `actions`\n<ListItem title=\"Fault on WLD-2207\"\n  actions={<><Button variant=\"secondary\" size=\"sm\">Ack</Button>\n            <Menu label=\"Alarm actions\" trigger={<IconButton icon=\"ellipsis\" label=\"Alarm actions\" size=\"sm\" />} items={[]} /></>} />";
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Data · Component specification</span>
+    <h1>List</h1>
+    <p className="lede">The run of records <code>Table</code> refuses. "List" is the vaguest name a design system can ship, and that vagueness <em>is</em> the design problem: it collapses three unrelated components. This one is the record run — an activity feed, an alarm list, search results — and its central decision is a refusal this system has now made four times: <strong>the row is not a control</strong>.</p>
+    <div className="meta">
+      <span>components/data/List.jsx</span><span>window.MeridianDesignSystem_962c43.List</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 1 open item</span><span>since: 1.22.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="The shape Table sends away, and the two things this is NOT.">
+    <p>Use a List when several records belong together, each needs a line or three of its own, and they do <em>not</em> share a set of fields worth aligning into columns. <code>Table</code> §01 sends exactly this shape away in its own words — <em>"if half the columns are empty for half the rows, they are not columns"</em> — and until 1.22.0 the system had nowhere to send it, so every product hand-rolled a stack of divs. The console template had two.</p>
+    <p className="warn"><strong>"List" collapses three components, and only one of them is this.</strong> A <em>run of records</em> is this component. A set of <em>selectable options</em> is <code>role="listbox"</code>, which <code>Combobox</code> and <code>MultiCombobox</code> already own inside their popovers — borrowing listbox semantics for a display list sends a screen-reader user hunting for a selection that does not exist. And <em>one record's label/value pairs</em> is a definition list: a different element (<code>dl/dt/dd</code>), different semantics, and a component this system still does not have even though <code>Table</code> asks for it by name twice (§14).</p>
+    <div className="demo plain grid2">
+      <Card title="Recent activity" headingLevel={2} padding="sm"><Activity /></Card>
+      <Card title="Open alarms" headingLevel={2} padding="sm">
+        <List label="Open alarms">
+          <ListItem leading={<Badge tone="danger" dot aria-label="Fault" />} title="WLD-2207 hydraulic pressure below 4.0 bar" href="#a1"
+            description="Weld 1 · Station 2. Line held automatically." meta="4 min ago"
+            actions={<Button variant="secondary" size="sm">Ack</Button>} />
+          <ListItem leading={<Badge tone="warning" dot aria-label="Alarm" />} title="PNT-0885 starved for 6 min" href="#a2"
+            description="Paint 2 · infeed conveyor." meta="22 min ago"
+            actions={<Button variant="secondary" size="sm">Ack</Button>} />
+        </List>
+      </Card>
+    </div>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Show records with unlike shapes','List','This component.'],
+      ['Compare records across shared fields','Table','Columns align, so the eye scans down. If the fields are shared, a list wastes them.'],
+      ['Offer selectable options','Combobox / MultiCombobox','They own role="listbox". A display list must not borrow it.'],
+      ['Show one record’s fields','A definition list','dl/dt/dd. Table §01 and §12 both call for it; it does not exist yet (§14).'],
+      ['Give each row its own surface and heading','Cards in a stack','A list row is a line, not a panel. Once a row needs a title, a chart and a footer it is a Card.'],
+      ['Show commands anchored to a trigger','Menu','Rows that are commands close on selection. These rows are records.'],
+      ['Show rows that expand','Accordion','A row that becomes a container is a disclosure, not a list item.'],
+      ['Show nothing, because there is nothing','EmptyState','A list of zero rows renders an empty box; say why (§06).'],
+    ]}/>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Six slots, all optional but one, and a gutter rule.">
+    <div className="demo">
+      <List label="Anatomy example">
+        <ListItem leading={<Icon name="siren" size="xs" />} title="Fault raised on WLD-2207" href="#x"
+          description="Hydraulic pressure below 4.0 bar for 40 s. The line held automatically."
+          meta="andon · m.osei · 4 h ago"
+          actions={<IconButton icon="ellipsis" label="Row actions" size="sm" />} />
+      </List>
+    </div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Leading slot</strong> — an <code>Icon</code>, an <code>Avatar</code>, a <code>Badge</code> dot. The <strong>ordinal is a separate column</strong> before it, so a numbered row can still carry a glyph: for one build the two shared a slot and every row of an <code>ordered</code> list silently dropped its icon. An <code>Icon</code> gets a sunken tile at <code>--list-leading-size-*</code>; an Avatar or Badge brings its own shape and is <em>not</em> boxed inside a second one.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>The gutter rule.</strong> If <em>any</em> row carries a leading element, <em>every</em> row reserves the gutter — otherwise the titles sit on two different left edges and the column stops scanning. <code>Menu</code> solved this with <code>anyIndent</code> and <code>MultiCombobox</code> with a permanently reserved checkbox column; this is the third instance, which is why it is a rule rather than a habit.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Title</strong> — one line, truncated, <code>--list-title-text</code>. The only slot that is effectively required: a row of a glyph and a timestamp says nothing that can be scanned or announced, and the component warns.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Description</strong> — up to two lines, clamped. A row is not a paragraph (<code>Menu</code>'s rule), and the clamp is what keeps the row height predictable down a run of forty.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Meta</strong> — mono, one line: a timestamp, an actor, an ID. Mono because these are values out of the data, which is <code>Tag</code>'s rule applied a third time.</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>Actions</strong> — trailing Buttons, an <code>IconButton</code>, a <code>Menu</code>. Where a row's commands belong, because the row itself cannot hold them (§07).</span></div>
+      <div className="callout"><span className="cnum">7</span><span><strong>Divider</strong> — a bottom rule on every row <em>but the last</em>. Not a top rule on every row but the first: a list inside a <code>Card</code> already has the Card's header rule above it, and a top rule would double it.</span></div>
+    </div>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Five on the list, seven on the row, and one conspicuous absence.">
+    <p><strong><code>List</code></strong></p>
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['label','string','—','What the items ARE. A list announces its length, never its subject (§08). Omitting it warns.'],
+      ['variant','divided | plain','divided','divided: rules, no gap — the dense default. plain: a gap, no rules.'],
+      ['size','sm | md | lg','md','Row padding and title size (§05).'],
+      ['ordered','boolean','false','Renders an <ol> and numbers the rows. Only when the NUMBER is the information.'],
+      ['as','ul | ol | div','ul / ol','Rarely needed — the ordered prop already picks the element.'],
+    ]}/>
+    <p><strong><code>ListItem</code></strong></p>
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['leading','ReactNode','—','Icon (gets a tile), Avatar, Badge dot. Triggers the gutter for the whole list.'],
+      ['marker','ReactNode','—','A manual ordinal or key; the ordered prop supplies these. Its OWN column — a row may carry a marker AND a leading element, and the ordinal is never aria-hidden (§08).'],
+      ['title','ReactNode','—','One line, truncated. Effectively required.'],
+      ['href','string','—','Makes the TITLE a link. Not the row (§07).'],
+      ['description','ReactNode','—','Up to two lines, clamped.'],
+      ['meta','ReactNode','—','Mono, one line.'],
+      ['actions','ReactNode','—','Trailing controls.'],
+      ['onClick','—','REFUSED','Not a prop. Warns and is stripped (§07).'],
+    ]}/>
+    <p><strong>There is no <code>selected</code>, no <code>onSelect</code> and no <code>selectable</code>.</strong> A list with a selection model is a <code>listbox</code>, and a listbox owes <code>aria-selected</code> on every option, <code>aria-multiselectable</code>, arrow-key navigation, a cursor published with <code>aria-activedescendant</code>, and typeahead. Half of that is worse than none of it, and this system has two components that already implement all of it.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Two, and they are about density rather than decoration.">
+    <div className="demo plain grid2">
+      <Card title="divided" headingLevel={2} padding="sm"><Activity /></Card>
+      <Card title="plain" headingLevel={2} padding="sm"><Activity variant="plain" /></Card>
+    </div>
+    <ul>
+      <li><strong>divided is the default</strong> because it is denser and because a rule does a job a gap cannot: it says where one record ends when the records are different heights. In a run where row one is a line and row two is three lines, gaps alone read as inconsistent spacing rather than as boundaries.</li>
+      <li><strong>plain is for short, uniform runs</strong> — four assignees, three tags, a stack of two. Rules between five near-identical rows are noise, and at that length the eye does not need help finding the boundary.</li>
+      <li><strong>ordered is not a third variant,</strong> it is a semantic switch: it renders <code>&lt;ol&gt;</code> and numbers the rows. Use it when the number is the information — a runbook, a ranking — not merely because things arrived in an order. An activity feed is chronological and still a <code>&lt;ul&gt;</code>, because "3." beside an event is a rank nobody assigned.</li>
+      <li><strong>There is no card variant.</strong> A run of rows that each want a surface is a stack of <code>Card</code>s, and that is a layout rather than a component. Building it in here would put Card's whole API behind a List prop.</li>
+    </ul>
+    <div className="demo plain">
+      <Card title="Runbook · ordered, with glyphs" headingLevel={2} padding="sm">
+        <List label="Runbook steps" ordered size="sm">
+          <ListItem leading={<Icon name="power-off" size="xs" />} title="Isolate the hydraulic circuit" />
+          <ListItem leading={<Icon name="gauge" size="xs" />} title="Bleed to below 0.5 bar" />
+          <ListItem leading={<Icon name="wrench" size="xs" />} title="Replace the seal kit" description="Part PN-2207-SK. Torque to 18 Nm." />
+        </List>
+      </Card>
+    </div>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Three, set by the container rather than by taste.">
+    <div className="demo plain">
+      <Row label="sm"><Card padding="sm"><Activity size="sm" /></Card></Row>
+      <Row label="md"><Card padding="sm"><Activity size="md" /></Card></Row>
+      <Row label="lg"><Card padding="sm"><Activity size="lg" /></Card></Row>
+    </div>
+    <T cols={['Size','Row padding · title · gutter','Use it for']} rows={[
+      ['sm','8px · --text-xs · 20px','A card sidebar, a drawer, a dashboard tile. The dense console default.'],
+      ['md','12px · --text-sm · 24px','A page region, a main column. The default.'],
+      ['lg','16px · --text-base · 32px','A full-page feed or search results, where the list IS the screen.'],
+    ]}/>
+    <p><strong>The row has no fixed height,</strong> unlike <code>Table</code>'s. That is the difference between the two components stated in geometry: a table row is one height because its cells align across rows, and a list row is as tall as its content because nothing aligns across rows except the gutter. A <code>min-height</code> here would produce empty space under single-line rows in a run that also holds three-line ones.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="The list has states; the row has almost none.">
+    <T cols={['State','What renders','Note']} rows={[
+      ['Populated','The rows.','The normal case.'],
+      ['Loading','Skeleton lines in the region, aria-busy on the region.','Not this component. Skeleton §06.'],
+      ['Empty','An EmptyState — never a List of zero rows.','A list with no children renders an empty box with no explanation. EmptyState §01.'],
+      ['Failed','An Alert with a retry.','Alert §08.'],
+      ['Row hover','NOTHING on the row. The Link or Button inside it hovers.','The row is not a control (§07), so a row-wide hover tint would promise a press that does not exist.'],
+      ['Row focus','On the link or the action, never on the row.','One tab stop per row, and it lands on the thing that does something.'],
+      ['Row disabled','NOTHING in this component.','A record is not disabled. If a row is unavailable, say so in its description and disable its action.'],
+      ['Truncated title','An ellipsis.','One line by design (§10).'],
+    ]}/>
+    <p className="warn"><strong>The row-wide hover tint is the most requested state and the one most worth refusing.</strong> It is the visual grammar of a clickable row, so painting it on a row that cannot be clicked teaches the user a press is available and then swallows it. Either the row's title is a link — in which case the link carries the affordance — or nothing in the row responds and it should not look as though something might.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="None of its own. The refusal is the whole component.">
+    <T cols={['Key','Does','Why']} rows={[
+      ['Tab','Reaches the title link, then the actions, in DOM order — one stop each, and only where there is something to activate.','A row with nothing interactive in it is not in the tab order at all, which is correct: there is nothing to do there.'],
+      ['← → ↑ ↓','Nothing. The list is not arrow-navigable.','Arrow navigation is the listbox/menu contract, and it arrives with aria-activedescendant, a cursor, typeahead and a selection model. Half of it is worse than none.'],
+      ['—','onClick on a row is refused: warned about and stripped.','See below.'],
+    ]}/>
+    <p className="warn"><strong>This is the fourth time this system has met the clickable-row defect, and the first time it has been refused before shipping.</strong> <code>Table</code> shipped <code>&lt;tr onClick&gt;</code> and documented what it cost. <code>Card</code> shipped <code>interactive</code> with a pointer cursor, a hover border, no <code>role</code>, no <code>tabIndex</code> and no key handler — a mouse-only control, invisible to keyboards and screen readers, fixed in 1.15.0. <code>Avatar</code> refused <code>onClick</code> outright in 1.21.0. A clickable <code>&lt;li&gt;</code> would have been the fourth, and passing the handler through the spread would have produced it silently — so the prop is stripped and the console says what to do instead.</p>
+    <pre>{KEYS}</pre>
+    <p><strong>Why the title rather than a block overlay.</strong> The tempting alternative makes the whole row clickable with an absolutely-positioned <code>&lt;a&gt;</code> stretched over it. That gets a real element and a real focus ring, but it also swallows text selection, covers the actions, and gives the link an accessible name assembled from every scrap of text in the row. A link on the title is boring, and it keeps one tab stop, selectable text, reachable actions, and a name that is exactly the record.</p>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="Mostly free from ul/li — and one browser bug that takes it away.">
+    <ul>
+      <li><strong>A real <code>&lt;ul&gt;</code> of <code>&lt;li&gt;</code>,</strong> so a screen reader announces "list, 6 items" and the user can jump the list with one shortcut. That count is the most useful thing a list offers a non-visual reader, and it is exactly what a stack of divs — what this component replaced in the console — destroys.</li>
+      <li className="warn"><strong><code>role="list"</code> is set explicitly, and it is not redundant.</strong> Safari with VoiceOver <em>drops</em> list semantics the moment <code>list-style: none</code> is applied — which this component always applies — so a six-row list is announced as six loose paragraphs and the list shortcut does nothing. Re-declaring the role restores it. This is the one place in the system where an explicit ARIA role duplicates a native element on purpose, and removing it as "redundant" is a regression on one of the two browsers a plant floor runs.</li>
+      <li><strong>label is required in practice.</strong> The list announces its length but never its subject; "list, 6 items" with no name tells the user nothing. Point <code>aria-labelledby</code> at the Card heading above it when there is one, rather than repeating the words.</li>
+      <li><strong>The leading glyph is decorative; the ordinal is not.</strong> An <code>Icon</code> in the slot carries no name — the title says the same thing. A <code>Badge</code> dot standing for severity is different: it is the only carrier of that information, so it needs an <code>aria-label</code> ("Fault"), which the Badge spec already requires for a dot with no text. The wrapper therefore sets no <code>aria-hidden</code> of its own — hiding it would have suppressed that label. <strong>And the ordinal is never hidden.</strong> For one build the gutter set <code>aria-hidden</code> whenever <code>leading</code> was absent, which is exactly the case in an <code>ordered</code> list — so with <code>list-style: none</code> already suppressing the native marker, the number §04 calls "the information" reached nobody using a screen reader.</li>
+      <li><strong>An <code>Avatar</code> in the slot must be <code>decorative</code>.</strong> The name is in the title beside it, so an announcing avatar reads it twice — Avatar §08, and the case that spec calls "almost always right".</li>
+      <li><strong>One tab stop per row at most,</strong> and it lands on the link or the action. A row with nothing to do is not focusable, which is why refusing <code>onClick</code> is an accessibility decision rather than an API one.</li>
+      <li><strong>Contrast.</strong> Title at <code>--text-primary</code>, description at <code>--text-secondary</code>, meta at <code>--text-tertiary</code> — the last at 11px mono, the smallest text in the row and the first thing to re-check if the palette is ever retargeted.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="None. Third component in the system with an empty table, same reason.">
+    <T cols={['Moment','Motion','Why']} rows={[
+      ['Rows arriving','NONE.','Data never animates in — Table §06. A feed that animates every poll is a page that never settles.'],
+      ['A row being removed','NONE.','A collapse-and-slide needs a height transition on a container whose children are different heights, and it mis-measures during a font swap.'],
+      ['Reordering','NONE.','If the order changed, the list is different; animating the difference asks the user to watch instead of read.'],
+      ['Hover','NONE on the row (§06). The link or button inside animates, on its own tokens.','—'],
+    ]}/>
+    <p><strong>The rule these three empty tables share, now stated for the third time:</strong> <em>a component that renders in bulk cannot afford motion.</em> An <code>EmptyState</code> appears once per query, which in a filter-as-you-type field is once per keystroke. An <code>Avatar</code> appears once per row. A List <em>is</em> the bulk — one animation multiplied by forty rows, firing while an operator scans the column. The system has no transition that survives being multiplied by forty.</p>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="One line, two lines, mono. In that order.">
+    <T cols={['Do','Not','Why']} rows={[
+      ['"WO-88431 released to Assembly 3"','"A work order was released"','The title carries the identifier an operator matches against a screen or a label.'],
+      ['meta: "2,000 pcs · m.osei · 12 min ago"','meta: "Released 12 minutes ago by m.osei, 2000 pieces"','Meta is a run of values separated by middots, not a sentence. Mono, because these came out of the data.'],
+      ['description: "Hydraulic pressure below 4.0 bar for 40 s."','A three-sentence explanation','Two lines, clamped. Anything longer belongs on the record’s own page.'],
+      ['Relative time within the shift, absolute after','An ISO timestamp for an event 4 minutes old','An operator reasons in "4 min ago" during a shift and in dates afterwards.'],
+      ['Consistent slot use down the run','Some rows with meta, some with description in its place','The eye learns the column positions on row one; moving them makes every later row a fresh read.'],
+    ]}/>
+    <ul>
+      <li><strong>The title is a noun phrase or a completed event,</strong> never a command. "Acknowledge alarm" in a title reads as a button; the button goes in <code>actions</code>.</li>
+      <li><strong>Do not repeat the list's subject in every row.</strong> If the label says "Open alarms", the rows do not each begin "Alarm:".</li>
+      <li><strong>Ten rows is the point to ask whether this is a Table.</strong> Not a hard limit — a feed is long by nature — but ten rows of the same three fields is a table that has not admitted it.</li>
+      <li><strong>Never put a second interactive thing in the title.</strong> One link per row; a title holding two links gives the row two names and no clear target.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="It reflows because it sets no width. Five rules keep that true.">
+    <ul>
+      <li><strong>No width, and <code>min-width: 0</code> on the list and every slot.</strong> The component is as wide as its container. The <code>min-width: 0</code> is what makes the title's ellipsis work at all — a flex child defaults to <code>min-width: auto</code> and refuses to shrink below its content, so without it a long title pushes the actions off the row instead of truncating.</li>
+      <li><strong>The gutter and the actions never shrink; the content column does.</strong> <code>flex: 0 0 auto</code> on both ends, <code>flex: 1</code> in the middle. At 280px a row is still a glyph, a truncated title and its menu button — which is the correct thing to lose last.</li>
+      <li><strong>The description clamps rather than wrapping freely,</strong> so a narrow container makes rows two lines taller rather than five. That is what keeps a long run scannable on a tablet held in portrait.</li>
+      <li><strong>Meta drops before description on a narrow row</strong> — by the caller's choice, not automatically. There is no container query here (the same gap <code>EmptyState</code> §11 logs), so a drawer that needs a tighter row passes <code>size="sm"</code> and omits <code>meta</code>.</li>
+      <li><strong>Rows do not become cards at narrow widths.</strong> The reflow-to-cards pattern belongs to <code>Table</code>, which has columns to lose; a list row is already one column.</li>
+    </ul>
+    <div className="demo plain">
+      <div style={{width:300}}>
+        <Card padding="sm">
+          <List label="Narrow example" size="sm">
+            <ListItem leading={<Icon name="siren" size="xs" />} title="WLD-2207 hydraulic pressure below 4.0 bar for 40 seconds" meta="4 min ago" actions={<IconButton icon="ellipsis" label="Row actions" size="sm" />} />
+            <ListItem leading={<Icon name="repeat" size="xs" />} title="Changeover completed on Pack 1" meta="38 min ago" actions={<IconButton icon="ellipsis" label="Row actions" size="sm" />} />
+          </List>
+        </Card>
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns" note="Eight, and the first is why the component has this shape.">
+    <div className="two">
+      <div className="pane dont"><h3>Interaction</h3><ul>
+        <li><strong>onClick on the row.</strong> The mouse-only control, refused (§07). Four components have now met it.</li>
+        <li><strong>A row-wide hover tint on a row that cannot be pressed.</strong> The grammar of a clickable row, promising a press the row swallows (§06).</li>
+        <li><strong>A block overlay link stretched over the row.</strong> Swallows text selection, covers the actions, and names the link after every scrap of text in the row.</li>
+        <li><strong>Arrow-key navigation, <code>role="listbox"</code>, or <code>aria-selected</code>.</strong> That is a selection component and this is not one (§03).</li>
+      </ul></div>
+      <div className="pane dont"><h3>Structure &amp; content</h3><ul>
+        <li><strong>A stack of divs instead of <code>ul/li</code>.</strong> Destroys "list, 6 items" — the one thing a list gives a non-visual reader. This component replaced two such stacks in the console template.</li>
+        <li><strong>Removing <code>role="list"</code> as redundant.</strong> Safari drops list semantics under <code>list-style: none</code> (§08).</li>
+        <li><strong>A List of zero rows.</strong> An empty box with no explanation. That is an <code>EmptyState</code>.</li>
+        <li><strong>Ten rows of the same three fields.</strong> A <code>Table</code> that has not admitted it (§10).</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>One more, specific to this system:</strong> do not use a List where the console means a <em>table without a header</em>. Hiding a Table's header to make it look like a list loses the column names an operator needs and keeps the fixed row height a list exists to avoid. If the fields are shared, use the Table and show its header.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="Six decisions in the file, and the tokens.">
+    <ul>
+      <li><strong>The gutter is decided by the parent, from its children.</strong> <code>List</code> inspects <code>React.Children</code> for any row with a <code>leading</code> or a <code>marker</code> and publishes one boolean through context, so every row reserves the same gutter or none does. A row cannot know what its siblings look like, and this is the third component to need that (<code>Menu</code>'s <code>anyIndent</code>, <code>MultiCombobox</code>'s reserved check column).</li>
+      <li><strong>Two things a row cannot know about itself are cloned in:</strong> whether it is last, because inline styles cannot express <code>:last-child</code> and the divider is a bottom rule; and its ordinal when the list is ordered, because <code>list-style: none</code> hides the native marker this component always suppresses. Both arrive as internal props the row strips. <strong>Both are computed over the same normalised array</strong> — <code>Children.toArray</code>’s output, not raw <code>children</code>: <code>toArray</code> strips <code>null</code>, <code>undefined</code> and booleans while <code>Children.map</code> preserves their positions, so taking the length from one and the index from the other put the divider under the last row the moment a caller wrote <code>{'{cond && <ListItem/>}'}</code> — which the console template does constantly. Fixed 1.22.1.</li>
+      <li><strong>The leading tile is drawn only for an <code>Icon</code>.</strong> The check is on the element's type, so an <code>Avatar</code>, a <code>Badge</code> dot or a status glyph brings its own shape and is not boxed inside a second one — a 24px avatar inside a 24px sunken square is a shape nobody designed.</li>
+      <li><strong><code>onClick</code> is stripped after the spread,</strong> not merely undocumented — spreading <code>...rest</code> onto the <code>&lt;li&gt;</code> would otherwise attach it and produce the defect the warning describes. Same mechanism as <code>Avatar</code>.</li>
+      <li><strong><code>role="list"</code> is explicit</strong> for the Safari bug in §08. It is the one deliberate ARIA-on-native-element in the system, and it is commented in the file so nobody removes it as noise.</li>
+      <li><strong>Two console warnings,</strong> both about what cannot be read rather than how it looks: a list with no accessible name, and a row with neither title nor description.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--list-divider','--list-row-padding-y-sm','--list-row-padding-y-md','--list-row-padding-y-lg','--list-gap-sm','--list-gap-md','--list-gap-lg','--list-gutter-gap','--list-leading-size-sm','--list-leading-size-md','--list-leading-size-lg','--list-leading-background','--list-leading-foreground','--list-leading-radius','--list-title-text','--list-description-text','--list-meta-text','--list-marker-text','--list-actions-gap'].map(t=><span key={t}>{t}</span>)}
+    </div>
+    <p><strong>Nineteen tokens, and the absences are the interesting part.</strong> There is no <code>--list-row-background-hover</code>, no <code>-selected</code> and no <code>-focus</code>, because the row has no such states (§06) — and a token declared for a state a component cannot enter is the inert-token defect this system has shipped three times. <code>tools/check-contracts.mjs</code> would flag them as orphans on the first run, which is the point of having it.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{SAMPLE}</pre>
+    <ul>
+      <li><strong>Testing.</strong> Assert the semantics first: <code>getByRole('list', {'{ name: /recent activity/i }'})</code> and <code>getAllByRole('listitem')</code> — that pair is the component's whole accessibility contract. Then that a row with <code>href</code> exposes exactly ONE link named after its title; that a row without <code>href</code> or <code>actions</code> is not focusable; that <code>onClick</code> on a row warns and does not fire; and that a list where only one row has <code>leading</code> renders the gutter on all of them.</li>
+      <li><strong>Lint.</strong> Flag <code>onClick</code> on a <code>ListItem</code>; an <code>Avatar</code> in <code>leading</code> without <code>decorative</code>; a <code>List</code> with no <code>label</code> and no <code>aria-labelledby</code>; a <code>List</code> with zero children (that is an <code>EmptyState</code>); <code>role="listbox"</code> or <code>aria-selected</code> anywhere inside one; and a hand-rolled <code>&lt;div&gt;</code> stack with a <code>borderBottom</code> on each child, which is this component being reinvented.</li>
+      <li><strong>Frozen 5 Sep 2026.</strong> API closed — <code>List</code>: <code>label</code>, <code>variant</code>, <code>size</code>, <code>ordered</code>, <code>as</code>, <code>style</code>. <code>ListItem</code>: <code>leading</code>, <code>marker</code>, <code>title</code>, <code>href</code>, <code>description</code>, <code>meta</code>, <code>actions</code>, <code>style</code>, plus native attributes.</li>
+      <li><strong>Additive, with two replacements:</strong> the console template's "Recent activity" panel and its alarm list were both hand-rolled div stacks with per-child <code>borderBottom</code> — no list semantics, so no "list, N items" for a screen-reader user. Both now use this component. Those two stacks are why it exists.</li>
+      <li><strong>Closed in 1.22.2 — <code>DescriptionList</code> shipped.</strong> It is the component this entry described and refused to fold in: <code>dl/dt/dd</code>, a two-column grid whose term column is one width down the whole list, collapsing to stacked pairs, with no leading slot, no actions and no per-row link. Three specs had asked for it by name — <code>Table</code> §01, <code>Table</code> §12 and this entry — and none of them was answered by growing an existing component.</li>
+      <li><strong>Open — no virtualisation.</strong> A feed of five thousand events renders five thousand rows. The same item <code>Combobox</code> and <code>MultiCombobox</code> carry, and the same answer for now: page or cap on the server. Windowing needs a fixed row height, which §05 explains this component deliberately does not have — so it is a harder problem here than in a table, not an easier one.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

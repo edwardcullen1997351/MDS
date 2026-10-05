@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Validated submission" description="Interaction pattern reference implementation, set in a manufacturing ERP — releasing a work order to a production line: cross-field validation, one snapshot, single-shot commit, values preserved through failure." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}fieldset{margin:0;min-width:0}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:900px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/ValidatedSubmission.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+</div>
+<p style="margin:0;max-width:78ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note, the state panel on the right, and the simulated-operation tweaks — exists to make the contract visible. It is not part of the pattern. Delete both blocks and replace <span style="font-family:var(--font-mono)">resolve()</span>'s simulation with your real MES or ERP release call; the validation, snapshot, state and focus logic is the part to keep.</p>
+<p style="margin:0;max-width:78ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Order quantity depends on the line's shift capacity — enter a quantity, then change the line to watch a dependent condition re-evaluate on the field the planner must change. Release an empty order to see commit-time evaluation, the group-level count, and focus landing on the first actionable problem. The failure tweaks cover what a plant floor actually meets: an MES that does not answer, a part rejected by the item master, and a release that books the order but not the material.</p>
+</div>
+
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">Release work order</h1>
+
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:28px;align-items:start">
+
+<form novalidate onSubmit="{{ onSubmit }}" style="display:flex;flex-direction:column;gap:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+<div style="padding:20px 22px 6px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Fieldset" label="Work order" hint="Chakan plant (PL-04) · fabrication · shift A (IST) · all five values are released together." error="{{ groupError }}" gap="16px" hint-size="100%,420px">
+
+<sc-if value="{{ banner }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ bannerTone }}" title="{{ bannerTitle }}" live="on" size="sm" hint-size="100%,64px">{{ bannerBody }}</x-import>
+</sc-if>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Order reference" hint="At least 3 characters. Printed on the traveller the operators work from." error="{{ errRef }}" required="{{ true }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ vRef }}" onChange="{{ onRef }}" onBlur="{{ onBlurRef }}" placeholder="Bracket weldment — March build" hint-size="100%,34px"></x-import>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Part number" hint="Item master format: uppercase letters, digits and hyphens." error="{{ errPart }}" required="{{ true }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ vPart }}" onChange="{{ onPart }}" onBlur="{{ onBlurPart }}" placeholder="BRK-4820-A" mono="{{ true }}" hint-size="100%,34px"></x-import>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Planner email" hint="Receives the release confirmation and any downstream exception." error="{{ errEmail }}" required="{{ true }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" type="email" value="{{ vEmail }}" onChange="{{ onEmail }}" onBlur="{{ onBlurEmail }}" placeholder="a.deshmukh@suryodaya.co.in" hint-size="100%,34px"></x-import>
+</x-import>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Production line" hint="Each line has its own validated shift capacity." error="{{ errLine }}" required="{{ true }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ lineOptions }}" value="{{ vLine }}" onChange="{{ onLine }}" hint-size="100%,34px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Order quantity" hint="{{ qtyHint }}" error="{{ errQty }}" required="{{ true }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" type="text" inputMode="numeric" mono="{{ true }}" suffix="pcs" value="{{ vQty }}" onChange="{{ onQty }}" onBlur="{{ onBlurQty }}" placeholder="250" hint-size="100%,34px"></x-import>
+</x-import>
+</div>
+</x-import>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 22px;margin-top:8px;border-top:var(--border-hairline);background:var(--surface-sunken)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ stateLabel }}</span>
+<div style="display:flex;gap:8px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" type="button" onClick="{{ onReset }}" disabled="{{ isSubmitting }}" hint-size="80px,34px">Reset</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="primary" type="submit" loading="{{ isSubmitting }}" hint-size="160px,34px">{{ commitLabel }}</x-import>
+</div>
+</div>
+</form>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:14px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:16px 18px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Pattern state · remove on copy</span>
+<div style="display:flex;flex-direction:column;gap:7px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="6">
+<sc-if value="{{ row.active }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="width:7px;height:7px;border-radius:999px;flex:none;background:var(--status-info-solid)"></span>
+<span style="color:var(--text-primary)">{{ row.name }}</span>
+</div>
+</sc-if>
+<sc-if value="{{ row.idle }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="width:7px;height:7px;border-radius:999px;flex:none;background:var(--border-strong)"></span>
+<span style="color:var(--text-tertiary)">{{ row.name }}</span>
+</div>
+</sc-if>
+</sc-for>
+</div>
+<div style="border-top:var(--border-hairline);padding-top:12px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Snapshot in flight</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ snapshotText }}</pre>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">Editing during <span style="font-family:var(--font-mono)">submitting</span> does not alter the snapshot in flight — §18. On a plant floor that is the difference between the traveller and what the line actually builds.</p>
+</div>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:980,&quot;height&quot;:760},&quot;outcome&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;success&quot;,&quot;failure&quot;,&quot;rejected-value&quot;,&quot;partial&quot;,&quot;unknown&quot;],&quot;default&quot;:&quot;success&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo harness — remove on copy&quot;,&quot;label&quot;:&quot;Simulated outcome&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:5000,&quot;step&quot;:100,&quot;default&quot;:1400,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness — remove on copy&quot;,&quot;label&quot;:&quot;Simulated latency&quot;}}">
+// Shift capacity per line, from the routing master. The dependent rule.
+const LINE_CAP = { 'Line A — manual cell': 120, 'Line B — semi-automatic': 900, 'Line C — automated': 4000 };
+const EMPTY = { ref: '', part: '', email: '', line: 'Line A — manual cell', qty: '' };
+
+class Component extends DCLogic {
+  state = {
+    values: { ...EMPTY },
+    touched: {},
+    problems: {},          // validation state — keyed by field
+    committed: false,      // true once commit has run at least once
+    op: 'idle',            // operation state: idle | pending | failed | done | partial | unknown
+    opMessage: '',
+    snapshot: null
+  };
+
+  // Pure function of the value set. Same code path on change and at commit.
+  evaluate(v) {
+    const p = {};
+    const ref = (v.ref || '').trim();
+    if (!ref) p.ref = 'Enter an order reference.';
+    else if (ref.length < 3) p.ref = 'Use at least 3 characters.';
+
+    const part = (v.part || '').trim();
+    if (!part) p.part = 'Enter a part number.';
+    else if (!/^[A-Z0-9-]+$/.test(part)) p.part = 'Use uppercase letters, digits and hyphens only — like BRK-4820-A.';
+
+    const email = (v.email || '').trim();
+    if (!email) p.email = 'Enter the planner’s email address.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) p.email = 'Enter a complete email address, like a.deshmukh@suryodaya.co.in.';
+
+    // Dependent rule: evaluated against the same value set, reported on the
+    // field the planner is expected to change, and naming both participants.
+    const cap = LINE_CAP[v.line] ?? 900;
+    const rawQty = (v.qty || '').trim();
+    // type="text" + inputMode="numeric" (Input refuses type="number"), so the
+    // string is parsed here rather than trusted: '', '250 pcs' and '2.5' all
+    // land on a stated rule instead of NaN-ing silently.
+    const qty = rawQty === '' ? null : (/^\d+$/.test(rawQty) ? Number(rawQty) : NaN);
+    if (qty === null) p.qty = 'Enter the order quantity.';
+    else if (!Number.isInteger(qty) || qty < 1) p.qty = 'Enter a whole number of pieces, 1 or more.';
+    else if (qty > cap) p.qty = v.line + ' runs ' + cap + ' pieces per shift. Reduce the quantity, or release it to a faster line.';
+
+    return p;
+  }
+
+  visible(problems) {
+    // Nothing is judged before the planner reaches it, until commit asks for a verdict.
+    if (this.state.committed) return problems;
+    const out = {};
+    for (const k in problems) if (this.state.touched[k]) out[k] = problems[k];
+    return out;
+  }
+
+  set(field, raw) {
+    this.setState(s => {
+      const values = { ...s.values, [field]: raw };
+      return { values, problems: this.evaluate(values) };
+    });
+  }
+
+  touch(field) {
+    this.setState(s => ({ touched: { ...s.touched, [field]: true } }));
+  }
+
+  submit = (e) => {
+    if (e) e.preventDefault();
+    if (this.state.op === 'pending') return;        // guarded at the transition, not the control
+
+    const snapshot = { ...this.state.values };       // one coherent snapshot
+    const problems = this.evaluate(snapshot);
+    const keys = Object.keys(problems);
+
+    if (keys.length) {
+      this.setState({ committed: true, problems, op: 'idle', opMessage: '', snapshot: null });
+      this.focusFirst(keys);
+      return;
+    }
+
+    this.setState({ committed: true, problems: {}, op: 'pending', opMessage: '', snapshot });
+    // HARNESS: the setTimeout stands in for the release call to MES/ERP. Keep
+    // the line above and the resolve() call; replace the delay with the real
+    // async work.
+    const latency = Number(this.props.latency ?? 1400);
+    clearTimeout(this._t);
+    this._t = setTimeout(() => this.resolve(snapshot), latency);
+  };
+
+  // ─── DEMO HARNESS · REMOVE ON COPY ────────────────────────────────────────
+  // Everything in this method is simulation. Replace the whole body with the
+  // real release call and keep only the four setState shapes it produces —
+  // they are the pattern's operation states (§08) and the rest of the class
+  // depends on them: done | failed (with or without a field-level problem) |
+  // partial | unknown. The `outcome` and `latency` props exist only to reach
+  // states a happy path never reaches; delete them from data-props too.
+  resolve(snapshot) {
+    const outcome = this.props.outcome || 'success';
+    const wo = 'WO-2026-' + String(1000 + Math.floor(Math.random() * 8999));
+    if (outcome === 'success') {
+      this.setState({ op: 'done', snapshot: null, opMessage: wo + ' is released to ' + snapshot.line + ' for ' + snapshot.qty + ' pcs of ' + snapshot.part.trim() + '. Material is reserved and the traveller is queued to print.' });
+      return;
+    }
+    if (outcome === 'failure') {
+      // Operational failure: values preserved, no field marked invalid.
+      this.setState({ op: 'failed', snapshot: null, opMessage: 'Your entries are fine — the MES did not answer. No work order was created and no material was reserved. Try again.' });
+      return;
+    }
+    if (outcome === 'rejected-value') {
+      // The narrow exception: the operation names the value that caused it.
+      this.setState(s => ({ op: 'failed', snapshot: null, problems: { ...s.problems, part: 'Not in the item master for Chakan (PL-04). Check the part number, or have engineering release the revision.' }, opMessage: 'One value was rejected by the item master. Correct it below and release again.' }));
+      this.focusFirst(['part']);
+      return;
+    }
+    if (outcome === 'partial') {
+      this.setState({ op: 'partial', snapshot: null, opMessage: wo + ' was created on ' + snapshot.line + ', but the material reservation failed — stock for ' + snapshot.part.trim() + ' is short. Retry reserves material only; the work order is not created twice.' });
+      return;
+    }
+    this.setState({ op: 'unknown', snapshot: null, opMessage: 'The release did not resolve, so we cannot say whether the work order reached the line. Check the dispatch list for Chakan (PL-04) before releasing again.' });
+  }
+
+  focusFirst(keys) {
+    const order = ['ref', 'part', 'email', 'line', 'qty'];
+    const first = order.find(k => keys.includes(k));
+    if (!first) return;
+    // Focus after the problems exist in the accessibility tree.
+    requestAnimationFrame(() => {
+      const root = this._root;
+      if (!root) return;
+      const label = { ref: 'Order reference', part: 'Part number', email: 'Planner email', line: 'Production line', qty: 'Order quantity' }[first];
+      const labels = Array.from(root.querySelectorAll('label'));
+      const match = labels.find(l => l.textContent.replace('*', '').trim() === label);
+      const id = match && match.getAttribute('for');
+      const el = id && root.querySelector('#' + CSS.escape(id));
+      if (el) el.focus();
+    });
+  }
+
+  reset = () => {
+    clearTimeout(this._t);
+    this.setState({ values: { ...EMPTY }, touched: {}, problems: {}, committed: false, op: 'idle', opMessage: '', snapshot: null });
+  };
+
+  componentDidMount() { this._root = document.body; }
+  componentWillUnmount() { clearTimeout(this._t); }
+
+  patternState() {
+    const { op } = this.state;
+    if (op === 'pending') return 'submitting';
+    if (op === 'failed') return 'failed';
+    if (op === 'done' || op === 'partial' || op === 'unknown') return 'submitted';
+    const shown = this.visible(this.state.problems);
+    if (Object.keys(shown).length) return 'invalid';
+    if (Object.keys(this.evaluate(this.state.values)).length === 0) return 'ready';
+    return 'editing';
+  }
+
+  renderVals() {
+    const s = this.state;
+    const v = s.values;
+    const shown = this.visible(s.problems);
+    const ps = this.patternState();
+    const cap = LINE_CAP[v.line] ?? 900;
+
+    const bannerMap = {
+      failed:  { tone: 'danger',  title: 'Work order not released' },
+      partial: { tone: 'warning', title: 'Released, with one step outstanding' },
+      unknown: { tone: 'warning', title: 'Outcome unknown' },
+      done:    { tone: 'success', title: 'Work order released' }
+    };
+    // Submission-level VALIDATION status rides the Fieldset's group error — it
+    // carries the count (§12) and announces on the group, not on any one field.
+    const n = Object.keys(shown).length;
+    const groupError = (ps === 'invalid' && s.committed)
+      ? 'Nothing was released. ' + n + (n === 1 ? ' value needs' : ' values need') + ' attention below.'
+      : undefined;
+    // OPERATIONAL outcomes ride the Alert — a different surface for a different
+    // kind of failure, so the two stay distinguishable (§04).
+    const banner = bannerMap[s.op] ? { ...bannerMap[s.op], body: s.opMessage } : null;
+
+    const rows = ['editing', 'invalid', 'ready', 'submitting', 'failed', 'submitted'].map(name => ({
+      name,
+      active: name === ps,
+      idle: name !== ps
+    }));
+
+    return {
+      vRef: v.ref, vPart: v.part, vEmail: v.email, vLine: v.line, vQty: v.qty,
+      lineOptions: Object.keys(LINE_CAP),
+      qtyHint: 'Up to ' + cap + ' pcs per shift on ' + v.line + '.',
+      errRef: shown.ref, errPart: shown.part, errEmail: shown.email, errLine: shown.line, errQty: shown.qty,
+      onRef: e => this.set('ref', e.target.value),
+      onPart: e => this.set('part', e.target.value.toUpperCase()),
+      onEmail: e => this.set('email', e.target.value),
+      onQty: e => this.set('qty', e.target.value),
+      onLine: e => { this.set('line', e.target.value); this.touch('qty'); },
+      onBlurRef: () => this.touch('ref'),
+      onBlurPart: () => this.touch('part'),
+      onBlurEmail: () => this.touch('email'),
+      onBlurQty: () => this.touch('qty'),
+      onSubmit: this.submit,
+      onReset: this.reset,
+      isSubmitting: s.op === 'pending',
+      commitLabel: s.op === 'pending' ? 'Releasing…' : (s.op === 'failed' || s.op === 'partial' ? 'Try again' : 'Release work order'),
+      stateLabel: ps,
+      banner: !!banner,
+      bannerTone: banner ? banner.tone : 'info',
+      bannerTitle: banner ? banner.title : '',
+      bannerBody: banner ? banner.body : '',
+      groupError,
+      stateRows: rows,
+      snapshotText: s.snapshot ? JSON.stringify(s.snapshot, null, 1) : '— nothing in flight —'
+    };
+  }
+}
+</script>
+</body>
+</html>

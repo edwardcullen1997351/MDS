@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Phase 3 focus check</title>
+<button id="launcher">Launch</button><div id="background"><button>Background</button></div>
+<div id="result">PENDING</div>
+<script type="module">
+import { useFocusTrap, FocusRestorationStack } from '/__phase3-angular.js';
+const checks = [];
+const check = (name, condition) => checks.push(`${name}:${condition ? 'pass' : 'fail'}`);
+const launcher = document.querySelector('#launcher');
+const background = document.querySelector('#background');
+launcher.focus();
+const outer = document.createElement('div');
+outer.tabIndex = -1;
+outer.innerHTML = '<button id="outer-first">First</button><button id="open-inner">Open inner</button>';
+document.body.append(outer);
+const releaseOuter = useFocusTrap(outer);
+check('initial-focus', document.activeElement?.id === 'outer-first');
+check('background-inert', background.inert);
+check('stack-one', FocusRestorationStack.length === 1);
+outer.querySelector('#open-inner').focus();
+const inner = document.createElement('div');
+inner.tabIndex = -1;
+inner.innerHTML = '<button id="inner-first">Inner first</button><button id="inner-last">Inner last</button>';
+outer.append(inner);
+const releaseInner = useFocusTrap(inner);
+check('nested-focus', document.activeElement?.id === 'inner-first');
+check('outer-sibling-inert', outer.querySelector('#outer-first').inert);
+inner.querySelector('#inner-last').focus();
+document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
+check('tab-wrap', document.activeElement?.id === 'inner-first');
+releaseInner();
+inner.remove();
+check('nested-restore', document.activeElement?.id === 'open-inner');
+check('stack-one-again', FocusRestorationStack.length === 1);
+releaseOuter();
+outer.remove();
+check('outer-restore', document.activeElement === launcher);
+check('background-restored', !background.inert);
+check('stack-empty', FocusRestorationStack.length === 0);
+document.querySelector('#result').textContent = `PHASE3_RESULT ${checks.join(' ')}`;
+</script></html>

@@ -1,0 +1,344 @@
+.ds-treemap {
+  position: relative;
+  box-sizing: border-box;
+  font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  color: var(--text-primary, #0f172a);
+  background: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  padding: 1rem;
+  outline: none;
+  display: inline-block;
+  max-width: 100%;
+  user-select: none;
+}
+
+.ds-treemap:focus-visible {
+  box-shadow: 0 0 0 2px var(--action-solid, #2563eb);
+}
+
+.ds-treemap--empty {
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-treemap__empty-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-sunken, #f8fafc);
+  border: 1px dashed var(--border-subtle, #cbd5e1);
+  border-radius: var(--radius-md, 8px);
+  color: var(--text-muted, #64748b);
+  font-size: 13px;
+  width: 100%;
+}
+
+.ds-treemap__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ds-treemap__title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary, #0f172a);
+  letter-spacing: -0.01em;
+}
+
+.ds-treemap__subtitle {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  margin: 2px 0 0 0;
+}
+
+.ds-treemap__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ds-treemap__table-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary, #475569);
+  background-color: var(--surface-subtle, #f1f5f9);
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.ds-treemap__table-btn:hover {
+  background-color: var(--surface-hover, #e2e8f0);
+}
+
+.ds-treemap__table-btn-sub {
+  opacity: 0.7;
+  font-size: 10px;
+}
+
+.ds-treemap__breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 12px;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  background: var(--surface-sunken, #f1f5f9);
+  border-radius: var(--radius-sm, 4px);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+}
+
+.ds-treemap__breadcrumbs-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+  margin-right: 4px;
+}
+
+.ds-treemap__crumb-separator {
+  color: var(--text-muted, #94a3b8);
+  margin: 0 2px;
+}
+
+.ds-treemap__crumb {
+  border: none;
+  background: transparent;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--action-solid, #2563eb);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.ds-treemap__crumb--current {
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  padding: 2px 4px;
+  cursor: default;
+}
+
+.ds-treemap__breadcrumbs-total {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary, #475569);
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-treemap__svg {
+  display: block;
+  background: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-md, 6px);
+  overflow: hidden;
+}
+
+.ds-treemap__node-rect {
+  transition: opacity 0.15s ease, stroke-width 0.15s ease;
+}
+
+/* 2D Dark Enterprise HUD Tooltip */
+.ds-treemap__tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--surface-floating, #0f172a);
+  color: #f8fafc;
+  padding: 10px 14px;
+  border-radius: var(--radius-md, 6px);
+  font-size: 11px;
+  line-height: 1.45;
+  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.4));
+  z-index: 60;
+  min-width: 200px;
+  max-width: 260px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+}
+
+.ds-treemap__tooltip-title {
+  font-weight: 600;
+  font-size: 12px;
+  color: #ffffff;
+  margin-bottom: 2px;
+  word-break: break-word;
+}
+
+.ds-treemap__tooltip-cat {
+  color: #38bdf8;
+  font-size: 10px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.ds-treemap__tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-treemap__tooltip-row--top {
+  margin-top: 4px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.15);
+  padding-top: 4px;
+}
+
+.ds-treemap__tooltip-val {
+  color: #38bdf8;
+}
+
+.ds-treemap__tooltip-parent {
+  color: #64748b;
+  font-size: 10px;
+  margin-top: 6px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-top: 4px;
+}
+
+.ds-treemap__tooltip-parent span {
+  color: #cbd5e1;
+}
+
+/* Modal Dialog */
+.ds-treemap__modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.ds-treemap__modal {
+  background-color: var(--surface-card, #ffffff);
+  border-radius: var(--radius-lg, 8px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  maxWidth: 820px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle, #e2e8f0);
+}
+
+.ds-treemap__modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+  background-color: var(--surface-subtle, #f8fafc);
+}
+
+.ds-treemap__modal-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+}
+
+.ds-treemap__modal-sub {
+  font-size: 11px;
+  color: var(--text-secondary, #64748b);
+  margin-top: 2px;
+}
+
+.ds-treemap__modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text-secondary, #64748b);
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+.ds-treemap__modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.ds-treemap__modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+}
+
+.ds-treemap__modal-table thead tr {
+  border-bottom: 2px solid var(--border-subtle, #e2e8f0);
+  background-color: var(--surface-subtle, #f8fafc);
+}
+
+.ds-treemap__modal-table th {
+  padding: 8px 10px;
+  font-weight: 600;
+  color: var(--text-secondary, #475569);
+}
+
+.ds-treemap__modal-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-subtle, #f1f5f9);
+}
+
+.ds-treemap__modal-row--alt {
+  background-color: var(--surface-subtle, #f8fafc);
+}
+
+.ds-treemap__modal-indent {
+  color: var(--text-muted, #94a3b8);
+  margin-right: 6px;
+}
+
+.ds-treemap__tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-treemap__modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 18px;
+  border-top: 1px solid var(--border-subtle, #e2e8f0);
+  background-color: var(--surface-subtle, #f8fafc);
+}
+
+.ds-treemap__modal-dismiss-btn {
+  padding: 6px 14px;
+  background-color: var(--action-solid, #0f172a);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

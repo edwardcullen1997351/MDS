@@ -1,0 +1,100 @@
+.ds-geo-map {
+  position: relative;
+  box-sizing: border-box;
+  font-family: var(--font-family-sans, system-ui, -apple-system, sans-serif);
+  color: var(--text-primary, #0f172a);
+  background: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  padding: 1rem;
+  outline: none;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.ds-geo-map:focus-visible {
+  box-shadow: 0 0 0 2px var(--action-solid, #2563eb);
+}
+
+.ds-geo-map__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.ds-geo-map__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary, #0f172a);
+}
+
+.ds-geo-map__subtitle {
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #64748b);
+  margin: 0.25rem 0 0 0;
+}
+
+.ds-geo-map__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.ds-geo-map__btn {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm, 4px);
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  background: var(--surface-card, #ffffff);
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+}
+
+.ds-geo-map__btn--active {
+  background: var(--surface-subtle, #f1f5f9);
+  color: var(--text-primary, #0f172a);
+  font-weight: 600;
+}
+
+.ds-geo-map__svg-wrapper {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-sm, 4px);
+  background: #f8fafc;
+}
+
+.ds-geo-map__svg {
+  display: block;
+  user-select: none;
+}
+
+.ds-geo-map__region {
+  cursor: pointer;
+  transition: fill-opacity 0.15s ease;
+}
+
+.ds-geo-map__hub {
+  cursor: pointer;
+}
+
+.ds-geo-map__route {
+  cursor: pointer;
+  transition: stroke-width 0.15s ease;
+}
+
+.ds-geo-map__tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  border-radius: var(--radius-md, 6px);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  z-index: 100;
+  max-width: 240px;
+}

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Layout · Sidebar" description="A secondary region kept continuously beside a dominant one — drawing tolerances held in view while incoming inspection records lot LOT-2609-118" -->
+<helmet><script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary)}</style>
+</helmet>
+<div style="min-height:100vh">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Container" size="{{ outerSize }}" py="{{ 7 }}" hint-size="100%,100%">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 6 }}" hint-size="100%,100%">
+
+<sc-if value="{{ harnessNotes }}" hint-placeholder-val="{{ true }}">
+<div data-harness="remove-on-copy" style="border:var(--border-width) dashed var(--border-strong);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Harness · remove on copy</span>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty">Dashed blocks and <code style="font-family:var(--font-mono)">harness*</code> tweaks are scaffolding for reading the frame — delete them when you copy this template. <em>Simulate constrained width</em> forces the §11 relocation without resizing the window: the sidebar moves before or after the main region, or becomes a <code style="font-family:var(--font-mono)">Drawer</code>. The sidebar here is reference material, not navigation — that is deliberate (§02).</p>
+</div>
+</sc-if>
+
+<sc-if value="{{ headerSpansBoth }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:10px;border-bottom:var(--border-hairline);padding-bottom:16px">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 4 · page header — spanning both regions</span>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Breadcrumb" items="{{ crumbs }}" size="sm" hint-size="100%,18px"></x-import>
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:var(--weight-light);letter-spacing:-0.018em">Incoming inspection — LOT-2609-118</h1>
+<p style="margin:0;font-size:var(--text-sm);color:var(--text-secondary);max-width:66ch;text-wrap:pretty">BRK-4820-A brake brackets, 2,400 pieces from Nashik Forge &amp; Machine Works against GR-2026-3391. Rohan Jadhav measures the sample; the tolerances he is measuring against stay beside him rather than in a second screen.</p>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">received 2026-09-08 08:10 (IST) · gate 2 · A shift</span>
+<sc-if value="{{ toggleVisible }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="secondary" onClick="{{ onToggle }}" aria-expanded="{{ ariaExpanded }}" aria-controls="{{ ariaControls }}" hint-size="150px,28px">{{ toggleLabel }}</x-import>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ standaloneToggle }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="secondary" onClick="{{ onToggle }}" aria-expanded="{{ ariaExpanded }}" aria-controls="{{ ariaControls }}" hint-size="150px,28px">{{ toggleLabel }}</x-import>
+<span style="font-size:var(--text-xs);color:var(--text-secondary)">Drawing tolerances for BRK-4820-A rev C.</span>
+</div>
+</sc-if>
+
+<sc-if value="{{ sidebarFirst }}" hint-placeholder-val="{{ true }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Grid" columns="{{ gridColumns }}" gap="{{ 6 }}" align="start" hint-size="100%,700px">
+
+<div id="sidebar-region" aria-hidden="{{ sidebarAriaHidden }}" style="display:flex;flex-direction:column;gap:10px;min-width:0">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 2 · sidebar — leading</span>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Box" pr="{{ sidebarPadEnd }}" border-right="{{ dividerAfterSidebar }}" width="{{ sidebarBoxWidth }}" overflow="{{ sidebarOverflow }}" style="transition:width var(--sidebar-collapse-duration, 180ms) var(--ease-standard, cubic-bezier(.2,0,0,1))" hint-size="100%,600px">
+<dc-import name="InspectionSidebar" query="{{ query }}" on-query="{{ onQuery }}" hint-size="100%,600px"></dc-import>
+</x-import>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 3 · main — dominant</span>
+</sc-if>
+<sc-if value="{{ headerInMain }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:8px;border-bottom:var(--border-hairline);padding-bottom:14px">
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:var(--weight-light);letter-spacing:-0.018em">Incoming inspection — LOT-2609-118</h1>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">Region 4 · page header — belonging to main only</span>
+</div>
+</sc-if>
+<dc-import name="InspectionMain" rec="{{ rec }}" on="{{ handlers }}" saved="{{ saved }}" hint-size="100%,800px"></dc-import>
+</div>
+
+</x-import>
+</sc-if>
+
+<sc-if value="{{ mainFirst }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Grid" columns="{{ gridColumns }}" gap="{{ 6 }}" align="start" hint-size="100%,700px">
+
+<div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 3 · main — dominant, first in the document</span>
+</sc-if>
+<sc-if value="{{ headerInMain }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:8px;border-bottom:var(--border-hairline);padding-bottom:14px">
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:var(--weight-light);letter-spacing:-0.018em">Incoming inspection — LOT-2609-118</h1>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">Region 4 · page header — belonging to main only</span>
+</div>
+</sc-if>
+<dc-import name="InspectionMain" rec="{{ rec }}" on="{{ handlers }}" saved="{{ saved }}" hint-size="100%,800px"></dc-import>
+</div>
+
+<div id="sidebar-region" aria-hidden="{{ sidebarAriaHidden }}" style="display:flex;flex-direction:column;gap:10px;min-width:0">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 2 · sidebar — trailing</span>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Box" pl="{{ sidebarPadStart }}" border-left="{{ dividerBeforeSidebar }}" width="{{ sidebarBoxWidth }}" overflow="{{ sidebarOverflow }}" style="transition:width var(--sidebar-collapse-duration, 180ms) var(--ease-standard, cubic-bezier(.2,0,0,1))" hint-size="100%,600px">
+<dc-import name="InspectionSidebar" query="{{ query }}" on-query="{{ onQuery }}" hint-size="100%,600px"></dc-import>
+</x-import>
+</div>
+
+</x-import>
+</sc-if>
+
+<sc-if value="{{ mainAlone }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">{{ mainAloneLabel }}</span>
+</sc-if>
+<dc-import name="InspectionMain" rec="{{ rec }}" on="{{ handlers }}" saved="{{ saved }}" hint-size="100%,800px"></dc-import>
+</div>
+<sc-if value="{{ drawerMode }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Drawer" open="{{ drawerOpen }}" title="Drawing and inspection plan" description="BRK-4820-A rev C · LOT-2609-118" side="left" size="sm" modal="{{ true }}" onClose="{{ onCloseDrawer }}" hint-size="360px,100%">
+<div id="sidebar-region" style="display:flex;flex-direction:column;min-width:0">
+<dc-import name="InspectionSidebar" query="{{ query }}" on-query="{{ onQuery }}" hint-size="100%,600px"></dc-import>
+</div>
+</x-import>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ harnessInspector }}" hint-placeholder-val="{{ true }}">
+<div data-harness="remove-on-copy" style="border:var(--border-width) dashed var(--border-strong);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Layout state · §03 properties and §06 states as applied</span>
+<div style="display:flex;flex-direction:column;gap:5px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)">
+<span>sidebar side&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ sideReadout }}</b></span>
+<span>sidebar width&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ widthReadout }}</b></span>
+<span>persistence&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ persistenceReadout }}</b></span>
+<span>state&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ stateReadout }}</b></span>
+<span>grid tracks&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ trackReadout }}</b></span>
+<span>document order&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ orderReadout }}</b></span>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty">Main region never goes below <code style="font-family:var(--font-mono)">480px</code> — that floor is what makes the constrained-width relocation mandatory rather than optional (§11, §13). The toggle always carries <code style="font-family:var(--font-mono)">aria-expanded</code>; <code style="font-family:var(--font-mono)">aria-controls</code> points at region 2 only while region 2 is in the document, since a dangling IDREF is worse than no relationship (§08).</p>
+</div>
+</sc-if>
+
+</x-import>
+</x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Light theme&quot;,&quot;Dark theme&quot;],&quot;default&quot;:&quot;Light theme&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Harness · remove on copy&quot;,&quot;label&quot;:&quot;Color theme&quot;},&quot;sidebarSide&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Leading — before the main region&quot;,&quot;Trailing — after the main region&quot;],&quot;default&quot;:&quot;Leading — before the main region&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;sidebarWidth&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Fixed — 260px track&quot;,&quot;Bounded — 300px, fixed track&quot;,&quot;Proportional — 0.32fr, min 240px&quot;],&quot;default&quot;:&quot;Bounded — 300px, fixed track&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;persistence&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Persistent — always beside the main region&quot;,&quot;Collapsible — hidden and restored by a toggle&quot;],&quot;default&quot;:&quot;Persistent — always beside the main region&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;pageHeader&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Spanning both regions&quot;,&quot;Main region only&quot;,&quot;None&quot;],&quot;default&quot;:&quot;Spanning both regions&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;dividers&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;constrainedBehaviour&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Sidebar before the main region&quot;,&quot;Sidebar after the main region&quot;,&quot;Drawer — temporary access on request&quot;],&quot;default&quot;:&quot;Sidebar before the main region&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Responsive (§11)&quot;},&quot;constrainedWidth&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Responsive (§11)&quot;},&quot;harnessRegionLabels&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness · remove on copy&quot;},&quot;harnessNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness · remove on copy&quot;},&quot;harnessInspector&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness · remove on copy&quot;}}">
+class Component extends DCLogic {
+  state = {
+    query: '',
+    collapsed: false,
+    animating: false,
+    entering: false,
+    drawerOpen: false,
+    saved: false,
+    rec: { bore: '48.03', flange: '6.04', ra: '1.2', hardness: '94', disposition: 'accept', remarks: 'Piece 3 measured 48.06 on the first reading; re-zeroed AG-118 and re-measured at 48.03. Air gauge log updated.' },
+  };
+
+  syncTheme() {
+    const isDark = String(this.prop('theme', 'Light theme')).indexOf('Dark') === 0;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }
+
+  componentDidMount() {
+    this.syncTheme();
+    this.reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    // The transition itself is literal in the template; its duration is the one
+    // thing that depends on the user's OS setting.
+    document.documentElement.style.setProperty('--sidebar-collapse-duration', this.reduced ? '0ms' : '180ms');
+    if (this.reduced) this.forceUpdate();
+  }
+
+  componentDidUpdate(prev) {
+    if (this.props.theme !== prev.theme) this.syncTheme();
+  }
+
+  componentWillUnmount() { window.clearTimeout(this.motionTimer); }
+
+  // Collapse and restore animate the region's own width, then region 2 leaves the
+  // document entirely (§06). Under reduced motion both steps happen at once.
+  toggleCollapse() {
+    const dur = this.reduced ? 0 : 200;
+    window.clearTimeout(this.motionTimer);
+    if (this.state.collapsed) {
+      this.setState({ collapsed: false, animating: dur > 0, entering: dur > 0 });
+      if (dur > 0) {
+        window.requestAnimationFrame(() => window.requestAnimationFrame(() => this.setState({ entering: false })));
+        this.motionTimer = window.setTimeout(() => this.setState({ animating: false }), dur + 40);
+      }
+    } else {
+      this.setState({ collapsed: true, animating: dur > 0 });
+      if (dur > 0) this.motionTimer = window.setTimeout(() => this.setState({ animating: false }), dur + 40);
+    }
+  }
+
+  renderVals() {
+    const side = this.props.sidebarSide ?? 'Leading — before the main region';
+    const width = this.props.sidebarWidth ?? 'Bounded — 300px, fixed track';
+    const persistence = this.props.persistence ?? 'Persistent — always beside the main region';
+    const constrained = this.props.constrainedWidth ?? false;
+    const relocation = this.props.constrainedBehaviour ?? 'Sidebar before the main region';
+    const headerScope = this.props.pageHeader ?? 'Spanning both regions';
+    const dividers = this.props.dividers ?? true;
+
+    const leading = side.startsWith('Leading');
+    const collapsible = persistence.startsWith('Collapsible');
+    const collapsed = collapsible && this.state.collapsed;
+    const animating = collapsible && this.state.animating;
+    const trackPx = width.startsWith('Fixed') ? 260 : 300;
+    // While collapsible, the sidebar track sizes to its child so the child's own
+    // width transition moves the boundary (§09). A fixed track cannot animate.
+    const track = collapsible ? 'auto' : width.startsWith('Bounded') ? '300px' : width.startsWith('Fixed') ? '260px' : 'minmax(240px, 0.32fr)';
+
+    let mode;
+    if (constrained) mode = relocation.startsWith('Drawer') ? 'drawer' : relocation.startsWith('Sidebar before') ? 'stack-before' : 'stack-after';
+    else mode = (collapsed && !animating) ? 'collapsed' : leading ? 'lateral-leading' : 'lateral-trailing';
+
+    const stacked = mode === 'stack-before' || mode === 'stack-after' || mode === 'collapsed';
+    const gridColumns = stacked ? 1 : mode === 'lateral-leading' ? track + ' minmax(480px, 1fr)' : 'minmax(480px, 1fr) ' + track;
+    const shrunk = collapsed || this.state.entering;
+    const sidebarFirst = mode === 'lateral-leading' || mode === 'stack-before' || (mode === 'collapsed' && leading);
+    const mainFirst = mode === 'lateral-trailing' || mode === 'stack-after' || (mode === 'collapsed' && !leading);
+    const showSidebar = mode !== 'drawer' && mode !== 'collapsed';
+
+    const set = (k) => (e) => this.setState({ rec: Object.assign({}, this.state.rec, { [k]: e.target.value }), saved: false });
+
+    return {
+      outerSize: 'xl',
+      gridColumns,
+      sidebarFirst: sidebarFirst && showSidebar,
+      mainFirst: mainFirst && showSidebar,
+      mainAlone: !showSidebar,
+      mainAloneLabel: mode === 'drawer'
+        ? 'Region 3 · main — full width · region 2 available through a Drawer'
+        : 'Region 3 · main — full width · region 2 collapsed, out of the document',
+      standaloneToggle: (collapsible || mode === 'drawer') && !headerScope.startsWith('Spanning'),
+      drawerMode: mode === 'drawer',
+      drawerOpen: mode === 'drawer' && this.state.drawerOpen,
+      sidebarBoxWidth: collapsible ? (shrunk ? 0 : trackPx) : '100%',
+      sidebarOverflow: collapsible ? 'hidden' : undefined,
+      sidebarAriaHidden: (collapsed && animating) ? 'true' : undefined,
+      sidebarPadEnd: dividers && !stacked ? 6 : 0,
+      sidebarPadStart: dividers && !stacked ? 6 : 0,
+      dividerAfterSidebar: dividers && !stacked ? 'default' : false,
+      dividerBeforeSidebar: dividers && !stacked ? 'default' : false,
+
+      headerSpansBoth: headerScope.startsWith('Spanning'),
+      headerInMain: headerScope.startsWith('Main'),
+      toggleVisible: collapsible || mode === 'drawer',
+      ariaExpanded: mode === 'drawer' ? (this.state.drawerOpen ? 'true' : 'false') : (collapsed ? 'false' : 'true'),
+      // Only reference region 2 while it is actually in the document: a dangling
+      // IDREF is worse than no relationship (§08).
+      ariaControls: (mode === 'drawer' ? this.state.drawerOpen : (showSidebar && !collapsed)) ? 'sidebar-region' : undefined,
+      toggleLabel: mode === 'drawer'
+        ? (this.state.drawerOpen ? 'Hide tolerances' : 'Show tolerances')
+        : (collapsed ? 'Show tolerances' : 'Hide tolerances'),
+      onToggle: () => (mode === 'drawer'
+        ? this.setState({ drawerOpen: !this.state.drawerOpen })
+        : this.toggleCollapse()),
+      onCloseDrawer: () => this.setState({ drawerOpen: false }),
+
+      harnessLabels: this.props.harnessRegionLabels ?? true,
+      harnessNotes: this.props.harnessNotes ?? true,
+      harnessInspector: this.props.harnessInspector ?? true,
+
+      sideReadout: side,
+      widthReadout: width,
+      persistenceReadout: persistence,
+      stateReadout: mode + (constrained ? ' (constrained width simulated)' : ''),
+      trackReadout: String(gridColumns),
+      orderReadout: mode === 'collapsed' ? 'main only — region 2 not in the document'
+        : mode === 'drawer' ? 'main → drawer (opened on request)'
+        : sidebarFirst ? 'sidebar → main' : 'main → sidebar',
+
+      crumbs: [{ label: 'Quality', href: '#' }, { label: 'Incoming inspection', href: '#' }, { label: 'LOT-2609-118' }],
+      query: this.state.query,
+      onQuery: (next) => this.setState({ query: next }),
+      rec: this.state.rec,
+      saved: this.state.saved,
+      handlers: {
+        bore: set('bore'), flange: set('flange'), ra: set('ra'), hardness: set('hardness'),
+        remarks: set('remarks'),
+        disposition: (next) => this.setState({ rec: Object.assign({}, this.state.rec, { disposition: next }), saved: false }),
+        save: () => this.setState({ saved: true }),
+        cancel: () => this.setState({ saved: false }),
+      },
+    };
+  }
+}
+
+</script>
+</body>
+</html>

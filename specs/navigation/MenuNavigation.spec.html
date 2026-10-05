@@ -1,0 +1,424 @@
+<!-- @dsCard group="Specs · Navigation" viewport="1120x760" name="Menu Navigation" subtitle="Transient Popover Navigation System — on-demand destination menus, disclosure semantics, and focus return" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Menu Navigation — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:68ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:74ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:76ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-direction:column;gap:16px}
+.demo-row{display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:120px;padding-top:6px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.badge-tier{display:inline-block;padding:2px 8px;font-family:var(--font-mono);font-size:var(--text-2xs);letter-spacing:var(--tracking-caps);text-transform:uppercase;border-radius:var(--radius-full);background:var(--status-info-soft);color:var(--status-info-solid)}
+
+/* Menu Nav mock styles */
+.mock-menu-surface{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-md, 0 4px 14px rgba(0,0,0,0.1));width:230px;padding:6px 0;display:flex;flex-direction:column;gap:1px;position:relative}
+.mock-menu-header{padding:6px 12px;font-size:10px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold)}
+.mock-menu-item{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;font-size:var(--text-xs);color:var(--text-secondary);text-decoration:none;cursor:pointer;transition:background 0.12s ease}
+.mock-menu-item:hover{background:var(--surface-sunken);color:var(--text-primary)}
+.mock-menu-item.current{background:var(--status-info-soft);color:var(--text-link);font-weight:var(--weight-medium)}
+.mock-menu-item.focus-ring{outline:2px solid var(--action-solid);outline-offset:-1px}
+.mock-menu-divider{height:1px;background:var(--border-subtle);margin:4px 0}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Button, IconButton, Badge, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const SUITE_DESTINATIONS = [
+  { group: 'Plant Operations', items: [
+    { id: 'mes', label: 'MES Execution Console', icon: 'cpu', href: '#mes' },
+    { id: 'scada', label: 'Telemetry & SCADA', icon: 'activity', href: '#scada' },
+    { id: 'quality', label: 'Quality & NC Portal', icon: 'shield-alert', badge: '2', href: '#quality' },
+  ]},
+  { group: 'Enterprise Services', items: [
+    { id: 'stores', label: 'Stores & BOM Master', icon: 'boxes', href: '#stores' },
+    { id: 'maintenance', label: 'CMMS Maintenance', icon: 'wrench', href: '#maintenance' },
+    { id: 'shift-planner', label: 'Shift Handover Roster', icon: 'calendar', href: '#planner' },
+  ]}
+];
+
+function MenuNavDemo(){
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [activeId, setActiveId] = React.useState('mes');
+
+  return (
+    <div className="demo">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:10}}>
+        <Text size="xs" weight="medium">Interactive Demonstration — Plant Suite Quick App Switcher</Text>
+      </div>
+
+      <div className="demo-row">
+        <div style={{position:'relative'}}>
+          <Button
+            variant="secondary"
+            size="sm"
+            aria-haspopup="true"
+            aria-expanded={isOpen}
+            aria-label="Switch Plant Application Suite"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <span>Suryodaya Plant Apps</span>
+            <span style={{marginLeft:6,fontSize:10}}>▾</span>
+          </Button>
+
+          {isOpen && (
+            <div style={{position:'absolute',top:'calc(100% + 6px)',left:0,zIndex:100}}>
+              <nav aria-label="Plant Application Switcher" className="mock-menu-surface">
+                {SUITE_DESTINATIONS.map((grp, gIdx) => (
+                  <div key={gIdx}>
+                    {gIdx > 0 && <div className="mock-menu-divider" />}
+                    <div className="mock-menu-header">{grp.group}</div>
+                    <ul style={{listStyle:'none',margin:0,padding:0}}>
+                      {grp.items.map(item => (
+                        <li key={item.id}>
+                          <a
+                            href={item.href}
+                            aria-current={activeId === item.id ? 'page' : undefined}
+                            className={`mock-menu-item ${activeId === item.id ? 'current' : ''}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setActiveId(item.id);
+                              setIsOpen(false);
+                            }}
+                          >
+                            <span>{item.label}</span>
+                            {item.badge ? <Badge size="sm" tone="critical">{item.badge}</Badge> : null}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </nav>
+            </div>
+          )}
+        </div>
+
+        <div style={{flex:1,minWidth:280,background:'var(--surface-sunken)',padding:18,borderRadius:'var(--radius-md)',border:'var(--border-hairline)'}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>
+            Active Application Context
+          </Text>
+          <div style={{marginTop:8,fontFamily:'var(--font-mono)',fontSize:'var(--text-sm)',color:'var(--text-primary)'}}>
+            Active Portal: <strong>{SUITE_DESTINATIONS.flatMap(g=>g.items).find(i=>i.id===activeId)?.label}</strong>
+          </div>
+          <p style={{marginTop:8,fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+            Menu Navigation exposes cross-suite jumping without taking up persistent sidebar real estate, dismissing automatically on destination selection or Escape.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Spec(){
+  return (
+    <div className="page">
+      <div className="masthead">
+        <span className="eyebrow">Navigation System · System specification</span>
+        <h1>Menu Navigation</h1>
+        <p className="lede">Provides access to secondary or cross-suite destinations through an on-demand, transient popup menu. It enables rapid context jumping (e.g. App Switcher, User Profile settings, contextual module overflow) without consuming permanent layout space.</p>
+        <div className="meta">
+          <span>specs/navigation/MenuNavigation.spec.html</span>
+          <span className="badge-tier">Tier: Transient Menu Navigation</span>
+          <span style={{color:'var(--text-primary)'}}>status: frozen 8 Sep 2026 · 0 open items</span>
+          <span>setting: Suryodaya Autocomp Ltd (PL-04, Chakan)</span>
+        </div>
+      </div>
+
+      <Sec n="01" title="Purpose" note="On-demand destination access and context jumping.">
+        <p>Menu Navigation provides compact, on-demand wayfinding for secondary destinations, cross-application portals, or account workspaces (e.g. Global App Launcher, Operator Shift Account Menu, Overflow Route Jumpers). It keeps the primary interface clean by revealing destinations only upon explicit user trigger.</p>
+        <T cols={['You need to…','Use this system','Instead of…','Why']} rows={[
+          ['Switch to secondary cross-suite applications on demand','Menu Navigation','Global Navigation','Menu navigation tucks dozens of enterprise portals behind a single compact trigger button.'],
+          ['Execute contextual commands (Duplicate, Delete, Export)','Action Menu (Menu Component)','Menu Navigation','Command menus execute actions in-place; Menu Navigation transitions the user to a new URL/destination.'],
+          ['Navigate primary operational workspaces persistently','Local Navigation','Menu Navigation','Primary daily tasks must remain visible and accessible without requiring extra opening clicks.'],
+          ['Drill down recursively through equipment assemblies','Tree Navigation','Menu Navigation','Deep multi-level hierarchies require persistent in-place branch expansion.']
+        ]} />
+        <div className="two" style={{marginTop:8}}>
+          <div className="pane do">
+            <h3>Do</h3>
+            <ul>
+              <li>Use Menu Navigation for app switchers, profile menus, and overflow links.</li>
+              <li>Restore focus to the trigger button immediately upon menu dismissal with <kbd>Esc</kbd>.</li>
+              <li>Use disclosure semantics (<code>aria-expanded</code>) rather than desktop application-menu roles for link menus.</li>
+            </ul>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <ul>
+              <li>Don't hide high-frequency core workflows behind popover menus.</li>
+              <li>Don't assign <code>role="menu"</code> blindly to simple website anchor navigation lists.</li>
+              <li>Don't nest submenus deeper than 2 levels.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="02" title="Anatomy" note="Trigger, popover surface, items, dividers, and focus anchor.">
+        <p>The Menu Navigation system consists of an interactive trigger button, popover navigation surface, grouped destination lists, dividers, and current location indicators.</p>
+        <MenuNavDemo />
+        <div style={{marginTop:12}}>
+          <T cols={['Structural Slot','Element','Role','Requirement']} rows={[
+            ['Menu Trigger','<button> / <IconButton>','Interactive element that toggles menu visibility with aria-expanded.','Mandatory'],
+            ['Popover Surface','<nav> landmark inside popover','Floating container with shadow and surface-card background.','Mandatory'],
+            ['Category Header','<div> / <span>','Non-interactive semantic category header (e.g. Plant Operations).','Optional'],
+            ['Destination Item','<li> > <a>','Clickable destination link carrying icon, label, and badge.','Mandatory'],
+            ['Divider Separator','<hr> / <div> (aria-hidden)','Visual divider between destination groups.','Optional'],
+            ['Nested Submenu Trigger','<li> > <button>','Item that expands a secondary flyout submenu.','Optional']
+          ]} />
+        </div>
+      </Sec>
+
+      <Sec n="03" title="Properties" note="Public API, placement, and dismissal rules.">
+        <p>Configured via an items array, placement alignment, and trigger render props:</p>
+        <pre>{`interface MenuNavItem {
+  id: string;                     // Unique destination ID
+  label: string;                  // Destination name (1–3 words)
+  href: string;                   // Target route URL
+  icon?: string;                  // Semantic Lucide icon
+  badge?: string | number;        // Alert / status badge
+  disabled?: boolean;             // Inactive permission flag
+  disabledReason?: string;        // Tooltip explanation
+  children?: MenuNavItem[];       // Optional nested flyout submenu (max 1 level)
+}
+
+interface MenuNavGroup {
+  group?: string;                 // Category group title
+  items: MenuNavItem[];           // Destination items in group
+}
+
+interface MenuNavigationProps {
+  trigger: React.ReactNode;       // Custom trigger button/element
+  items: MenuNavItem[] | MenuNavGroup[]; // Destination items schema
+  activeId?: string;              // Current active destination ID
+  placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
+  label?: string;                 // Accessible landmark label (default: "Quick Navigation")
+  onNavigate?: (item: MenuNavItem) => void; // Router push delegate
+}`}</pre>
+        <div className="warn" style={{marginTop:8}}>
+          <p><strong>Refused Properties:</strong> No automatic hover-to-open on top-level triggers (requires intentional click/Enter activation to prevent accidental opens); no arbitrarily deep submenu nesting beyond 2 levels.</p>
+        </div>
+      </Sec>
+
+      <Sec n="04" title="Variants" note="Single-level menus, nested flyouts, and trigger styles.">
+        <p>Menu Navigation supports single-level and nested flyout forms across multiple trigger presentations:</p>
+        <T cols={['Variant / Trigger','Structure','Optimal Use Case']} rows={[
+          ['Single-Level Flat / Grouped','Categorized list of 4–10 destinations.','User Account / Shift Profile Menu; Plant Utility Switcher.'],
+          ['Nested Flyout Submenu','Parent items expand secondary slide-over submenus.','Multi-domain App Switcher (e.g. Quality $\to$ NCRs, Audits, Vendors).'],
+          ['Text Trigger with Chevron','Full text button (e.g. "Suryodaya Plant Apps ▾").','Application Shell header switcher.'],
+          ['Icon Button Trigger','Grid / Kebab / Avatar icon trigger.','Compact header toolbar or operator avatar corner.']
+        ]} />
+      </Sec>
+
+      <Sec n="05" title="Sizes" note="Surface widths, row heights, and collision padding.">
+        <p>Dimensions optimized for cursor and touch precision:</p>
+        <T cols={['Metric','Token / Value','Application']} rows={[
+          ['Surface Min Width','200px','Compact navigation dropdown.'],
+          ['Surface Max Width','280px','Wide multi-service portal menu.'],
+          ['Item Row Height (Compact)','32px (--control-h-sm)','Dense desktop header utility menus.'],
+          ['Item Row Height (Comfortable)','38px / 40px (--control-h-md)','Standard touch and pointer default.'],
+          ['Viewport Collision Margin','8px','Minimum clearance preserved from viewport edges.']
+        ]} />
+      </Sec>
+
+      <Sec n="06" title="States" note="Open/closed, hover, focus rings, and active state.">
+        <p>Visual states provide clear interactive feedback:</p>
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          <Row label="Closed Trigger">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>Standard resting button; aria-expanded="false".</span>
+          </Row>
+          <Row label="Open Trigger">
+            <span style={{fontSize:'var(--text-xs)',background:'var(--surface-sunken)',padding:'3px 8px',borderRadius:'var(--radius-xs)'}}>Active button highlight; aria-expanded="true"; menu surface visible.</span>
+          </Row>
+          <Row label="Item Hover">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-primary)',background:'var(--surface-sunken)',padding:'3px 8px',borderRadius:'var(--radius-xs)'}}>Surface shifts to surface-sunken; text shifts to text-primary.</span>
+          </Row>
+          <Row label="Item Focus-Visible">
+            <span style={{fontSize:'var(--text-xs)',outline:'2px solid var(--action-solid)',outlineOffset:-1,padding:'3px 8px',borderRadius:'var(--radius-xs)'}}>Solid blue outline within item bounding box.</span>
+          </Row>
+          <Row label="Current Location">
+            <span style={{fontSize:'var(--text-xs)',background:'var(--status-info-soft)',color:'var(--text-link)',fontWeight:'var(--weight-medium)',padding:'3px 8px',borderRadius:'var(--radius-xs)'}}>Soft blue background pill with aria-current="page".</span>
+          </Row>
+        </div>
+      </Sec>
+
+      <Sec n="07" title="Keyboard" note="Disclosure navigation and focus restoration.">
+        <p>Implements robust keyboard navigation and guaranteed focus return:</p>
+        <T cols={['Key / Shortcut','Location','Behavior']} rows={[
+          ['Enter / Space / Arrow Down','On Trigger','Opens the menu surface and moves focus immediately to the first item.'],
+          ['Arrow Down / Up','Inside Menu','Roves focus sequentially through destination links and sub-triggers.'],
+          ['Arrow Right / Enter','On Sub-trigger','Opens nested submenu flyout and focuses its first child item.'],
+          ['Arrow Left','Inside Submenu','Closes submenu and returns focus to the parent sub-trigger item.'],
+          ['Enter / Space','On Link Item','Navigates to the destination and dismisses the menu.'],
+          ['Escape','Inside Menu','Dismisses the menu and restores focus cleanly to the trigger button.']
+        ]} />
+      </Sec>
+
+      <Sec n="08" title="Accessibility" note="Disclosure vs application-menu semantics.">
+        <p>Accessibility requirements per W3C navigation disclosure recommendations:</p>
+        <ul>
+          <li><strong>Disclosure Semantics:</strong> Trigger carries <code>aria-haspopup="true"</code> and <code>aria-expanded="true|false"</code>.</li>
+          <li><strong>Landmark Scoping:</strong> Popover contains a <code>&lt;nav aria-label="[Menu Title]"&gt;</code> landmark enclosing an unordered list <code>&lt;ul&gt;</code> of standard HTML anchors.</li>
+          <li><strong>Current Destination:</strong> The active destination link carries <code>aria-current="page"</code>.</li>
+          <li><strong>Focus Restoration:</strong> When the menu closes via <kbd>Esc</kbd> or outside click, focus returns automatically to the trigger element.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="09" title="Motion" note="Popover entrance and exit micro-animations.">
+        <p>Fast, subtle entrance that maintains spatial origin from trigger:</p>
+        <T cols={['Transition','Property','Duration Token','Easing']} rows={[
+          ['Popover Surface Entrance','opacity, transform (scale, translateY)','120ms (--duration-quick)','cubic-bezier(0, 0, 0.2, 1)'],
+          ['Popover Surface Exit','opacity','80ms (--duration-instant)','ease-out'],
+          ['Reduced Motion Override','all transitions','0ms (Instant)','prefers-reduced-motion: reduce']
+        ]} />
+      </Sec>
+
+      <Sec n="10" title="Content Rules" note="Labeling standards, action vs destination distinctions.">
+        <p>Labels describe destination portals rather than transient commands:</p>
+        <T cols={['Correct Destination Label','Incorrect Command Phrasing','Rationale']} rows={[
+          ['MES Execution Console','Launch Manufacturing System','Label identifies the target destination portal.'],
+          ['CMMS Maintenance','Open Work Order Schedule','Destinations represent workspaces, not specific actions.'],
+          ['Stores & BOM Master','View Bill of Materials','Keep destination labels concise and consistent (1–3 words).']
+        ]} />
+        <ul style={{marginTop:8}}>
+          <li><strong>Separation of Concerns:</strong> Group navigation links separately from session actions (e.g. "Sign Out" or "Switch Language" separated by a divider).</li>
+        </ul>
+      </Sec>
+
+      <Sec n="11" title="Responsive" note="Viewport edge collision and mobile bottom sheet.">
+        <p>Ensures flawless operation across pointer, keyboard, and touch screens:</p>
+        <T cols={['Viewport Width','Breakpoint','Presentation Form']} rows={[
+          ['Desktop / Tablet (≥768px)','Standard Popover','Floating menu anchored to trigger with smart edge-flip collision avoidance.'],
+          ['Mobile (<768px)','Bottom Action Sheet','Transitions to a slide-up bottom modal sheet for easy one-thumb tapping.']
+        ]} />
+      </Sec>
+
+      <Sec n="12" title="Anti-patterns" note="Common mistakes and misuses to avoid.">
+        <div className="two">
+          <div className="pane dont">
+            <h3>Anti-Patterns (Never Do)</h3>
+            <ul>
+              <li><strong>Hiding Core Nav:</strong> Burying daily high-frequency links inside a popup menu.</li>
+              <li><strong>Heavy ARIA Misuse:</strong> Assigning complex `role="menu"` semantics to simple web links.</li>
+              <li><strong>Lost Keyboard Focus:</strong> Dropping focus to document body on Escape.</li>
+              <li><strong>Deep Nested Mazes:</strong> Creating 3+ levels of cascading submenus.</li>
+            </ul>
+          </div>
+          <div className="pane do">
+            <h3>Standard Corrections</h3>
+            <ul>
+              <li>Keep primary workflows in persistent Global / Local navigation.</li>
+              <li>Use clean disclosure semantics (`aria-expanded`) with real `<a href>` links.</li>
+              <li>Always restore focus to the trigger button when dismissed.</li>
+              <li>Limit submenus to a single level of nesting.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="13" title="Implementation Notes" note="Outside click detection, position calculation, and tokens.">
+        <p>Implementation guidelines for popover surface management:</p>
+        <ul>
+          <li><strong>Outside Pointer Interaction:</strong> Listen on `pointerdown` for outside clicks to dismiss the menu before focus blurs.</li>
+          <li><strong>Collision Detection:</strong> Measure bounding rect against `window.innerHeight` to flip placement from `bottom-start` to `top-start` when space is tight.</li>
+        </ul>
+        <div style={{marginTop:8}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>Tokens Consumed</Text>
+          <div className="tokenlist" style={{marginTop:6}}>
+            <code>--surface-card</code>
+            <code>--surface-sunken</code>
+            <code>--border-hairline</code>
+            <code>--border-subtle</code>
+            <code>--text-primary</code>
+            <code>--text-secondary</code>
+            <code>--text-link</code>
+            <code>--action-solid</code>
+            <code>--shadow-md</code>
+            <code>--radius-md</code>
+            <code>--radius-sm</code>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="14" title="Developer Notes" note="Router integration, focus hooks, and test assertions.">
+        <p>Router integration recipe and test assertions:</p>
+        <pre>{`// Example: App Switcher Menu Navigation with React Router
+import { MenuNavigation } from '@meridian/design-system';
+import { useNavigate } from 'react-router-dom';
+
+export function HeaderAppSwitcher() {
+  const navigate = useNavigate();
+
+  return (
+    <MenuNavigation
+      trigger={<Button variant="secondary" size="sm">Plant Portals ▾</Button>}
+      items={SUITE_DESTINATIONS}
+      activeId="quality"
+      onNavigate={(item) => navigate(item.href)}
+      label="Plant Portals Switcher"
+    />
+  );
+}`}</pre>
+        <div style={{marginTop:12}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>Test Assertions</Text>
+          <ul>
+            <li>Assert that the trigger button has <code>aria-haspopup="true"</code> and toggles <code>aria-expanded</code>.</li>
+            <li>Assert that pressing <kbd>Esc</kbd> inside the menu closes it and returns focus to the trigger button.</li>
+            <li>Assert that clicking a destination item invokes <code>onNavigate</code> and dismisses the menu surface.</li>
+          </ul>
+        </div>
+      </Sec>
+
+      <div style={{marginTop:36,paddingTop:12,borderTop:'var(--border-hairline)',fontFamily:'var(--font-mono)',fontSize:'var(--text-2xs)',color:'var(--text-tertiary)'}}>
+        Applies to: Transient Menu Navigation System · Governance: <a href="../../guidelines/navigation-spec-standard.card.html">Navigation System specification standard</a> · Sections §01–§14 frozen · Sibling Systems: <a href="GlobalNavigation.spec.html">Global Navigation</a>, <a href="LocalNavigation.spec.html">Local Navigation</a>, <a href="BreadcrumbNavigation.spec.html">Breadcrumb Navigation</a>, <a href="TabNavigation.spec.html">Tab Navigation</a>, <a href="TreeNavigation.spec.html">Tree Navigation</a>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Staged input" description="Interaction pattern reference implementation, set in a manufacturing ERP — raising a purchase requisition in ordered stages: validation gates that only look at the current stage, backward movement that commits nothing, a stage that stops applying when the value drops under the approval threshold, and stage data that survives a failed release." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}fieldset{margin:0;min-width:0}[data-stage-heading]:focus-visible{outline:2px solid var(--action-solid);outline-offset:3px;border-radius:2px}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/StagedInput.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+</div>
+<p style="margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note, the stage-machine inspector on the right, and the simulated release outcome and latency tweaks — exists to make the contract visible. The other four tweaks are not harness: <span style="font-family:var(--font-mono)">backtracking</span>, <span style="font-family:var(--font-mono)">gating</span>, <span style="font-family:var(--font-mono)">preservation</span> and <span style="font-family:var(--font-mono)">cancelPolicy</span> are the §05 policies an adopting team must declare, and switching them changes the contract rather than the demo. Advisory gating lets you leave a stage with unresolved values and reports them all at review; <span style="font-family:var(--font-mono)">draft</span> preservation survives a reload, <span style="font-family:var(--font-mono)">session</span> does not, and <span style="font-family:var(--font-mono)">none</span> discards on exit whatever cancellation says.</p>
+<p style="margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Try to leave a stage empty to see the gate hold you and focus land on the first blocking value. Enter 4 × ₹62,500 to put the line over ₹2,00,000 and watch Approval routing become a stage; drop the quantity to 1 and watch it stop being one without losing the approver you typed. Choose an approver, then go back and change the cost centre — only that dependent value is invalidated. Set the need-by date inside Nashik Forge's 21-day lead time to see a rule that no single stage can evaluate. Then release with each simulated outcome: the failures keep all four stages, and the item-master failure sends you back to the stage that can fix it.</p>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px">
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">Raise purchase requisition</h1>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">REQ-2026-0881 · draft · requester Anjali Deshmukh · Chakan plant (PL-04), Pune</span>
+</div>
+
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:start">
+
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+
+<sc-if value="{{ notStarted }}" hint-placeholder-val="{{ false }}">
+<div style="padding:26px 24px;display:flex;flex-direction:column;gap:14px">
+<h2 style="margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold)">Four stages, in order</h2>
+<p style="margin:0;max-width:70ch;color:var(--text-secondary);font-size:var(--text-sm);line-height:1.6;text-wrap:pretty">Charge and timing, the line item, sourcing and delivery, then review and release. A fifth stage — approval routing — applies only if the line comes to ₹2,00,000 or more. Nothing is sent to purchasing until you release it on the last stage, and you can move back through anything you have completed.</p>
+<div style="display:flex;gap:8px;padding-top:4px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="primary" type="button" onClick="{{ onStart }}" hint-size="180px,34px">Start requisition</x-import>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ started }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column">
+
+<div style="padding:18px 22px 16px;display:flex;flex-direction:column;gap:14px;border-bottom:var(--border-hairline);background:var(--surface-sunken)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Progress" value="{{ pct }}" label="{{ progressLabel }}" size="sm" hint-size="100%,34px"></x-import>
+<div style="display:flex;flex-wrap:wrap;gap:6px">
+<sc-for list="{{ rail }}" as="s" hint-placeholder-count="4">
+<sc-if value="{{ s.isCurrent }}" hint-placeholder-val="{{ false }}">
+<button type="button" data-rail="{{ s.id }}" onClick="{{ s.onClick }}" aria-current="step" style="display:flex;align-items:center;gap:7px;padding:5px 10px;border:var(--border-hairline);border-radius:var(--radius-full);background:var(--surface-card);color:var(--text-primary);font-family:var(--font-mono);font-size:var(--text-2xs);cursor:pointer">
+<sc-if value="{{ s.dotComplete }}" hint-placeholder-val="{{ false }}"><span style="width:6px;height:6px;border-radius:999px;flex:none;background:var(--status-success-solid)"></span></sc-if>
+<sc-if value="{{ s.dotInvalid }}" hint-placeholder-val="{{ false }}"><span style="width:6px;height:6px;border-radius:999px;flex:none;background:var(--status-critical-solid)"></span></sc-if>
+<sc-if value="{{ s.dotActive }}" hint-placeholder-val="{{ true }}"><span style="width:6px;height:6px;border-radius:999px;flex:none;background:var(--status-info-solid)"></span></sc-if>
+<sc-if value="{{ s.dotIdle }}" hint-placeholder-val="{{ false }}"><span style="width:6px;height:6px;border-radius:999px;flex:none;background:var(--border-strong)"></span></sc-if>
+{{ s.n }} {{ s.label }}</button>
+</sc-if>
+<sc-if value="{{ s.isLocked }}" hint-placeholder-val="{{ true }}">
+<button type="button" data-rail="{{ s.id }}" disabled="{{ true }}" style="display:flex;align-items:center;gap:7px;padding:5px 10px;border:var(--border-hairline);border-radius:var(--radius-full);background:transparent;color:var(--text-tertiary);font-family:var(--font-mono);font-size:var(--text-2xs);cursor:default">
+<span style="width:6px;height:6px;border-radius:999px;flex:none;background:var(--border-strong)"></span>{{ s.n }} {{ s.label }}</button>
+</sc-if>
+<sc-if value="{{ s.isBehind }}" hint-placeholder-val="{{ false }}">
+<button type="button" data-rail="{{ s.id }}" onClick="{{ s.onClick }}" style="display:flex;align-items:center;gap:7px;padding:5px 10px;border:var(--border-hairline);border-radius:var(--radius-full);background:transparent;color:var(--text-secondary);font-family:var(--font-mono);font-size:var(--text-2xs);cursor:pointer">
+<sc-if value="{{ s.dotComplete }}" hint-placeholder-val="{{ true }}"><span style="width:6px;height:6px;border-radius:999px;flex:none;background:var(--status-success-solid)"></span></sc-if>
+<sc-if value="{{ s.dotInvalid }}" hint-placeholder-val="{{ false }}"><span style="width:6px;height:6px;border-radius:999px;flex:none;background:var(--status-critical-solid)"></span></sc-if>
+<sc-if value="{{ s.dotActive }}" hint-placeholder-val="{{ false }}"><span style="width:6px;height:6px;border-radius:999px;flex:none;background:var(--status-info-solid)"></span></sc-if>
+<sc-if value="{{ s.dotIdle }}" hint-placeholder-val="{{ false }}"><span style="width:6px;height:6px;border-radius:999px;flex:none;background:var(--border-strong)"></span></sc-if>
+{{ s.n }} {{ s.label }}</button>
+</sc-if>
+</sc-for>
+</div>
+<div role="status" aria-live="polite" style="min-height:18px;font-size:var(--text-xs);line-height:1.5;color:var(--text-secondary);text-wrap:pretty">{{ announcement }}</div>
+</div>
+
+<form novalidate onSubmit="{{ onSubmit }}" style="display:flex;flex-direction:column">
+<div style="padding:22px 22px 8px;display:flex;flex-direction:column;gap:18px">
+
+<sc-if value="{{ isCharge }}" hint-placeholder-val="{{ true }}">
+<div data-stage="charge" style="display:flex;flex-direction:column;gap:16px">
+<h2 data-stage-heading="charge" tabIndex="-1" style="margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold)">Charge &amp; timing</h2>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Fieldset" label="What this requisition is charged to" hint="The cost centre decides who approves the requisition if it needs approval." error="{{ gateError }}" gap="18px" hint-size="100%,320px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+<div data-f="costCentre">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Cost centre" hint="{{ ccHint }}" error="{{ errCostCentre }}" required="{{ true }}" hint-size="100%,80px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ ccOptions }}" value="{{ vCostCentre }}" onChange="{{ onCostCentre }}" hint-size="100%,34px"></x-import>
+</x-import>
+</div>
+<div data-f="neededBy">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Needed on line by" hint="Today is 2026-09-07 (IST). Supplier lead time is checked on the last stage, once a supplier is chosen." error="{{ errNeededBy }}" required="{{ true }}" hint-size="100%,96px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.DatePicker" value="{{ vNeededBy }}" onChange="{{ onNeededBy }}" min="2026-09-07" clearable="{{ true }}" hint-size="100%,34px"></x-import>
+</x-import>
+</div>
+</div>
+<div data-f="priority">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.RadioGroup" label="Priority" hint="Breakdown work is expedited by the buyer; it does not change what this requisition asks you for." options="{{ priorityOptions }}" value="{{ vPriority }}" onChange="{{ onPriority }}" required="{{ true }}" hint-size="100%,150px"></x-import>
+</div>
+</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{ isLine }}" hint-placeholder-val="{{ false }}">
+<div data-stage="line" style="display:flex;flex-direction:column;gap:16px">
+<h2 data-stage-heading="line" tabIndex="-1" style="margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold)">Line item</h2>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Fieldset" label="What you are buying" hint="{{ lineHint }}" error="{{ gateError }}" gap="18px" hint-size="100%,300px">
+<div data-f="partNo" style="max-width:320px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Part number" hint="Item-master format, like BRK-4820-A. Checked against the item master at release." error="{{ errPartNo }}" required="{{ true }}" hint-size="100%,96px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" mono="{{ true }}" value="{{ vPartNo }}" onChange="{{ onPartNo }}" onBlur="{{ onBlurPartNo }}" placeholder="BRK-4820-A" hint-size="100%,34px"></x-import>
+</x-import>
+</div>
+<div style="display:grid;grid-template-columns:150px 190px minmax(0,1fr);gap:16px;align-items:start">
+<div data-f="qty">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Quantity" hint="Whole pieces." error="{{ errQty }}" required="{{ true }}" hint-size="100%,80px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" inputMode="numeric" mono="{{ true }}" suffix="ea" value="{{ vQty }}" onChange="{{ onQty }}" onBlur="{{ onBlurQty }}" placeholder="1" hint-size="100%,34px"></x-import>
+</x-import>
+</div>
+<div data-f="unitPrice">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Unit price" hint="Last quoted price, ex works." error="{{ errUnitPrice }}" required="{{ true }}" hint-size="100%,80px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" inputMode="decimal" mono="{{ true }}" suffix="INR" value="{{ vUnitPrice }}" onChange="{{ onUnitPrice }}" onBlur="{{ onBlurUnitPrice }}" placeholder="62500.00" hint-size="100%,34px"></x-import>
+</x-import>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px;padding-top:22px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">Line value</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-base);color:var(--text-primary)">{{ totalText }}</span>
+<span style="font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.5;text-wrap:pretty">{{ bandText }}</span>
+</div>
+</div>
+</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSourcing }}" hint-placeholder-val="{{ false }}">
+<div data-stage="sourcing" style="display:flex;flex-direction:column;gap:16px">
+<h2 data-stage-heading="sourcing" tabIndex="-1" style="margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold)">Sourcing &amp; delivery</h2>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Fieldset" label="Who supplies it and where it lands" hint="{{ sourcingHint }}" error="{{ gateError }}" gap="18px" hint-size="100%,300px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+<div data-f="supplier">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Supplier" hint="{{ supplierHint }}" error="{{ errSupplier }}" required="{{ true }}" hint-size="100%,80px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ supplierOptions }}" value="{{ vSupplier }}" onChange="{{ onSupplier }}" hint-size="100%,34px"></x-import>
+</x-import>
+</div>
+<div data-f="dock">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Receiving point" hint="Where goods receipt books the delivery." error="{{ errDock }}" required="{{ true }}" hint-size="100%,80px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ dockOptions }}" value="{{ vDock }}" onChange="{{ onDock }}" hint-size="100%,34px"></x-import>
+</x-import>
+</div>
+</div>
+<div data-f="notes">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Note to the buyer" hint="Optional. Quote reference, drawing revision, anything the buyer needs." hint-size="100%,110px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Textarea" rows="2" value="{{ vNotes }}" onChange="{{ onNotes }}" placeholder="Quote NF-88213 rev B, press 4 capital spare" hint-size="100%,56px"></x-import>
+</x-import>
+</div>
+</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{ isApproval }}" hint-placeholder-val="{{ false }}">
+<div data-stage="approval" style="display:flex;flex-direction:column;gap:16px">
+<h2 data-stage-heading="approval" tabIndex="-1" style="margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold)">Approval routing</h2>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Fieldset" label="Who signs this off" hint="{{ approvalHint }}" error="{{ gateError }}" gap="18px" hint-size="100%,220px">
+<div data-f="approver" style="max-width:360px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Approver" hint="{{ approverHint }}" error="{{ errApprover }}" required="{{ true }}" hint-size="100%,96px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" type="email" value="{{ vApprover }}" onChange="{{ onApprover }}" onBlur="{{ onBlurApprover }}" placeholder="s.rao@suryodaya.co.in" hint-size="100%,34px"></x-import>
+</x-import>
+</div>
+</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{ isReview }}" hint-placeholder-val="{{ false }}">
+<div data-stage="review" style="display:flex;flex-direction:column;gap:16px">
+<h2 data-stage-heading="review" tabIndex="-1" style="margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold)">Review &amp; release</h2>
+
+<sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="success" title="Requisition released to purchasing" live="on" size="sm" hint-size="100%,80px">{{ doneBody }}</x-import>
+</sc-if>
+
+<sc-if value="{{ hasFailure }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ failTone }}" title="{{ failTitle }}" live="on" size="sm" action="{{ failAction }}" hint-size="100%,110px">{{ failBody }}</x-import>
+</sc-if>
+
+<sc-if value="{{ hasBlockers }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-left:2px solid var(--status-critical-solid);border-radius:var(--radius-sm);background:var(--status-critical-soft)">
+<span style="font-size:var(--text-xs);font-weight:var(--weight-medium);color:var(--text-critical)">{{ blockerHeading }}</span>
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ blockers }}" as="b" hint-placeholder-count="2">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px">
+<span style="font-size:var(--text-xs);color:var(--text-primary);line-height:1.5;flex:1 1 320px;text-wrap:pretty">{{ b.message }}</span>
+<button type="button" onClick="{{ b.onGo }}" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline">Go to {{ b.stageLabel }}</button>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<div style="display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden">
+<sc-for list="{{ summary }}" as="r" hint-placeholder-count="6">
+<div style="display:grid;grid-template-columns:180px minmax(0,1fr) auto;gap:12px;padding:10px 14px;border-bottom:var(--border-subtle);align-items:baseline">
+<span style="font-size:var(--text-xs);color:var(--text-tertiary)">{{ r.k }}</span>
+<span style="font-size:var(--text-xs);color:var(--text-primary);text-wrap:pretty">{{ r.v }}</span>
+<sc-if value="{{ r.editable }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ r.onGo }}" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline">Change</button></sc-if>
+</div>
+</sc-for>
+</div>
+<p style="margin:0;max-width:74ch;font-size:var(--text-xs);color:var(--text-secondary);line-height:1.55;text-wrap:pretty">{{ reviewNote }}</p>
+</div>
+</sc-if>
+
+</div>
+
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:16px 22px;margin-top:10px;border-top:var(--border-hairline);background:var(--surface-sunken)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ stateLabel }}</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" type="button" onClick="{{ onCancel }}" disabled="{{ busy }}" hint-size="150px,34px">{{ cancelLabel }}</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="secondary" type="button" onClick="{{ onBack }}" disabled="{{ backDisabled }}" iconLeft="arrow-left" hint-size="100px,34px">Back</x-import>
+<sc-if value="{{ showNext }}" hint-placeholder-val="{{ true }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="primary" type="button" onClick="{{ onNext }}" iconRight="arrow-right" hint-size="180px,34px">{{ nextLabel }}</x-import>
+</sc-if>
+<sc-if value="{{ showRelease }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="primary" type="submit" loading="{{ busy }}" disabled="{{ releaseDisabled }}" hint-size="200px,34px">{{ releaseLabel }}</x-import>
+</sc-if>
+</div>
+</div>
+</form>
+</div>
+</sc-if>
+</div>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:14px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:16px 18px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Stage machine · remove on copy</span>
+<div style="display:flex;flex-direction:column;gap:11px">
+<sc-for list="{{ inspector }}" as="row" hint-placeholder-count="5">
+<div style="display:flex;flex-direction:column;gap:3px">
+<div style="display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<sc-if value="{{ row.dotComplete }}" hint-placeholder-val="{{ false }}"><span style="width:7px;height:7px;border-radius:999px;flex:none;background:var(--status-success-solid)"></span></sc-if>
+<sc-if value="{{ row.dotInvalid }}" hint-placeholder-val="{{ false }}"><span style="width:7px;height:7px;border-radius:999px;flex:none;background:var(--status-critical-solid)"></span></sc-if>
+<sc-if value="{{ row.dotActive }}" hint-placeholder-val="{{ true }}"><span style="width:7px;height:7px;border-radius:999px;flex:none;background:var(--status-info-solid)"></span></sc-if>
+<sc-if value="{{ row.dotInert }}" hint-placeholder-val="{{ false }}"><span style="width:7px;height:7px;border-radius:999px;flex:none;background:var(--border-subtle)"></span></sc-if>
+<sc-if value="{{ row.dotIdle }}" hint-placeholder-val="{{ false }}"><span style="width:7px;height:7px;border-radius:999px;flex:none;background:var(--border-strong)"></span></sc-if>
+<span style="color:var(--text-primary)">{{ row.label }}</span>
+<span style="color:var(--text-tertiary);margin-left:auto">{{ row.state }}</span>
+</div>
+<span style="padding-left:15px;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.5;text-wrap:pretty">{{ row.note }}</span>
+</div>
+</sc-for>
+</div>
+<div style="border-top:var(--border-hairline);padding-top:12px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Staged value model</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ modelText }}</pre>
+</div>
+<div style="border-top:var(--border-hairline);padding-top:12px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Held, out of the release payload</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ heldText }}</pre>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">Stage state and field state are separate stores — §20. One value model spans every stage, so a stage the user has left still holds exactly what they typed, and a stage that stops applying keeps its value out of the payload without discarding it.</p>
+</div>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1100,&quot;height&quot;:940},&quot;backtracking&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;free&quot;,&quot;one-step&quot;],&quot;default&quot;:&quot;free&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Backward movement&quot;},&quot;gating&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;blocking&quot;,&quot;advisory&quot;],&quot;default&quot;:&quot;blocking&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Forward gating&quot;},&quot;preservation&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;draft&quot;,&quot;session&quot;,&quot;none&quot;],&quot;default&quot;:&quot;draft&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Preservation&quot;},&quot;cancelPolicy&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;keep-draft&quot;,&quot;discard&quot;],&quot;default&quot;:&quot;keep-draft&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Cancellation policy&quot;},&quot;outcome&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;success&quot;,&quot;system-failure&quot;,&quot;item-master-failure&quot;,&quot;unknown&quot;],&quot;default&quot;:&quot;success&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo harness · remove on copy&quot;,&quot;label&quot;:&quot;Simulated release outcome&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:300,&quot;max&quot;:4000,&quot;step&quot;:100,&quot;default&quot;:1200,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness · remove on copy&quot;,&quot;label&quot;:&quot;Simulated latency&quot;}}">
+// Plant reference data. In a real ERP these come from the item master, the
+// vendor master and the approval matrix — replace the four constants below.
+const TODAY = '2026-09-07';
+const THRESHOLD = 200000;
+const CC = [
+  { value: 'CC-4120', label: 'CC-4120 · Press shop', approver: 's.rao@suryodaya.co.in', name: 'Shalini Rao' },
+  { value: 'CC-4180', label: 'CC-4180 · Maintenance', approver: 'v.bhosale@suryodaya.co.in', name: 'Vikram Bhosale' },
+  { value: 'CC-4310', label: 'CC-4310 · Tool room', approver: 'p.iyer@suryodaya.co.in', name: 'Priya Iyer' }
+];
+const SUP = [
+  { value: 'nf', label: 'Nashik Forge & Machine Works — 21 day lead', lead: 21, name: 'Nashik Forge & Machine Works' },
+  { value: 'sb', label: 'Sahyadri Bearings Pvt Ltd — 7 day lead', lead: 7, name: 'Sahyadri Bearings Pvt Ltd' },
+  { value: 'dm', label: 'Deccan Machine Supply, Pune — 3 day lead', lead: 3, name: 'Deccan Machine Supply' }
+];
+const DOCKS = [
+  { value: 'd2', label: 'Gate 2 — main goods-in' },
+  { value: 'd5', label: 'Gate 5 — heavy, EOT crane' },
+  { value: 'tr', label: 'Toolroom hatch' }
+];
+const FIELD_LABEL = {
+  costCentre: 'Cost centre', neededBy: 'Needed on line by', priority: 'Priority',
+  partNo: 'Part number', qty: 'Quantity', unitPrice: 'Unit price',
+  supplier: 'Supplier', dock: 'Receiving point', notes: 'Note to the buyer',
+  approver: 'Approver'
+};
+
+// Lakh-style grouping, paise only when there are paise.
+function money(n) { return '₹' + n.toLocaleString('en-IN', { minimumFractionDigits: n % 1 === 0 ? 0 : 2, maximumFractionDigits: 2 }); }
+function lineTotal(v) {
+  const q = Number(String(v.qty).trim());
+  const p = Number(String(v.unitPrice).replace(/,/g, '').trim());
+  if (!Number.isFinite(q) || !Number.isFinite(p) || String(v.qty).trim() === '' || String(v.unitPrice).trim() === '') return null;
+  return q * p;
+}
+function addDays(iso, d) { const t = new Date(iso + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() + d); return t.toISOString().slice(0, 10); }
+
+// Stage list. `when` makes a stage conditionally applicable; every other
+// stage always applies. Fields belong to exactly one stage.
+const STAGES = [
+  { id: 'charge', label: 'Charge & timing', fields: ['costCentre', 'neededBy', 'priority'] },
+  { id: 'line', label: 'Line item', fields: ['partNo', 'qty', 'unitPrice'] },
+  { id: 'sourcing', label: 'Sourcing & delivery', fields: ['supplier', 'dock', 'notes'] },
+  { id: 'approval', label: 'Approval routing', fields: ['approver'], when: v => (lineTotal(v) || 0) >= THRESHOLD },
+  { id: 'review', label: 'Review & release', fields: [] }
+];
+const EMPTY = { costCentre: '', neededBy: '', priority: 'routine', partNo: '', qty: '', unitPrice: '', supplier: '', dock: '', notes: '', approver: '' };
+// Where a `draft` preservation policy puts the value model. One key, written
+// only by this pattern — replace with your own draft service.
+const DRAFT_KEY = 'meridian.pattern.stagedInput.draft';
+const PRESERVATION_NOTE = {
+  draft: 'draft preserved for return',
+  session: 'draft held for this session only',
+  none: 'values discarded on exit'
+};
+
+class Component extends DCLogic {
+  state = {
+    started: false, current: 'charge', values: { ...EMPTY },
+    touched: {}, gated: {}, cleared: {},
+    status: 'idle', failure: null, done: null, announcement: ''
+  };
+
+  // ─── Stage applicability. A pure function of the value model, never of what
+  // has been rendered (§20).
+  applicable(v) { return STAGES.filter(s => !s.when || s.when(v)); }
+  stageOf(id) { return STAGES.find(s => s.id === id); }
+  indexOf(id) { const a = this.applicable(this.state.values); return a.findIndex(s => s.id === id); }
+
+  // ─── Stage-local validation: rules a stage can decide on its own.
+  localProblems(v) {
+    const p = {};
+    if (!v.costCentre) p.costCentre = 'Choose the cost centre this is charged to.';
+    if (!v.neededBy) p.neededBy = 'Enter the date the part is needed on the line.';
+    else if (v.neededBy < TODAY) p.neededBy = 'The need-by date is in the past. Enter 2026-09-07 or later.';
+    const part = (v.partNo || '').trim().toUpperCase();
+    if (!part) p.partNo = 'Enter the part number you are requisitioning.';
+    else if (!/^[A-Z]{2,4}-\d{4}(-[A-Z])?$/.test(part)) p.partNo = 'Use the item-master format, like BRK-4820-A.';
+    const q = String(v.qty).trim();
+    if (!q) p.qty = 'Enter how many pieces you need.';
+    else if (!/^\d+$/.test(q) || Number(q) < 1) p.qty = 'Enter a whole number of pieces, 1 or more.';
+    const up = String(v.unitPrice).replace(/,/g, '').trim();
+    if (!up) p.unitPrice = 'Enter the unit price.';
+    else if (!/^\d+(\.\d{1,2})?$/.test(up) || Number(up) <= 0) p.unitPrice = 'Enter a price in rupees, like 62500.00.';
+    if (!v.supplier) p.supplier = 'Choose the supplier the buyer should raise the order against.';
+    if (!v.dock) p.dock = 'Choose where the delivery is received.';
+    const app = this.applicable(v).some(s => s.id === 'approval');
+    if (app) {
+      const a = (v.approver || '').trim();
+      if (!a) p.approver = 'Enter the approver for this cost centre.';
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a)) p.approver = 'Enter a complete work email address.';
+    }
+    return p;
+  }
+
+  // ─── Cross-stage validation: rules that need values from two stages and so
+  // cannot be evaluated while either stage is current. Each carries the stage
+  // that can fix it (§09).
+  crossProblems(v) {
+    const out = [];
+    const local = this.localProblems(v);
+    const sup = SUP.find(s => s.value === v.supplier);
+    if (sup && v.neededBy && !local.neededBy) {
+      const earliest = addDays(TODAY, sup.lead);
+      if (v.neededBy < earliest) out.push({
+        stage: 'charge', field: 'neededBy',
+        message: sup.name + ' quotes a ' + sup.lead + '-day lead time, so the earliest arrival is ' + earliest + '. Move the need-by date out, or choose a shorter-lead supplier.'
+      });
+    }
+    const cc = CC.find(c => c.value === v.costCentre);
+    const needsApproval = this.applicable(v).some(s => s.id === 'approval');
+    if (needsApproval && cc && (v.approver || '').trim() && !local.approver) {
+      if ((v.approver || '').trim().toLowerCase() !== cc.approver) out.push({
+        stage: 'approval', field: 'approver',
+        message: cc.label.replace(' · ', ' ') + ' over ' + money(THRESHOLD) + ' routes to ' + cc.name + ' (' + cc.approver + '). The approver entered is not authorised for this cost centre.'
+      });
+    }
+    return out;
+  }
+
+  // Errors the user may see: a stage-local problem shows once its field is
+  // touched or the stage's gate has been tried; a cross-stage problem shows
+  // only where it is being reported.
+  visibleErrors() {
+    const v = this.state.values;
+    const local = this.localProblems(v);
+    const out = {};
+    for (const k in local) {
+      const stage = STAGES.find(s => s.fields.includes(k));
+      if (this.state.touched[k] || this.state.gated[stage.id]) out[k] = local[k];
+    }
+    if (this.state.failure && this.state.failure.field && !out[this.state.failure.field]) {
+      out[this.state.failure.field] = this.state.failure.fieldMessage;
+    }
+    for (const c of this.crossProblems(v)) {
+      if (this.state.current === 'review' || this.state.current === c.stage) out[c.field] = out[c.field] || c.message;
+    }
+    return out;
+  }
+
+  stageState(id) {
+    const v = this.state.values;
+    const s = this.stageOf(id);
+    if (s.when && !s.when(v)) return 'not applicable';
+    if (this.state.status === 'done') return 'complete';
+    const local = this.localProblems(v);
+    const cross = this.crossProblems(v);
+    const bad = s.fields.some(f => local[f]) || cross.some(c => c.stage === id);
+    const shown = s.fields.some(f => this.visibleErrors()[f]) || cross.some(c => c.stage === id && this.state.current === 'review');
+    if (id === this.state.current) return bad && shown ? 'active · invalid' : 'active';
+    if (id === 'review') return 'not started';
+    if (bad) return this.state.gated[id] || this.state.touched[s.fields[0]] ? 'invalid' : 'not started';
+    return 'complete';
+  }
+
+  focusStage(id) {
+    requestAnimationFrame(() => {
+      const h = document.querySelector('[data-stage-heading="' + id + '"]');
+      if (h) h.focus();
+    });
+  }
+
+  focusField(field) {
+    requestAnimationFrame(() => {
+      const host = document.querySelector('[data-f="' + field + '"]');
+      if (!host) return;
+      const el = host.querySelector('input:not([disabled]),textarea:not([disabled]),select:not([disabled]),button:not([disabled])');
+      if (el) el.focus();
+    });
+  }
+
+  // ─── Movement. One entry point, so announcement and focus cannot diverge
+  // from the stage change that caused them.
+  goTo(id, note) {
+    const app = this.applicable(this.state.values);
+    const i = app.findIndex(s => s.id === id);
+    if (i < 0) return;
+    const label = app[i].label;
+    const where = 'Stage ' + (i + 1) + ' of ' + app.length + ' · ' + label + (id === 'review' ? ' — nothing has been sent yet.' : '.');
+    this.setState({ current: id, announcement: [note, where].filter(Boolean).join(' ') });
+    this.focusStage(id);
+  }
+
+  next = () => {
+    const id = this.state.current;
+    const stage = this.stageOf(id);
+    const local = this.localProblems(this.state.values);
+    const blocking = stage.fields.filter(f => local[f]);
+    let note = '';
+    if (blocking.length) {
+      // The gate looks at this stage only. Later stages are unjudged, so
+      // being incomplete elsewhere can never hold the user here (§09).
+      const advisory = (this.props.gating || 'blocking') === 'advisory';
+      if (!advisory) {
+        this.setState({
+          gated: { ...this.state.gated, [id]: true },
+          announcement: blocking.length + (blocking.length === 1 ? ' value on this stage needs' : ' values on this stage need') + ' attention before you can continue.'
+        });
+        this.focusField(blocking[0]);
+        return;
+      }
+      // Advisory gating: the stage is marked and the user proceeds. Legitimate
+      // only because the final stage reports every outstanding problem and
+      // routes back to the stage that owns it (§05).
+      // One statement carries both facts: what was left unresolved, and where
+      // the user now is. goTo() would otherwise overwrite the warning (§12).
+      note = 'Moving on with ' + blocking.length + (blocking.length === 1 ? ' unresolved value' : ' unresolved values') + ' on ' + stage.label + '. They are listed again at review, before release.';
+      this.setState({ gated: { ...this.state.gated, [id]: true } });
+    }
+    const app = this.applicable(this.state.values);
+    const i = app.findIndex(s => s.id === id);
+    const nextStage = app[i + 1];
+    if (nextStage) this.goTo(nextStage.id, note);
+  };
+
+  back = () => {
+    const app = this.applicable(this.state.values);
+    const i = app.findIndex(s => s.id === this.state.current);
+    if (i > 0) this.goTo(app[i - 1].id, 'Moved back. Nothing was committed and nothing was cleared.');
+  };
+
+  // Backward movement never validates and never commits (§04), so a jump to
+  // a completed stage is the same movement as Back.
+  jump = (id) => {
+    // Completion pending suspends movement; a completed task has nothing to
+    // move back to — the stages are a record (§08).
+    if (this.state.status === 'pending' || this.state.status === 'done') return;
+    const app = this.applicable(this.state.values);
+    const target = app.findIndex(s => s.id === id);
+    const here = app.findIndex(s => s.id === this.state.current);
+    if (target < 0 || target === here) return;
+    if (target > here) { this.next(); return; }
+    if ((this.props.backtracking || 'free') === 'one-step' && target < here - 1) return;
+    this.goTo(id, 'Moved back. Nothing was committed and nothing was cleared.');
+  };
+
+  // ─── Value edits. A controlling value that a later stage depends on
+  // invalidates only that dependent value, and never by clearing values whose
+  // dependency does not actually exist (§09).
+  set(field, raw) {
+    // Refused at the state transition, not by disabling controls: a released
+    // requisition is read-only, and a pending one is mid-commit (§04, §08).
+    if (this.state.status === 'done' || this.state.status === 'pending') return;
+    const prev = this.state.values;
+    const next = { ...prev, [field]: raw };
+    let note = '';
+    let cleared = this.state.cleared;
+    if (field === 'costCentre' && prev.costCentre && raw !== prev.costCentre && (prev.approver || '').trim()) {
+      const cc = CC.find(c => c.value === raw);
+      note = 'Approval routing needs checking: ' + (cc ? cc.label.replace(' · ', ' ') + ' routes to ' + cc.name + '.' : '');
+      cleared = { ...cleared, approver: true };
+    }
+    if (field === 'qty' || field === 'unitPrice') {
+      const before = this.applicable(prev).some(s => s.id === 'approval');
+      const after = this.applicable(next).some(s => s.id === 'approval');
+      if (!before && after) note = 'This line now comes to ' + money(lineTotal(next)) + ', so Approval routing applies.';
+      if (before && !after) note = 'This line is now under ' + money(THRESHOLD) + ', so Approval routing no longer applies. Any approver you entered is kept out of the release.';
+    }
+    this.persist(next);
+    this.setState({ values: next, cleared, announcement: note || this.state.announcement, failure: this.state.failure && this.state.failure.field === field ? null : this.state.failure, done: null });
+    // A current stage that stops applying cannot stay current.
+    if (this.state.current === 'approval' && !this.applicable(next).some(s => s.id === 'approval')) {
+      setTimeout(() => this.goTo('review', 'Approval routing no longer applies.'), 0);
+    }
+  }
+
+  touch(field) {
+    if (this.state.status === 'done' || this.state.status === 'pending') return;
+    this.setState(s => ({ touched: { ...s.touched, [field]: true } }));
+  }
+
+  payload() {
+    const v = this.state.values;
+    const out = {};
+    this.applicable(v).forEach(s => s.fields.forEach(f => { if (String(v[f] ?? '') !== '') out[f] = v[f]; }));
+    const t = lineTotal(v);
+    if (t !== null) out.lineValue = money(t);
+    return out;
+  }
+
+  // ─── Completion. Single-shot: a second activation while pending is refused
+  // at the state transition, not by disabling a button.
+  release = (e) => {
+    if (e) e.preventDefault();
+    if (this.state.status === 'pending' || this.state.status === 'done') return;
+    const v = this.state.values;
+    const local = this.localProblems(v);
+    const cross = this.crossProblems(v);
+    const localKeys = Object.keys(local);
+    if (localKeys.length || cross.length) {
+      const gated = { ...this.state.gated };
+      STAGES.forEach(s => { if (s.fields.some(f => local[f])) gated[s.id] = true; });
+      const n = localKeys.length + cross.length;
+      this.setState({ gated, failure: null, announcement: 'Nothing was released. ' + n + (n === 1 ? ' value needs' : ' values need') + ' attention before this requisition can be released.' });
+      return;
+    }
+    this.setState({ status: 'pending', failure: null, announcement: 'Releasing the requisition. This has not completed yet.' });
+    const outcome = this.props.outcome || 'success';
+    const wait = Number(this.props.latency || 1200);
+    // ── Simulated purchasing call. Replace with the real request; keep the
+    // four outcome branches — the contract is what happens to staged data in
+    // each of them.
+    clearTimeout(this._t);
+    this._t = setTimeout(() => {
+      if (outcome === 'success') {
+        try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+        this.setState({ status: 'done', done: 'REQ-2026-0881 released to purchasing for ' + money(lineTotal(this.state.values)) + '. Buyer: central purchasing, Chakan (PL-04). The requisition is now read-only; raise a change request to alter it.', announcement: 'Requisition released.' });
+      } else if (outcome === 'system-failure') {
+        this.setState({ status: 'failed', announcement: 'The release failed. Every stage was kept.', failure: {
+          tone: 'danger', title: 'Purchasing did not answer',
+          body: 'The requisition gateway timed out after ' + Math.round(wait / 1000) + 's. Nothing was created and all four stages are exactly as you left them. Release again when the gateway is back — you do not need to re-enter anything.'
+        } });
+      } else if (outcome === 'item-master-failure') {
+        this.setState({ status: 'failed', announcement: 'The release failed on the part number. You can correct it on the Line item stage.', failure: {
+          tone: 'danger', title: 'Part ' + (this.state.values.partNo || '').trim().toUpperCase() + ' is not in the item master',
+          body: 'Purchasing rejected the requisition: the part number is not an active item at Chakan (PL-04). Every stage was kept — go back to Line item, correct the part number, and release again.',
+          stage: 'line', field: 'partNo', fieldMessage: 'Not an active item at Chakan (PL-04). Check the number against the item master.'
+        } });
+      } else {
+        this.setState({ status: 'failed', announcement: 'The release did not confirm.', failure: {
+          tone: 'warning', title: 'The release did not confirm',
+          body: 'The gateway accepted the requisition but never confirmed it, so it may or may not exist. Check the requisition queue for REQ-2026-0881 before releasing again — releasing twice can raise two orders. Your staged values are kept either way.'
+        } });
+      }
+    }, wait);
+  };
+
+  cancel = () => {
+    if (this.state.status === 'pending') return;
+    clearTimeout(this._t);
+    // A completed requisition is a record; leaving it starts a fresh one
+    // rather than reopening the released stages.
+    if (this.state.status === 'done') {
+      // Remove, never write an empty draft: a stored EMPTY would come back as
+      // a "draft restored" on the next load with nothing in it.
+      try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+      this.setState({ started: false, current: 'charge', values: { ...EMPTY }, touched: {}, gated: {}, cleared: {}, status: 'idle', failure: null, done: null, announcement: 'REQ-2026-0881 stays released. This is a new requisition.' });
+      return;
+    }
+    const pres = this.policy();
+    // A `none` preservation policy discards on exit whatever cancel is called.
+    const discard = (this.props.cancelPolicy || 'keep-draft') === 'discard' || pres === 'none';
+    if (discard) {
+      try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+      this.setState({ started: false, current: 'charge', values: { ...EMPTY }, touched: {}, gated: {}, cleared: {}, status: 'idle', failure: null, done: null, announcement: pres === 'none' ? 'Requisition discarded. This task keeps no draft.' : 'Requisition discarded. Nothing was kept.' });
+    } else {
+      this.setState({ started: false, status: 'idle', failure: null, done: null, announcement: pres === 'draft' ? 'Draft saved. Everything you entered is here when you come back, including after a reload.' : 'Draft kept for this session. A reload will lose it.' });
+    }
+  };
+
+  // ─── Preservation (§05). `draft` outlives the page, `session` outlives only
+  // the interaction, `none` outlives nothing. Stage state is never persisted —
+  // it is re-derived from the restored value model (§20).
+  policy() { return this.props.preservation || 'draft'; }
+
+  persist(values) {
+    try {
+      if (this.policy() === 'draft') localStorage.setItem(DRAFT_KEY, JSON.stringify(values));
+      else localStorage.removeItem(DRAFT_KEY);
+    } catch (e) { /* storage unavailable — the interaction still works, unpersisted */ }
+  }
+
+  componentDidMount() {
+    if (this.policy() !== 'draft') return;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      const empty = !saved || Object.keys(EMPTY).every(k => String(saved[k] ?? '') === String(EMPTY[k]));
+      if (empty) { localStorage.removeItem(DRAFT_KEY); return; }
+      if (typeof saved === 'object') {
+        this.setState({ values: { ...EMPTY, ...saved }, announcement: 'Draft restored. Every stage is re-checked against the values as they stand.' });
+      }
+    } catch (e) { /* unreadable draft is no draft */ }
+  }
+
+  componentWillUnmount() { clearTimeout(this._t); }
+
+  renderVals() {
+    const v = this.state.values;
+    const app = this.applicable(v);
+    const cur = this.state.current;
+    const i = app.findIndex(s => s.id === cur);
+    const errs = this.visibleErrors();
+    const total = lineTotal(v);
+    const cc = CC.find(c => c.value === v.costCentre);
+    const sup = SUP.find(s => s.value === v.supplier);
+    const dock = DOCKS.find(d => d.value === v.dock);
+    const stage = this.stageOf(cur);
+    const gateCount = stage.fields.filter(f => errs[f]).length;
+    const busy = this.state.status === 'pending';
+    const done = this.state.status === 'done';
+    const cross = this.crossProblems(v);
+    const local = this.localProblems(v);
+    const localKeys = Object.keys(local);
+    const blockers = [
+      ...localKeys.map(k => ({ stage: STAGES.find(s => s.fields.includes(k)).id, message: FIELD_LABEL[k] + ': ' + local[k] })),
+      ...cross.map(c => ({ stage: c.stage, message: c.message }))
+    ].map(b => ({ ...b, stageLabel: this.stageOf(b.stage).label, onGo: () => this.jump(b.stage) }));
+
+    const dots = st => ({
+      dotComplete: st === 'complete',
+      dotInvalid: st.indexOf('invalid') >= 0,
+      dotActive: st === 'active',
+      dotInert: st === 'not applicable',
+      dotIdle: st === 'not started'
+    });
+
+    const rail = app.filter(s => s.id !== 'review').concat(app.filter(s => s.id === 'review')).map((s, n) => {
+      const st = this.stageState(s.id);
+      const isCur = s.id === cur;
+      const behind = app.findIndex(x => x.id === s.id) < i;
+      const locked = busy || done || (!isCur && !behind && st !== 'complete');
+      return {
+        id: s.id, label: s.label, n: String(n + 1).padStart(2, '0'),
+        onClick: () => this.jump(s.id),
+        isCurrent: isCur && !busy && !done,
+        isLocked: locked || (isCur && (busy || done)),
+        isBehind: !isCur && !locked,
+        ...dots(st)
+      };
+    });
+
+    const held = {};
+    if (!app.some(s => s.id === 'approval') && (v.approver || '').trim()) held['Approver'] = v.approver + ' — Approval routing does not apply under ' + money(THRESHOLD);
+    if ((v.notes || '').trim() === '') held['Note to the buyer'] = 'empty — optional, not blocking';
+
+    const summaryRow = (k, val, id) => ({ k, v: val, editable: !done && !busy, onGo: () => this.jump(id) });
+
+    return {
+      started: this.state.started, notStarted: !this.state.started,
+      onStart: () => { this.setState({ started: true, announcement: '' }); this.goTo(this.state.current); },
+
+      pct: done ? 100 : Math.round((i / (app.length - 1)) * 100),
+      progressLabel: done ? 'Released — REQ-2026-0881 is with purchasing'
+        : cur === 'review' ? 'Stage ' + app.length + ' of ' + app.length + ' · Review & release — not yet released'
+        : 'Stage ' + (i + 1) + ' of ' + app.length + ' · ' + stage.label + ' — in progress',
+      rail, announcement: this.state.announcement,
+
+      isCharge: cur === 'charge', isLine: cur === 'line', isSourcing: cur === 'sourcing',
+      isApproval: cur === 'approval', isReview: cur === 'review',
+
+      ccOptions: [{ value: '', label: 'Choose a cost centre' }].concat(CC.map(c => ({ value: c.value, label: c.label }))),
+      supplierOptions: [{ value: '', label: 'Choose a supplier' }].concat(SUP.map(s => ({ value: s.value, label: s.label }))),
+      dockOptions: [{ value: '', label: 'Choose a receiving point' }].concat(DOCKS),
+      priorityOptions: [
+        { value: 'routine', label: 'Routine', description: 'Buyer works it in the normal cycle.' },
+        { value: 'expedite', label: 'Expedite', description: 'Buyer chases the supplier for an earlier date.' },
+        { value: 'breakdown', label: 'Breakdown', description: 'Press is down. Purchasing is called as well as notified.' }
+      ],
+
+      vCostCentre: v.costCentre, vNeededBy: v.neededBy, vPriority: v.priority,
+      vPartNo: v.partNo, vQty: v.qty, vUnitPrice: v.unitPrice,
+      vSupplier: v.supplier, vDock: v.dock, vNotes: v.notes, vApprover: v.approver,
+
+      errCostCentre: errs.costCentre, errNeededBy: errs.neededBy, errPartNo: errs.partNo,
+      errQty: errs.qty, errUnitPrice: errs.unitPrice, errSupplier: errs.supplier,
+      errDock: errs.dock, errApprover: errs.approver,
+
+      onCostCentre: e => this.set('costCentre', e.target.value),
+      onNeededBy: next => { this.set('neededBy', next || ''); this.touch('neededBy'); },
+      onPriority: next => this.set('priority', next),
+      onPartNo: e => this.set('partNo', e.target.value),
+      onQty: e => this.set('qty', e.target.value),
+      onUnitPrice: e => this.set('unitPrice', e.target.value),
+      onSupplier: e => { this.set('supplier', e.target.value); this.touch('supplier'); },
+      onDock: e => { this.set('dock', e.target.value); this.touch('dock'); },
+      onNotes: e => this.set('notes', e.target.value),
+      onApprover: e => this.set('approver', e.target.value),
+      onBlurPartNo: () => this.touch('partNo'),
+      onBlurQty: () => this.touch('qty'),
+      onBlurUnitPrice: () => this.touch('unitPrice'),
+      onBlurApprover: () => this.touch('approver'),
+
+      ccHint: cc ? 'Requisitions of ' + money(THRESHOLD) + ' or more on this cost centre route to ' + cc.name + '.' : 'Sets the approval route if this requisition needs approval.',
+      lineHint: 'One line per requisition at Chakan. ' + money(THRESHOLD) + ' or more adds an approval stage.',
+      sourcingHint: 'Lead time is checked against your need-by date on the last stage — that rule needs both stages.',
+      supplierHint: sup ? sup.name + ' quotes ' + sup.lead + ' days; earliest arrival ' + addDays(TODAY, sup.lead) + '.' : 'Lead time is shown once you choose.',
+      approvalHint: 'This stage applies because the line comes to ' + (total === null ? '—' : money(total)) + ', at or over the ' + money(THRESHOLD) + ' threshold.',
+      approverHint: cc ? 'Authorised for ' + cc.label.replace(' · ', ' ') + ': ' + cc.name + ' (' + cc.approver + ').' + (this.state.cleared.approver ? ' The cost centre changed after this was entered — check it.' : '') : 'Choose a cost centre on stage 1 first.',
+      totalText: total === null ? '—' : money(total),
+      bandText: total === null ? 'Enter quantity and unit price.' : total >= THRESHOLD ? 'At or over ' + money(THRESHOLD) + ' — Approval routing applies.' : 'Under ' + money(THRESHOLD) + ' — no approval stage.',
+
+      gateError: gateCount && cur !== 'review' ? 'This stage cannot be left yet. ' + gateCount + (gateCount === 1 ? ' value below needs' : ' values below need') + ' attention.' : undefined,
+
+      hasBlockers: (cur === 'review') && blockers.length > 0 && !done,
+      blockerHeading: blockers.length + (blockers.length === 1 ? ' value blocks the release' : ' values block the release') + ' — each on the stage that can fix it',
+      blockers,
+
+      summary: [
+        summaryRow('Cost centre', cc ? cc.label.replace(' · ', ' ') : '—', 'charge'),
+        summaryRow('Needed by', v.neededBy || '—', 'charge'),
+        summaryRow('Priority', v.priority === 'routine' ? 'Routine' : v.priority === 'expedite' ? 'Expedite' : 'Breakdown', 'charge'),
+        summaryRow('Line', (v.partNo || '—').toUpperCase() + ' × ' + (v.qty || '—') + ' ea @ ' + (v.unitPrice ? money(Number(v.unitPrice)) : '—') + ' = ' + (total === null ? '—' : money(total)), 'line'),
+        summaryRow('Supplier', sup ? sup.name + ' (' + sup.lead + ' day lead)' : '—', 'sourcing'),
+        summaryRow('Receiving point', dock ? dock.label : '—', 'sourcing'),
+        summaryRow('Buyer note', (v.notes || '').trim() || 'none', 'sourcing')
+      ].concat(app.some(s => s.id === 'approval') ? [summaryRow('Approver', v.approver || '—', 'approval')] : []),
+      reviewNote: done ? 'Released. The stages above are a record of what was sent.' : 'Nothing has been sent to purchasing yet. Release is the only action that commits this requisition, and it commits every stage at once.',
+
+      isDone: done, doneBody: this.state.done || '',
+      hasFailure: !!this.state.failure,
+      failTone: this.state.failure ? this.state.failure.tone : 'danger',
+      failTitle: this.state.failure ? this.state.failure.title : '',
+      failBody: this.state.failure ? this.state.failure.body : '',
+      failAction: this.state.failure && this.state.failure.stage
+        ? React.createElement(window.MeridianDesignSystem_962c43.Button, { variant: 'secondary', size: 'sm', type: 'button', onClick: () => this.jump(this.state.failure.stage) }, 'Go to ' + this.stageOf(this.state.failure.stage).label)
+        : undefined,
+
+      busy,
+      showNext: cur !== 'review', showRelease: cur === 'review' && !done,
+      nextLabel: 'Continue to ' + (app[i + 1] ? app[i + 1].label : 'review'),
+      releaseLabel: this.state.failure ? 'Release again' : 'Release requisition',
+      releaseDisabled: busy || done,
+      backDisabled: busy || i <= 0 || done,
+      cancelLabel: done ? 'Start a new requisition'
+        : ((this.props.cancelPolicy || 'keep-draft') === 'discard' || this.policy() === 'none') ? 'Cancel and discard'
+        : this.policy() === 'session' ? 'Keep for now and leave' : 'Save draft and leave',
+      onNext: this.next, onBack: this.back, onSubmit: this.release, onCancel: this.cancel,
+
+      stateLabel: (done ? 'completed' : busy ? 'completion pending · single-shot' : this.state.failure ? 'completion failed · stages preserved' : this.stageState(cur) + ' · ' + (i + 1) + '/' + app.length)
+        + ' · ' + ((this.props.gating || 'blocking') === 'advisory' ? 'advisory gating' : 'blocking gating') + ' · ' + PRESERVATION_NOTE[this.policy()],
+
+      inspector: STAGES.map(s => {
+        const st = this.stageState(s.id);
+        return {
+          label: s.label, state: st, ...dots(st),
+          note: s.id === 'approval' ? 'Applies at or over ' + money(THRESHOLD) + '. Line: ' + (total === null ? '—' : money(total)) + '.'
+            : s.id === 'review' ? 'Holds no values; the release acts on the whole staged set.'
+            : s.fields.map(f => FIELD_LABEL[f]).join(' · ')
+        };
+      }),
+      modelText: JSON.stringify(this.payload(), null, 1),
+      heldText: Object.keys(held).length ? Object.keys(held).map(k => k + ': ' + held[k]).join('\n') : '— nothing held —'
+    };
+  }
+}
+</script>
+</body>
+</html>

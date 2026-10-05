@@ -1,0 +1,271 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Validated submission" subtitle="Full specification — several related values, one acceptance decision, one explicit commit · manufacturing ERP reference" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Validated submission — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.mf{display:flex;flex-direction:column;gap:4px}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mi{height:28px;border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);display:flex;align-items:center;padding:0 8px;font-size:11px;color:var(--text-primary)}
+.mi.bad{border-color:var(--status-critical-solid)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.me{font-size:10px;color:var(--text-critical)}
+.mb{align-self:flex-start;height:28px;padding:0 12px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:11px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.mb.off{background:var(--surface-sunken);color:var(--text-disabled);border:var(--border-hairline)}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-critical-soft);color:var(--text-critical)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Validated submission</h1>
+  <p class="lede">Collecting several related values, deciding whether the combined input is acceptable, and committing it through one explicit action — with the user's entries surviving anything that goes wrong along the way.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: Fieldset, Field, Input, Button</span><span>Reference implementation: <a href="validated-submission-reference.card.html">card</a> · <a href="../../templates/validated-submission/ValidatedSubmission.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — releasing a work order to a production line</span><span>Sections included: 12 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>Several values entered by a user form one logical submission. Individually each may be acceptable; together they may not be. The pattern owns the coordination between input, validation, submission, and submission outcome — the decision of when input is judged, what "acceptable" means across fields rather than within one, and what is guaranteed to the user when the commit does not complete.</p>
+    <p><strong>Use it when</strong> the values are committed together, an acceptance decision applies to the set, and the commit is an explicit act the user takes.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>A form whose values are accepted or rejected as one unit.</li><li>Input with a constraint spanning two or more values.</li><li>A commit that can fail for reasons other than bad input.</li><li>Settings or details edited together and saved once.</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>A single field.</strong> One input and its own validation is <code>Field</code>'s contract. This pattern is not a place to re-document it.</li><li><strong>Values that commit as they change.</strong> Continuous or per-control commit has no acceptance decision and no submission state.</li><li><strong>A search or filter query.</strong> Nothing is committed; there is no acceptance rule and no failure to recover from.</li><li><strong>A sequence across several screens.</strong> A stepped flow may contain this pattern at each step, but the progression between steps is not owned here.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">Group</td><td><code>Fieldset</code></td><td>Required. A real <code>&lt;fieldset&gt;</code>/<code>&lt;legend&gt;</code> bounding the logical submission and carrying its name. The boundary is what makes cross-field validation meaningful — it defines the value set the rules are evaluated against, and its group-level <code>error</code> is where submission-level validation status belongs (§12), announced on the group rather than on any one field.</td></tr>
+      <tr><td class="k">Input relationship</td><td><code>Field</code></td><td>Required per value. Establishes the label, description, and error association for its control. The pattern supplies the error; <code>Field</code> owns its association and presentation.</td></tr>
+      <tr><td class="k">Value capture</td><td><code>Input</code> and, as applicable, <code>Textarea</code>, <code>Select</code>, <code>Checkbox</code>, <code>CheckboxGroup</code>, <code>Radio</code>, <code>RadioGroup</code>, <code>Switch</code>, <code>Combobox</code>, <code>Autocomplete</code>, <code>MultiCombobox</code>, <code>Slider</code>, <code>RangeSlider</code>, <code>DatePicker</code>, <code>TimeField</code></td><td>At least one required. Each control owns its own value, format, and control-level validity. The pattern owns nothing about how a value is typed or picked.</td></tr>
+      <tr><td class="k">Commit</td><td><code>Button</code></td><td>Required, exactly one. Initiates submission. No other affordance in the group may commit.</td></tr>
+      <tr><td class="k">Submission outcome</td><td><code>Alert</code>, <code>Toast</code>, <code>Snackbar</code></td><td>Optional, and required whenever an outcome is not evident from the resulting state. <code>Alert</code> in place for operational failures that keep the user in the form; <code>Toast</code> or <code>Snackbar</code> for success when the surface moves on. Keeping operational outcomes on this surface and validation status on the <code>Fieldset</code>'s group error is how the two stay distinguishable (§04).</td></tr>
+      <tr><td class="k">Async indication</td><td><code>Progress</code></td><td>Optional. Only where the commit is asynchronous and its duration is perceivable, or determinate progress is genuinely known.</td></tr>
+    </tbody></table>
+    <p>The relationship the pattern owns: one <code>Fieldset</code> boundary, one value set, one commit, one outcome. A second commit button in the same boundary means either two submissions or an ambiguous one — both are refused. Nothing outside the boundary participates in its validation.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>Entry.</strong> The user enters or modifies values. Nothing is committed and nothing is judged that the user has not yet reached.</li>
+      <li><strong>Validation.</strong> Rules are evaluated according to the timing defined in §09 — some per value as it settles, some only against the whole set.</li>
+      <li><strong>Commit.</strong> The user activates the commit action. All applicable rules are evaluated against one snapshot of the current values.</li>
+      <li><strong>Branch — unacceptable.</strong> Nothing is sent. Every value remains editable and every unresolved problem is exposed at its field, plus a submission-level statement that the commit did not proceed. The user is directed to the first actionable problem (§12).</li>
+      <li><strong>Branch — acceptable.</strong> The snapshot proceeds to commitment and the pattern enters <code>submitting</code>.</li>
+      <li><strong>Success.</strong> The operation completes the submission. What happens to the values — retained, cleared, or replaced by a resulting state — is declared, not incidental (§04).</li>
+      <li><strong>Failure.</strong> Recoverable values are preserved, the failure is reported as an operational failure and not as invalid input, and the user may correct or retry.</li>
+      <li><strong>Interruption.</strong> Before commit, abandonment loses nothing the pattern promised to keep. After commit, the outcome belongs to the operation; the interface must not claim a result it does not have.</li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Submission operates on one coherent snapshot.</strong> All rules and the commit itself see the same value set, captured at activation — never fields read independently as the operation proceeds.</li>
+      <li><strong>Submission never silently discards a value.</strong> Anything the pattern will drop — an unused field, a value invalidated by another choice, a trimmed entry — is either visible to the user before commit or reported at it.</li>
+      <li><strong>The commit is single-shot while pending.</strong> Repeated activation during <code>submitting</code> must not create a second operation. Enforced by the pattern's own state, not by the button's appearance.</li>
+      <li><strong>Implicit submission is the commit action.</strong> <kbd>Enter</kbd> pressed in a single-line control within the boundary activates the one commit action and nothing else — same snapshot, same evaluation, same single-shot guard. It is never a second commit path with its own behavior, and it is never suppressed: removing it strands keyboard users. Controls that consume <kbd>Enter</kbd> for their own purpose — a multi-line <code>Textarea</code>, an open <code>Combobox</code> list — keep it, and the pattern makes no claim on those keypresses.</li>
+      <li><strong>Field-level and submission-level failures stay distinguishable</strong> at every point: in placement, in wording, and in what the user is asked to do about them. One says "this value is wrong"; the other says "your values were fine and the operation did not complete".</li>
+      <li><strong>Success declares the fate of the values.</strong> The pattern must state whether they remain visible for further editing, reset for a subsequent entry, or transition to a resulting state. An undeclared outcome produces the two worst readings: a form that looks unsaved, and a cleared form that looks lost.</li>
+      <li><strong>Validation state is the pattern's, not the controls'.</strong> Individual controls report their own validity; whether the submission is acceptable is a conclusion the pattern draws over all of them.</li>
+      <li><strong>Correcting a value clears its own problem, not others'.</strong> Resolving one error must never suppress the remaining errors or the submission-level report while problems remain.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Pattern state</th><th>What is true</th><th>Commit</th></tr></thead><tbody>
+      <tr><td class="k">editing</td><td>Values are being entered or changed. No blocking problem is currently exposed. Nothing sent.</td><td>Available</td></tr>
+      <tr><td class="k">invalid</td><td>At least one blocking condition is exposed and unresolved. Values intact and editable.</td><td>Available, and refuses — see below</td></tr>
+      <tr><td class="k">ready</td><td>All applicable rules are satisfied against the current values.</td><td>Available</td></tr>
+      <tr><td class="k">submitting</td><td>One operation in flight against one snapshot. Outcome unknown.</td><td>Suspended</td></tr>
+      <tr><td class="k">failed</td><td>The operation resolved unsuccessfully. Values preserved. Not an input problem unless the operation says the input caused it.</td><td>Available, as retry</td></tr>
+      <tr><td class="k">submitted</td><td>Committed. The declared post-success disposition of the values applies.</td><td>Per disposition</td></tr>
+    </tbody></table>
+    <p><code>invalid</code> and <code>failed</code> are separate states because they are separate facts with separate remedies, and collapsing them is the most common defect in implementations of this pattern.</p>
+    <p class="warn"><strong>The commit action stays reachable in <code>invalid</code>.</strong> Activation is what runs the full evaluation and exposes the problems; a permanently unavailable commit leaves a user with no way to find out what is wrong. It refuses the operation — it does not refuse the click.</p>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="mf"><span class="ml">Order quantity</span><div class="mi">400</div><span class="mh">Up to 120 pcs per shift on Line A.</span></div><div class="mb">Release work order</div></div><p class="why">Reachable. Activating it evaluates everything and shows the planner what is wrong.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="mf"><span class="ml">Order quantity</span><div class="mi">400</div><span class="mh">Up to 120 pcs per shift on Line A.</span></div><div class="mb off">Release work order</div></div><p class="why">Unavailable with nothing marked. The planner can see the release is blocked and not why — a dead end on a shift clock.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§09</span><h2>Validation</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Every rule declares its scope.</strong> Independent rules concern one value alone; dependent rules concern a value in relation to others. Which is which must be explicit, because it determines when the rule can be evaluated at all.</li>
+      <li><strong>Cross-field constraints are evaluated against one logical value set</strong> — the same snapshot for every rule. Evaluating a dependency against a value read at a different moment produces conclusions that were never simultaneously true.</li>
+      <li><strong>Timing.</strong> Independent rules may report once the user has finished with the value and never while they are still producing it. Dependent rules report when both participating values exist. All applicable rules are evaluated at commit, without exception — commit-time evaluation is the authority.</li>
+      <li><strong>A blocking condition prevents the commit.</strong> If a rule is not blocking, it is advisory and must not be presented as an error; a warning that stops nothing but looks like a failure teaches users to ignore real ones.</li>
+      <li><strong>Correction re-evaluates.</strong> Changing a value must allow its condition — and every dependent condition it participates in — to be judged again and cleared. A condition that cannot be cleared by correcting the value it names is a defect.</li>
+      <li><strong>Dependent failure names the relationship.</strong> When two values conflict, the message must identify which value the user is expected to change, and attach to that value's field. A constraint reported on neither participant is unactionable.</li>
+      <li><strong>Nothing is judged before the user reaches it.</strong> Untouched values are not errors on arrival; they become problems at commit, where the user asked for a verdict.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="mf"><span class="ml">Production line</span><div class="mi">Line A — manual cell</div></div><div class="mf"><span class="ml">Order quantity</span><div class="mi bad">400</div><span class="me">Line A — manual cell runs 120 pieces per shift. Reduce the quantity, or release it to a faster line.</span></div></div><p class="why">The dependent problem sits on the value the user is expected to change, and names both participants and the fix.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="mf"><span class="ml">Production line</span><div class="mi bad">Line A — manual cell</div></div><div class="mf"><span class="ml">Order quantity</span><div class="mi bad">400</div></div><div class="ma">Your selections are incompatible.</div></div><p class="why">Both fields marked, the message attached to neither, and no indication which value to change.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Error handling</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Operational failure is not invalid input.</strong> A timeout, an unavailable service, or a conflict elsewhere must not mark fields invalid or borrow validation's wording and styling. The exception is narrow and explicit: where the operation reports that a specific value caused the rejection, that becomes a field-level problem on that value, and only that value.</li>
+      <li><strong>Recoverable input remains available.</strong> After failure every value the user provided is still there and still editable. Values a system cannot retain — a one-time credential, a secret it must not hold — are the only permitted exception, and the failure message must say what has to be re-entered.</li>
+      <li><strong>Retry uses the current intended values.</strong> Retry re-snapshots at the moment of retry, including corrections made since the failure. Silently replaying an obsolete snapshot commits something the user no longer intends.</li>
+      <li><strong>Report in place.</strong> Failure keeps the user with their input, using <code>Alert</code> within the submission's boundary. A failure reported only in a transient surface can be missed, leaving a form that appears to have succeeded.</li>
+      <li><strong>Partial commitment is reported as partial.</strong> Where the operation can commit some of the set, the user must be told what was committed and what remains, and retry must be scoped to the remainder.</li>
+      <li><strong>An unresolved operation is not a failure.</strong> When the outcome is genuinely unknown, say so and say where the truth can be found. Never guess in either direction; a false failure invites a duplicate commit.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma">Work order not released — your entries are fine, the MES did not answer. Nothing was created and no material was reserved. Try again.</div><div class="mf"><span class="ml">Order reference</span><div class="mi">Bracket weldment — March build</div></div><div class="mb">Try again</div></div><p class="why">Reported in place, values intact, no field marked invalid, retry offered against what the user now intends.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma">Invalid submission. Please check your entries and try again.</div><div class="mf"><span class="ml">Order reference</span><div class="mi bad">Bracket weldment — March build</div></div><div class="mb">Release work order</div></div><p class="why">An operational failure dressed as invalid input. The planner is sent to audit correct values for a fault that was never theirs, while the line waits.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Validation feedback is programmatically associated with its input</strong> through the owning <code>Field</code>, wherever the problem belongs to a value. A dependent problem attaches to the field the user must change.</li>
+      <li><strong>Submission-level status is conveyed independently of visual styling</strong> — a role and a text statement, not colour, position, or an icon alone.</li>
+      <li><strong>After a failed submission, focus goes to the first actionable problem</strong> in reading order, and every remaining problem stays reachable and announced in its field. Moving focus must never be the only way the problems are conveyed, and it must not make the others harder to find.</li>
+      <li><strong>The submission-level statement carries the count and nature of the problems</strong> so that a user who does not tab through the whole group learns the scale of what needs fixing.</li>
+      <li><strong>Asynchronous completion and failure are announced.</strong> Entering <code>submitting</code> is announced politely and once; failure assertively; success by the outcome report. Silence during an asynchronous commit is indistinguishable from a dead interface.</li>
+      <li><strong>Suspension of the commit is perceivable</strong> as a state and not only as a visual change — a user who cannot see the spinner must still be able to tell the operation is in flight.</li>
+      <li><strong>No time limit.</strong> Values are never discarded and the commit never becomes unavailable through inaction.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The commit label names the commitment</strong> — <code>Release work order</code>, <code>Post disposition</code>, <code>Save changes</code>. Never <code>Submit</code>, <code>OK</code>, or <code>Continue</code>: a user reading only the button must know what they are agreeing to.</li>
+      <li><strong>Validation messages state the problem and, where possible, the correction.</strong> "Enter a date after the start date", not "Invalid date". A message that only reports rejection leaves the user guessing at the rule.</li>
+      <li><strong>Operational errors are not worded as validation failures.</strong> No "invalid", no "please check your entries" for something the entries did not cause. Say what did not happen, and whether trying again is expected to help.</li>
+      <li><strong>Dependent messages name both values and the direction of the fix,</strong> so the user is not left choosing which of two fields to change.</li>
+      <li><strong>Terminology is stable</strong> across label, validation message, and outcome report: a value called “Order quantity” in the label is not “volume” in its error.</li>
+      <li><strong>Requirements are stated before commit, not only after.</strong> A constraint a user could not have known — a format, a minimum, a dependency — belongs in the field's description; discovering it only through an error is the pattern failing at its purpose.</li>
+      <li><strong>Success is stated in terms of what now exists,</strong> not "success".</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="mf"><span class="ml">Part number</span><div class="mi bad">brk 4820 a</div><span class="mh">Item master format: uppercase letters, digits and hyphens.</span><span class="me">Use uppercase letters, digits and hyphens only — try BRK-4820-A.</span></div><div class="mb">Release work order</div></div><p class="why">The rule was stated before commit, the message names the correction, and the label names the commitment.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="mf"><span class="ml">Part number</span><div class="mi bad">brk 4820 a</div><span class="me">Invalid.</span></div><div class="mb">Submit</div></div><p class="why">A constraint the user could not have known, a message that only reports rejection, and a button that names nothing.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§17</span><h2>Performance</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>A commit that is not immediate must be perceivable as in flight.</strong> Feedback begins at activation, without a delay threshold — the gap between clicking and any acknowledgement is where duplicate submissions are created.</li>
+      <li><strong>Suspension takes effect at activation.</strong> The window in which the commit still looks available after being pressed must not exist.</li>
+      <li><strong>Repeated activation during a pending operation never produces a second commitment,</strong> whatever the input path — pointer, keyboard repeat, or assistive activation.</li>
+      <li><strong>Validation must not block input.</strong> Evaluation that depends on a remote check runs without preventing the user from continuing, and must not leave the commit indefinitely unavailable while it settles.</li>
+      <li><strong>An unresolved remote check at commit is resolved before the verdict,</strong> not ignored and not treated as a pass.</li>
+      <li><strong>Determinate progress only when the progress is known.</strong> Otherwise indicate activity, not completion.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+      <tr><td class="k">Value changes at commit</td><td>A change that lands between activation and snapshot is either in the snapshot or not committed. Never partially applied. Where a control commits its value on blur, activating the commit must settle that value first.</td></tr>
+      <tr><td class="k">Repeated activation</td><td>Additional activations while <code>submitting</code> are discarded. One activation yields at most one operation.</td></tr>
+      <tr><td class="k">Failure after everything validated</td><td>Stays an operational failure. Values preserved, fields not marked invalid, retry available with current values.</td></tr>
+      <tr><td class="k">Value invalidated by another value</td><td>The dependent condition is re-evaluated and exposed on the field the user must change — including when the newly conflicting value was entered long before and is scrolled out of view.</td></tr>
+      <tr><td class="k">Correction during flight</td><td>Editing while <code>submitting</code> does not alter the snapshot in flight. The operation commits what was submitted; the edited values belong to the next commit, and the difference must not be hidden from the user.</td></tr>
+      <tr><td class="k">Rule set changes mid-entry</td><td>When a choice adds or removes fields, values already entered into now-inapplicable fields are excluded from the snapshot and their conditions cease to block. Nothing is silently discarded (§04).</td></tr>
+      <tr><td class="k">Repeat submission after success</td><td>Where the group resets for another entry, the second submission must be a distinct operation, and the prior success must not remain on screen as if it described the new one.</td></tr>
+      <tr><td class="k">Nothing entered</td><td>Commit runs the evaluation and reports what is required. Never a silent no-op.</td></tr>
+      <tr><td class="k">Extreme input</td><td>Length and range limits are enforced at the field with a stated limit, not discovered as a submission failure.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Three separate stores: input state, validation state, operation state.</strong> Derive the pattern states of §08 from them; never store a conflated "error" that both a rule and a request can write. Almost every defect in this pattern traces to one of the three standing in for another.</li>
+      <li><strong>Snapshot at activation</strong> and evaluate every rule and the request itself against that one object. Rules that read live field state cannot be reasoned about and cannot be tested.</li>
+      <li><strong>Guard the transition, not the control.</strong> Single-shot commitment is a refused transition out of <code>submitting</code> — relying on a disabled button leaves a race the width of one render.</li>
+      <li><strong>Keep the snapshot until the operation resolves,</strong> so that retry, partial failure, and the reporting of what was attempted all have something to refer to.</li>
+      <li><strong>Retry re-snapshots.</strong> Never resend the stored snapshot; take a new one from current input so corrections are included.</li>
+      <li><strong>Preserve enough to retry without re-entry,</strong> including values held in controls whose own state resets on remount. If the surface can unmount, the values do not live in the controls.</li>
+      <li><strong>Validation is a pure function of the value set,</strong> returning problems keyed to the fields that own them. Evaluated identically on change and at commit; two code paths become two definitions of acceptable.</li>
+      <li><strong>Sequence on failure:</strong> resolve → write operation state → announce → move focus. Moving focus before the problems exist in the accessibility tree drops the announcement.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted"><strong>Omitted sections and why.</strong>
+§05 Properties — validation timing and post-success disposition are declared per application in §09 and §04; the pattern exposes no configuration of its own beyond them.
+§06 Variants — differences between submissions are differences of rules and content, not of behavioral contract; a stepped or autosaving form is a different pattern, not a variant of this one.
+§07 Sizes — no coordinated sizing exists at the pattern level; control sizing belongs to the controls.
+§11 Input &amp; interaction modalities — every affordance is an ordinary control whose modality contracts are owned by <code>Input</code>, <code>Button</code>, and their peers; the pattern adds no gesture and no modality-specific behavior. Implicit submission is settled in §04 as an activation of the one commit action, not a modality of its own.
+§13 Motion — no motion carries pattern-owned meaning; the progress indication of §17 is a state, not choreography.
+§15 Responsive — layout reflows, but the interaction does not change with available space; a submission split across screens by space is a stepped flow.
+§16 Internationalization — locale-sensitive parsing and formatting of individual values are owned by the capturing controls; the pattern is direction-agnostic, and its one cross-cutting requirement, that messages remain attached to the field the user must change, is stated in §09.
+§19 Anti-patterns — the refusals in §01 and the distinctions held in §08 and §10 cover the misuses; a separate section would restate them.
+§21 Developer notes — the contract in §04, §08, and §20 is the whole contract; there is no separate API surface.</p>
+</div></body></html>

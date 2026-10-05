@@ -1,0 +1,388 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="Checkbox" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Checkbox — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:16px 28px}
+.demo.col{flex-direction:column;align-items:stretch;gap:12px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+td.num,th.num{text-align:right;font-family:var(--font-mono)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:5px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.grp{display:flex;flex-direction:column;gap:10px}
+.hdr{font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--text-secondary)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Checkbox, Switch, Radio, Field, Button, Icon } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows,numCols=[]}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i} className={numCols.includes(i)?'num':''}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={(j===0?'k ':'')+(numCols.includes(j)?'num':'')}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Group(){
+  const areas = ['Mixing','Filling','Packing','Palletising'];
+  const [sel,setSel] = React.useState(['Mixing','Packing']);
+  const all = sel.length === areas.length;
+  const some = sel.length > 0 && !all;
+  return (
+    <div role="group" aria-labelledby="areas-h" className="grp">
+      <span className="hdr" id="areas-h">Areas included in the report</span>
+      <Checkbox label="All areas" checked={all} indeterminate={some} onChange={() => setSel(all ? [] : areas)} />
+      <div className="grp" style={{marginLeft:24}}>
+        {areas.map((a) => (
+          <Checkbox key={a} label={a} checked={sel.includes(a)}
+            onChange={(e) => setSel(e.target.checked ? [...sel, a] : sel.filter((x) => x !== a))} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>Checkbox</h1>
+    <p className="lede">A 16 px box that answers one yes/no question, and the selector that owns every table row in the system. It is the smallest control here and the one with the most ways to be wrong: an unnamed box in a cell, a fake “mixed” state that announces as unchecked, a hit target the size of the glyph, and a label phrased as a negative.</p>
+    <div className="meta">
+      <span>components/forms/Checkbox.jsx</span><span>window.MeridianDesignSystem_962c43.Checkbox</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 0 open items</span><span>since: 1.0.0 · revised 1.2.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="An independent choice that takes effect on save.">
+    <p>A Checkbox states a fact the user is setting: this option is on, this row is selected. Each box is independent of every other, and nothing happens until the form is submitted — that last clause is the whole distinction from <code>Switch</code>.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['One boolean in a form, applied on save','Checkbox','This component.'],
+      ['A setting that takes effect the moment it is flipped','Switch','A checkbox implies a pending change; a switch implies a live one.'],
+      ['One of several mutually exclusive options','Radio','Exclusive choice is a radio group, never a set of boxes you police in code.'],
+      ['Select rows in a table','Checkbox (bare, with aria-label)','The system-wide row selector. Table already draws it.'],
+      ['Accept terms before continuing','Checkbox','Legally the only correct control: it must be deliberately set, never pre-set.'],
+      ['Filter a list by several values','Checkbox, or Tag selected','Boxes in a filter panel; tags when they must sit in a row.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> for independent options, row selection, and consent.</li>
+      <li><strong>Do not use</strong> two checkboxes to express one either/or — that is a Radio group with two options.</li>
+      <li><strong>Do not use</strong> for an action. A box that runs something on click is a Button; the box implies a stored state.</li>
+      <li><strong>Never pre-check consent</strong>, and never pre-check anything whose cost the user has not seen.</li>
+    </ul>
+    <div className="demo">
+      <div className="grp">
+        <Checkbox label="Email me on failures" defaultChecked />
+        <Checkbox label="Retain raw samples" description="Adds ~2 GB per line per day." />
+      </div>
+      <div className="grp">
+        <Switch label="Auto-hold on fault" description="Takes effect immediately." defaultChecked />
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Box, mark, label, description — and a target bigger than all of them.">
+    <div className="demo"><Checkbox label="Retain raw samples" description="Adds ~2 GB per line per day." defaultChecked /></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Box</strong> — 16 px square, 2 px radius (<code>--radius-xs</code>), the one shape in the system that is nearly square: a rounder box reads as a radio, a sharper one as a table cell.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Border</strong> — <code>--checkbox-border</code>. An unchecked box is nothing but its border, so this is a load-bearing control edge: <code>--border-control</code> at 4.74:1, retargeted from <code>--border-strong</code> (1.60:1) in 1.2.0 (§08).</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Mark</strong> — <code>check</code> or <code>minus</code> at 11 px (<code>--icon-mark</code>), white on the action fill at 6.98:1. The mark size exists for exactly this box; it is not on the icon scale.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Label</strong> — 13 px primary text at <code>--leading-snug</code>, inside the <code>&lt;label&gt;</code>, so it is both the accessible name and part of the click target.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Description</strong> — 12 px tertiary, indented 24 px, <em>outside</em> the <code>&lt;label&gt;</code> and linked with <code>aria-describedby</code>. Inside it, it would be read as part of the name (§13).</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>Target</strong> — the label row is at least <code>--control-h-sm</code> tall (28 px comfortable, 34 px expanded), and at least that wide when there is no label. The 16 px box is never the target (§08).</span></div>
+      <div className="callout"><span className="cnum">7</span><span><strong>Hidden input</strong> — a real <code>&lt;input type="checkbox"&gt;</code>, visually hidden but present: it carries the role, the state, the keyboard behaviour and the form value.</span></div>
+    </div>
+    <T cols={['Region','Value','Token']} rows={[
+      ['Box','16 × 16 px','—'],
+      ['Radius','2 px','--checkbox-radius (--radius-xs)'],
+      ['Mark','11 px','--icon-mark'],
+      ['Gap box → label','8 px','--space-2'],
+      ['Description indent','24 px (box + gap)','—'],
+      ['Target row','28 px comfortable / 24 compact / 34 expanded','--control-h-sm'],
+      ['Focus','3 px ring','--input-focus-ring'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Six props. No size, no variant, no colour.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['label',<span className="t">ReactNode</span>,'—','The accessible name. Omit only for a bare selector, and then pass aria-label — the component warns otherwise.'],
+      ['description',<span className="t">ReactNode</span>,'—','One line of consequence or scope. Announced as the description.'],
+      ['checked',<span className="t">boolean</span>,<span className="t">false</span>,'With onChange the control is controlled; without it, this seeds the initial state.'],
+      ['indeterminate',<span className="t">boolean</span>,<span className="t">false</span>,'Sets the native DOM property, so it announces as "mixed". For a parent whose children are partly selected.'],
+      ['disabled',<span className="t">boolean</span>,<span className="t">false</span>,'Not focusable, and the reason cannot be announced — see §06.'],
+      ['onChange',<span className="t">(e) => void</span>,'—','Read e.target.checked.'],
+      ['style',<span className="t">CSSProperties</span>,'—','Layout only, on the outer wrapper.'],
+      ['…rest',<span className="t">InputHTMLAttributes</span>,'—','name, value, required, aria-label, aria-describedby, onClick (Table stops propagation with it), data-*.'],
+    ]}/>
+    <p><strong>There is no <code>size</code>.</strong> A checkbox is 16 px everywhere — in a 28 px form row and in a 44 px table row alike. Two sizes of box in one product reads as a rendering bug, and the thing that should change with density is the target, which it does.</p>
+    <p><strong>There is no <code>error</code> or tone.</strong> A single box cannot be invalid in a way colour explains; if a required consent is missing, the message belongs to the form, next to the submit button.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="No variant prop. Four shapes the same component takes.">
+    <T cols={['Shape','Markup','Use']} rows={[
+      ['Label only','<Checkbox label="…">','The default. A form option.'],
+      ['Label + description','<Checkbox label="…" description="…">','When the consequence is not obvious from the label — cost, scope, who gets notified.'],
+      ['Bare selector','<Checkbox aria-label="Select row 4">','Table rows and headers. Never without the aria-label.'],
+      ['Parent with indeterminate','<Checkbox label="All areas" indeterminate={some}>','A select-all above a set of children. The dash means "some", not "unknown".'],
+    ]}/>
+    <div className="demo">
+      <div className="grp">
+        <Checkbox label="Label only" />
+        <Checkbox label="With description" description="One line of consequence." />
+        <Row label="bare"><Checkbox aria-label="Bare selector example" /></Row>
+      </div>
+      <Group />
+    </div>
+    <p><strong><code>indeterminate</code> is a display of children, never a user state.</strong> A click on a mixed parent selects all; it never cycles back to mixed. The component sets the native property, so assistive tech hears “mixed” instead of the old lie — before 1.2.0 the dash was drawn but the input still reported unchecked (§13).</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="One box. The target is what scales.">
+    <T cols={['Density','Target row','Box','Note']} numCols={[1,2]} rows={[
+      ['compact','24 px','16 px','Exactly the 2.5.8 minimum. Pointer-first tables only.'],
+      ['comfortable','28 px','16 px','Default.'],
+      ['expanded','34 px','16 px','Floor tablets and gloves. Put a checkbox column in a --row-h row and the row gives 56 px.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="comfortable"><Checkbox label="Email me on failures" /></Row>
+      <Row label="in a 44px row"><span style={{display:'inline-flex',alignItems:'center',height:44,padding:'0 12px',border:'var(--border-hairline)',borderRadius:'var(--radius-sm)'}}><Checkbox aria-label="Row selector in a 44px row" /></span></Row>
+    </div>
+    <ul>
+      <li><strong>The label extends the target, and should.</strong> A 40-character label gives a 300 px target — the reason a checkbox with a label is easy to hit and a bare one is not.</li>
+      <li><strong>A bare box still reserves a square target</strong> of <code>--control-h-sm</code>, so a table selector is never a 16 px pinprick.</li>
+      <li><strong>Do not scale the box with <code>style</code>.</strong> The mark is 11 px and centred for a 16 px box; a 20 px box gets a small mark floating in it.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="06" title="States" note="Eight, and two of them are pairs the fill has to keep apart.">
+    <T cols={['State','Box','Notes']} rows={[
+      ['Unchecked','card fill, --checkbox-border (4.74:1)','The border is the whole control.'],
+      ['Unchecked hover','--checkbox-background-hover tint, --checkbox-border-hover (7.78:1)','New in 1.2.0 — the box had no hover response at all, on a 16px target.'],
+      ['Checked','--checkbox-background-checked fill, white mark at 6.98:1','Fill and border move together, so the box reads as solid.'],
+      ['Checked hover','--checkbox-background-checked-hover (action 700)','Deepens, matching Button primary hover.'],
+      ['Indeterminate','same fill as checked, minus mark','Announced as "mixed" (§04).'],
+      ['Focus visible','3 px --input-focus-ring','Only on keyboard focus — the ring is gated on :focus-visible, so a mouse click no longer leaves a ring sitting on the box.'],
+      ['Disabled unchecked','--checkbox-background-disabled, --checkbox-border-disabled','Low contrast by design; exempt from 1.4.3.'],
+      ['Disabled checked','disabled fill, mark in --text-disabled (2.27:1)','Fixed in 1.2.0: the mark stayed white on the grey fill, so a checked-disabled box looked EMPTY — the value was invisible.'],
+    ]}/>
+    <div className="demo">
+      <div className="grp">
+        <Checkbox label="Unchecked" />
+        <Checkbox label="Checked" defaultChecked />
+        <Checkbox label="Indeterminate" indeterminate />
+      </div>
+      <div className="grp">
+        <Checkbox label="Disabled, unchecked" disabled />
+        <Checkbox label="Disabled, checked" disabled checked />
+        <Checkbox label="Disabled, with description" description="Locked by the shift schedule." disabled />
+      </div>
+    </div>
+    <p className="warn"><strong>Disabled hides the reason.</strong> A disabled checkbox is not focusable, so a keyboard or screen-reader user never learns why the option is unavailable. Prefer leaving it enabled and explaining on submit, or replace it with static text stating the state; reserve <code>disabled</code> for options that are irrelevant rather than blocked.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Space toggles. Enter does not, and must not be made to.">
+    <T cols={['Key','Behaviour','Note']} rows={[
+      ['Tab / Shift-Tab','Focuses the box. Every checkbox is its own tab stop — unlike a Radio group, which is one.','A ten-option list is ten tab stops. That is correct; do not "improve" it with arrow keys.'],
+      ['Space','Toggles.','The only activation key on a checkbox.'],
+      ['Enter','Submits the form.','Native. Adding Enter-to-toggle would break the form contract and confuse it with a button.'],
+      ['Click on the label','Toggles.','The label element wraps box and text; the description is outside it and does not toggle — deliberate, so a long explanation is selectable text.'],
+      ['Shift-click (table)','Range select.','A Table behaviour, not this component. If you add it, say so in the table header.'],
+    ]}/>
+    <ul>
+      <li><strong>Do not add arrow-key navigation.</strong> Checkboxes are independent, so arrows have no meaning; that pattern belongs to Radio and Tabs.</li>
+      <li><strong>Do not trap Space</strong> in a scrolling panel that also uses it — the focused control wins, and that is correct.</li>
+      <li><strong>A parent select-all must be reachable</strong> as its own tab stop before the children, which is why it is a real checkbox and not an icon button in the header.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="Three requirements. The system failed two of them before 1.2.0.">
+    <p className="warn"><strong>Every checkbox needs a name — including the one in a table cell.</strong> A bare selector announces as “checkbox, not checked” with nothing to say what it selects, and a row of forty of them is forty identical announcements. Pass <code>aria-label</code> naming the row (“Select work order WO-4471”); the component warns when there is neither a <code>label</code> nor an <code>aria-label</code>, and <code>Table</code> now supplies both the row and select-all names.</p>
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Role & name','A real <input type="checkbox"> wrapped in a <label>, so the label text IS the name and clicking it toggles. Warns when unnamed.'],
+      ['Mixed state (4.1.2)','indeterminate sets the native DOM property via a ref, which is the only way — there is no attribute, so JSX alone cannot do it. Assistive tech reports "mixed". Before 1.2.0 the dash was drawn and the state was still "not checked".'],
+      ['Description (1.3.1)','description sits outside the label with an id and is referenced by aria-describedby. Inside the label it became part of the NAME, so the control announced "Retain raw samples Adds ~2 GB per line per day, checkbox".'],
+      ['Control boundary (1.4.11)','Resolved in 1.2.0. --checkbox-border was --border-strong at 1.60:1; an unchecked box has no other boundary, so that was a real failure. Now --border-control: 4.74:1 on a card, 4.46:1 on the page band, 6.96:1 in dark. Hover 7.78:1.'],
+      ['Mark contrast','White on --action-solid measures 6.98:1 — above 3:1 for a graphical object and above 4.5:1 anyway.'],
+      ['Disabled checked','The mark switches to --text-disabled (2.27:1 on the disabled fill). Exempt, but visible — previously white on grey, which read as an empty box and misstated the value.'],
+      ['Focus (2.4.7)','3 px --input-focus-ring, gated on :focus-visible so it appears for keyboard users and not after a mouse click.'],
+      ['Target size (2.5.8)','The label row is at least --control-h-sm (28 px comfortable, 24 px compact, 34 px expanded), and at least as wide when unlabelled. The 16 px box is never the target.'],
+      ['Grouping (1.3.1)','A set of related checkboxes needs role="group" and aria-labelledby pointing at its heading. A Field label CANNOT name a set — its <label for> points at one control. See §14.'],
+      ['Reduced motion','140 ms colour transitions only; the mark itself is instant.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="named"><Checkbox aria-label="Select work order WO-4471" /></Row>
+      <Row label="group"><Group /></Row>
+    </div>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="Colour, 140 ms. The mark does not animate.">
+    <T cols={['Change','Duration','Easing','Property']} rows={[
+      ['Fill on check','140 ms','--ease-out','background-color'],
+      ['Border on hover / check','140 ms','--ease-out','border-color'],
+      ['Focus ring','140 ms','--ease-out','box-shadow'],
+      ['Mark appearing','0 ms','—','the glyph is present or it is not'],
+      ['Box size','—','—','never'],
+    ]}/>
+    <ul>
+      <li><strong>No drawn checkmark.</strong> A stroke that animates in delays the answer to “did that register?” by 200 ms, forty times over in a table.</li>
+      <li><strong>No scale bounce on click.</strong> The box is 16 px; a bounce at that size is a flicker.</li>
+      <li><strong>The tick must survive a fast click.</strong> Because the mark is instant and the fill is a 140 ms colour change, a rapid double toggle can never leave a half-drawn state.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="The label states what is TRUE when the box is checked.">
+    <T cols={['Context','Write','Not']} rows={[
+      ['Notification','Email me on failures','Do not email me on failures'],
+      ['Retention','Retain raw samples','Sample retention'],
+      ['Consent','I accept the data processing terms','Accept terms · Agree'],
+      ['Select all','All areas · Select all rows','Toggle all · Check all'],
+      ['Description','Adds ~2 GB per line per day.','This will use more storage'],
+    ]}/>
+    <ul>
+      <li><strong>Never phrase a label as a negative.</strong> “Do not send email” checked means email is off — a double negative the user has to solve. Flip the sentence.</li>
+      <li><strong>The label is a statement, not a question,</strong> in sentence case with no trailing period. A description IS a sentence and takes one.</li>
+      <li><strong>The description carries the cost, not the instruction.</strong> Storage, money, who gets paged, what stops working — not “check this box to enable”.</li>
+      <li><strong>Consent is first person</strong> (“I accept…”) and never pre-checked.</li>
+      <li><strong>Keep labels to a line or two.</strong> The box centres on the text block, so a five-line label leaves it floating in the middle.</li>
+      <li><strong>Parallel labels in a set.</strong> All nouns or all verb phrases, never mixed — a set is read as a list.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Stack, indent, and let the label be the target.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','One box per line, full width, expanded density where the surface is touch-first — a 34 px row inside a 44 px list row. The label wraps; the box centres on the text block.'],
+      ['tablet ≥ 600','Same. Never two columns of checkboxes: reading order becomes ambiguous, and a set read down beats a set read across.'],
+      ['desktop ≥ 1024','Sets stack in one column at --space-3; children of a select-all indent 24 px, aligning with the parent label text.'],
+      ['ultrawide ≥ 1600','Unchanged. The column does not grow — a checkbox list is scanned, not read across.'],
+    ]}/>
+    <div className="demo col" style={{maxWidth:320}}>
+      <Checkbox label="Include stations that were starved by an upstream stop during the same shift" description="Attributes the loss upstream." />
+      <Group />
+    </div>
+    <ul>
+      <li><strong>The description indents to 24 px</strong> so it aligns with the label text rather than the box — the indent survives wrapping.</li>
+      <li><strong>In a table, keep the selector column at 36 px</strong> and let the row height give the target. Do not shrink the column on mobile; a mis-tap there selects the wrong row.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Give every box a name, including in tables.</li>
+        <li>Phrase the label as the checked state.</li>
+        <li><code>indeterminate</code> for a partly-selected parent.</li>
+        <li>Wrap a set in <code>role="group"</code> with a heading.</li>
+        <li>Put cost and scope in <code>description</code>.</li>
+        <li>Leave consent unchecked.</li>
+        <li>Use <code>Switch</code> when it applies immediately.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>A bare box with no <code>aria-label</code>.</li>
+        <li>Two checkboxes for one either/or.</li>
+        <li>A negative label.</li>
+        <li>A pre-checked consent box.</li>
+        <li>Arrow keys, or Enter-to-toggle.</li>
+        <li>An animated tick or a bouncing box.</li>
+        <li>A <code>Field</code> label as the name of a checkbox set.</li>
+        <li>Resizing the box with <code>style</code>.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this component invites.</strong> <code>&lt;Checkbox /&gt;</code> in a table cell — no label, because the row “obviously” says what it is. It renders perfectly, ships, and leaves the one control that selects data unnamed for every non-visual user; forty rows announce forty times as “checkbox, not checked”. It was in this system's own Table until 1.2.0.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="What ships, and the four defects closed in 1.2.0.">
+    <ul>
+      <li><strong>A hidden native input inside a <code>&lt;label&gt;</code>.</strong> The input is <code>position: absolute; opacity: 0</code> — present, focusable, form-submitting; the visible box is a sibling <code>&lt;span&gt;</code>. No <code>appearance: none</code> hacks, and no <code>role="checkbox"</code> re-implementation.</li>
+      <li><strong><code>indeterminate</code> is set through a ref in an effect.</strong> It is a DOM property with no HTML attribute, so JSX cannot express it: <code>ref.current.indeterminate = indeterminate</code>. Before 1.2.0 the minus glyph was drawn and the input still reported <code>checked = false</code> — the visual and the announced state disagreed.</li>
+      <li><strong>The description moved out of the label.</strong> Anything inside <code>&lt;label&gt;</code> becomes the accessible name, so the old markup announced label + description as one long name. It is now a sibling with a <code>useId</code>-derived id, referenced by <code>aria-describedby</code>, indented 24 px to align under the label text.</li>
+      <li><strong>Hover exists.</strong> The 16 px box previously had no pointer feedback: unchecked hover tints the fill and strengthens the border, checked hover deepens the fill to action 700.</li>
+      <li><strong>The focus ring is gated on <code>:focus-visible</code></strong> — checked with <code>e.target.matches(':focus-visible')</code> in <code>onFocus</code> — so a mouse click no longer leaves a 3 px ring on the box.</li>
+      <li><strong>The target is <code>--control-h-sm</code>, not 16 px.</strong> The label row carries <code>min-height</code>, and <code>min-width</code> too when there is no label, so a bare table selector clears 2.5.8 and grows with density.</li>
+      <li><strong>The disabled-checked mark is <code>--text-disabled</code></strong>, not white. White on the disabled grey fill was invisible, so a checked-disabled box read as empty and misstated the stored value.</li>
+      <li><strong>Semi-controlled, like Select:</strong> with <code>onChange</code> it is controlled; without, <code>checked</code> seeds <code>defaultChecked</code> and the input is <code>readOnly</code> so React does not warn.</li>
+      <li><strong>One console warning:</strong> no accessible name. Rendering is unaffected — a nameless box still draws, because a missing selector would be worse.</li>
+      <li><strong>Tokens consumed:</strong></li>
+    </ul>
+    <div className="tokenlist">
+      <span>--checkbox-radius</span><span>--checkbox-background</span><span>--checkbox-background-hover</span><span>--checkbox-background-checked</span><span>--checkbox-background-checked-hover</span><span>--checkbox-background-disabled</span><span>--checkbox-border</span><span>--checkbox-border-hover</span><span>--checkbox-border-checked</span><span>--checkbox-border-checked-hover</span><span>--checkbox-border-disabled</span><span>--checkbox-mark</span><span>--icon-mark</span><span>--input-focus-ring (borrowed)</span><span>--control-h-sm (target)</span><span>--space-2</span><span>--text-sm · --text-xs</span><span>--leading-snug</span><span>--text-disabled</span><span>--transition-control</span>
+    </div>
+    <p>Four <code>--checkbox-*</code> tokens are new in 1.2.0 (both hover fills, both hover borders). <code>--input-focus-ring</code> is borrowed deliberately: one ring across every form control, or a form shows two.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { Checkbox } from '@meridian/ds';
+
+// a form option
+<Checkbox label="Email me on failures" checked={v} onChange={(e) => set(e.target.checked)} />
+
+// with the cost stated
+<Checkbox label="Retain raw samples" description="Adds ~2 GB per line per day."
+  checked={keep} onChange={(e) => setKeep(e.target.checked)} />
+
+// a set — role="group" + a heading id; a Field label cannot name a set
+<div role="group" aria-labelledby="areas-h">
+  <span id="areas-h">Areas included in the report</span>
+  <Checkbox label="All areas" checked={all} indeterminate={some} onChange={toggleAll} />
+  {areas.map((a) => (
+    <Checkbox key={a} label={a} checked={sel.includes(a)} onChange={onOne(a)} />
+  ))}
+</div>
+
+// a table selector always carries a name
+<Checkbox aria-label={'Select ' + row.id} checked={selected} onChange={onSelect} />`}</pre>
+    <ul>
+      <li><strong>Grouping is manual, and that is the one thing this component does not solve.</strong> <code>Field</code> cannot label a set: its <code>&lt;label for&gt;</code> addresses a single id. Use <code>role="group"</code> with <code>aria-labelledby</code>, as above.</li>
+      <li><strong>Select-all logic belongs to the caller.</strong> The component never derives <code>indeterminate</code> — it renders what you pass. The rule: <code>indeterminate = selected.length &gt; 0 &amp;&amp; selected.length &lt; total</code>, and a click on a mixed parent selects all.</li>
+      <li><strong>Testing.</strong> <code>getByRole('checkbox', {'{ name: /email me on failures/i }'})</code>. For a mixed parent assert the DOM property (<code>input.indeterminate === true</code>) as well as the glyph — the property is the part that regressed before. Assert the description is in <code>aria-describedby</code> and NOT in the accessible name. Assert the resting <code>border-color</code> resolves to <code>--border-control</code>.</li>
+      <li><strong>Lint.</strong> Flag a bare <code>&lt;input type="checkbox"&gt;</code>, a <code>Checkbox</code> with neither <code>label</code> nor <code>aria-label</code>, a negative label string, and two <code>Checkbox</code>es whose labels read as one either/or (“Yes”/“No”).</li>
+      <li><strong>Frozen 4 Sep 2026.</strong> API closed: <code>label</code>, <code>description</code>, <code>checked</code>, <code>indeterminate</code>, <code>disabled</code>, <code>onChange</code>, <code>style</code>, plus native input attributes.</li>
+      <li><strong>Breaking, visual:</strong> every unchecked box gains a darker edge (1.60:1 → 4.74:1) and hover feedback. Pull <code>styles.css</code> and <code>_ds_bundle.js</code> together.</li>
+      <li><strong>Breaking, structural:</strong> a Checkbox with a <code>description</code> now renders a wrapper <code>&lt;span&gt;</code> with the description outside the label. Any CSS selecting <code>label &gt; span:last-child</code> — none in this project — would need updating.</li>
+      <li><strong>Radio is next, and inherits all of this:</strong> <code>--radio-border</code> is still <code>--border-strong</code> (1.60:1), its description has the same name-swallowing bug, and it has no hover state either. Retargeting it here without its spec would leave the dot geometry unreviewed; it is the last open item from the 1.4.11 sweep.</li>
+      <li><strong>Closed in 1.17.0 — <code>CheckboxGroup</code> shipped.</strong> Every consumer will hand-roll the <code>role="group"</code> wrapper, the select-all maths and the 24 px indent. That is a real component (label, description, options, value, onChange, indeterminate parent), and it should be specced rather than pasted. Not built here because it is a new API, not a fix. It owns the <code>role="group"</code> wrapper, the select-all maths and the 24 px indent, and it has its own frozen spec.</li>
+      <li><strong>Closed — <code>tokens.json</code> is generated again.</strong> Rebuilt from <code>tokens/*.css</code> at 1.2.0; the four hand-mirrored <code>--checkbox-*</code> tokens came back byte-identical, so no values were wrong — but the mirror is a build artefact again rather than a promise.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

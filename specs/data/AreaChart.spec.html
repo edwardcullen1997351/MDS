@@ -1,0 +1,490 @@
+<!-- @dsCard group="Specs · Data" viewport="1080x760" name="AreaChart" subtitle="Full specification — purpose, anatomy, props, stacking transforms, WCAG 1.4.1 patterns, keyboard, a11y, responsive, anti-patterns" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AreaChart Specification — Meridian Design System</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <style>
+    body {
+      margin: 0;
+      background: var(--background-page);
+      padding: 32px;
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+    .spec-container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .spec-header {
+      border-bottom: 2px solid var(--border-strong);
+      padding-bottom: 20px;
+      margin-bottom: 32px;
+    }
+    .spec-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: var(--weight-bold);
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: var(--radius-xs);
+      background: var(--surface-sunken);
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .spec-badge--frozen {
+      background: var(--status-success-bg, #ecfdf5);
+      color: var(--status-success-text, #065f46);
+      border: 1px solid var(--status-success-border, #a7f3d0);
+    }
+    .spec-title {
+      font-size: var(--text-3xl);
+      font-weight: var(--weight-bold);
+      margin: 0 0 8px 0;
+      letter-spacing: var(--tracking-tight);
+    }
+    .spec-meta {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .spec-section {
+      margin-bottom: 48px;
+    }
+    .spec-section-title {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      border-bottom: 1px solid var(--border-hairline);
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-xs);
+      margin: 16px 0;
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .spec-table th, .spec-table td {
+      padding: 10px 14px;
+      border-bottom: var(--border-hairline);
+      text-align: left;
+    }
+    .spec-table th {
+      background: var(--surface-sunken);
+      color: var(--text-secondary);
+      font-weight: var(--weight-semibold);
+    }
+    .spec-table code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--surface-sunken);
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    .spec-callout {
+      background: var(--surface-card);
+      border-left: 3px solid var(--action-solid);
+      padding: 14px 18px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 16px 0;
+      font-size: var(--text-sm);
+    }
+    .spec-callout--critical {
+      border-left-color: var(--status-critical-solid, #ef4444);
+      background: var(--status-critical-bg, #fef2f2);
+    }
+    .spec-callout--warning {
+      border-left-color: var(--status-warning-solid, #f59e0b);
+      background: var(--status-warning-bg, #fffbeb);
+    }
+    .demo-frame {
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin: 20px 0;
+      box-shadow: var(--shadow-xs);
+    }
+    .anatomy-diagram {
+      background: var(--surface-sunken);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="spec-container">
+
+    <!-- Spec Header -->
+    <header class="spec-header">
+      <div class="spec-badge spec-badge--frozen">Status: Frozen · 0 Open Items</div>
+      <h1 class="spec-title">AreaChart Specification</h1>
+      <div class="spec-meta">
+        <span>Component: <code>AreaChart</code></span>
+        <span>Package: <code>components/data/AreaChart.jsx</code></span>
+        <span>Infrastructure: <code>components/data/viz-core.js</code></span>
+        <span>Standard: <code>guidelines/data-visualization-spec-standard.card.html</code></span>
+        <span>WCAG: Level AA Compliant</span>
+      </div>
+    </header>
+
+    <!-- §01 Purpose & Domain Contract -->
+    <section class="spec-section" id="purpose">
+      <h2 class="spec-section-title">§01 Purpose & Domain Contract</h2>
+      <p>
+        <strong>AreaChart</strong> visualizes quantitative change across an ordered, usually temporal domain, specifically emphasizing <em>accumulated magnitude</em>, <em>volume</em>, or <em>shifting composition</em> (parts-to-whole).
+      </p>
+      <div class="spec-callout">
+        <strong>Domain Contract:</strong>
+        <ul>
+          <li><strong>Mandatory Ordered Domain:</strong> Observations along the X-axis must follow a strict, meaningful sequence (time, shift intervals, thermal ramp steps, frequency bins). Unordered categorical lists (e.g. regions, tool codes) are strictly forbidden; use <strong>BarChart</strong> instead.</li>
+          <li><strong>When to Use:</strong> Use when total volume, cumulative envelope, or proportional composition across sequential time periods is the primary cognitive objective.</li>
+          <li><strong>When NOT to Use:</strong> If the primary objective is comparing fine slopes, subtle rate changes, or when 4+ individual series intersect and overlap (which causes opaque occlusion), use <strong>LineChart</strong>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- §02 Anatomy & Layer Stacking -->
+    <section class="spec-section" id="anatomy">
+      <h2 class="spec-section-title">§02 Anatomy & Layer Stacking</h2>
+      <div class="anatomy-diagram">
++-----------------------------------------------------------------------------------+
+|  AreaChart Container (role="region", aria-roledescription="area chart")           |
+|                                                                                   |
+|  [Header]: Title, Subtitle, [Table Modal Trigger (Alt+F11)]                       |
+|  [Legend]: Interactive Series Isolation Swatches (Color + Pattern)                |
+|                                                                                   |
+|  +-- SVG Plot Region (Layer 0: Background) ------------------------------------+  |
+|  |  +-- Layer 1: Threshold Bands & Subtle Gridlines -----------------------+   |  |
+|  |  |   Horizontal Value Guides & Nominal Setpoint Bands                   |   |  |
+|  |  +----------------------------------------------------------------------+   |  |
+|  |  +-- Layer 2: Clipped Area Layers (stackSeriesData + createAreaPath) ---+   |  |
+|  |  |   [Upper Line Boundary (2px)] ------------------------------------+  |   |  |
+|  |  |   [Filled Area Segment (Color Token Fill)]                        |  |   |  |
+|  |  |   [Accessible Texture / Hatch Pattern Overlay (WCAG 1.4.1)]       |  |   |  |
+|  |  |   [Lower Baseline / Lower Series Boundary] -----------------------+  |   |  |
+|  |  +----------------------------------------------------------------------+   |  |
+|  |  +-- Layer 3: Reference Target Lines (Nominal / Max Thresholds) --------+   |  |
+|  |  +-- Layer 4: Interactive Crosshair Tracking Line + Series Sync Dots ---+   |  |
+|  |  +-- Layer 5: Categorical / Temporal Axes & Formatted Ticks ------------+   |  |
+|  +-----------------------------------------------------------------------------+  |
+|                                                                                   |
+|  [Layer 5 (HTML)]: Floating Telemetry Tooltip (Raw Value, Stacked Sum, Share %)   |
+|  [Accessible Modal]: Semantic HTML Data Table (Keyboard Accessible)               |
+|  [Screen Reader Live Region]: aria-live="polite" Speech Output                    |
++-----------------------------------------------------------------------------------+
+      </div>
+    </section>
+
+    <!-- §03 Properties & Data Model -->
+    <section class="spec-section" id="props">
+      <h2 class="spec-section-title">§03 Properties & Data Model</h2>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>data</code></td>
+            <td><code>Array&lt;Record&lt;string, any&gt;&gt;</code></td>
+            <td><code>[]</code></td>
+            <td>Sequential array of observations containing ordered X and numerical Y series fields.</td>
+          </tr>
+          <tr>
+            <td><code>series</code></td>
+            <td><code>AreaSeriesDef[]</code></td>
+            <td><code>[]</code></td>
+            <td>Array of series definitions specifying <code>key</code>, <code>label</code>, <code>color</code>, and <code>pattern</code>.</td>
+          </tr>
+          <tr>
+            <td><code>xKey</code></td>
+            <td><code>string</code></td>
+            <td><code>'x'</code></td>
+            <td>Key identifying the ordered/temporal domain in each data object.</td>
+          </tr>
+          <tr>
+            <td><code>variant</code></td>
+            <td><code>'single' | 'stacked' | 'normalized' | 'diverging' | 'stream'</code></td>
+            <td><code>'single'</code></td>
+            <td>Stacking and composition mode governing mathematical accumulation.</td>
+          </tr>
+          <tr>
+            <td><code>curve</code></td>
+            <td><code>'linear' | 'monotone' | 'step-after'</code></td>
+            <td><code>'monotone'</code></td>
+            <td>Path interpolation algorithm for top and lower boundaries.</td>
+          </tr>
+          <tr>
+            <td><code>baseline</code></td>
+            <td><code>number</code></td>
+            <td><code>0</code></td>
+            <td>Y-value origin for baseline area anchoring (e.g. 0 for positive volume, nominal target for diverging).</td>
+          </tr>
+          <tr>
+            <td><code>enablePatterns</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Enables SVG hatch and stipple pattern overlays for WCAG 1.4.1 non-color differentiation.</td>
+          </tr>
+          <tr>
+            <td><code>enableCrosshair</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Enables vertical dashed tracking line with snapped multi-series highlight glyphs.</td>
+          </tr>
+          <tr>
+            <td><code>referenceLines</code></td>
+            <td><code>Array&lt;{ y: number, label?: string, color?: string }&gt;</code></td>
+            <td><code>[]</code></td>
+            <td>Horizontal threshold or setpoint indicators rendered above area layers.</td>
+          </tr>
+          <tr>
+            <td><code>thresholdBands</code></td>
+            <td><code>Array&lt;{ yMin: number, yMax: number, color?: string }&gt;</code></td>
+            <td><code>[]</code></td>
+            <td>Background tolerance or operating window range bands.</td>
+          </tr>
+          <tr>
+            <td><code>locale</code></td>
+            <td><code>string</code></td>
+            <td><code>'en-IN'</code></td>
+            <td>Locale for numerical and timestamp formatting (Indian numbering system).</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §04 Included Variants -->
+    <section class="spec-section" id="variants">
+      <h2 class="spec-section-title">§04 Included Variants</h2>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Variant</th>
+            <th>Visual Encoding</th>
+            <th>Primary Manufacturing Scenario</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Single Area</strong></td>
+            <td>Single area filled with subtle vertical gradient and crisp boundary line anchored to baseline.</td>
+            <td>Total Press Shop electrical energy consumption (kWh) over 24-hour shift cycle.</td>
+          </tr>
+          <tr>
+            <td><strong>Stacked Area</strong></td>
+            <td>Cumulative sub-series stacked sequentially ($y_1 = y_0 + v_i$), displaying total envelope and individual volume.</td>
+            <td>Press Shop scrap generation breakdown by machine cell (Blanking, Stamping, Heat Treat, CNC).</td>
+          </tr>
+          <tr>
+            <td><strong>100% Normalized</strong></td>
+            <td>Constant 100% total height, showing shifting proportional percentage shares over time.</td>
+            <td>Downtime root cause composition (% Mechanical, Electrical, Die Change, Material Shortage).</td>
+          </tr>
+          <tr>
+            <td><strong>Diverging Area</strong></td>
+            <td>Positive and negative area deviations expanding above and below a central zero/setpoint baseline.</td>
+            <td>Furnace CCF-02 quench tank thermal flux (°C delta above/below nominal 850°C setpoint).</td>
+          </tr>
+          <tr>
+            <td><strong>Streamgraph</strong></td>
+            <td>Silhouette area centered symmetrically around a zero baseline for organic compositional shifts.</td>
+            <td>Shop-floor operator labor allocation across assembly lines during peak production runs.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §05 Sizes & Density Modes -->
+    <section class="spec-section" id="sizes">
+      <h2 class="spec-section-title">§05 Sizes & Density Modes</h2>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Density / Size</th>
+            <th>Default Dimensions</th>
+            <th>Tick Density</th>
+            <th>Use Case</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Compact (Dense)</strong></td>
+            <td>Width: 320–480px, Height: 200–240px</td>
+            <td>3–4 Y ticks, 4 X ticks</td>
+            <td>Embedded sidebar cards, machine line status summaries, multi-tile dashboards.</td>
+          </tr>
+          <tr>
+            <td><strong>Standard (Comfortable)</strong></td>
+            <td>Width: 600–760px, Height: 300–360px</td>
+            <td>5–6 Y ticks, 6–8 X ticks</td>
+            <td>Primary view in production monitoring dashboards and quality inspection screens.</td>
+          </tr>
+          <tr>
+            <td><strong>Expanded</strong></td>
+            <td>Width: 900–1200px, Height: 420–520px</td>
+            <td>8–10 Y ticks, 10–14 X ticks</td>
+            <td>Full-page historical energy auditing and detailed shift telemetry reports.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §06 Interactive & Visual States -->
+    <section class="spec-section" id="states">
+      <h2 class="spec-section-title">§06 Interactive & Visual States</h2>
+      <ul>
+        <li><strong>Resting:</strong> All series layers rendered with 0.85 fill opacity + overlaid pattern + 2px solid top boundary stroke.</li>
+        <li><strong>Pointer Tracking:</strong> Crosshair line snaps to nearest X observation, displaying synchronized point markers and pinned multi-layer tooltip.</li>
+        <li><strong>Series Isolation:</strong> Clicking a legend item dims non-selected series layers (0.25 opacity) and isolates the selected area layer for unhindered focus.</li>
+        <li><strong>Keyboard Active:</strong> Roving focus indicator highlights active observation; screen reader announces exact metrics and percentage shares.</li>
+        <li><strong>Loading Skeleton:</strong> Shimmering sweep placeholder maintains chart layout during async telemetry fetch.</li>
+        <li><strong>Empty Telemetry:</strong> Standard empty state displaying notice when no telemetry is recorded for the selected shift or date range.</li>
+      </ul>
+    </section>
+
+    <!-- §07 Stacking Mathematics & Missing Data Policies -->
+    <section class="spec-section" id="stacking-math">
+      <h2 class="spec-section-title">§07 Stacking Mathematics & Missing Data Policies</h2>
+      <div class="spec-callout">
+        <strong>Stacking Engine Formulation:</strong>
+        <ul>
+          <li><strong>Standard Stacked:</strong> $y_{0, s}(t) = \sum_{k=0}^{s-1} v_k(t)$, $y_{1, s}(t) = y_{0, s}(t) + v_s(t)$.</li>
+          <li><strong>100% Normalized:</strong> $S(t) = \sum_{k=0}^{M-1} |v_k(t)|$, $y_{0, s}(t) = \frac{\sum_{k=0}^{s-1} v_k(t)}{S(t)} \times 100$, $y_{1, s}(t) = y_{0, s}(t) + \frac{v_s(t)}{S(t)} \times 100$.</li>
+          <li><strong>Stream Center:</strong> Baseline offset $y_{base}(t) = -\frac{1}{2} \sum_{k=0}^{M-1} v_k(t)$.</li>
+          <li><strong>Missing Data Integrity:</strong> Telemetry interruptions must not be smoothed over with artificial curves. Missing timestamps must either explicitly record 0 or cleanly break the area polygon into disjoint intervals.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- §08 Keyboard Navigation & Focus Interactions -->
+    <section class="spec-section" id="keyboard">
+      <h2 class="spec-section-title">§08 Keyboard Navigation & Focus Interactions</h2>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Key Combination</th>
+            <th>Target</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><kbd>Tab</kbd></td>
+            <td>Chart Container</td>
+            <td>Focuses the chart container (<code>tabindex="0"</code>) and initializes crosshair on first datum.</td>
+          </tr>
+          <tr>
+            <td><kbd>→</kbd> / <kbd>←</kbd></td>
+            <td>Domain Points</td>
+            <td>Traverses forward / backward along sequential time observations.</td>
+          </tr>
+          <tr>
+            <td><kbd>Home</kbd> / <kbd>End</kbd></td>
+            <td>Boundary Points</td>
+            <td>Snaps immediately to the first or last observation in the active interval.</td>
+          </tr>
+          <tr>
+            <td><kbd>Alt</kbd> + <kbd>F11</kbd></td>
+            <td>Accessible Data Table</td>
+            <td>Opens modal dialog rendering the raw data table with complete tabular metrics and percentage shares.</td>
+          </tr>
+          <tr>
+            <td><kbd>Escape</kbd></td>
+            <td>Active Tooltip / Modal</td>
+            <td>Dismisses crosshair inspection or closes the open data table modal.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §09 Accessibility & Assistive Technology -->
+    <section class="spec-section" id="a11y">
+      <h2 class="spec-section-title">§09 Accessibility & Assistive Technology (WCAG 2.2 AA)</h2>
+      <div class="spec-callout spec-callout--critical">
+        <strong>WCAG 1.4.1 (Non-Color Differentiation) Strict Compliance:</strong>
+        <p>
+          Color fills alone must never be the sole differentiator between stacked area series. <code>AreaChart</code> enforces this by overlaying SVG hatch, crosshatch, stipple, and stripe patterns (<code>PATTERN_PRESETS</code>) and drawing distinct 2px boundary strokes.
+        </p>
+      </div>
+      <ul>
+        <li><strong>ARIA Landmark:</strong> <code>role="region"</code>, <code>aria-roledescription="area chart"</code>, with descriptive <code>aria-label</code>.</li>
+        <li><strong>Live Screen Reader Region:</strong> <code>aria-live="polite"</code> announces: <em>"Selected observation 3 of 12, time 10:00. Blanking 25 kg (21.6%), Stamping 58 kg (50.0%), Total: 116 kg."</em></li>
+        <li><strong>Tabular Alternative:</strong> Built-in <kbd>Alt+F11</kbd> data table guarantees 100% information parity for non-visual assistive technology users.</li>
+      </ul>
+    </section>
+
+    <!-- §10 Motion & Transition Guidelines -->
+    <section class="spec-section" id="motion">
+      <h2 class="spec-section-title">§10 Motion & Transition Guidelines</h2>
+      <ul>
+        <li><strong>Path Interpolation Tweening:</strong> Transitions between series isolation or filter updates execute within <strong>200–300ms</strong> using <code>cubic-bezier(0.16, 1, 0.3, 1)</code>.</li>
+        <li><strong>Prefers Reduced Motion:</strong> When <code>@media (prefers-reduced-motion: reduce)</code> is detected, all path transitions, crosshair fades, and skeleton sweeps are rendered instantly with <strong>0ms duration</strong>.</li>
+      </ul>
+    </section>
+
+    <!-- §11 Content Rules & Number Formatting -->
+    <section class="spec-section" id="content-rules">
+      <h2 class="spec-section-title">§11 Content Rules & Number Formatting</h2>
+      <ul>
+        <li><strong>Locale Convention:</strong> Default to Indian numbering system (<code>en-IN</code>, e.g. <code>₹1,45,000</code>, <code>25,480 kWh</code>).</li>
+        <li><strong>Normalized Percentage Rounding:</strong> Stacked percentage shares must be formatted to <strong>1 decimal place</strong> (e.g. <code>32.4%</code>) and guaranteed to sum to exactly 100.0%.</li>
+        <li><strong>Unit Suffixes:</strong> Always declare explicit engineering telemetry units in headers, axes, and tooltip rows (<code>kWh</code>, <code>kg/hr</code>, <code>°C</code>, <code>SPM</code>, <code>bar</code>).</li>
+      </ul>
+    </section>
+
+    <!-- §12 Responsive Behavior & Container Constraints -->
+    <section class="spec-section" id="responsive">
+      <h2 class="spec-section-title">§12 Responsive Behavior & Container Constraints</h2>
+      <ul>
+        <li><strong>Container Width &lt; 480px:</strong> Automatically reduce X-axis ticks to 3–4 items, wrap legend into vertical flow, and reposition tooltips below the active point.</li>
+        <li><strong>Touch Devices:</strong> Supports touch scrubbing along the plot area with instantaneous crosshair sync and enlarged hit targets.</li>
+      </ul>
+    </section>
+
+    <!-- §13 Anti-Patterns & Misconfigurations -->
+    <section class="spec-section" id="anti-patterns">
+      <h2 class="spec-section-title">§13 Anti-Patterns & Misconfigurations</h2>
+      <div class="spec-callout spec-callout--critical">
+        <strong>Strictly Prohibited Anti-Patterns:</strong>
+        <ol>
+          <li><strong>Overlapping Opaque Areas:</strong> Rendering multiple non-stacked areas with opaque fills causes severe visual obstruction. Always stack additive series or use <code>LineChart</code> for overlapping lines.</li>
+          <li><strong>Stacking Non-Additive Quantities:</strong> Never stack averages, percentages that do not represent parts of a whole, or temperature measurements (stacking 850°C and 820°C produces a nonsensical 1670°C).</li>
+          <li><strong>Excessive Series Clutter:</strong> Never exceed 5 stacked area series in a single chart. For &gt;5 series, consolidate minor categories into an "Other" series.</li>
+          <li><strong>Smooth Curves Over Telemetry Blackouts:</strong> Never draw continuous bezier curves through periods of machine downtime.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- §14 Implementation & Developer Notes -->
+    <section class="spec-section" id="dev-notes">
+      <h2 class="spec-section-title">§14 Implementation & Developer Notes</h2>
+      <ul>
+        <li><strong>Zero Heavy Dependencies:</strong> <code>AreaChart</code> is implemented natively in React and standard SVG, consuming only the shared mathematical engine in <code>viz-core.js</code>.</li>
+        <li><strong>ClipPath Safety:</strong> All area `<path>` polygons are wrapped in an SVG `<clipPath>` bounding rectangle matching the plot region to prevent line bleeding outside margin bounds.</li>
+        <li><strong>Fast Bisecting:</strong> Pointer move listener uses direct mathematical domain bisecting ($O(1)$ computation) rather than expensive DOM element hit tests.</li>
+      </ul>
+    </section>
+
+  </div>
+</body>
+</html>

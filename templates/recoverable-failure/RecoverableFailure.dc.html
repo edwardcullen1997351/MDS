@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Recoverable failure" description="Interaction pattern reference implementation, set in a manufacturing ERP — posting the B-shift production confirmations for line PR-05: a failure that keeps the operator's note and the retrieved list, retry scoped to what actually failed, a non-recoverable failure that offers a different route instead of a dead retry, and validation, empty and outage kept as three separate states." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:1220px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/RecoverableFailure.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+</div>
+<p style="margin:0;max-width:84ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note, the state-category panel at the foot, and the three tweaks under <span style="font-family:var(--font-mono)">Demo harness</span> — exists to make the contract visible. Retrieval and posting are timers standing in for the MES calls; the comments above them say what to replace. The five tweaks under <span style="font-family:var(--font-mono)">Pattern properties</span> are not harness: <span style="font-family:var(--font-mono)">retryScope</span>, <span style="font-family:var(--font-mono)">repeatedFailure</span>, <span style="font-family:var(--font-mono)">failureFeedback</span>, <span style="font-family:var(--font-mono)">retrievalPreservation</span> and <span style="font-family:var(--font-mono)">retryBackoff</span> are the §05 policies an adopting team must declare.</p>
+<p style="margin:0;max-width:84ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Type a shift note, then set <span style="font-family:var(--font-mono)">Posting outcome</span> to <span style="font-family:var(--font-mono)">gateway outage</span> and post: the note, the reason and the retrieved list all survive, and the retry is guarded so a jabbed button cannot start two postings. Post again for the escalated second failure. Switch to <span style="font-family:var(--font-mono)">partial</span> for four posted and two refused — retry offers only the two under <span style="font-family:var(--font-mono)">failed-only</span>. Switch to <span style="font-family:var(--font-mono)">period closed</span> for a failure with no retry at all and a different route out. Set <span style="font-family:var(--font-mono)">Retrieval</span> to <span style="font-family:var(--font-mono)">fails</span> and to <span style="font-family:var(--font-mono)">empty</span> to see an outage and an empty shift kept apart; leave the downtime reason set and the note blank to see validation kept apart from both.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Shop floor terminal · Suryodaya Autocomp Ltd · Chakan plant (PL-04) · line PR-05 · shift B · 2026-09-07 (IST)</span>
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">Shift-end production confirmation</h1>
+<p style="margin:0;max-width:82ch;color:var(--text-secondary);font-size:var(--text-sm);line-height:1.55">Line supervisor Sandeep Kulkarni closes the shift: six operation confirmations read back from MES, a downtime reason and a note in his own words. Posting them is the one moment the shift can go wrong — and none of his work may be lost when it does.</p>
+</div>
+
+<sc-if value="{{ bannerOpen }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ failure.tone }}" title="{{ failure.title }}" live="on" size="md" variant="inline" action="{{ failure.action }}" hint-size="100%,132px">{{ failure.body }}</x-import>
+</sc-if>
+
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 344px;gap:20px;align-items:start">
+
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-bottom:var(--border-hairline)">
+<div style="display:flex;flex-direction:column;gap:2px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Confirmations read back from MES</span>
+<span style="font-size:var(--text-xs);color:var(--text-secondary)">{{ retrievalLine }}</span>
+</div>
+<div style="display:flex;gap:8px">{{ retrievalActions }}</div>
+</div>
+
+<sc-if value="{{ retrieving }}" hint-placeholder-val="{{ false }}">
+<div style="padding:12px 18px;border-bottom:var(--border-hairline)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Progress" variant="bar" size="sm" label="{{ retrievingLabel }}" delay="{{ 200 }}" hint-size="100%,20px"></x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{ regionFailureOpen }}" hint-placeholder-val="{{ false }}">
+<div style="padding:15px 18px;border-bottom:var(--border-hairline)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ failure.tone }}" title="{{ failure.title }}" live="on" size="sm" action="{{ failure.action }}" hint-size="100%,120px">{{ failure.body }}</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{ showEmpty }}" hint-placeholder-val="{{ false }}">
+<div style="padding:26px 18px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.EmptyState" variant="first-run" title="No confirmations recorded on PR-05 this shift" size="sm" headingLevel="{{ 3 }}" live="polite" actions="{{ emptyActions }}" hint="Empty is not a failure: MES answered, and the answer was none." hint-size="100%,180px">The terminal has nothing to post yet. Confirmations appear here as operators book them against the shift's operations.</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{ showTable }}" hint-placeholder-val="{{ true }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Table" caption="Production confirmations for line PR-05, shift B" columns="{{ columns }}" rows="{{ rows }}" rowKey="id" minWidth="880px" hint-size="100%,320px"></x-import>
+</sc-if>
+
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-top:var(--border-hairline);background:var(--surface-sunken)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ postSummary }}</span>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">{{ postActions }}</div>
+</div>
+
+<sc-if value="{{ posting }}" hint-placeholder-val="{{ false }}">
+<div style="padding:12px 18px;border-top:var(--border-hairline)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Progress" variant="bar" size="sm" label="{{ postingLabel }}" delay="{{ 200 }}" hint-size="100%,20px"></x-import>
+</div>
+</sc-if>
+
+<div style="padding:12px 18px;border-top:var(--border-hairline)">
+<div role="status" aria-live="polite" style="min-height:17px;font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty;max-width:80ch">{{ announcement }}</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:16px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);padding:19px 20px">
+<div style="display:flex;flex-direction:column;gap:3px">
+<h2 style="margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold)">Shift record</h2>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary);line-height:1.5;text-wrap:pretty">Typed by the supervisor, held here, and posted with the confirmations. Nothing in this panel is cleared by a failure.</p>
+</div>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Downtime reason" hint="Chosen from the plant's downtime catalogue" error="{{ reasonError }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ reasonOptions }}" value="{{ reason }}" onChange="{{ onReason }}" size="sm" disabled="{{ busy }}" data-fld="reason" hint-size="100%,28px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Shift note" hint="{{ noteHint }}" error="{{ noteError }}" hint-size="100%,140px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Textarea" value="{{ note }}" onChange="{{ onNote }}" rows="{{ 4 }}" size="sm" resize="vertical" placeholder="What happened on the line, in your words." disabled="{{ busy }}" data-fld="note" hint-size="100%,84px"></x-import>
+</x-import>
+<div style="display:flex;flex-direction:column;gap:6px;padding:12px 13px;background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-md)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Kept through the last failure</span>
+<span style="font-size:var(--text-xs);color:var(--text-secondary);line-height:1.55;text-wrap:pretty">{{ preservedLine }}</span>
+</div>
+</div>
+
+</div>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:12px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:15px 17px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Four state categories, held separately · policies &amp; attempt log · remove on copy</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(214px,1fr));gap:12px">
+<sc-for list="{{ categories }}" as="cat" hint-placeholder-count="4">
+<div style="display:flex;flex-direction:column;gap:4px;padding:11px 12px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">{{ cat.k }}</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-primary)">{{ cat.v }}</span>
+<span style="font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.5">{{ cat.note }}</span>
+</div>
+</sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px 20px;border-top:var(--border-hairline);padding-top:11px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="7">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:128px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;border-top:var(--border-hairline);padding-top:11px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Attempt log · newest first</span>
+<sc-for list="{{ log }}" as="l" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:104px 118px minmax(0,1fr);gap:12px;font-family:var(--font-mono);font-size:var(--text-2xs);padding:3px 0;border-bottom:var(--border-subtle)">
+<span style="color:var(--text-primary)">{{ l.at }}</span>
+<span style="color:var(--text-tertiary)">{{ l.kind }}</span>
+<span style="color:var(--text-secondary);word-break:break-word">{{ l.detail }}</span>
+</div>
+</sc-for>
+<p style="margin:4px 0 0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">The retry context — which confirmations, which note, which reason, and which attempt — is held with the failure rather than read back off the screen, which is what lets a retry target what actually failed and no more (§20).</p>
+</div>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1020},&quot;retryScope&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;failed-only&quot;,&quot;whole-operation&quot;],&quot;default&quot;:&quot;failed-only&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;What a retry sends&quot;},&quot;repeatedFailure&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;escalate&quot;,&quot;same&quot;],&quot;default&quot;:&quot;escalate&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Second consecutive failure&quot;},&quot;failureFeedback&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;inline-region&quot;,&quot;page-banner&quot;],&quot;default&quot;:&quot;inline-region&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Where the failure sits&quot;},&quot;retrievalPreservation&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;keep&quot;,&quot;clear&quot;],&quot;default&quot;:&quot;keep&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Retrieved content after a failed read&quot;},&quot;retryBackoff&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:5000,&quot;step&quot;:250,&quot;default&quot;:1500,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Guard between retries&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:200,&quot;max&quot;:4000,&quot;step&quot;:100,&quot;default&quot;:1100,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;MES latency&quot;},&quot;postOutcome&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;succeeds&quot;,&quot;gateway outage&quot;,&quot;partial&quot;,&quot;period closed&quot;],&quot;default&quot;:&quot;succeeds&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Posting outcome&quot;},&quot;retrieval&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;succeeds&quot;,&quot;fails&quot;,&quot;empty&quot;],&quot;default&quot;:&quot;succeeds&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Retrieval outcome&quot;}}">
+// Shift-end production confirmation, line PR-05, shift B, 2026-09-07, PL-04.
+// Six operation confirmations read back from MES; two of them are the ones
+// MES refuses under the partial-failure outcome.
+const CONFS = [
+  { id: 'C-1', op: 'OP-10', part: 'PLT-6601', produced: 1180, scrapped: 12 },
+  { id: 'C-2', op: 'OP-20', part: 'PLT-6601', produced: 1180, scrapped: 8 },
+  { id: 'C-3', op: 'OP-30', part: 'PLT-6604', produced: 940, scrapped: 22 },
+  { id: 'C-4', op: 'OP-40', part: 'PLT-6604', produced: 940, scrapped: 5 },
+  { id: 'C-5', op: 'OP-50', part: 'SPR-5502', produced: 1500, scrapped: 0 },
+  { id: 'C-6', op: 'OP-60', part: 'SPR-5502', produced: 1500, scrapped: 18 }
+];
+const REFUSED = {
+  'C-3': 'OP-30 has no open operation quantity left in MES \u2014 940 pcs already booked against it at 14:12 IST.',
+  'C-6': 'Cost centre CC-4120 is blocked for period 2026-09 by plant controlling.'
+};
+const REASONS = ['No downtime', 'Die change over-run', 'Coolant pump failure', 'Material short', 'Power dip', 'Manpower short'];
+const num = n => Number(n).toLocaleString('en-IN');
+const clock = () => new Date().toLocaleTimeString('en-IN', { hour12: false, timeZone: 'Asia/Kolkata' }) + ' IST';
+const M = () => window.MeridianDesignSystem_962c43 || {};
+const confOf = id => CONFS.find(c => c.id === id);
+
+class Component extends DCLogic {
+  state = {
+    rows: CONFS.map(c => c.id),        // what MES gave us
+    retrievedAt: '14:58:12 IST',
+    retrieving: false,
+    retrievalFailed: null,             // { why, staleRows, staleAt }
+    empty: false,                      // MES answered, and the answer was none
+    posting: null,                     // { ids, at }
+    posted: [],                        // confirmation ids MES accepted
+    failure: null,                     // { kind, recoverable, why, failedIds, attempt, ids }
+    success: null,                     // { count, at }
+    corrected: null,                   // { doc, at, ids } — handled by another route
+    reason: 'Die change over-run',
+    note: '',
+    touchedNote: false,
+    backoffUntil: 0,
+    now: Date.now(),
+    announcement: '',
+    log: []
+  };
+  timers = {};
+  ticker = null;
+
+  policy(name, fallback) { return this.props[name] ?? fallback; }
+  note(kind, detail) { this.setState(s => ({ log: [{ at: clock(), kind, detail }].concat(s.log).slice(0, 10) })); }
+
+  // Validation is its own category: a rule about the operator's input, decided
+  // locally, and never dressed as a failure of the posting (§01, §20).
+  problems() {
+    const p = {};
+    if (this.state.reason !== 'No downtime' && this.state.note.trim().length < 12) p.note = 'A downtime reason needs a note of at least 12 characters. ' + this.state.note.trim().length + ' so far.';
+    return p;
+  }
+
+  pending() { return !!(this.state.posting || this.state.retrieving); }
+  toPost() {
+    const f = this.state.failure;
+    if (f && f.failedIds && f.failedIds.length && this.policy('retryScope', 'failed-only') === 'failed-only') return f.failedIds.slice();
+    return this.state.rows.filter(id => this.state.posted.indexOf(id) === -1);
+  }
+  backoffLeft() { return Math.max(0, Math.ceil((this.state.backoffUntil - this.state.now) / 1000)); }
+  startTicker() {
+    if (this.ticker) return;
+    this.ticker = setInterval(() => {
+      this.setState({ now: Date.now() });
+      if (this.state.backoffUntil <= Date.now()) { clearInterval(this.ticker); this.ticker = null; }
+    }, 250);
+  }
+
+  // ——— Retrieval: its own operation, with its own failure ———
+  reload = () => {
+    if (this.pending()) return;
+    this.setState({ retrieving: true, announcement: 'Reading the shift\u2019s confirmations back from MES\u2026' });
+    // REPLACE: stands in for GET /api/mes/shifts/{shift}/confirmations
+    this.timers.get = setTimeout(() => {
+      const mode = this.props.retrieval || 'succeeds';
+      if (mode === 'fails') {
+        const keep = this.policy('retrievalPreservation', 'keep') === 'keep';
+        this.setState(s => ({
+          retrieving: false, empty: false,
+          retrievalFailed: { why: 'The MES read gateway did not answer (timeout after 30 s). The shift is not lost \u2014 nothing about it has changed.', staleRows: keep ? s.rows : [], staleAt: s.retrievedAt },
+          rows: keep ? s.rows : [],
+          announcement: 'Could not read the confirmations back from MES. ' + (keep ? 'The list from ' + s.retrievedAt + ' is still shown and marked as such; your note and reason are untouched.' : 'The list was cleared under the clear policy; your note and reason are untouched.')
+        }));
+        this.note('retrieval', 'failed \u00b7 gateway timeout');
+        return;
+      }
+      if (mode === 'empty') {
+        this.setState({ retrieving: false, retrievalFailed: null, empty: true, rows: [], retrievedAt: clock(), posted: [], failure: null, corrected: null, announcement: 'MES answered: no confirmations have been booked on PR-05 this shift. That is an empty shift, not a failure.' });
+        this.note('retrieval', 'succeeded \u00b7 zero confirmations');
+        return;
+      }
+      // A fresh read makes the previous posting failure obsolete: it is cleared
+      // rather than left beside newer state (§20).
+      // A fresh read replaces everything the previous read produced: the rows,
+      // their posting state, the success line and any failure. Keeping the old
+      // posted flags would leave the shift unpostable and contradict the new
+      // read (§20).
+      this.setState({ retrieving: false, retrievalFailed: null, empty: false, rows: CONFS.map(c => c.id), retrievedAt: clock(), posted: [], success: null, failure: null, corrected: null, backoffUntil: 0, announcement: 'Six confirmations read back from MES at ' + clock() + ' \u2014 this read replaces the last one, so the shift is unposted again and any earlier failure has been cleared.' });
+      this.note('retrieval', 'succeeded \u00b7 6 confirmations');
+    }, Math.max(200, this.props.latency ?? 1100));
+  };
+
+  // ——— Posting: the operation whose failure this pattern is about ———
+  post = (retry) => {
+    if (this.pending()) return;                            // one posting at a time
+    if (this.backoffLeft() > 0) {
+      this.setState({ announcement: 'Retry is held for another ' + this.backoffLeft() + ' s so a repeated press cannot start two postings.' });
+      return;
+    }
+    const p = this.problems();
+    if (p.note) {
+      this.setState({ touchedNote: true, announcement: 'Nothing was posted: ' + p.note + ' This is your entry to correct \u2014 MES has not been asked yet.' });
+      setTimeout(() => { const el = document.querySelector('[data-fld="note"]'); if (el) el.focus({ preventScroll: true }); }, 30);
+      return;
+    }
+    const ids = this.toPost();
+    if (!ids.length) { this.setState({ announcement: 'Every confirmation on this shift is already posted.' }); return; }
+    const attempt = (this.state.failure ? this.state.failure.attempt : 0) + 1;
+    this.setState({ posting: { ids, at: clock() }, success: null, announcement: (retry ? 'Retrying' : 'Posting') + ' ' + ids.length + ' confirmation' + (ids.length === 1 ? '' : 's') + ' to MES\u2026' });
+    // REPLACE: stands in for POST /api/mes/shifts/{shift}/confirmations
+    // { ids, downtimeReason, note } — the retry context is held in state, not
+    // read back off the screen.
+    this.timers.post = setTimeout(() => {
+      const outcome = this.props.postOutcome || 'succeeds';
+      if (outcome === 'succeeds') {
+        this.setState(s => ({
+          posting: null, failure: null, backoffUntil: 0,
+          posted: s.posted.concat(ids),
+          success: { count: ids.length, at: clock() },
+          announcement: ids.length + ' confirmation' + (ids.length === 1 ? '' : 's') + ' posted to MES at ' + clock() + '. The earlier failure no longer applies and has been cleared.'
+        }));
+        this.note('posting', 'succeeded \u00b7 ' + ids.join(', '));
+        return;
+      }
+      if (outcome === 'partial') {
+        const failed = ids.filter(id => REFUSED[id]);
+        const ok = ids.filter(id => !REFUSED[id]);
+        this.setState(s => ({
+          posting: null, success: ok.length ? { count: ok.length, at: clock(), partial: true } : null,
+          posted: s.posted.concat(ok),
+          failure: failed.length ? { kind: 'partial', recoverable: true, attempt, ids, failedIds: failed, why: failed.map(id => confOf(id).op + ': ' + REFUSED[id]).join(' ') } : null,
+          backoffUntil: failed.length ? Date.now() + (this.policy('retryBackoff', 1500)) : 0,
+          now: Date.now(),
+          announcement: ok.length + ' of ' + ids.length + ' confirmations posted. ' + (failed.length ? failed.length + ' were refused and are still unposted; the ' + ok.length + ' that went through will not be sent again.' : '')
+        }));
+        if (failed.length) this.note('posting', 'partial \u00b7 posted ' + ok.join(', ') + ' \u00b7 refused ' + failed.join(', '));
+        this.startTicker();
+        return;
+      }
+      if (outcome === 'period closed') {
+        this.setState({
+          posting: null,
+          failure: { kind: 'closed', recoverable: false, attempt, ids, failedIds: ids, why: 'Period 2026-09 is closed for line PR-05 \u2014 plant controlling closed it at 06:00 IST today. A confirmation cannot be posted into a closed period, and posting the same shift again will fail the same way.' },
+          backoffUntil: 0,
+          announcement: 'Nothing was posted, and retrying cannot change that: the period is closed. The shift must go in as a correction document instead \u2014 your figures and note are kept for it.'
+        });
+        this.note('posting', 'failed \u00b7 non-recoverable \u00b7 period closed');
+        return;
+      }
+      this.setState({
+        posting: null,
+        failure: { kind: 'gateway', recoverable: true, attempt, ids, failedIds: ids, why: 'The MES posting gateway did not answer (timeout after 30 s).' },
+        backoffUntil: Date.now() + (this.policy('retryBackoff', 1500)),
+        now: Date.now(),
+        announcement: 'Nothing was posted \u2014 MES did not answer. Your ' + ids.length + ' confirmations, the downtime reason and your note are all still here; the retry sends exactly what you can see.'
+      });
+      this.note('posting', 'failed \u00b7 attempt ' + attempt + ' \u00b7 gateway timeout');
+      this.startTicker();
+    }, Math.max(200, this.props.latency ?? 1100));
+  };
+
+  dismissSuccess = () => this.setState({ success: null });
+  // The recovery that a non-recoverable failure offers instead of a retry. It
+  // resolves the failure: the shift is now handled, so the error is obsolete
+  // and must not remain on screen (§04, §20).
+  raiseCorrection = () => {
+    const f = this.state.failure;
+    const ids = f ? f.failedIds.slice() : this.state.rows.filter(id => this.state.posted.indexOf(id) === -1);
+    this.setState({
+      failure: null, backoffUntil: 0,
+      corrected: { doc: '4C-2026-0914', at: clock(), ids },
+      announcement: 'Correction document 4C-2026-0914 opened for shift B on PR-05 with ' + ids.length + ' confirmation' + (ids.length === 1 ? '' : 's') + ' and your note carried into it. Meera Nair (quality) is the approver; the failure no longer applies and has been cleared.'
+    });
+    this.note('recovery', 'correction 4C-2026-0914 raised for ' + ids.join(', '));
+  };
+  changeReason = (e) => this.setState({ reason: e.target.value });
+  changeNote = (e) => this.setState({ note: e.target.value, touchedNote: true });
+
+  componentDidMount() { this.setState({ announcement: 'Six confirmations read back at 14:58:12 IST. Add the downtime note, then post the shift.' }); }
+  componentWillUnmount() { Object.values(this.timers).forEach(clearTimeout); if (this.ticker) clearInterval(this.ticker); }
+
+  renderVals() {
+    const s = this.state, C = M();
+    const p = this.problems();
+    const f = s.failure;
+    const rf = s.retrievalFailed;
+    const btn = (props, label) => C.Button ? React.createElement(C.Button, props, label) : null;
+    const badge = (tone, text, dot) => C.Badge ? React.createElement(C.Badge, { tone, size: 'sm', dot: !!dot }, text) : null;
+    const left = this.backoffLeft();
+    const scope = this.policy('retryScope', 'failed-only');
+    const escalate = this.policy('repeatedFailure', 'escalate') === 'escalate' && f && f.attempt > 1;
+    const ids = this.toPost();
+    const unposted = s.rows.filter(id => s.posted.indexOf(id) === -1);
+
+    // One failure object, rendered in one place — a second failure replaces it
+    // rather than stacking beside it (§04).
+    const active = f || (rf ? {
+      kind: 'retrieval', recoverable: true, why: rf.why,
+      title: 'Could not read the shift back from MES',
+      body: rf.why + ' ' + (rf.staleRows.length ? 'The list below is the one read at ' + rf.staleAt + ' and is marked as such; it is not this shift\u2019s current state.' : 'The list was cleared under the clear policy.') + ' Your downtime reason and note are untouched.'
+    } : null);
+
+    const failureView = !active ? null : active.kind === 'retrieval' ? {
+      tone: 'danger', title: active.title, body: active.body,
+      action: btn({ variant: 'secondary', size: 'sm', type: 'button', disabled: this.pending(), 'data-retry': 'retrieval', onClick: this.reload }, 'Read the shift again')
+    } : active.kind === 'closed' ? {
+      tone: 'danger',
+      title: 'Period 2026-09 is closed \u2014 this shift cannot be posted',
+      body: active.why + ' Nothing was posted: MES holds no part of this shift. Raise it as a correction document; the six confirmations, the downtime reason and your note are carried into it.',
+      action: React.createElement('div', { style: { display: 'flex', gap: '8px' } },
+        btn({ key: 'c', variant: 'secondary', size: 'sm', type: 'button', 'data-recover': 'correction', onClick: this.raiseCorrection }, 'Raise a correction document (4C)'),
+        btn({ key: 'w', variant: 'ghost', size: 'sm', type: 'button', onClick: () => this.setState({ announcement: 'Plant controlling: Meera Nair \u00b7 meera.nair@suryodaya.co.in \u00b7 +91 98230 41185 (IST, 09:00\u201318:00).' }) }, 'Who can reopen the period'))
+    } : active.kind === 'partial' ? {
+      tone: 'warning',
+      title: active.failedIds.length + ' of ' + active.ids.length + ' confirmations were refused by MES',
+      body: active.why + ' The ' + (active.ids.length - active.failedIds.length) + ' that went through are posted and will not be sent again. ' + (scope === 'failed-only' ? 'The retry sends only the ' + active.failedIds.length + ' that failed.' : 'Under the whole-operation policy the retry sends every unposted confirmation \u2014 ' + unposted.length + ' of them.'),
+      action: React.createElement('div', { style: { display: 'flex', gap: '8px' } },
+        btn({ key: 'r', variant: 'secondary', size: 'sm', type: 'button', disabled: this.pending(), 'data-retry': 'posting', onClick: () => this.post(true) },
+          left > 0 ? 'Retry in ' + left + ' s' : (scope === 'failed-only' ? 'Retry the ' + active.failedIds.length + ' refused confirmation' + (active.failedIds.length === 1 ? '' : 's') : 'Repost all ' + unposted.length + ' unposted')),
+        btn({ key: 'c', variant: 'ghost', size: 'sm', type: 'button', onClick: this.raiseCorrection }, 'Raise a correction for the refused two'))
+    } : {
+      tone: 'danger',
+      title: escalate ? 'MES still did not answer \u2014 attempt ' + active.attempt + ' failed' : 'Nothing was posted \u2014 MES did not answer',
+      body: active.why + ' Nothing was posted: the shift is exactly as it was, and your ' + active.ids.length + ' confirmations, the downtime reason and the note are all still on screen. The retry sends what you can see now.'
+        + (escalate ? ' MES has now refused twice in a row. If the third attempt fails, post the shift from the plant office terminal or hand it to Anjali Deshmukh (planning) \u2014 the shift may not be left unposted past 22:30 IST.' : ''),
+      action: React.createElement('div', { style: { display: 'flex', gap: '8px' } },
+        btn({ key: 'r', variant: 'secondary', size: 'sm', type: 'button', disabled: this.pending(), 'data-retry': 'posting', onClick: () => this.post(true) }, left > 0 ? 'Retry in ' + left + ' s' : 'Retry posting ' + ids.length + ' confirmation' + (ids.length === 1 ? '' : 's')),
+        escalate ? btn({ key: 'e', variant: 'ghost', size: 'sm', type: 'button', onClick: () => this.setState({ announcement: 'Plant office terminal: PL-04-OFF-02. Planning: Anjali Deshmukh \u00b7 +91 98230 41185 (IST).' }) }, 'Where else this can be posted') : null)
+    };
+
+    const inRegion = this.policy('failureFeedback', 'inline-region') === 'inline-region';
+
+    return {
+      failure: failureView,
+      bannerOpen: !!failureView && !inRegion,
+      regionFailureOpen: !!failureView && inRegion,
+
+      retrievalLine: rf
+        ? (rf.staleRows.length ? 'Shown from ' + rf.staleAt + ' \u00b7 could not be refreshed \u00b7 not this shift\u2019s current state' : 'Cleared after the read failed \u00b7 nothing is being shown')
+        : (s.empty ? 'MES answered at ' + s.retrievedAt + ' \u00b7 no confirmations booked' : s.rows.length + ' confirmations \u00b7 read at ' + s.retrievedAt + ' \u00b7 ' + s.posted.length + ' posted, ' + unposted.length + ' unposted'),
+      retrievalActions: [
+        btn({ key: 'r', variant: 'ghost', size: 'sm', type: 'button', disabled: this.pending(), 'data-reload': '1', onClick: this.reload }, s.retrieving ? 'Reading\u2026' : 'Read again from MES'),
+        s.posted.length ? badge('success', s.posted.length + ' posted') : null
+      ],
+      retrieving: !!s.retrieving,
+      retrievingLabel: 'Reading shift B confirmations for PR-05 from MES',
+      showEmpty: !!s.empty && !s.retrieving,
+      emptyActions: btn({ variant: 'secondary', size: 'sm', type: 'button', onClick: this.reload }, 'Read again from MES'),
+      showTable: !s.empty && s.rows.length > 0,
+
+      columns: [
+        { key: 'op', header: 'Operation', width: '112px', mono: true },
+        { key: 'part', header: 'Part', width: '118px', mono: true },
+        { key: 'produced', header: 'Produced', align: 'right', mono: true, width: '104px', render: (row) => num(row.produced) },
+        { key: 'scrapped', header: 'Scrapped', align: 'right', mono: true, width: '104px', render: (row) => num(row.scrapped) },
+        { key: 'state', header: 'MES', width: '124px', render: (row) => {
+            if (s.posting && s.posting.ids.indexOf(row.id) !== -1) return badge('accent', 'posting', true);
+            if (s.posted.indexOf(row.id) !== -1) return badge('success', 'posted', true);
+            if (f && f.failedIds && f.failedIds.indexOf(row.id) !== -1) return badge(f.recoverable ? 'warning' : 'critical', f.recoverable ? 'refused' : 'blocked', true);
+            return badge('neutral', 'unposted');
+          } },
+        { key: 'why', header: 'MES response', wrap: true, render: (row) => {
+            if (f && f.failedIds && f.failedIds.indexOf(row.id) !== -1 && REFUSED[row.id] && f.kind === 'partial') return React.createElement('span', { style: { fontSize: 'var(--text-xs)', color: 'var(--text-warning)', lineHeight: 1.45 } }, REFUSED[row.id]);
+            if (s.posted.indexOf(row.id) !== -1) return React.createElement('span', { style: { fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' } }, 'Accepted \u00b7 booked against ' + row.op);
+            if (f && f.failedIds && f.failedIds.indexOf(row.id) !== -1) return React.createElement('span', { style: { fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' } }, f.kind === 'closed' ? 'Not posted \u2014 period closed' : 'Not posted \u2014 no answer from MES');
+            return React.createElement('span', { style: { fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' } }, '\u2014');
+          } }
+      ],
+      rows: s.rows.map(id => Object.assign({}, confOf(id))),
+
+      postSummary: unposted.length
+        ? unposted.length + ' of ' + s.rows.length + ' confirmations unposted \u00b7 ' + num(unposted.reduce((t, id) => t + confOf(id).produced, 0)) + ' pcs produced, ' + num(unposted.reduce((t, id) => t + confOf(id).scrapped, 0)) + ' scrapped'
+        : (s.rows.length ? 'Shift complete \u00b7 all ' + s.rows.length + ' confirmations posted' : 'Nothing to post'),
+      postActions: [
+        s.corrected ? React.createElement('span', { key: 'corr', style: { fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' } }, s.corrected.ids.length + ' confirmations handled as correction ' + s.corrected.doc + ' at ' + s.corrected.at + ' \u00b7 read again from MES to start over') : null,
+        s.success ? React.createElement('span', { key: 'ok', style: { fontSize: 'var(--text-xs)', color: 'var(--text-success)' } }, s.success.count + (s.success.partial ? ' of the batch' : '') + ' posted at ' + s.success.at) : null,
+        left > 0 ? React.createElement('span', { key: 'bo', style: { fontFamily: 'var(--font-mono)', fontSize: 'var(--text-2xs)', color: 'var(--text-tertiary)' } }, 'retry held ' + left + ' s') : null,
+        // While a failure is current the recovery lives in the failure message
+        // and nowhere else: one recovery, one control, one wording (§02, §14).
+        f ? React.createElement('span', { key: 'owned', style: { fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', maxWidth: '46ch', textWrap: 'pretty' } },
+              f.recoverable ? 'The recovery is in the message above \u2014 it names what it will send.' : 'This failure cannot be retried; the routes out are in the message above.')
+          : (!unposted.length || s.corrected) ? null      // nothing to offer: the summary states what is true
+          : btn({
+              key: 'post', variant: 'primary', size: 'sm', type: 'button',
+              disabled: this.pending(),
+              'aria-label': 'Post ' + ids.length + ' production confirmations for shift B on PR-05 to MES',
+              'data-post': '1', onClick: () => this.post(false)
+            }, s.posting ? 'Posting\u2026' : 'Post ' + ids.length + ' confirmation' + (ids.length === 1 ? '' : 's'))
+      ],
+      posting: !!s.posting,
+      postingLabel: s.posting ? 'Posting ' + s.posting.ids.length + ' confirmations to MES' : '',
+
+      reasonOptions: REASONS,
+      reason: s.reason,
+      onReason: this.changeReason,
+      reasonError: undefined,
+      note: s.note,
+      onNote: this.changeNote,
+      noteHint: s.reason === 'No downtime' ? 'Optional when there was no downtime' : 'Required for ' + s.reason.toLowerCase() + ' \u00b7 at least 12 characters',
+      noteError: s.touchedNote ? p.note : undefined,
+      busy: this.pending(),
+      preservedLine: f || rf
+        ? 'The ' + (s.note.trim() ? s.note.trim().length + '-character note' : 'note field') + ', the reason "' + s.reason + '"' + (rf && rf.staleRows.length ? ', the list read at ' + rf.staleAt : '') + (s.posted.length ? ' and the ' + s.posted.length + ' confirmations MES already accepted' : '') + ' \u2014 all kept through the failure. None of it was retyped.'
+        : 'Nothing has failed yet. When something does, everything in this panel stays exactly as it is.',
+
+      announcement: s.announcement,
+
+      categories: [
+        { k: 'validation', v: p.note ? 'note too short' : 'satisfied', note: 'A rule about the operator\u2019s input. Decided locally, shown on the field, never announced as a failure of MES.' },
+        { k: 'empty', v: s.empty ? 'zero confirmations' : (s.rows.length ? s.rows.length + ' confirmations' : 'cleared'), note: 'MES answered and the answer was none. An explanation, not an error, and it takes no retry.' },
+        { k: 'pending', v: s.posting ? 'posting ' + s.posting.ids.length : (s.retrieving ? 'reading' : 'idle'), note: 'Work in flight. It is not a failure yet and must never be rendered as one.' },
+        { k: 'operational failure', v: f ? f.kind + (f.recoverable ? ' \u00b7 recoverable' : ' \u00b7 not recoverable') : (rf ? 'retrieval \u00b7 recoverable' : 'none'), note: 'The request was fine and the operation failed anyway. This is the only category that carries a cause and a recovery.' }
+      ],
+      stateRows: [
+        { k: 'state', v: s.posting ? 'recovering' : (f ? (f.attempt > 1 ? 'recovery failed \u00b7 attempt ' + f.attempt : 'failed') : (s.corrected ? 'recovered \u00b7 by correction ' + s.corrected.doc : (s.success ? 'recovered' : 'stable'))) },
+        { k: 'retry scope', v: scope === 'failed-only' ? 'the failed confirmations only' : 'every unposted confirmation' },
+        { k: 'repeated failure', v: this.policy('repeatedFailure', 'escalate') === 'escalate' ? 'escalates after the second' : 'same message every time' },
+        { k: 'failure shown', v: inRegion ? 'in the region that failed' : 'as a page banner' },
+        { k: 'retrieval failure', v: this.policy('retrievalPreservation', 'keep') === 'keep' ? 'keep the stale list, labelled' : 'clear the list' },
+        { k: 'retry guard', v: this.policy('retryBackoff', 1500) + ' ms' + (left > 0 ? ' \u00b7 ' + left + ' s left' : '') },
+        { k: 'posted', v: s.posted.length ? s.posted.join(', ') : '\u2014' },
+        { k: 'retry context', v: f ? f.failedIds.join(', ') + ' \u00b7 attempt ' + f.attempt : '\u2014' }
+      ],
+      log: s.log
+    };
+  }
+}
+
+</script>
+</body>
+</html>

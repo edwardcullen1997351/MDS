@@ -1,0 +1,21 @@
+<!-- @dsCard group="Specs · Layouts" viewport="1180x900" name="Dashboard — reference implementation" subtitle="The working frame behind the spec, set in a manufacturing ERP — column count, spans, module order, shared versus local control scope and the three responsive forms with the tweaks" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Dashboard — reference implementation</title><link rel="stylesheet" href="../../styles.css">
+<style>
+html,body{margin:0;height:100%}
+body{background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);display:flex;flex-direction:column}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;padding:16px 22px;border-bottom:var(--border-hairline);background:var(--surface-card);flex:none}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em;flex:1 1 auto;min-width:200px}
+.links{display:flex;flex-wrap:wrap;gap:14px;font-family:var(--font-mono);font-size:var(--text-2xs)}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+p{margin:0;flex:1 1 100%;max-width:88ch;color:var(--text-secondary);font-size:var(--text-xs);line-height:1.55;text-wrap:pretty}
+iframe{flex:1 1 auto;width:100%;border:0;display:block;min-height:0}
+</style></head><body>
+<header>
+<span class="eyebrow">Reference implementation</span>
+<h1>Dashboard</h1>
+<div class="links"><a href="../../specs/layouts/Dashboard.spec.html">Specification §01–§14</a><a href="../../templates/dashboard/Dashboard.dc.html">Open standalone</a><a href="layouts.card.html">Layouts index</a></div>
+<p>Live, on Meridian’s own components: the 07:15 (IST) shift-handover screen at the Chakan plant (PL-04) on 2026-09-08, the one Shalini Rao, Meera Nair, Vikram Bhosale and Anjali Deshmukh stand at for eleven minutes. Seven modules on the twelve-column grid — shift-C output against plan full-span and first, OEE by line, open nonconformances, material shortages holding today's work orders, overnight breakdowns, despatch adherence, and the week's losses by cause — each with its own heading, period and scope, each readable alone. Shared controls in the header scope every module; the OEE module reads MES on its own and the despatch module can fail on its own, because eight independent reads means eight independent failures. Open standalone to reach the tweaks: grid column count, differentiated or equal spans, where the shortage module sits in the order, shared versus local control scope, and a <em>simulate available width</em> switch stepping through the expanded, intermediate and single-stream forms — the module order is identical in all three, in the DOM and on screen.</p>
+</header>
+<iframe src="../../templates/dashboard/Dashboard.dc.html" title="Dashboard reference implementation"></iframe>
+</body></html>

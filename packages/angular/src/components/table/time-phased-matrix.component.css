@@ -1,0 +1,187 @@
+/* ==========================================================================
+   Time-Phased Planning Matrix (§01–§14)
+   ========================================================================== */
+.ds-time-phased-matrix {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 480px;
+  max-height: 100%;
+  border: 1px solid var(--color-neutral-200, #E5E7EB);
+  border-radius: var(--radius-lg, 8px);
+  background: var(--color-surface-card, #FFFFFF);
+  overflow: hidden;
+  font-family: var(--font-family-sans, system-ui, sans-serif);
+}
+
+.ds-time-phased-matrix__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-3, 12px) var(--spacing-4, 16px);
+  border-bottom: 1px solid var(--color-neutral-200, #E5E7EB);
+  background: var(--color-surface-card, #FFFFFF);
+  gap: var(--spacing-3, 12px);
+  flex-wrap: wrap;
+}
+
+.ds-time-phased-matrix__viewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ds-time-phased-matrix__table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: max-content;
+  min-width: 100%;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Bi-directional Sticky Top Rows (Y-axis) */
+.ds-time-phased-matrix__th--date {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--color-neutral-50, #F9FAFB);
+  border-bottom: 1px solid var(--color-neutral-200, #E5E7EB);
+  border-right: 1px solid var(--color-neutral-200, #E5E7EB);
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-neutral-600, #4B5563);
+  text-align: center;
+}
+
+.ds-time-phased-matrix__th--shift {
+  position: sticky;
+  top: 33px;
+  z-index: 20;
+  background: var(--color-neutral-100, #F3F4F6);
+  border-bottom: 2px solid var(--color-neutral-300, #D1D5DB);
+  border-right: 1px solid var(--color-neutral-200, #E5E7EB);
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-neutral-700, #374151);
+  text-align: center;
+  min-width: 80px;
+}
+
+/* Bi-directional Sticky Left Columns (X-axis) */
+.ds-time-phased-matrix__col-sku {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  background: var(--color-surface-card, #FFFFFF);
+  border-right: 1px solid var(--color-neutral-200, #E5E7EB);
+  text-align: left;
+  font-weight: 600;
+  font-family: var(--font-family-mono, monospace);
+}
+
+.ds-time-phased-matrix__col-name {
+  position: sticky;
+  left: 180px;
+  z-index: 10;
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px;
+  background: var(--color-surface-card, #FFFFFF);
+  border-right: 1px solid var(--color-neutral-200, #E5E7EB);
+  text-align: left;
+}
+
+.ds-time-phased-matrix__col-stock {
+  position: sticky;
+  left: 440px;
+  z-index: 10;
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
+  background: var(--color-surface-card, #FFFFFF);
+  border-right: 2px solid var(--color-neutral-300, #D1D5DB);
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.04);
+  text-align: center;
+}
+
+.ds-time-phased-matrix__name-text {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ds-time-phased-matrix__category-text {
+  font-size: 11px;
+  color: var(--color-neutral-500, #6B7280);
+  line-height: 1.2;
+}
+
+/* Top-Left Corner Intersections */
+.ds-time-phased-matrix__corner-sku {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 30;
+  background: var(--color-neutral-100, #F3F4F6);
+}
+
+.ds-time-phased-matrix__corner-name {
+  position: sticky;
+  top: 0;
+  left: 180px;
+  z-index: 30;
+  background: var(--color-neutral-100, #F3F4F6);
+}
+
+.ds-time-phased-matrix__corner-stock {
+  position: sticky;
+  top: 0;
+  left: 440px;
+  z-index: 30;
+  background: var(--color-neutral-100, #F3F4F6);
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.04);
+}
+
+/* Matrix Data Cell */
+.ds-time-phased-matrix__cell {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-neutral-100, #F3F4F6);
+  border-right: 1px solid var(--color-neutral-100, #F3F4F6);
+  font-family: var(--font-family-mono, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  text-align: right;
+  min-width: 80px;
+}
+
+.ds-time-phased-matrix__cell--deficit {
+  background: var(--color-danger-100, #FEE2E2);
+  color: var(--color-danger-700, #B91C1C);
+  font-weight: 700;
+}
+
+.ds-time-phased-matrix__cell--planned {
+  color: var(--color-primary-700, #1D4ED8);
+  font-weight: 600;
+}
+
+.ds-time-phased-matrix__row:hover td {
+  background-color: var(--color-neutral-50, #F9FAFB);
+}
+
+.ds-time-phased-matrix__row--selected td {
+  background-color: var(--color-primary-50, #EFF6FF);
+}

@@ -1,0 +1,15 @@
+<!-- @dsCard group="Type" viewport="760x285" name="Code typography" subtitle="Mono runs one step below its sans neighbour — Plex has the larger x-height" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="../styles.css"><style>body{margin:0;padding:18px 20px;background:var(--surface-card);color:var(--text-primary)}.mono{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);letter-spacing:0}.cap{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold)}.r{display:flex}.c{display:flex;flex-direction:column}.li{display:grid;grid-template-columns:130px 1fr;gap:8px;padding:3px 0;border-bottom:var(--border-hairline-subtle);font-size:var(--text-xs)}.g{display:grid;grid-template-columns:1fr 250px;gap:24px}</style></head><body><div class="g"><div class="c" style="gap:10px">
+<div style="font-size:var(--text-base)">Filter with <code>state:down area:assembly</code> to scope the list, then acknowledge from the row.</div>
+<pre>curl -s meridian/api/v1/lines/L-03/runs \
+  -H "authorization: Bearer $TOKEN" \
+  | jq '.runs[] | {lot, oee, scrap}'</pre>
+<div class="r" style="gap:18px"><div class="c"><div class="cap">Tabular figures</div><div style="font-family:var(--font-mono);font-variant-numeric:var(--numeric-figures);font-size:var(--text-sm);line-height:1.5">1,284 pcs<br>412 pcs/h<br>−11 pcs/h</div></div><div class="c"><div class="cap">Machine strings</div><div style="font-family:var(--font-mono);font-size:var(--text-sm);line-height:1.5">WO-88431<br>LOT-2261<br>sha 4b19e07</div></div></div></div>
+<div class="c" style="gap:2px"><div class="cap" style="margin-bottom:6px">Tokens</div>
+<div class="li"><div class="mono">code-size</div><div>12px · inline</div></div>
+<div class="li"><div class="mono">code-size-block</div><div>12.5px · pre</div></div>
+<div class="li"><div class="mono">code-leading</div><div>1.55</div></div>
+<div class="li"><div class="mono">code-tab-size</div><div>2</div></div>
+<div class="li"><div class="mono">tracking-mono</div><div>0em — never tracked</div></div>
+<div class="li"><div class="mono">numeric-figures</div><div>tabular-nums</div></div>
+<div style="font-size:var(--text-2xs);color:var(--text-tertiary);margin-top:8px;line-height:1.4">If a value could be pasted into a terminal, it is mono. That is a semantic rule, not a stylistic one.</div></div></div></body></html>

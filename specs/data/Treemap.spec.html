@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Treemap · 14-Section Specification Standard</title>
+  <link rel="stylesheet" href="../../tokens/tokens.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+    }
+    body {
+      margin: 0;
+      padding: 40px 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .spec-container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .spec-header {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 24px;
+      margin-bottom: 36px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #a7f3d0;
+      margin-top: 8px;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      color: #0f172a;
+    }
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+    p, li {
+      font-size: 14px;
+      color: #334155;
+    }
+    ul, ol {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      background: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 12px;
+      margin-bottom: 24px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: #eff6ff;
+      padding: 14px 18px;
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+      font-size: 13px;
+      color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="spec-container">
+    <header class="spec-header">
+      <div class="badge">Meridian Design System · Data Visualization Specification</div>
+      <h1>Treemap Component Specification</h1>
+      <div style="font-size: 14px; color: var(--text-muted);">
+        Standard Specification Document for Hierarchical Part-to-Whole Area Encodings
+      </div>
+      <div class="status-tag">
+        <span>●</span> status: frozen 9 Sep 2026 · 0 open items
+      </div>
+    </header>
+
+    <!-- SECTION 01: PURPOSE -->
+    <section>
+      <h2>§01 Purpose & Analytical Intent</h2>
+      <p>
+        The <code>Treemap</code> component is designed to compare quantitative magnitude within a multi-level hierarchy while rigorously preserving containment and parent-child membership relationships. It packs space efficiently by dividing a bounding rectangle into nested sub-rectangles whose areas correspond directly to positive quantitative values.
+      </p>
+      <ul>
+        <li><strong>Primary analytical question:</strong> <em>"What proportion of the whole belongs to each branch and leaf within the operational hierarchy?"</em></li>
+        <li><strong>Contextual enterprise scenario:</strong> Shop-floor energy distribution (Plant &rarr; Shop &rarr; Equipment), raw material scrap cost loss, and asset maintenance budget allocations at <strong>Suryodaya Autocomp Ltd (Chakan plant PL-04, Pune)</strong>.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 02: DATA MODEL -->
+    <section>
+      <h2>§02 Data Model & Transformation</h2>
+      <p>
+        Input data is defined as a hierarchical tree structure where leaf nodes possess non-negative quantitative values. Branch container values are derived recursively via bottom-up summation in <code>rollupHierarchy()</code>:
+      </p>
+      <pre><code>// Formal Node Hierarchy Model
+interface TreemapNode {
+  id: string;              // Unique node identifier
+  label: string;           // Display name (e.g. "Press Shop")
+  category?: string;       // Color categorization key
+  value?: number;          // Leaf quantitative metric (>= 0)
+  children?: TreemapNode[]; // Nested branch child nodes
+}
+
+// Rollup Formula
+Value(Branch) = Sum(Value(Child_i)) for all Child_i in Branch.children</code></pre>
+      <p>
+        Negative values are mathematically invalid in area part-to-whole encodings and are clamped to <code>0</code>.
+      </p>
+    </section>
+
+    <!-- SECTION 03: VISUAL ENCODING -->
+    <section>
+      <h2>§03 Visual Encoding & Layout Anatomy</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Visual Channel</th>
+            <th>Data Attribute</th>
+            <th>Design & Scaling Rule</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Rectangle Area</strong></td>
+            <td>Quantitative Metric (<code>value</code>)</td>
+            <td>Direct linear proportion to container area: <code>Area(Node) = (Value(Node) / Value(Root)) * Area(Root)</code></td>
+          </tr>
+          <tr>
+            <td><strong>Spatial Containment</strong></td>
+            <td>Hierarchy Depth & Lineage</td>
+            <td>Nested SVG <code>&lt;g&gt;</code> groupings and container bounding boundaries.</td>
+          </tr>
+          <tr>
+            <td><strong>Fill Color & Pattern</strong></td>
+            <td>Category / Branch Dimension</td>
+            <td>Categorical color mapping from <code>VIZ_COLORS</code> overlaid with accessible SVG hatch patterns (<code>PATTERN_PRESETS</code>).</td>
+          </tr>
+          <tr>
+            <td><strong>Boundary Stroke</strong></td>
+            <td>Containment & Selection State</td>
+            <td>1px <code>#ffffff</code> for leaf borders; 2px <code>#cbd5e1</code> for branch banners; 2.5px dark stroke with drop-shadow for active selection.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SECTION 04: COMPONENT COMPOSITION -->
+    <section>
+      <h2>§04 Component Composition & Layer Stacking</h2>
+      <p>
+        The Treemap utilizes a strict 6-layer z-index structure:
+      </p>
+      <ol>
+        <li><code>Layer 0 (Canvas)</code>: Outer SVG background canvas and pattern definition dictionary.</li>
+        <li><code>Layer 10 (Branch Containers)</code>: Sunken background rectangles (<code>#f8fafc</code>) and top header banners (<code>#e2e8f0</code>) for branch grouping.</li>
+        <li><code>Layer 20 (Leaf Tiles)</code>: Base categorical color fill rectangles with 3px border radius.</li>
+        <li><code>Layer 25 (Hatch Patterns)</code>: Transparent SVG monochrome line/dot hatch pattern textures for WCAG 1.4.1 non-color differentiation.</li>
+        <li><code>Layer 30 (Labels & Value Text)</code>: High-contrast white typography with <code>text-shadow: 0 1px 2px rgba(0,0,0,0.7)</code>.</li>
+        <li><code>Layer 50 (Interactive Overlays)</code>: Floating tooltip portal and accessible table modal (<kbd>Alt+F11</kbd>).</li>
+      </ol>
+    </section>
+
+    <!-- SECTION 05: PROPERTIES & PROPS -->
+    <section>
+      <h2>§05 Properties, Props & Configuration</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>data</code></td>
+            <td><code>TreemapNode | TreemapNode[]</code></td>
+            <td><strong>Required</strong></td>
+            <td>Hierarchical data tree or array of root categories.</td>
+          </tr>
+          <tr>
+            <td><code>algorithm</code></td>
+            <td><code>'squarified' | 'slice-and-dice'</code></td>
+            <td><code>'squarified'</code></td>
+            <td>Layout algorithm. Squarified targets aspect ratios ~1.0; Slice-and-dice alternates directional cuts.</td>
+          </tr>
+          <tr>
+            <td><code>enableDrilldown</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Enables zoom-in interaction on branch containers with breadcrumb bar.</td>
+          </tr>
+          <tr>
+            <td><code>patternFills</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Applies SVG hatch textures for WCAG 2.2 AA color-blind accessibility.</td>
+          </tr>
+          <tr>
+            <td><code>unit</code></td>
+            <td><code>string</code></td>
+            <td><code>''</code></td>
+            <td>Unit suffix for values (e.g. <code>'kWh'</code>, <code>'INR'</code>, <code>'₹'</code>).</td>
+          </tr>
+          <tr>
+            <td><code>locale</code></td>
+            <td><code>string</code></td>
+            <td><code>'en-IN'</code></td>
+            <td>Locale for Indian numbering formatting.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SECTION 06: STATES & INTERACTIONS -->
+    <section>
+      <h2>§06 States & Interactions</h2>
+      <ul>
+        <li><strong>Default State:</strong> All visible nodes rendered within plot bounds with stable sorting (descending value).</li>
+        <li><strong>Hover State:</strong> Hovered leaf retains 100% opacity; non-hovered leaves dim slightly to 75% opacity; floating tooltip displays lineage, value, and parent/root share percentages.</li>
+        <li><strong>Drilled State:</strong> Clicking a branch or pressing <kbd>Enter</kbd> zooms into the subtree. The breadcrumb trail updates dynamically (e.g., <code>Plant PL-04 &rsaquo; Press Shop &rsaquo; Line 01</code>).</li>
+        <li><strong>Focused State:</strong> White dashed focus ring (<code>stroke-dasharray: 3 2</code>) rendered over focused rectangle.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 07: LAYOUT ALGORITHMS & GEOMETRY -->
+    <section>
+      <h2>§07 Layout Algorithms & Geometry</h2>
+      <p>
+        The default <strong>Squarified Treemap</strong> algorithm (Bruls, Huizing, van Wijk, 2000) subdivides rectangular space into rows of tiles such that the maximum aspect ratio of each rectangle is minimized towards <code>1.0</code>:
+      </p>
+      <pre><code>// Worst Aspect Ratio Formulation
+AspectRatio(r, s, S) = max((s^2 * r) / S^2, S^2 / (s^2 * r))
+where:
+  s = length of the shortest side of the remaining bounding box
+  S = cumulative area sum of the items in the current proposed row
+  r = individual area of item under evaluation</code></pre>
+      <p>
+        Items are presorted descending by magnitude prior to partitioning to guarantee layout determinism across routine data polling.
+      </p>
+    </section>
+
+    <!-- SECTION 08: LABELING & DENSITY RULES -->
+    <section>
+      <h2>§08 Labeling, Clipping & Density Rules</h2>
+      <p>
+        To prevent unreadable spatial clutter, internal text labels adhere to strict adaptive thresholds:
+      </p>
+      <ul>
+        <li><strong>Primary Label:</strong> Rendered if <code>width &ge; 40px</code> and <code>height &ge; 24px</code>. Truncated with ellipsis (<code>…</code>) if text width exceeds cell boundary.</li>
+        <li><strong>Metric Value:</strong> Rendered if <code>width &ge; 60px</code> and <code>height &ge; 40px</code>.</li>
+        <li><strong>Percentage Share:</strong> Rendered if <code>width &ge; 75px</code> and <code>height &ge; 56px</code>.</li>
+        <li><strong>Micro-Cells (w &lt; 40px or h &lt; 24px):</strong> Text is suppressed; metrics remain accessible via hover tooltip and <kbd>Alt+F11</kbd> data table.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 09: RESPONSIVE BEHAVIOR -->
+    <section>
+      <h2>§09 Responsive & Breakpoint Behavior</h2>
+      <ul>
+        <li><strong>Fluid Resizing:</strong> Recomputes rectangular partitions when width/height change while maintaining relative aspect ratios.</li>
+        <li><strong>Small Screens (&lt; 480px):</strong> Automatic depth restriction (<code>maxDepth = 2</code>) to prevent micro-cell fragmentation.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 10: ACCESSIBILITY -->
+    <section>
+      <h2>§10 Accessibility & Dual-Encoding (WCAG 2.2 AA / AAA)</h2>
+      <ul>
+        <li><strong>WCAG 1.4.1 (Non-Color Differentiation):</strong> Every category is differentiated by both a distinct hex hue and an SVG hatch pattern texture (stripes, dots, crosshatch).</li>
+        <li><strong>WCAG 2.1.1 (Keyboard Operability):</strong> Full 2D navigation (<kbd>&larr;</kbd>/<kbd>&rarr;</kbd>/<kbd>&uarr;</kbd>/<kbd>&darr;</kbd>), drilldown (<kbd>Enter</kbd>/<kbd>Space</kbd>), drill up (<kbd>Backspace</kbd>/<kbd>Esc</kbd>), and start/end (<kbd>Home</kbd>/<kbd>End</kbd>).</li>
+        <li><strong>WCAG 4.1.3 (Status Messages):</strong> Dynamic <code>aria-live="polite"</code> announcements upon selection and navigation.</li>
+        <li><strong>Non-Spatial Modal Alternative:</strong> <kbd>Alt+F11</kbd> accessible hierarchical data table.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 11: COLOR PALETTES & THEMES -->
+    <section>
+      <h2>§11 Color Palettes, Tokens & Themes</h2>
+      <p>
+        Adheres strictly to Meridian design tokens: <code>--viz-1</code> through <code>--viz-6</code>, <code>--surface-card</code>, <code>--surface-sunken</code>, <code>--border-subtle</code>, <code>--text-primary</code>, and <code>--text-secondary</code>.
+      </p>
+    </section>
+
+    <!-- SECTION 12: MOTION & TRANSITIONS -->
+    <section>
+      <h2>§12 Motion & Transitions</h2>
+      <p>
+        Tile opacity and border strokes transition at <code>150ms ease</code> on hover. Zoom transitions preserve spatial continuity without disorientation.
+      </p>
+    </section>
+
+    <!-- SECTION 13: ANTI-PATTERNS -->
+    <section>
+      <h2>§13 Anti-Patterns & Error Handling</h2>
+      <ul>
+        <li>❌ <strong>Do NOT use for high-precision leaf comparisons:</strong> Use horizontal <code>BarChart</code> when exact reading of small differences is required.</li>
+        <li>❌ <strong>Do NOT permit negative values:</strong> Area encodings cannot represent negative quantities.</li>
+        <li>❌ <strong>Do NOT overload depth:</strong> Avoid rendering &gt;3 levels simultaneously without drilldown containers.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 14: DEVELOPER NOTES -->
+    <section>
+      <h2>§14 Developer Notes & Sample Code</h2>
+      <pre><code>import React from 'react';
+import { Treemap } from '@meridian/design-system';
+
+const plantHierarchy = {
+  label: 'Chakan Plant (PL-04)',
+  children: [
+    {
+      label: 'Press Shop',
+      category: 'Press Shop',
+      children: [
+        { label: '800T Transfer Press', value: 1420 },
+        { label: '400T Tandem Press', value: 980 }
+      ]
+    },
+    {
+      label: 'Welding Cell',
+      category: 'Welding Cell',
+      children: [
+        { label: 'Robotic Spot Welders', value: 890 }
+      ]
+    }
+  ]
+};
+
+export function Dashboard() {
+  return (
+    &lt;Treemap
+      data={plantHierarchy}
+      unit="kWh"
+      title="Plant Power Distribution"
+      subtitle="Shop-floor energy hierarchy"
+      width={720}
+      height={420}
+      algorithm="squarified"
+      patternFills={true}
+    /&gt;
+  );
+}</code></pre>
+    </section>
+  </div>
+
+</body>
+</html>

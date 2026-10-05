@@ -1,0 +1,187 @@
+.ds-datetime-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+  font-family: var(--font-sans, inherit);
+  color: var(--text-primary, #111827);
+  width: 100%;
+  box-sizing: border-box;
+  container-type: inline-size;
+}
+
+.ds-datetime-picker-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2, 8px);
+}
+
+.ds-datetime-picker-label {
+  font-size: var(--text-xs, 12px);
+  font-weight: var(--weight-medium, 500);
+  color: var(--text-secondary, #4B5563);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps, 0.05em);
+}
+
+.ds-datetime-picker-zone {
+  font-family: var(--font-mono, monospace);
+  font-size: var(--text-2xs, 10px);
+  font-weight: var(--weight-semibold, 600);
+  background: var(--surface-sunken, #F3F4F6);
+  border: var(--border-hairline, 1px solid #E5E7EB);
+  border-radius: var(--radius-xs, 2px);
+  padding: 1px 6px;
+  color: var(--text-secondary, #4B5563);
+}
+
+.ds-datetime-picker-controls {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2, 8px);
+  position: relative;
+}
+
+.ds-datetime-picker--stacked .ds-datetime-picker-controls {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.ds-datetime-picker--inline .ds-datetime-picker-controls {
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.ds-datetime-picker-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 4px);
+  flex: 1 1 auto;
+}
+
+.ds-datetime-picker-field--date {
+  flex: 3 1 160px;
+}
+
+.ds-datetime-picker-field--time {
+  flex: 2 1 120px;
+}
+
+.ds-datetime-picker-sublabel {
+  font-size: var(--text-2xs, 10px);
+  color: var(--text-tertiary, #9CA3AF);
+  font-weight: var(--weight-normal, 400);
+}
+
+.ds-datetime-picker-input {
+  font-family: var(--font-mono, inherit);
+  background: var(--surface-card, #FFFFFF);
+  border: var(--border-hairline, 1px solid #E5E7EB);
+  border-radius: var(--radius-sm, 4px);
+  color: var(--text-primary, #111827);
+  padding: 0 10px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ds-datetime-picker--sm .ds-datetime-picker-input {
+  height: var(--control-h-sm, 28px);
+  font-size: var(--text-xs, 12px);
+}
+
+.ds-datetime-picker--md .ds-datetime-picker-input {
+  height: var(--control-h-md, 32px);
+  font-size: var(--text-sm, 14px);
+}
+
+.ds-datetime-picker--lg .ds-datetime-picker-input {
+  height: var(--control-h-lg, 40px);
+  font-size: var(--text-base, 16px);
+}
+
+.ds-datetime-picker-input:focus {
+  border-color: var(--action-solid, #2563EB);
+  box-shadow: 0 0 0 1px var(--action-solid, #2563EB);
+}
+
+.ds-datetime-picker--invalid .ds-datetime-picker-input {
+  border-color: var(--status-critical-solid, #DC2626);
+}
+
+.ds-datetime-picker--disabled .ds-datetime-picker-input {
+  background: var(--surface-sunken, #F9FAFB);
+  color: var(--text-disabled, #9CA3AF);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.ds-datetime-picker-clear-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary, #9CA3AF);
+  cursor: pointer;
+  padding: 6px;
+  font-size: 12px;
+  line-height: 1;
+  border-radius: var(--radius-xs, 2px);
+  align-self: center;
+  margin-top: 14px;
+}
+
+.ds-datetime-picker-clear-btn:hover {
+  background: var(--surface-sunken, #F3F4F6);
+  color: var(--text-primary, #111827);
+}
+
+.ds-datetime-picker-subhint {
+  font-size: var(--text-2xs, 10px);
+  color: var(--text-tertiary, #9CA3AF);
+}
+
+.ds-datetime-picker-hint {
+  font-size: var(--text-xs, 12px);
+  color: var(--text-secondary, #6B7280);
+}
+
+.ds-datetime-picker-error {
+  font-size: var(--text-xs, 12px);
+  color: var(--text-critical, #DC2626);
+}
+
+.ds-datetime-picker-warning {
+  font-size: var(--text-xs, 12px);
+  color: var(--text-warning, #D97706);
+  background: var(--status-warning-soft, #FEF3C7);
+  padding: 4px 8px;
+  border-radius: var(--radius-xs, 2px);
+}
+
+.ds-datetime-picker-notice {
+  font-size: var(--text-xs, 12px);
+  color: var(--text-secondary, #4B5563);
+  background: var(--surface-sunken, #F3F4F6);
+  padding: 4px 8px;
+  border-radius: var(--radius-xs, 2px);
+}
+
+/* Container Queries for DateTimePicker */
+@container (max-width: 440px) {
+  .ds-datetime-picker-controls {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: var(--space-2, 8px);
+  }
+
+  .ds-datetime-picker-field--date,
+  .ds-datetime-picker-field--time {
+    flex: 1 1 100% !important;
+    width: 100%;
+  }
+
+  .ds-datetime-picker-clear-btn {
+    align-self: flex-end;
+    margin-top: 0;
+  }
+}

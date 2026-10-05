@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Layout · Master-detail" description="A collection held beside the item it drives — the expediting queue of overdue purchase-order lines at Chakan (PL-04) on the left, the selected line's schedule, receipts and follow-up actions on the right, with the collection's position, refinement and selection surviving the responsive collapse." -->
+<helmet><script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary)}</style>
+</helmet>
+<div style="min-height:100vh">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Container" size="full" py="{{ 7 }}" hint-size="100%,100%">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 6 }}" hint-size="100%,100%">
+
+<sc-if value="{{ harnessNotes }}" hint-placeholder-val="{{ true }}">
+<div data-harness="remove-on-copy" style="border:var(--border-width) dashed var(--border-strong);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Harness · remove on copy</span>
+<a href="../../specs/layouts/MasterDetail.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§14</a>
+</div>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty;line-height:1.55">Dashed blocks and the <code style="font-family:var(--font-mono)">harness*</code> tweaks are scaffolding for reading the frame — delete them when you copy this template. The collection drives the detail: pick a line and the right region describes that line, one direction only (§02). The tweaks under <em>Layout properties</em> are the real §03 choices — the two track widths, what is selected on first load, and whether selection survives a search, a filter or a page change. <em>Simulate available width</em> forces the §11 sequential form, where the queue and the line become two views with an explicit return that restores query, filter, page, scroll and selection. Selecting a line never moves focus into the detail region; <em>Jump to the selected line</em> in the queue header is the deliberate way across (§07).</p>
+</div>
+</sc-if>
+
+<div style="display:flex;flex-direction:column;gap:10px;border-bottom:var(--border-hairline);padding-bottom:16px">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 1 · screen frame — one collection, one heading, both regions inside it</span>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Breadcrumb" items="{{ crumbs }}" size="sm" hint-size="100%,18px"></x-import>
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px 24px">
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:var(--weight-light);letter-spacing:-0.018em">Delivery expediting — open purchase-order lines</h1>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">PL-04 Chakan · materials planning · 2026-09-08 09:40 (IST)</span>
+</div>
+<p style="margin:0;font-size:var(--text-sm);color:var(--text-secondary);max-width:96ch;text-wrap:pretty">Anjali Deshmukh works this queue every morning: fourteen lines past their promise date, each one chased on its own — supplier called, promise revised, quantity closed short — without leaving the queue and losing her place in it.</p>
+</div>
+
+<sc-if value="{{ sequential }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">§11 sequential form — queue → line → return, with the queue's state preserved</span>
+</sc-if>
+<sc-if value="{{ showReturn }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" type="button" iconLeft="arrow-left" onClick="{{ onReturn }}" hint-size="200px,28px">Back to the expediting queue</x-import>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ returnReadout }}</span>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Grid" columns="{{ gridColumns }}" gap="{{ 0 }}" align="stretch" hint-size="100%,780px">
+
+<sc-if value="{{ showCollection }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:10px;min-width:0;min-height:0">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent);padding-right:16px">Region 2 · collection region — search, refinement, the queue, pagination · owns its own scroll and position</span>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Box" pr="{{ collectionPadEnd }}" minWidth="{{ 0 }}" minHeight="{{ 0 }}" hint-size="100%,720px">
+<section aria-labelledby="md-queue-heading" style="display:flex;flex-direction:column;gap:12px;min-width:0">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px">
+<h2 id="md-queue-heading" style="margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold)">Expediting queue</h2>
+<sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" type="button" onClick="{{ onJump }}" hint-size="190px,28px">{{ jumpLabel }}</x-import>
+</sc-if>
+</div>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.SearchField" label="Search the expediting queue" placeholder="Part, PO number or supplier" value="{{ query }}" onChange="{{ onQuery }}" size="sm" hint="Searches part number, description, PO line and supplier." hint-size="100%,56px"></x-import>
+<div style="display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end">
+<label style="display:flex;flex-direction:column;gap:5px;font-size:var(--text-2xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Supplier
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ supplierOptions }}" value="{{ supplier }}" onChange="{{ onSupplier }}" size="sm" aria-label="Filter by supplier" hint-size="240px,30px"></x-import>
+</label>
+<label style="display:flex;flex-direction:column;gap:5px;font-size:var(--text-2xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Line status
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ statusOptions }}" value="{{ status }}" onChange="{{ onStatus }}" size="sm" aria-label="Filter by line status" hint-size="180px,30px"></x-import>
+</label>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-bottom:6px">{{ refineReadout }}</span>
+</div>
+<div id="md-collection" style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Box" maxHeight="{{ collectionScrollMax }}" overflow="{{ collectionOverflow }}" minWidth="{{ 0 }}" hint-size="100%,440px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Table" caption="Purchase-order lines past their promise date" columns="{{ columns }}" rows="{{ rows }}" rowKey="id" onRowClick="{{ onRowClick }}" sort="{{ sort }}" onSortChange="{{ onSort }}" minWidth="720px" density="compact" emptyMessage="{{ emptyMessage }}" hint-size="100%,420px"></x-import>
+</x-import>
+<div style="padding:10px 14px;border-top:var(--border-hairline);background:var(--surface-sunken)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Pagination" page="{{ page }}" totalItems="{{ totalItems }}" pageSize="{{ 8 }}" onPageChange="{{ onPage }}" variant="numbered" size="sm" itemLabel="lines" label="Expediting queue pages" hint-size="100%,30px"></x-import>
+</div>
+</div>
+</section>
+</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{ showDetail }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:10px;min-width:0;min-height:0">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent);padding-left:16px">{{ detailRegionLabel }}</span>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Box" pl="{{ detailPadStart }}" border-left="{{ boundaryLeft }}" minWidth="{{ 0 }}" minHeight="{{ 0 }}" hint-size="100%,720px">
+<section id="md-detail" tabindex="-1" aria-labelledby="md-detail-heading" style="display:flex;flex-direction:column;gap:12px;min-width:0;outline:none">
+<div style="display:flex;flex-direction:column;gap:3px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">{{ detailEyebrow }}</span>
+<h2 id="md-detail-heading" style="margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.008em">{{ detailHeading }}</h2>
+<span style="font-size:var(--text-xs);color:var(--text-secondary)">{{ detailSubtitle }}</span>
+</div>
+
+<div aria-live="polite" aria-atomic="false" style="display:flex;flex-direction:column;gap:14px;min-width:0">
+
+<sc-if value="{{ showEmpty }}" hint-placeholder-val="{{ true }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.EmptyState" variant="first-run" title="No line selected" size="sm" align="start" hint-size="100%,130px">Pick a line in the queue to see its schedule, what has been received against it, and the follow-up open with the supplier. The queue stays where it is.</x-import>
+</sc-if>
+
+<sc-if value="{{ showSkeleton }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:10px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Skeleton" lines="{{ 8 }}" delay="{{ 200 }}" hint-size="100%,160px"></x-import>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ loadingNote }}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{ showGone }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="info" title="{{ goneTitle }}" live="on" size="sm" hint-size="100%,110px">{{ goneBody }}</x-import>
+</sc-if>
+
+<sc-if value="{{ showFields }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ slipTone }}" title="{{ slipTitle }}" size="sm" hint-size="100%,90px">{{ slipBody }}</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.DescriptionList" items="{{ detailFields }}" layout="columns" size="sm" divided="{{ true }}" termWidth="196px" responsive="{{ true }}" hint-size="100%,320px"></x-import>
+<div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+<h3 style="margin:0;font-size:var(--text-xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-regular)">Receipts against this line</h3>
+<sc-if value="{{ hasReceipts }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)">
+<sc-for list="{{ receipts }}" as="r" hint-placeholder-count="2">
+<div style="display:flex;flex-wrap:wrap;gap:4px 16px;padding:9px 13px;border-bottom:var(--border-subtle);font-size:var(--text-xs);color:var(--text-secondary)">
+<span style="font-family:var(--font-mono);color:var(--text-primary)">{{ r.grn }}</span>
+<span style="font-family:var(--font-mono)">{{ r.date }}</span>
+<span style="font-family:var(--font-mono)">{{ r.qty }}</span>
+<span style="flex:1 1 200px;min-width:0">{{ r.note }}</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ noReceipts }}" hint-placeholder-val="{{ false }}">
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-tertiary)">Nothing received against this line yet.</p>
+</sc-if>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+<h3 style="margin:0;font-size:var(--text-xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-regular)">Follow-up</h3>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary);line-height:1.6;text-wrap:pretty">{{ followUp }}</p>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;padding-top:4px;border-top:var(--border-hairline)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="primary" size="sm" type="button" onClick="{{ onRevise }}" hint-size="200px,30px">{{ reviseLabel }}</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="secondary" size="sm" type="button" onClick="{{ onEscalate }}" hint-size="220px,30px">{{ escalateLabel }}</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" type="button" onClick="{{ onCloseShort }}" hint-size="180px,30px">{{ closeLabel }}</x-import>
+</div>
+</div>
+</sc-if>
+
+</div>
+<div role="status" aria-live="polite" style="min-height:19px;font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty">{{ announcement }}</div>
+</section>
+</x-import>
+</div>
+</sc-if>
+
+</x-import>
+
+<sc-if value="{{ harnessInspector }}" hint-placeholder-val="{{ true }}">
+<div data-harness="remove-on-copy" style="border:var(--border-width) dashed var(--border-strong);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Layout state · §03 properties and §06 states as applied</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px 20px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="8">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:128px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty;line-height:1.6">The detail track carries a functional minimum of <code style="font-family:var(--font-mono)">420px</code> and the collection track <code style="font-family:var(--font-mono)">360px</code>. When both cannot hold, the frame becomes two sequential views rather than a squeezed pair (§11) — and the return restores query, filter, page, scroll and selection, so the relationship survives the spatial change.</p>
+</div>
+</sc-if>
+
+</x-import>
+</x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1000},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Light theme&quot;,&quot;Dark theme&quot;],&quot;default&quot;:&quot;Light theme&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;,&quot;label&quot;:&quot;Color theme&quot;},&quot;trackWidths&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Collection 2fr · detail 3fr&quot;,&quot;Collection 3fr · detail 2fr&quot;,&quot;Collection fixed 420px · detail flexible&quot;],&quot;default&quot;:&quot;Collection 2fr · detail 3fr&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties (§03)&quot;,&quot;label&quot;:&quot;Region widths&quot;},&quot;initialSelection&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;None — the detail region starts empty&quot;,&quot;First item selected on load&quot;],&quot;default&quot;:&quot;None — the detail region starts empty&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties (§03)&quot;,&quot;label&quot;:&quot;Initial-selection policy&quot;},&quot;selectionPersistence&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Preserved across search, filter and paging&quot;,&quot;Cleared whenever the collection is refined&quot;],&quot;default&quot;:&quot;Preserved across search, filter and paging&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties (§03)&quot;,&quot;label&quot;:&quot;Selection persistence&quot;},&quot;collectionScroll&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;The collection region scrolls&quot;,&quot;The screen scrolls as one&quot;],&quot;default&quot;:&quot;The collection region scrolls&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties (§03)&quot;,&quot;label&quot;:&quot;Scroll ownership&quot;},&quot;availableWidth&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Expanded — collection and detail together&quot;,&quot;Constrained — sequential views&quot;],&quot;default&quot;:&quot;Expanded — collection and detail together&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Responsive (§11)&quot;,&quot;label&quot;:&quot;Simulate available width&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:2500,&quot;step&quot;:100,&quot;default&quot;:600,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;,&quot;label&quot;:&quot;Purchasing read latency&quot;},&quot;buyerClosesLine&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;,&quot;label&quot;:&quot;Buyer closes the selected line elsewhere&quot;},&quot;harnessRegionLabels&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;,&quot;label&quot;:&quot;Region labels&quot;},&quot;harnessNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;,&quot;label&quot;:&quot;Explanatory notes&quot;},&quot;harnessInspector&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;,&quot;label&quot;:&quot;Layout state inspector&quot;}}">
+// Delivery expediting, PL-04 Chakan, 2026-09-08 (IST). The queue holds the open
+// PO lines past promise; the detail is read for the line currently selected.
+const TODAY = '2026-09-08';
+const LINES = [
+  { id: 'PO-24118/30', po: 'PO-24118', line: '30', part: 'BRK-4820-A', desc: 'Caliper bracket forging, LH', sup: 'Nashik Forge & Machine Works', supCode: 'V-1042', contact: 'Rohit Pawar', phone: '+91 98230 41185', qty: 2400, recd: 900, uom: 'Nos', rate: 412, orig: '2026-08-24', promise: '2026-09-04', days: 4, status: 'partial', need: 'WO-561204 · press line P-2, shift A, 2026-09-09', receipts: [ { grn: 'GRN-2609-0441', date: '2026-08-29', qty: 600, note: 'Gate 2, six bins, accepted' }, { grn: 'GRN-2609-0512', date: '2026-09-02', qty: 300, note: 'Short — two bins held by incoming inspection for rust' } ], follow: 'Rohit Pawar committed 900 Nos on 2026-09-10 and the balance 600 on 2026-09-13; forging die was down two shifts at Nashik. Sandeep Kulkarni has enough bracket stock for shift A on 2026-09-09 only.' },
+  { id: 'PO-24118/40', po: 'PO-24118', line: '40', part: 'BRK-4820-B', desc: 'Caliper bracket forging, RH', sup: 'Nashik Forge & Machine Works', supCode: 'V-1042', contact: 'Rohit Pawar', phone: '+91 98230 41185', qty: 2400, recd: 0, uom: 'Nos', rate: 412, orig: '2026-08-24', promise: '2026-09-02', days: 6, status: 'overdue', need: 'WO-561205 · press line P-2, shift B, 2026-09-10', receipts: [], follow: 'No acknowledgement since the reminder of 2026-09-03. Same die outage as line 30; Rohit Pawar has not given a revised date for the RH part.' },
+  { id: 'PO-24203/10', po: 'PO-24203', line: '10', part: 'BRG-6208-2RS', desc: 'Deep groove ball bearing 6208-2RS', sup: 'Sahyadri Bearings Pvt Ltd', supCode: 'V-1178', contact: 'Meenal Kadam', phone: '+91 98220 71390', qty: 1800, recd: 1800, uom: 'Nos', rate: 268, orig: '2026-08-31', promise: '2026-09-05', days: 3, status: 'partial', need: 'WO-561188 · assembly line A-1, shift A', receipts: [ { grn: 'GRN-2609-0538', date: '2026-09-06', qty: 1800, note: 'Full quantity, awaiting test certificate' } ], follow: 'Material in, mill test certificate not received — Meera Nair will not release to stores without it. Meenal Kadam sending the certificate by e-mail today.' },
+  { id: 'PO-24203/20', po: 'PO-24203', line: '20', part: 'BRG-6304-C3', desc: 'Deep groove ball bearing 6304 C3', sup: 'Sahyadri Bearings Pvt Ltd', supCode: 'V-1178', contact: 'Meenal Kadam', phone: '+91 98220 71390', qty: 900, recd: 0, uom: 'Nos', rate: 214, orig: '2026-08-31', promise: '2026-09-01', days: 7, status: 'overdue', need: 'WO-561190 · assembly line A-1, shift C', receipts: [], follow: 'Sahyadri has the C3 clearance grade on allocation from their own supplier. Meenal Kadam offered 400 Nos on 2026-09-11 against the 900 ordered.' },
+  { id: 'PO-24219/10', po: 'PO-24219', line: '10', part: 'HSG-3360-B', desc: 'Transmission housing casting, machined blank', sup: 'Godavari Castings Pvt Ltd', supCode: 'V-0931', contact: 'Sunil Mahajan', phone: '+91 94220 55817', qty: 600, recd: 240, uom: 'Nos', rate: 1875, orig: '2026-08-27', promise: '2026-09-06', days: 2, status: 'partial', need: 'WO-561212 · machine shop HMC-04, 2026-09-11', receipts: [ { grn: 'GRN-2609-0503', date: '2026-09-01', qty: 240, note: 'Accepted, four castings scrapped at layout' } ], follow: 'Sunil Mahajan holds the balance for the 2026-09-09 pour; foundry shut two days for the furnace reline. Rev D routing needs these blanks with the extra 1.5 mm at the bore mouth.' },
+  { id: 'PO-24219/20', po: 'PO-24219', line: '20', part: 'HSG-3120', desc: 'Gear housing cover casting', sup: 'Godavari Castings Pvt Ltd', supCode: 'V-0931', contact: 'Sunil Mahajan', phone: '+91 94220 55817', qty: 1200, recd: 0, uom: 'Nos', rate: 1140, orig: '2026-09-02', promise: '2026-09-09', days: 0, status: 'at risk', need: 'WO-561220 · press line P-8, 2026-09-14', receipts: [], follow: 'Acknowledged for 2026-09-09 but the same furnace reline sits in front of it. Treated as at risk rather than overdue until the promise date passes.' },
+  { id: 'PO-24240/10', po: 'PO-24240', line: '10', part: 'TL-FM-63', desc: 'Face mill FM-63, 5-insert body', sup: 'Deccan Machine Supply', supCode: 'V-1265', contact: 'Farhan Shaikh', phone: '+91 98905 12244', qty: 6, recd: 0, uom: 'Nos', rate: 34500, orig: '2026-08-20', promise: '2026-08-28', days: 11, status: 'overdue', need: 'Tool room · VMC-11 spare set, Priya Iyer', receipts: [], follow: 'Farhan Shaikh says the bodies cleared customs on 2026-09-04 and are with the transporter. No consignment note yet; eleven days late and VMC-11 is running its last body.' },
+  { id: 'PO-24240/20', po: 'PO-24240', line: '20', part: 'TL-TH-10', desc: 'Tap holder TH-10, M10 collet type', sup: 'Deccan Machine Supply', supCode: 'V-1265', contact: 'Farhan Shaikh', phone: '+91 98905 12244', qty: 4, recd: 2, uom: 'Nos', rate: 8900, orig: '2026-08-20', promise: '2026-09-03', days: 5, status: 'partial', need: 'Tool room · VMC-12, Priya Iyer', receipts: [ { grn: 'GRN-2609-0521', date: '2026-09-03', qty: 2, note: 'Two of four, accepted' } ], follow: 'Balance two holders promised with the face mills on the same consignment.' },
+  { id: 'PO-24251/10', po: 'PO-24251', line: '10', part: 'GSK-8801', desc: 'Manifold gasket, graphite, 1.5 mm', sup: 'Bhima Rubber Products', supCode: 'V-1310', contact: 'Kavya Patil', phone: '+91 97640 88213', qty: 12000, recd: 4000, uom: 'Nos', rate: 46, orig: '2026-08-29', promise: '2026-09-05', days: 3, status: 'partial', need: 'WO-561196 · assembly line A-2, continuous', receipts: [ { grn: 'GRN-2609-0529', date: '2026-09-04', qty: 4000, note: 'One-third quantity, accepted' } ], follow: 'Kavya Patil splitting the balance 8000 across 2026-09-10 and 2026-09-17. A-2 consumes 1,600 a shift; cover to 2026-09-11 only.' },
+  { id: 'PO-24251/20', po: 'PO-24251', line: '20', part: 'SEL-7702', desc: 'Oil seal retainer, nitrile', sup: 'Bhima Rubber Products', supCode: 'V-1310', contact: 'Kavya Patil', phone: '+91 97640 88213', qty: 5000, recd: 5000, uom: 'Nos', rate: 62, orig: '2026-08-29', promise: '2026-09-04', days: 4, status: 'acknowledged', need: 'WO-561198 · assembly line A-2', receipts: [ { grn: 'GRN-2609-0533', date: '2026-09-05', qty: 5000, note: 'Full quantity, accepted' } ], follow: 'Received in full a day after promise; kept in the queue until the line is closed in purchasing.' },
+  { id: 'PO-24266/10', po: 'PO-24266', line: '10', part: 'PLT-6601', desc: 'Mounting plate, 2.5 mm HR sheet', sup: 'Nashik Forge & Machine Works', supCode: 'V-1042', contact: 'Rohit Pawar', phone: '+91 98230 41185', qty: 8000, recd: 0, uom: 'Kg', rate: 78, orig: '2026-09-01', promise: '2026-09-07', days: 1, status: 'overdue', need: 'WO-561224 · press line P-5, 2026-09-12', receipts: [], follow: 'One day past promise, no acknowledgement of the reminder sent 2026-09-07 18:10 (IST).' },
+  { id: 'PO-24274/10', po: 'PO-24274', line: '10', part: 'SPR-5502', desc: 'Spring seat, phosphated', sup: 'Sahyadri Bearings Pvt Ltd', supCode: 'V-1178', contact: 'Meenal Kadam', phone: '+91 98220 71390', qty: 3600, recd: 1200, uom: 'Nos', rate: 118, orig: '2026-08-26', promise: '2026-09-03', days: 5, status: 'partial', need: 'WO-561201 · press line P-5, shift B', receipts: [ { grn: 'GRN-2609-0517', date: '2026-09-02', qty: 1200, note: 'Accepted' } ], follow: 'Meenal Kadam confirmed 1200 Nos a week from 2026-09-10. Plating vendor at their end is the constraint.' },
+  { id: 'PO-24281/10', po: 'PO-24281', line: '10', part: 'WSH-0408', desc: 'Spring washer, 8 mm', sup: 'Deccan Machine Supply', supCode: 'V-1265', contact: 'Farhan Shaikh', phone: '+91 98905 12244', qty: 40000, recd: 0, uom: 'Nos', rate: 3, orig: '2026-09-01', promise: '2026-09-08', days: 0, status: 'at risk', need: 'WO-561230 · assembly line A-1', receipts: [], follow: 'Promised for today. Farhan Shaikh has not confirmed despatch by 09:00 (IST); flagged at risk, not yet overdue.' },
+  { id: 'PO-24288/10', po: 'PO-24288', line: '10', part: 'MCH-2201', desc: 'Hub carrier, rough machined', sup: 'Godavari Castings Pvt Ltd', supCode: 'V-0931', contact: 'Sunil Mahajan', phone: '+91 94220 55817', qty: 300, recd: 60, uom: 'Nos', rate: 2960, orig: '2026-08-18', promise: '2026-08-30', days: 9, status: 'overdue', need: 'WO-561176 · machine shop HMC-04, held', receipts: [ { grn: 'GRN-2608-0398', date: '2026-08-27', qty: 60, note: 'First lot, accepted with concession' } ], follow: 'Nine days late and holding WO-561176. Sunil Mahajan asked for a rate revision before releasing the balance; Anjali Deshmukh has escalated to Shalini Rao.' }
+];
+const rupee = (n) => '\u20B9' + Number(n).toLocaleString('en-IN');
+const num = (n) => Number(n).toLocaleString('en-IN');
+const M = () => window.MeridianDesignSystem_962c43 || {};
+const find = (id) => LINES.find((l) => l.id === id);
+const TONE = { overdue: 'critical', partial: 'warning', 'at risk': 'warning', acknowledged: 'info' };
+
+class Component extends DCLogic {
+  state = {
+    open: LINES.map((l) => l.id),
+    selected: null,
+    detail: null,
+    loading: false,
+    gone: null,
+    query: '',
+    supplier: 'All suppliers',
+    status: 'All statuses',
+    page: 1,
+    sort: { key: 'days', direction: 'desc' },
+    view: 'list',
+    announcement: '',
+    revised: {},
+    reads: 0
+  };
+  req = 0;
+
+  prop(name, fallback) { return this.props[name] ?? fallback; }
+
+  filtered() {
+    const q = this.state.query.trim().toLowerCase();
+    return this.state.open.map(find).filter((l) => {
+      if (this.state.supplier !== 'All suppliers' && l.sup !== this.state.supplier) return false;
+      if (this.state.status !== 'All statuses' && l.status !== this.state.status) return false;
+      if (!q) return true;
+      return (l.part + ' ' + l.desc + ' ' + l.id + ' ' + l.sup).toLowerCase().indexOf(q) > -1;
+    });
+  }
+
+  sorted() {
+    const s = this.state.sort, dir = s.direction === 'desc' ? -1 : 1;
+    return this.filtered().slice().sort((a, b) => {
+      const x = a[s.key], y = b[s.key];
+      if (typeof x === 'number') return (x - y) * dir;
+      return String(x).localeCompare(String(y)) * dir;
+    });
+  }
+
+  // Detail retrieval for one selected identity. Each read carries the request
+  // number that started it; a late answer for a line the planner has moved off
+  // is dropped rather than written into the detail region.
+  read(id) {
+    const n = ++this.req;
+    this.setState((s) => ({ loading: true, gone: null, detail: null, reads: s.reads + 1 }));
+    // REPLACE: stands in for the purchasing read —
+    //   GET /api/purchasing/po-lines/{id}?include=receipts,followup
+    setTimeout(() => {
+      if (n !== this.req) return;
+      if (!this.state.open.includes(id)) return;
+      const l = Object.assign({}, find(id), this.state.revised[id] || {});
+      this.setState({ loading: false, detail: { id, data: l }, announcement: id + ' \u2014 ' + l.part + ', ' + num(Math.max(0, l.qty - l.recd)) + ' ' + l.uom + ' open, promised ' + l.promise + ' (IST).' });
+    }, this.prop('latency', 600));
+  }
+
+  select = (id) => {
+    if (!this.state.open.includes(id)) return;
+    if (id === this.state.selected) {
+      if (this.sequential()) this.setState({ view: 'detail' }, this.focusDetail);
+      return;
+    }
+    // Selection changes the detail region. It does NOT move focus there: the
+    // planner arrows through the queue and reads across (§07).
+    this.setState({ selected: id, gone: null, view: this.sequential() ? 'detail' : 'list', announcement: id + ' selected. Reading the line\u2026' }, () => { if (this.sequential()) this.focusDetail(); });
+    this.read(id);
+  };
+
+  focusDetail = () => { const el = document.getElementById('md-detail'); if (el) el.focus({ preventScroll: true }); };
+
+  // Returning from the sequential detail view restores the queue's position and
+  // puts focus back on the control for the line that is still selected.
+  back = () => this.setState({ view: 'list' }, () => {
+    const id = this.state.selected;
+    if (!id) return;
+    const el = document.querySelector('#md-collection input[name="md-line"][value="' + id + '"]');
+    if (el) el.focus({ preventScroll: true });
+  });
+
+  sequential() { return String(this.prop('availableWidth', 'Expanded — collection and detail together')).indexOf('Constrained') === 0; }
+
+  // Collection operations. Under `preserve` the selection is untouched even when
+  // the selected line is not on the visible page; under `clear-on-refine` any
+  // refinement empties the detail region.
+  refine(patch, label) {
+    const clear = this.prop('selectionPersistence', 'Preserved across search, filter and paging').indexOf('Cleared') === 0;
+    if (clear && this.state.selected) this.req++;
+    this.setState(Object.assign({ page: 1 }, patch, clear ? { selected: null, detail: null, loading: false, gone: null } : null), () => {
+      if (clear) this.setState({ announcement: label + ' Selection cleared under the clear-on-refine policy; the detail region is empty.' });
+    });
+  }
+
+  closeShort = () => {
+    const id = this.state.selected; if (!id) return;
+    const l = find(id);
+    this.remove(id, 'Line closed short at ' + num(l.recd) + ' of ' + num(l.qty) + ' ' + l.uom + ' by Anjali Deshmukh.', id + ' has been closed short and has left the queue.');
+  };
+
+  remove(id, why, announce) {
+    this.req++;
+    this.setState({ open: this.state.open.filter((x) => x !== id), selected: null, detail: null, loading: false, gone: { id, why }, view: this.sequential() ? 'detail' : this.state.view, announcement: announce + ' Nothing is selected; the detail region says which line left and why.' });
+  }
+
+  syncTheme() {
+    const isDark = String(this.prop('theme', 'Light theme')).indexOf('Dark') === 0;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }
+
+  componentDidMount() {
+    this.syncTheme();
+    if (String(this.prop('initialSelection', 'None — the detail region starts empty')).indexOf('First') === 0) {
+      const first = this.sorted()[0];
+      if (first) { this.setState({ selected: first.id }); this.read(first.id); return; }
+    }
+    this.setState({ announcement: 'No line selected. Choose a line in the queue to work it.' });
+  }
+
+  componentDidUpdate(prev) {
+    if (this.props.theme !== prev.theme) this.syncTheme();
+    if (this.props.buyerClosesLine && !prev.buyerClosesLine) {
+      const id = this.state.selected;
+      if (!id) { this.setState({ announcement: 'Nothing selected \u2014 select a line first, then turn the tweak on.' }); return; }
+      this.remove(id, 'Closed in purchasing by Shalini Rao from another terminal while you had it open.', id + ' was closed in purchasing while you had it open.');
+    }
+    if (this.props.availableWidth !== prev.availableWidth) this.setState({ view: 'list' });
+  }
+
+  renderVals() {
+    const s = this.state, C = M();
+    const rows = this.sorted();
+    const per = 8;
+    const page = Math.min(s.page, Math.max(1, Math.ceil(rows.length / per)));
+    const pageRows = rows.slice((page - 1) * per, page * per);
+    const sel = s.selected && s.open.includes(s.selected) ? s.selected : null;
+    const d = s.detail && s.detail.id === sel ? s.detail.data : null;
+    const seq = this.sequential();
+    const widths = String(this.prop('trackWidths', 'Collection 2fr · detail 3fr'));
+    const parts = widths.indexOf('fixed') > -1 ? null : (widths.indexOf('3fr · detail 2fr') > -1 ? [3, 2] : [2, 3]);
+    const gridColumns = seq ? 1 : (parts ? 'minmax(360px, ' + parts[0] + 'fr) minmax(420px, ' + parts[1] + 'fr)' : '420px minmax(420px, 1fr)');
+    const selOnPage = sel ? pageRows.some((r) => r.id === sel) : false;
+
+    return {
+      crumbs: [{ label: 'Materials planning', href: '#' }, { label: 'Purchasing', href: '#' }, { label: 'Delivery expediting' }],
+      gridColumns,
+      sequential: seq,
+      showCollection: !seq || s.view === 'list',
+      showDetail: !seq || s.view === 'detail',
+      showReturn: seq && s.view === 'detail',
+      onReturn: this.back,
+      returnReadout: 'restores query, filter, page ' + page + ', scroll and selection',
+      collectionPadEnd: seq ? 0 : 6,
+      detailPadStart: seq ? 0 : 6,
+      boundaryLeft: seq ? false : 'default',
+      collectionScrollMax: String(this.prop('collectionScroll', 'The collection region scrolls')).indexOf('The collection') === 0 ? '460px' : undefined,
+      collectionOverflow: String(this.prop('collectionScroll', 'The collection region scrolls')).indexOf('The collection') === 0 ? 'auto' : 'visible',
+      detailRegionLabel: 'Region 3 · detail region — the selected line only · region 4 boundary at the left edge · region 5 selection relationship: queue \u2192 line, one direction',
+
+      columns: [
+        { key: 'id', header: 'PO line', width: '186px', sortable: true, render: (row) => C.Radio ? React.createElement(C.Radio, { name: 'md-line', value: row.id, checked: sel === row.id, onChange: () => this.select(row.id), label: React.createElement('span', { style: { fontFamily: 'var(--font-mono)' } }, row.id) }) : row.id },
+        { key: 'part', header: 'Part', mono: true, width: '124px', sortable: true },
+        { key: 'sup', header: 'Supplier', wrap: true },
+        { key: 'openQty', header: 'Open', align: 'right', mono: true, width: '104px', render: (row) => num(Math.max(0, row.qty - row.recd)) + ' ' + row.uom },
+        { key: 'promise', header: 'Promise (IST)', mono: true, width: '124px', sortable: true },
+        { key: 'days', header: 'Days late', align: 'right', mono: true, width: '96px', sortable: true },
+        { key: 'status', header: 'Status', width: '124px', render: (row) => C.Badge ? React.createElement(C.Badge, { tone: TONE[row.status] || 'neutral', size: 'sm', dot: true }, row.status) : row.status }
+      ],
+      rows: pageRows,
+      sort: s.sort,
+      onSort: (sort) => this.setState({ sort }),
+      onRowClick: (row) => this.select(row.id),
+      emptyMessage: 'No open line matches this search and filter. Clear the refinement to see the whole queue.',
+      query: s.query,
+      onQuery: (next) => this.refine({ query: next }, 'Queue searched.'),
+      supplierOptions: ['All suppliers'].concat(LINES.map((l) => l.sup).filter((v, i, a) => a.indexOf(v) === i)),
+      supplier: s.supplier,
+      onSupplier: (e) => this.refine({ supplier: e.target.value }, 'Supplier filter applied.'),
+      statusOptions: ['All statuses', 'overdue', 'partial', 'at risk', 'acknowledged'],
+      status: s.status,
+      onStatus: (e) => this.refine({ status: e.target.value }, 'Status filter applied.'),
+      refineReadout: rows.length + ' of ' + s.open.length + ' open lines' + (sel && !selOnPage ? ' \u00b7 selected line not on this page' : ''),
+      page,
+      totalItems: rows.length,
+      onPage: (next) => this.setState({ page: next }),
+
+      hasSelection: !!sel,
+      jumpLabel: sel ? 'Jump to ' + sel : '',
+      onJump: this.focusDetail,
+
+      detailEyebrow: sel ? 'Selected line \u00b7 ' + (d ? d.sup : 'reading\u2026') : (s.gone ? 'Selection unavailable' : 'Nothing selected'),
+      detailHeading: sel ? sel + (d ? ' \u00b7 ' + d.part : '') : (s.gone ? s.gone.id + ' has left the queue' : 'No line selected'),
+      detailSubtitle: d ? d.desc + ' \u00b7 ' + rupee(d.rate) + ' per ' + d.uom + ' \u00b7 line value ' + rupee(d.qty * d.rate) : (sel ? 'Reading the line from purchasing\u2026' : 'The queue drives this region.'),
+
+      showEmpty: !sel && !s.gone && !s.loading,
+      showSkeleton: !!(sel && s.loading),
+      loadingNote: 'Reading ' + (sel || '\u2014') + ' \u00b7 request #' + this.req + ' \u00b7 the queue is untouched while this loads',
+      showGone: !!s.gone,
+      goneTitle: s.gone ? s.gone.id + ' is no longer an open line' : '',
+      goneBody: s.gone ? s.gone.why + ' Its detail is no longer shown, because nothing is selected. Pick another line to carry on \u2014 your search, filter and page are as you left them.' : '',
+
+      showFields: !!d && !s.loading,
+      slipTone: d ? (TONE[d.status] === 'critical' ? 'danger' : TONE[d.status] === 'warning' ? 'warning' : 'neutral') : 'neutral',
+      slipTitle: d ? (d.days > 0 ? d.days + ' day' + (d.days > 1 ? 's' : '') + ' past promise' : 'Promised today, not yet despatched') : '',
+      slipBody: d ? 'Ordered ' + num(d.qty) + ' ' + d.uom + ', received ' + num(d.recd) + ', open ' + num(Math.max(0, d.qty - d.recd)) + '. Required for ' + d.need + '.' : '',
+      detailFields: d ? [
+        { term: 'Part', value: d.part + ' \u2014 ' + d.desc },
+        { term: 'Supplier', value: d.sup + ' (' + d.supCode + ')' },
+        { term: 'Supplier contact', value: d.contact + ' \u00b7 ' + d.phone, mono: false },
+        { term: 'Ordered / received / open', value: num(d.qty) + ' / ' + num(d.recd) + ' / ' + num(Math.max(0, d.qty - d.recd)) + ' ' + d.uom, mono: true },
+        { term: 'Rate \u00b7 line value', value: rupee(d.rate) + ' per ' + d.uom + ' \u00b7 ' + rupee(d.qty * d.rate), mono: true },
+        { term: 'Original promise (IST)', value: d.orig, mono: true },
+        { term: 'Current promise (IST)', value: d.promise + (s.revised[d.id] ? ' \u00b7 revised just now' : ''), mono: true },
+        { term: 'Required for', value: d.need },
+        { term: 'Planner', value: 'Anjali Deshmukh \u00b7 planning@suryodaya.co.in' },
+        { term: 'Ship to', value: 'Suryodaya Autocomp Ltd, Chakan plant (PL-04), gate 2 stores' }
+      ] : [],
+      receipts: d ? d.receipts.map((r) => ({ grn: r.grn, date: r.date, qty: num(r.qty) + ' ' + d.uom, note: r.note })) : [],
+      hasReceipts: !!(d && d.receipts.length),
+      noReceipts: !!(d && !d.receipts.length),
+      followUp: d ? d.follow : '',
+      reviseLabel: d ? 'Revise the promise date' : '',
+      escalateLabel: d ? 'Escalate to ' + d.contact : '',
+      closeLabel: d ? 'Close line short' : '',
+      onRevise: () => { const id = sel; if (!id) return; const l = find(id); const next = '2026-09-' + String(Math.min(30, Number(l.promise.slice(8)) + 6)).padStart(2, '0'); this.setState({ revised: Object.assign({}, s.revised, { [id]: { promise: next, days: 0, status: 'acknowledged' } }), detail: { id, data: Object.assign({}, l, { promise: next, days: 0, status: 'acknowledged' }) }, announcement: 'Promise date on ' + id + ' revised to ' + next + ' (IST). The queue keeps its position and the line stays selected.' }); },
+      onEscalate: () => this.setState({ announcement: d ? 'Expediting note sent to ' + d.contact + ' at ' + d.sup + ' for ' + sel + '. The line stays selected.' : '' }),
+      onCloseShort: this.closeShort,
+      announcement: s.announcement,
+
+      harnessLabels: this.prop('harnessRegionLabels', true),
+      harnessNotes: this.prop('harnessNotes', true),
+      harnessInspector: this.prop('harnessInspector', true),
+      stateRows: [
+        { k: 'layout state', v: !sel ? (s.gone ? 'selected item unavailable' : 'no selection') : (s.loading ? 'detail loading' : 'selected item') },
+        { k: 'selection', v: sel || '\u2014' },
+        { k: 'detail describes', v: s.detail ? s.detail.id : '\u2014' },
+        { k: 'tracks', v: String(gridColumns) },
+        { k: 'form', v: seq ? 'sequential \u00b7 view = ' + s.view : 'concurrent \u00b7 collection and detail' },
+        { k: 'initial selection', v: String(this.prop('initialSelection', 'None \u2014 the detail region starts empty')) },
+        { k: 'persistence', v: String(this.prop('selectionPersistence', 'Preserved across search, filter and paging')) },
+        { k: 'queue position', v: 'page ' + page + ' of ' + Math.max(1, Math.ceil(rows.length / per)) + ' \u00b7 ' + rows.length + ' matching \u00b7 sorted by ' + s.sort.key + ' ' + s.sort.direction },
+        { k: 'selected on page', v: sel ? (selOnPage ? 'yes' : 'no \u2014 detail still shown') : '\u2014' },
+        { k: 'reads', v: String(s.reads) + ' \u00b7 request #' + this.req + (s.loading ? ' in flight' : ' resolved') }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

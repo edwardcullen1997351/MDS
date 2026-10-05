@@ -1,0 +1,28 @@
+:root{
+/* ── ICONOGRAPHY ───────────────────────────────────────────────────────
+   Lucide 0.469.0 — 24px grid, 2px stroke, round caps, outline only.
+   Always <Icon name="…" />: glyphs are masked with background-color:
+   currentColor, so every icon inherits text colour and the dark scope
+   for free. Never inline SVG, never a fixed-colour <img>, never emoji. */
+--icon-grid:24px; /* @kind spacing */
+--icon-stroke:2px; /* @kind spacing */
+--icon-xs:14px; /* table rows, badges, small controls */
+--icon-sm:16px; /* buttons, nav, DEFAULT */
+--icon-md:20px; /* page headers, specimen rows */
+--icon-lg:22px; /* empty states — nothing larger exists */
+
+/* A MARK inside a control's own box — a checkbox tick, a tag remove ×, a
+   sort caret — is not on the icon scale: it is sized to its container, and
+   14px would nearly fill a 16px box. Never use on a surface. */
+--icon-mark:11px; /* @kind spacing */
+
+/* Optical gap between a glyph and its label. A mask has no side bearing,
+   so the glyph reads closer to its label than a word would: --icon-gap is
+   space-2 (8px), and dense controls tighten to 6px. */
+--icon-gap:var(--space-2);
+--icon-gap-tight:6px;
+
+/* Status dots are the one non-glyph mark in the system. */
+--dot-size:6px;
+--dot-size-lg:8px;
+}

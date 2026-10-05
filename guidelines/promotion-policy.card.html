@@ -1,0 +1,113 @@
+<!-- @dsCard group="Governance" viewport="980x2000" name="Promotion policy" subtitle="When a hand-assembly becomes a Composite Component, when a Composite becomes Core, and what a specification without code means meanwhile" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Promotion policy</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:32px}
+.wrap{max-width:1000px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0;max-width:76ch;color:var(--text-secondary);text-wrap:pretty}
+.rules{margin:24px 0 12px;padding:20px 22px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:10px}
+.rules.origin{border-left:2px solid var(--status-critical-solid)}
+.rules h2{margin:0 0 2px;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+p{margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:80ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:30px 0 12px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec{display:grid;grid-template-columns:190px minmax(0,1fr);gap:28px;padding:20px 0;border-bottom:var(--border-hairline)}
+.sec:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:7px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.badge{align-self:flex-start;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);padding:2px 8px;border-radius:var(--radius-full);white-space:nowrap;background:var(--surface-sunken);color:var(--text-secondary)}
+.body{display:flex;flex-direction:column;gap:10px;min-width:0}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td:first-child{font-family:var(--font-mono);color:var(--text-primary)}
+.sig{margin-top:36px;padding-top:12px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:12px}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Governance · Policy</span>
+<h1>Promotion policy</h1>
+<p class="lede">When does a way of putting components together stop being a pattern and become a component? This system had five composites and no written answer, which is how a specification came to cite a “rule of three” that did not exist. This page is the answer: the tier definitions, the evidence each promotion needs, what a closed specification without code does and does not oblige, and when a component may be frozen.</p>
+
+<div class="rules origin">
+  <h2>Why this exists</h2>
+  <p>On 7 Sep 2026 the <a href="../specs/composite/FileUpload.spec.html">FileUpload</a> specification justified shipping without an implementation “per the composite policy · the rule of three”, and asserted that two surfaces already assembled it by hand. Neither the policy nor the surfaces existed; both were plausible inferences stated as governance. The claims are retracted in that spec's §14 rather than deleted, and this card replaces them. <strong>A citation is only worth making if the thing cited can be read.</strong></p>
+</div>
+
+<div class="groupline"><h2>The four tiers</h2><span>What each one is, and what it costs to be in it</span></div>
+
+<table>
+<thead><tr><th>Tier</th><th>Is</th><th>Documented by</th><th>Cost of admission</th></tr></thead>
+<tbody>
+<tr><td>Primitive</td><td>A layout or typography atom with no behaviour of its own — <code>Box</code>, <code>Stack</code>, <code>Text</code>.</td><td><code>.d.ts</code> + <code>.prompt.md</code>, per the <a href="primitives-policy.card.html">primitives policy</a>. No spec.</td><td>Low. It has almost no contract to get wrong.</td></tr>
+<tr><td>Core</td><td>One control with its own contract — <code>Button</code>, <code>Input</code>, <code>FileDropzone</code>.</td><td>A full spec: all fourteen sections, per the <a href="core-spec-standard.card.html">core spec standard</a>.</td><td>High. Every state, key, size, message and token is a decision someone must own.</td></tr>
+<tr><td>Composite</td><td>A standardized assembly of Core Components carrying meaning the parts do not — <code>Toolbar</code>, <code>SplitButton</code>, <code>FileUpload</code>.</td><td>A spec of what the composition <em>adds</em>, per the <a href="composite-spec-standard.card.html">composite spec standard</a>.</td><td>Medium. Only the added contract, but it must be genuinely added.</td></tr>
+<tr><td>Pattern</td><td>A recurring way of solving an interaction problem with existing components. No API, nothing to install.</td><td>A spec plus a reference implementation, per the <a href="interaction-pattern-spec-standard.card.html">pattern standard</a>.</td><td>Low in code, high in prose. It has to be right about behaviour without owning any.</td></tr>
+</tbody>
+</table>
+
+<div class="groupline"><h2>Promotion</h2><span>The evidence each step requires</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">01</span><h3>Pattern → Composite</h3><span class="badge">Two tests, both required</span></div>
+  <div class="body">
+    <p>An assembly earns a component when repeating it by hand is <em>unsafe</em>, not merely tedious.</p>
+    <ul>
+      <li><strong>The ownership test.</strong> Name a contract the assembly holds that no part can hold alone — an aggregate state, a relationship between two controls, a single identity over several inputs. If everything the assembly does belongs to one of its parts, it stays a pattern however often it recurs. <code>FileUpload</code> passes on “is this set finished?”; a <code>Stack</code> of buttons fails, which is why <code>Toolbar</code>'s §01 argues the point rather than assuming it.</li>
+      <li><strong>The consequence test.</strong> Say what goes wrong when the assembly is rebuilt slightly differently. If the answer is “it looks a bit off”, that is a pattern with a reference implementation. If it is “the ECR releases with the BOM at 64%”, it is a component. A promotion needs a failure worth preventing, stated in the product's own terms.</li>
+    </ul>
+    <p><strong>Recurrence is evidence, not a threshold.</strong> Two independent surfaces wanting the same assembly is a strong signal and worth citing — but there is no count that promotes anything on its own, and there is no queue. A single surface with a dangerous aggregate qualifies; five surfaces sharing a padding convention do not.</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">02</span><h3>Composite → Core</h3><span class="badge">Rare, and reversible only by deprecation</span></div>
+  <div class="body">
+    <p>A composite becomes Core when it stops being decomposable: when its parts are no longer separately useful, or when its contract has grown to include states its parts cannot express.</p>
+    <ul>
+      <li><strong>The test:</strong> would anyone use the parts alone? <code>FileDropzone</code> and <code>FileItem</code> are separately useful (a read-only attachment list, a bare picker), so <code>FileUpload</code> stays composite. If a composite's parts only ever appear inside it, the assembly was really one control.</li>
+      <li><strong>The cost:</strong> a full fourteen-section Core spec, and the parts become internal. Do not take this step to make an import shorter.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">03</span><h3>Anything → nothing</h3><span class="badge">Demotion is a real move</span></div>
+  <div class="body">
+    <p>A component whose contract turns out to belong to its consumers should be demoted to a pattern, not kept for politeness. State it in §14, keep the export for one minor version, and move the prose to <code>specs/patterns</code>. Nothing in this system is entitled to remain a component because it once was.</p>
+  </div>
+</div>
+
+<div class="groupline"><h2>Specification without code</h2><span>What a closed spec obliges, and what it does not</span></div>
+
+<div class="rules">
+  <ul>
+    <li><strong>A spec may be closed before an implementation exists</strong>, and that is often the right order — the standard is what the implementation is written from, and <code>FileUpload</code> was built from its own closed spec without reopening it.</li>
+    <li><strong>A closed spec binds anything that solves the same problem</strong>, component or not. Conformance is judged against the spec, so a hand-built attachment set that derives no aggregate status is wrong whether or not it imports the component.</li>
+    <li><strong>A closed spec does not oblige anyone to build it</strong>, and it must not claim consumers it does not have. If the spec says two surfaces assemble this by hand, two surfaces must be nameable and readable.</li>
+    <li><strong>Say which state it is in, in the masthead.</strong> <code>specified, not built</code> · <code>built &lt;version&gt;</code> · <code>frozen &lt;date&gt;</code>. A reader should never have to grep the components folder to find out whether a spec has code.</li>
+  </ul>
+</div>
+
+<div class="groupline"><h2>Freezing</h2><span>What the word means here</span></div>
+
+<div class="rules">
+  <ul>
+    <li><strong>Freeze after a consumer, not after a build.</strong> A shape has survived nothing until something outside the design system has used it. <code>FileUpload</code> was built at 1.30.0 and frozen at 1.30.1 — the two props in between (<code>requiredMessage</code>, <code>showRequired</code>) were found by building a real surface against it, and would have been frozen out had the freeze followed the build. Both are demonstrated in the <a href="../specs/patterns/evidence-attachment-reference.card.html">evidence attachment reference implementation</a>, which is the consumer that survives; the first one was deleted once that superseded it, and the citation was moved rather than left dangling.</li>
+    <li><strong>Frozen means the API is closed, not that the component is finished.</strong> Additive exports and internal fixes continue: <code>FileDropzone</code> gained <code>fileGlyph</code> at 1.29.1 while frozen, because a new export changes nothing for existing callers.</li>
+    <li><strong>Zero open items is a requirement of freezing</strong>, and “closed as decided” is how an item reaches zero. Every closure states the decision and its reason, so it cannot return as a fresh question — an item that merely disappears reads as an oversight.</li>
+    <li><strong>Unfreezing is a breaking change with a version and a note.</strong> It is allowed. It is not quiet.</li>
+  </ul>
+</div>
+
+<p class="sig">Applies to: tier decisions across this system · Section sets: <a href="core-spec-standard.card.html">Core</a> · <a href="composite-spec-standard.card.html">Composite</a> · <a href="interaction-pattern-spec-standard.card.html">Patterns</a> · <a href="primitives-policy.card.html">Primitives</a> · Written 7 Sep 2026, replacing an invented citation in the FileUpload spec · <a href="layout-template-spec-standard.card.html">Layout Templates</a> keep theirs</p>
+</div>
+</body></html>

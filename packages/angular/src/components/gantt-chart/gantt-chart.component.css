@@ -1,0 +1,289 @@
+.ds-gantt-chart {
+  position: relative;
+  box-sizing: border-box;
+  font-family: var(--font-family-sans, system-ui, -apple-system, sans-serif);
+  color: var(--text-primary, #0f172a);
+  background: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  padding: 1rem 1.25rem;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+}
+
+.ds-gantt-chart:focus-visible {
+  box-shadow: 0 0 0 2px var(--action-solid, #2563eb);
+}
+
+.ds-gantt-chart__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
+}
+
+.ds-gantt-chart__title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary, #0f172a);
+}
+
+.ds-gantt-chart__subtitle {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #64748b);
+  margin: 0.125rem 0 0 0;
+}
+
+.ds-gantt-chart__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+}
+
+.ds-gantt-chart__search-wrap {
+  position: relative;
+}
+
+.ds-gantt-chart__search-input {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  border-radius: var(--radius-sm, 4px);
+  outline: none;
+  width: 160px;
+  background: var(--surface-card, #ffffff);
+  color: var(--text-primary, #0f172a);
+}
+
+.ds-gantt-chart__search-clear {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 0.6875rem;
+  padding: 0;
+}
+
+.ds-gantt-chart__zoom-group {
+  display: flex;
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  border-radius: var(--radius-sm, 4px);
+  overflow: hidden;
+  background: var(--surface-card, #ffffff);
+}
+
+.ds-gantt-chart__zoom-btn {
+  font-size: 0.6875rem;
+  padding: 0.25rem 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #334155);
+  cursor: pointer;
+  text-transform: capitalize;
+  font-weight: 400;
+}
+
+.ds-gantt-chart__zoom-btn--active {
+  background: var(--action-solid, #2563eb);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.ds-gantt-chart__body {
+  display: flex;
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-sm, 6px);
+  overflow: hidden;
+}
+
+.ds-gantt-chart__table-col {
+  border-right: 1px solid var(--border-subtle, #e2e8f0);
+  background: var(--surface-card, #ffffff);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.ds-gantt-chart__table-header {
+  height: 44px;
+  background: var(--surface-subtle, #f8fafc);
+  border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  font-weight: 700;
+  font-size: 0.6875rem;
+  color: var(--text-secondary, #475569);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.ds-gantt-chart__th-name {
+  flex: 1;
+}
+
+.ds-gantt-chart__th-prog {
+  width: 45px;
+  text-align: right;
+}
+
+.ds-gantt-chart__table-row {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  font-size: 0.75rem;
+  border-bottom: 1px solid var(--border-subtle, #f1f5f9);
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.ds-gantt-chart__table-row:hover,
+.ds-gantt-chart__table-row--hovered {
+  background: var(--surface-subtle, #f8fafc);
+}
+
+.ds-gantt-chart__table-row--selected {
+  background: #eff6ff;
+}
+
+.ds-gantt-chart__row-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ds-gantt-chart__row-owner {
+  font-size: 0.625rem;
+  color: #94a3b8;
+  margin-left: 0.375rem;
+}
+
+.ds-gantt-chart__row-prog {
+  width: 45px;
+  text-align: right;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.ds-gantt-chart__timeline-col {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  background: var(--surface-card, #ffffff);
+  position: relative;
+}
+
+.ds-gantt-chart__timeline-header {
+  height: 44px;
+  background: var(--surface-subtle, #f8fafc);
+  border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.ds-gantt-chart__tick {
+  border-left: 1px solid var(--border-subtle, #e2e8f0);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.25rem 0.375rem;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.ds-gantt-chart__tick--weekend {
+  background: #f1f5f9;
+}
+
+.ds-gantt-chart__tick-primary {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--text-primary, #334155);
+}
+
+.ds-gantt-chart__tick-secondary {
+  font-size: 0.5625rem;
+  color: #94a3b8;
+}
+
+.ds-gantt-chart__timeline-canvas {
+  position: relative;
+}
+
+.ds-gantt-chart__timeline-svg {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.ds-gantt-chart__milestone {
+  cursor: pointer;
+}
+
+.ds-gantt-chart__task-bar-group {
+  cursor: pointer;
+}
+
+.ds-gantt-chart__task-bar {
+  transition: opacity 0.15s ease;
+}
+
+.ds-gantt-chart__task-bar:hover {
+  opacity: 0.85;
+}
+
+.ds-gantt-chart__tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radius-md, 6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  font-size: 0.75rem;
+  z-index: 100;
+  max-width: 280px;
+}
+
+.ds-gantt-chart__tooltip-title {
+  font-weight: 700;
+  font-size: 0.8125rem;
+  margin-bottom: 0.25rem;
+}
+
+.ds-gantt-chart__tooltip-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.6875rem;
+}
+
+.ds-gantt-chart__tooltip-lbl {
+  color: #94a3b8;
+}
+
+.ds-gantt-chart__tooltip-val {
+  font-weight: 600;
+  text-align: right;
+}
+
+.ds-gantt-chart__tooltip-status {
+  margin-top: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}

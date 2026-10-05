@@ -1,0 +1,295 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Selection-driven detail" subtitle="Full specification — one current selection, a detail region that always corresponds to it, and responses matched to the selection that asked for them · manufacturing ERP reference" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Selection-driven detail — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.mn{font-size:10px;color:var(--text-secondary);line-height:1.5}
+.mb{align-self:flex-start;height:26px;padding:0 10px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:10px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.mb.q{background:var(--surface-sunken);color:var(--text-primary);border:var(--border-hairline)}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-warning-soft);color:var(--text-warning)}
+.ma.bad{background:var(--status-critical-soft);color:var(--text-critical)}
+.ma.ok{background:var(--status-success-soft);color:var(--text-success)}
+.split{display:grid;grid-template-columns:118px minmax(0,1fr);gap:8px}
+.rows{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-card)}
+.rows div{display:flex;align-items:center;gap:7px;padding:5px 7px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);border-bottom:var(--border-subtle)}
+.rows div:last-child{border-bottom:none}
+.rows div.on{background:var(--surface-sunken);color:var(--text-primary)}
+.dot{width:9px;height:9px;border:1px solid var(--border-strong);border-radius:50%;flex:none}
+.dot.on{border:3px solid var(--action-solid)}
+.panel{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:8px 9px;display:flex;flex-direction:column;gap:5px}
+.panel .t{font-family:var(--font-mono);font-size:10px;color:var(--text-primary)}
+.panel .f{display:flex;justify-content:space-between;gap:8px;font-size:9.5px;color:var(--text-secondary);font-family:var(--font-mono)}
+.sk{height:7px;border-radius:3px;background:var(--surface-sunken)}
+.mcount{font-size:10px;font-family:var(--font-mono);color:var(--text-tertiary)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Selection-driven detail</h1>
+  <p class="lede">Choosing one item from a collection to inspect it — with selection held as an interaction state rather than a navigation, a detail region that always describes the item currently selected, and a documented rule for what the selection becomes when that item is no longer there.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: List or Table, Card or Surface</span><span>Reference implementation: <a href="selection-driven-detail-reference.card.html">card</a> · <a href="../../templates/selection-driven-detail/SelectionDrivenDetail.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — press-shop tool crib, reading a die's tool life</span><span>Sections included: 13 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>A tool-room clerk is looking for a die to hand to press PR-03. The crib list gives ten dies by number; the stroke count, the last inspection and the refurbishment spend that decide the choice live in MES. The clerk picks a die, reads it, picks another, compares, then issues one. Nothing has been navigated to: the crib is still there, the choice is still reversible, and the panel beside it is only ever a view of whichever die is current.</p>
+    <p><strong>Use it when</strong> selection in one collection determines what a coordinated detail region shows, and the user's task is comparison or inspection rather than moving into a record.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>Inspecting records in turn without leaving the collection — a crib, a queue, an alarm list.</li><li>A detail region whose content is retrieved separately from the collection's own rows.</li><li>Actions that belong to whichever item is current and are read in the context of the collection.</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>Opening a record.</strong> If the user's intent is to go to the die's own page — deep-linkable, shareable, with its own history entry — that is navigation. Selection state is not a substitute for a route, and a route is not a substitute for this pattern.</li><li><strong>Choosing several to act on.</strong> A checkbox column feeding one operation is <a href="BulkSelectionAction.spec.html">bulk selection and action</a>. This pattern has exactly one current selection and no aggregate.</li><li><strong>Choosing a value.</strong> Picking one option to fill a field is a <code>Select</code>, <code>Radio</code> group or <code>Combobox</code> — the selection is the answer, not a lens on a record.</li><li><strong>Narrowing the collection.</strong> Ticking to change what is listed is <a href="CollectionRefinement.spec.html">collection refinement</a>; refinement changes membership, selection changes what is being read.</li><li><strong>One record only.</strong> With nothing to choose between, there is no selection: render the record.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">Collection</td><td><code>List</code> or <code>Table</code></td><td>Required. Supplies the items and their stable identities. It does not own the selection (§20).</td></tr>
+      <tr><td class="k">Item selection</td><td><code>Radio</code> group, one per item, sharing a name</td><td>Required. One-of-N is what the platform already models; the radio carries the current selection into the accessibility tree, is named after the record, and gives arrow-key movement for free. <code>Table onRowClick</code> may make the whole row a pointer target beside it — never instead of it.</td></tr>
+      <tr><td class="k">Detail region</td><td><code>Card</code>, or a surface</td><td>Required. Names the selected item in its own heading, so the panel is legible without reference to which row is highlighted.</td></tr>
+      <tr><td class="k">Detail content</td><td><code>DescriptionList</code> · <code>Heading</code>, <code>Text</code>, <code>Badge</code>, <code>Tag</code>, <code>Image</code>, <code>Avatar</code></td><td>Optional. A record's fields belong in a <code>DescriptionList</code>; a table for one record is a definition list wearing a table.</td></tr>
+      <tr><td class="k">Detail actions</td><td><code>Button</code>, <code>ButtonGroup</code></td><td>Optional. Operate on the current selected identity and name it (§14).</td></tr>
+      <tr><td class="k">Loading</td><td><code>Skeleton</code></td><td>Required where retrieval is asynchronous. Occupies the detail region, never the collection.</td></tr>
+      <tr><td class="k">No selection</td><td><code>EmptyState variant="first-run"</code></td><td>Required where no selection is a reachable state. It says what selecting will do, not that something is missing.</td></tr>
+      <tr><td class="k">Failure and unavailability</td><td><code>Alert</code></td><td>Required. Two distinct conditions with two distinct tones: the read failed (<code>danger</code>, retryable), or the selected item is gone (<code>info</code>, not the user's fault and not retryable).</td></tr>
+    </tbody></table>
+    <p>The relationship the composition creates is one-directional: the collection writes the selection, the selection determines the detail. The detail region never writes the selection back — except through an action that removes the item, which is a membership change (§08).</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>Entry.</strong> Under the declared <code>initialSelection</code> policy (§05) the pattern opens with nothing selected, or with the first item selected and its detail retrieved.</li>
+      <li><strong>Selection.</strong> The user chooses an item. The identity is stored, retrieval starts, and — this is the whole point — the collection stays where it is.</li>
+      <li><strong>Retrieval.</strong> The detail region reports that it is loading, tagged with the selection that asked for it.</li>
+      <li><strong>Detail.</strong> The response for the current selection populates the region and is announced politely. Focus has not moved.</li>
+      <li><strong>Change.</strong> A new selection supersedes the old one: any read still in flight is abandoned, and its response, if it arrives, is discarded (§17).</li>
+      <li><strong>Action.</strong> An action in the detail region operates on the current identity. Where it removes the item from the collection, step 6 applies.</li>
+      <li><strong>Unavailability.</strong> The selected item leaves the collection. The <code>removalPolicy</code> either clears the selection and says which item left and why, or selects a documented replacement and retrieves it.</li>
+      <li><strong>Exit.</strong> Clearing the selection returns to step 1's no-selection state exactly. Under serialized presentation, returning from the detail view preserves the selection (§15).</li>
+    </ol>
+    <p>There is no completion in this flow and no commit. That is what distinguishes it: the user may sit in step 4 indefinitely, move between items freely, and leave without having done anything.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>At most one item is the current selection.</strong> One identity, or none. There is no multiple-selection state and no notion of a secondary or previous selection that anything else reads.</li>
+      <li><strong>Selection is a stable identity, not a position.</strong> The die number, not the row index — sorting the crib by stroke count re-assigns every position, and an index-based selection then points at whatever moved into that slot.</li>
+      <li><strong>Selection is interaction state, not navigation.</strong> No history entry, no route change, no scroll to the top; the collection remains visible, operable and in the same place. Where the selection is worth restoring across a reload, it is persisted as state — a URL parameter is legitimate for that, but the pattern still owes the user a collection they never left.</li>
+      <li><strong>The detail region always corresponds to the current selection.</strong> Content shown for one item may never be presented as another's. This is the pattern's single load-bearing rule, and every rule in §17 exists to keep it true under latency.</li>
+      <li><strong>Changing the selection supersedes the previous detail state.</strong> The previous item's content is either replaced or explicitly labelled as the previous item's under <code>loadingTreatment</code> (§05) — never left standing under a new selection with no label.</li>
+      <li><strong>An unavailable selection resolves by a documented rule, not by accident.</strong> Either the selection is cleared and the disappearance stated, or a defined replacement is selected and retrieved. Silently emptying the panel, or leaving the last-read detail on screen, are both failures.</li>
+      <li><strong>Detail actions operate on the current selected identity,</strong> read at activation and named in the label. An action must never send the identity the panel happened to load first.</li>
+      <li><strong>Selection survives changes to the collection's order and shape.</strong> Sorting, refinement and paging move rows; as long as the identity is still a member, it is still selected. If it moves out of view, the selection stands and the detail region still describes it.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="split"><div class="rows"><div><span class="dot"></span><span>DIE-2211</span></div><div class="on"><span class="dot on"></span><span>DIE-2223</span></div><div><span class="dot"></span><span>DIE-2247</span></div></div><div class="panel"><span class="t">DIE-2223 · tool life</span><div class="f"><span>strokes</span><span>47,900 / 60,000</span></div><div class="f"><span>press</span><span>PR-03 · 800 T</span></div></div></div><span class="mcount">selection = "DIE-2223" · detailFor = "DIE-2223"</span></div><p class="why">Identity on both sides, and the panel names the die it is describing — so a re-sort of the crib changes nothing about what is being read.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="split"><div class="rows"><div><span class="dot"></span><span>DIE-2211</span></div><div class="on"><span class="dot on"></span><span>DIE-2223</span></div><div><span class="dot"></span><span>DIE-2247</span></div></div><div class="panel"><span class="t">Tool life</span><div class="f"><span>strokes</span><span>58,600 / 60,000</span></div><div class="f"><span>press</span><span>PR-05 · 400 T</span></div></div></div><span class="mcount">selection = row 2</span></div><p class="why">The panel has no subject and the selection is a row number. After sorting by strokes, row 2 is a different die: the clerk issues a die with 1,400 strokes of life to a press expecting 12,000, and the panel never said whose figures those were.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+  <div class="body">
+    <p>Four choices belong to the application of the pattern. Each has two defensible answers, which is exactly why leaving them implicit produces two products that behave differently for no stated reason.</p>
+    <table><thead><tr><th>Property</th><th>Options</th><th>What it decides</th></tr></thead><tbody>
+      <tr><td class="k">initialSelection</td><td><code>none</code> · <code>first-item</code></td><td>What is selected on arrival. <code>none</code> is the safe default: it costs an extra click and it never asserts that a record the user did not choose is the one they wanted, which matters when the detail region carries actions. <code>first-item</code> suits a monitoring view where an empty panel is dead space and no action is destructive. Never a remembered selection from another session unless the collection is guaranteed to still contain it — a restored selection is subject to §08's unavailable rule like any other.</td></tr>
+      <tr><td class="k">removalPolicy</td><td><code>clear</code> · <code>select-nearest</code></td><td>What the selection becomes when the selected item leaves the collection. <code>clear</code> says what left and why and asks the user to choose again — correct wherever the detail region carries actions, because an automatically selected replacement puts a different record under a button the user was already reaching for. <code>select-nearest</code> keeps a monitoring view populated. Whichever is chosen, the rule is documented and the change is announced (§12).</td></tr>
+      <tr><td class="k">loadingTreatment</td><td><code>skeleton</code> · <code>retain-previous</code></td><td>What the detail region shows while a new selection's content is being retrieved. <code>skeleton</code> is honest and cheap. <code>retain-previous</code> reduces flicker when the user is moving quickly through items, and is only permissible with the retained content labelled as the previous item's — unlabelled retention is the §04 violation this property most often causes.</td></tr>
+      <tr><td class="k">presentation</td><td><code>split</code> · <code>serialized</code></td><td>Whether the collection and detail are shown together or one at a time (§15). Declared rather than derived so that a product can serialize deliberately — a hand terminal on the shop floor — and not only when a breakpoint fires.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <table><thead><tr><th>State</th><th>What is true</th><th>What is displayed</th></tr></thead><tbody>
+      <tr><td class="k">no selection</td><td>No identity is current. The baseline, and the state <code>clear</code> returns to.</td><td>The collection with nothing marked, and a detail region that says what selecting will show. Not a blank panel.</td></tr>
+      <tr><td class="k">selection active</td><td>An identity is current; its content has not arrived.</td><td>The item marked in the collection, the detail region naming it and reporting the read.</td></tr>
+      <tr><td class="k">detail loading</td><td>A retrieval is in flight, tagged with the selection that started it.</td><td>Skeleton at the shape of the content, or the previous item's content labelled as such. The collection stays fully operable.</td></tr>
+      <tr><td class="k">detail available</td><td>Content for the current selection is present.</td><td>The fields, the item's status, and any actions — all named after the current identity.</td></tr>
+      <tr><td class="k">selection unavailable</td><td>The selected identity has left the collection.</td><td>Under <code>clear</code>: which item left, why, and that nothing is selected. Under <code>select-nearest</code>: the replacement, selected and announced.</td></tr>
+      <tr><td class="k">detail failure</td><td>The retrieval failed. The selection is intact and still valid.</td><td>The cause, a retry for that identity, and an explicit statement that the item is still selected.</td></tr>
+    </tbody></table>
+    <p class="warn"><strong>Unavailable and failed are not the same state and never share a message.</strong> "Could not load DIE-2230" for a die that was issued twenty seconds ago sends the clerk to retry a read that will never succeed; "DIE-2230 was issued to PR-08" for an MES timeout sends them looking for a die that is still sitting in bay C-09. One is a membership change with no retry; the other is a retrieval failure with nothing else wrong.</p>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="panel"><span class="t">DIE-2230 · tool life</span><div class="sk" style="width:80%"></div><div class="sk" style="width:62%"></div><div class="sk" style="width:71%"></div></div><span class="mh">Reading tool life for DIE-2230 from MES · request #4</span><div class="ma ok">DIE-2223 · 47,900 / 60,000 strokes — from the previous selection, still labelled</div></div><p class="why">The region names the die being read while it is being read, and any content held over says whose it is. Nothing on screen can be misread as the current selection's figures.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="panel"><span class="t">Tool life</span><div class="f"><span>strokes</span><span>47,900 / 60,000</span></div><div class="f"><span>press</span><span>PR-03 · 800 T</span></div></div><span class="mh">DIE-2230 selected</span></div><p class="why">The previous die's figures sit unlabelled under a new selection. The clerk reads 12,100 strokes of remaining life onto a die that is on hold with a cracked punch radius.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Error handling</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>A failed retrieval leaves the selection intact.</strong> The item is still selected, still marked in the collection, and the failure says so — a failed read is not a reason to un-choose what the user chose.</li>
+      <li><strong>The failure names the item and the cause.</strong> "MES did not answer the tool-life read for DIE-2230" tells the clerk it is the interface, not the die.</li>
+      <li><strong>Retry is scoped to the current selection at the moment it is pressed,</strong> not to the selection that failed. If the user has moved on, there is nothing to retry there — the failure went with the selection that owned it.</li>
+      <li><strong>A failure for a superseded selection is discarded, not displayed.</strong> An error belonging to an abandoned read is as stale as a success belonging to one (§17).</li>
+      <li><strong>Partial content is labelled by field, not by panel.</strong> Where some of a record's fields are unavailable, the fields that arrived are shown and the missing ones say they are unavailable. Failing the whole panel because the refurbishment figure did not resolve withholds eight facts to report one.</li>
+      <li><strong>Actions are unavailable while the detail is failed or unknown.</strong> An action derived from content that did not arrive is an action taken on an assumption; the detail region says which is missing.</li>
+      <li><strong>The collection never fails with the detail.</strong> The collection and the detail are separate retrievals; a detail failure leaves the crib list readable and selectable, which is the only way the user can move off the failure.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Selection is programmatically perceivable through a real control.</strong> A radio group named after the records — <code>aria-checked</code> on the item the user chose — not a background colour and not a class. A highlighted row is not a selection state to anyone who cannot see the highlight.</li>
+      <li><strong>Each item's control is named after its record.</strong> "DIE-2223", not "select" — a column of ten identical names is unusable, and the rest of the row is not read on arrival at the control.</li>
+      <li><strong>The relationship between collection and detail is stated.</strong> The collection is a named group ("Dies in the crib — choose the die to inspect"), and the detail region's heading names the selected item. Two named regions whose names refer to each other are what makes the coordination discoverable; proximity is not a relationship.</li>
+      <li><strong>Selecting does not move focus.</strong> Focus stays on the control the user operated, so arrow keys continue through the collection and each item's detail is readable as it is reached. Moving focus into the panel on every selection makes comparing three dies a sequence of escapes.</li>
+      <li><strong>Detail arrival is announced politely, once, naming the item.</strong> The detail region is a polite live region; the announcement is the fact the user asked for, not "loaded". Rapid selection changes must not queue an announcement per abandoned read.</li>
+      <li><strong>Failure and unavailability are announced by their severity</strong> — an <code>Alert</code> that appears, because the user's model of what is on screen is now wrong.</li>
+      <li><strong>Serialized presentation restores focus on return.</strong> Coming back from the detail view lands focus on the control for the item that was selected, not at the top of the collection (§15).</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="rows"><div><span class="dot"></span><span>DIE-2211</span></div><div class="on"><span class="dot on"></span><span>DIE-2223</span></div></div><span class="mh">radio · name="crib-die" · checked · label "DIE-2223"</span><span class="mn" style="color:var(--text-secondary)">Focus stays on DIE-2223. Politely: "Tool life for DIE-2223 loaded — 12,100 strokes to the next grind."</span></div><p class="why">The selection is in the accessibility tree, the arrow keys still work, and the detail arrives as a fact rather than as a focus change.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="rows"><div><span>DIE-2211</span></div><div class="on"><span>DIE-2223</span></div></div><span class="mh">div · class="row is-selected" · onClick</span><span class="mn" style="color:var(--text-secondary)">Focus jumps into the panel heading on every pick.</span></div><p class="why">Nothing announces which die is current, keyboard users cannot reach the rows at all, and comparing dies means tabbing back out of the panel ten times.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The detail region names its subject in its own heading.</strong> "DIE-2223 · tool life", never "Details" — the panel must be legible on its own, because a screenshot, a narrow layout or a screen reader all separate it from the marked row.</li>
+      <li><strong>Actions name the identity they will act on.</strong> "Issue DIE-2223 to PR-03", not "Issue" — the label is the last thing read before a die leaves the crib.</li>
+      <li><strong>The no-selection state says what selecting does,</strong> in the collection's own nouns: "Choose a die in the crib to read its stroke count, inspection history and refurbishment spend." Not "no data" and not "nothing selected" alone.</li>
+      <li><strong>Unavailability states which item left and why.</strong> "DIE-2230 was issued to PR-08 from the tool-room terminal" — a bare "not found" leaves the clerk searching the crib for a die that is on a press.</li>
+      <li><strong>Retained content says whose it is.</strong> "Still showing DIE-2223 — tool life for DIE-2230 is being read." Without the sentence, retention is a lie of omission.</li>
+      <li><strong>Failure copy separates the read from the record.</strong> The die is fine; the interface did not answer. Wording that blames the record sends the user to fix the wrong thing.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="panel"><span class="t">DIE-2223 · tool life</span><div class="f"><span>strokes to next grind</span><span>12,100</span></div></div><div style="display:flex;gap:6px"><div class="mb">Issue DIE-2223 to PR-03</div><div class="mb q">Send DIE-2223 for grinding</div></div></div><p class="why">Subject, figures and consequence are all readable in one glance, and the buttons cannot be pressed in ignorance of which die they move.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="panel"><span class="t">Details</span><div class="f"><span>strokes to next grind</span><span>12,100</span></div></div><div style="display:flex;gap:6px"><div class="mb">Issue</div><div class="mb q">Grind</div></div></div><p class="why">"Issue" what? The clerk turns from the panel to a ringing phone, comes back, presses Issue, and a die on hold for a cracked punch goes to an 800 T press.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§15</span><h2>Responsive</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Where the space cannot hold both, the presentation serializes.</strong> The collection and the detail become two views of one interaction, not two screens: what changes is how many are visible, never what selection means.</li>
+      <li><strong>Return is guaranteed and preserves the selection.</strong> A back affordance returns to the collection with the selected item still current and still marked. A serialization that loses the selection on return has converted the pattern into navigation, which is the one thing §01 rules out.</li>
+      <li><strong>Serialized detail is still not a route.</strong> Whether the platform's own back gesture also returns is a product decision; if it is wired, it must return to the collection with the selection intact, and never to whatever preceded the screen.</li>
+      <li><strong>The rest of the contract is unchanged.</strong> One current selection, detail corresponding to it, the same loading, unavailable and failure states, the same announcements. Only simultaneity is lost.</li>
+      <li><strong>Serialization is declared, not only derived.</strong> The <code>presentation</code> property (§05) lets a product serialize on a hand terminal at any width; a breakpoint is one input to that choice, not the whole of it.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§17</span><h2>Performance</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Every retrieval is associated with the selection that initiated it,</strong> and only the response belonging to the current selection may write detail state. This is the mechanism behind §04's correspondence rule; there is no other.</li>
+      <li><strong>A response for a superseded selection is rejected outright</strong> — not rendered for a frame, not merged, not queued. The clerk who clicks through four dies while MES is slow must never end on the second die's figures.</li>
+      <li><strong>Rapid selection changes cost the reads, not the correctness.</strong> Abandoning an in-flight read is normal; where the collection is large or the backend expensive, a short debounce on retrieval is legitimate, but the marked selection must change immediately regardless.</li>
+      <li><strong>Selection feedback is never gated on retrieval.</strong> The item is marked as current the moment it is chosen; only the panel waits.</li>
+      <li><strong>The collection stays operable during a read.</strong> Nothing in the collection is disabled while the detail loads — that is what lets a user escape a slow read by choosing something else.</li>
+      <li><strong>Loading treatment is a policy, not a timing accident.</strong> A skeleton delayed by ~200 ms avoids a flash on a fast read; what is never acceptable is unlabelled previous content standing in the interval.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+      <tr><td class="k">Selected item removed</td><td>Resolved by the declared <code>removalPolicy</code> and announced. Never a panel left showing a record that is no longer in the collection.</td></tr>
+      <tr><td class="k">Collection reordered</td><td>The selection holds on its identity and moves with it. Reordering never changes what is being read. Where the user is the one doing the reordering, that move is <a href="DirectManipulationOfOrder.spec.html">direct manipulation of order</a>, and the selection is not part of it.</td></tr>
+      <tr><td class="k">Selected item scrolls or pages out of view</td><td>Still selected, and the detail region still describes it. The count or heading may say the selected item is not currently visible; it is not deselected for being off screen.</td></tr>
+      <tr><td class="k">Rapid selection changes</td><td>The last selection wins; all earlier reads are abandoned and their responses discarded (§17).</td></tr>
+      <tr><td class="k">Detail response arrives after a newer selection</td><td>Discarded. The state it would have written belongs to a selection that no longer exists.</td></tr>
+      <tr><td class="k">Response arrives for an item that has since left the collection</td><td>Discarded, and the unavailable state stands. A read that resolves after its subject was issued has nothing to describe.</td></tr>
+      <tr><td class="k">Re-selecting the current item</td><td>No-op. Not a second retrieval, not a cleared panel; under serialized presentation it re-opens the detail view.</td></tr>
+      <tr><td class="k">Collection becomes empty</td><td>The selection is cleared under the unavailable rule and the collection says why it is empty in its own terms — "every die has been issued or sent for grinding".</td></tr>
+      <tr><td class="k">Selected item's own data changes</td><td>The detail region updates in place, still corresponding to the same identity. A change to the record is not a change of selection.</td></tr>
+      <tr><td class="k">Restored selection no longer exists</td><td>Treated as unavailable on arrival: the collection loads, nothing is selected, and the pattern says the remembered item is not in the collection.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Hold the selected identity above both regions</strong> — one field, one identity, nullable. The collection renders whether each item matches it; the collection does not own it, and the detail region does not copy it.</li>
+      <li><strong>Store the identity, never the object or the index.</strong> A stored row object goes stale the moment the collection refreshes; a stored index goes stale the moment it re-sorts.</li>
+      <li><strong>Tag each retrieval with a monotonic request number and its identity,</strong> and discard any response whose number is not current. Checking the identity alone is not enough — two reads of the same item can overlap — and checking the number alone loses the ability to reject a response whose subject has left the collection.</li>
+      <li><strong>Keep the detail's subject in the detail state,</strong> not implied by the selection variable: <code>{ for: 'DIE-2223', data }</code>. Correspondence then becomes an assertion the UI can make — and the reason the reference implementation can show <code>selection</code> and <code>detailFor</code> side by side.</li>
+      <li><strong>Reconcile the selection against membership on read,</strong> deriving the effective selection as "the stored identity, if it is still a member". No event handler then has to remember to prune it after a refresh.</li>
+      <li><strong>Resolve the replacement identity before removing the item,</strong> from the current order — <code>select-nearest</code> means the item that will occupy the neighbouring position, which cannot be computed after the array has changed.</li>
+      <li><strong>Read the identity at activation inside the action,</strong> from the selection state, not from a value captured when the panel first rendered.</li>
+      <li><strong>Do not put the selection in the browser's history.</strong> Selection state may be reflected in the URL for restoration, but pushing a history entry per selection turns a comparison into a stack of ten back presses.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted"><strong>Omitted sections and why.</strong>
+§06 Variants — split and serialized presentation are one contract under a declared property (§05, §15), and a master–detail layout, a list with an inspector panel and a table with a side sheet are presentations of the same selection relationship.
+§07 Sizes — no coordinated sizing exists at the pattern level; the detail region's size is a layout decision.
+§09 Validation — nothing is submitted and no input is judged. A selected item that may not be acted on is action availability (§04) with its reason in the detail region (§14).
+§11 Input &amp; interaction modalities — the radio group supplies keyboard one-of-N and the collection component supplies pointer and touch targets; the pattern's one cross-component rule, that selecting never moves focus, is in §12.
+§13 Motion — a detail region may cross-fade between selections, but no motion carries pattern-owned meaning and none may delay the announcement in §12.
+§16 Internationalization — the pattern is direction-agnostic and holds no locale-sensitive values of its own; the collection's order and the detail's dates, quantities and currency are formatted by the product's locale rules.
+§19 Anti-patterns — the refusals in §01 (navigation, bulk action, value choice, refinement) and the correspondence rules in §04 and §17 cover the recurring misuses.
+§21 Developer notes — the contract in §04, §05, §08, §17 and §20 is the whole contract; its one requirement of an API, that a detail response be attributable to the request that asked for it, is stated in §20.</p>
+</div></body></html>

@@ -1,0 +1,120 @@
+{
+  "assembly": "ra-production-analytics",
+  "version": "0.1.0",
+  "executedAt": "2026-10-02T12:22:48.141Z",
+  "storybookBaseUrl": "http://127.0.0.1:6006",
+  "sourceChecks": "pass",
+  "viewports": [
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1425,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "widgets": 4,
+        "svgCharts": 3,
+        "dataTableSummaries": 4,
+        "statusRegions": 2,
+        "actionButtons": [
+          "Set string",
+          "Set string",
+          "Set string",
+          "Ready▼",
+          "Complete telemetry▼",
+          "Success▼",
+          "Last 30 Days▼",
+          "Export Dataset (CSV)",
+          "Output Details ›",
+          "Breakdown ›",
+          "Batch Logs ›"
+        ]
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "widgets": 4,
+        "svgCharts": 3,
+        "dataTableSummaries": 4,
+        "statusRegions": 2,
+        "actionButtons": [
+          "Set string",
+          "Set string",
+          "Set string",
+          "Ready▼",
+          "Complete telemetry▼",
+          "Success▼",
+          "Last 30 Days▼",
+          "Export Dataset (CSV)",
+          "Output Details ›",
+          "Breakdown ›",
+          "Batch Logs ›"
+        ]
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "widgets": 4,
+        "svgCharts": 3,
+        "dataTableSummaries": 4,
+        "statusRegions": 2,
+        "actionButtons": [
+          "Set string",
+          "Set string",
+          "Set string",
+          "Ready▼",
+          "Complete telemetry▼",
+          "Success▼",
+          "Last 30 Days▼",
+          "Export Dataset (CSV)",
+          "Output Details ›",
+          "Breakdown ›",
+          "Batch Logs ›"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "action": "export-success",
+      "found": true,
+      "pendingMs": 27,
+      "outcomeMs": 554,
+      "textSample": "Inspection controls - current state: ready\nCHAKAN PLANT PL-04 · CANDIDATE REFERENCE ASSEMBLY\nProduction performance analytics\n\nAccepted output, production-area distribution, and line rate across the selected horizon.\n\nLast 7 Days\nLast 30 Days\nLast Quarter (90d)\nLast 30 Days\n▼\nExport Dataset (CSV)\nTelemetry quality and export status\nDATA QUALITY\n\nTelemetry complete. Last synchronized 29 Sep 2026, 10:30 IST.\n\nEXPORT CONTROL\n\nDataset export completed and audit event recorded.\n\nAccepted output trend (pcs)\nOutput Details ›\nW1\nW2\nW3\nW4\nW5\n0\n1,000\n2,000\n3,000\n4,000\nView data table\nOutput by productio"
+    }
+  ]
+}

@@ -1,0 +1,356 @@
+<!-- @dsCard group="Specs · Navigation" viewport="1080x760" name="Breadcrumb" subtitle="Full specification — the ancestor trail: purpose, anatomy, props, collapse, keyboard, a11y" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Breadcrumb — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:4px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.head{display:flex;flex-direction:column;gap:6px}
+.head h4{margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.018em}
+.narrow{width:280px;max-width:100%;border:var(--border-hairline);border-radius:var(--radius-md);padding:12px;background:var(--surface-card)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Breadcrumb, Button, IconButton, Badge, Text, Tabs, Link, Menu } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const TRAIL = [
+  {label:'Tilburg',href:'#tilburg',icon:'factory'},
+  {label:'Assembly',href:'#assembly'},
+  {label:'Line 4'},
+];
+const DEEP = [
+  {label:'Tilburg',href:'#tilburg',icon:'factory'},
+  {label:'Assembly',href:'#assembly'},
+  {label:'Cell 12',href:'#cell'},
+  {label:'Line 4',href:'#line'},
+  {label:'Station 3',href:'#station'},
+  {label:'Torque head',href:'#head'},
+  {label:'WO-88431'},
+];
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Navigation · Component specification</span>
+    <h1>Breadcrumb</h1>
+    <p className="lede">Where this page sits in the hierarchy, and one press back up it. The quietest navigation in the system and the only one that describes the <em>page you are already on</em> — which is why the last crumb is not a link, why the whole trail is 12px, and why a product with two levels of depth should not have one at all. A breadcrumb earns its line of vertical space only when users arrive deep, from search or a link, and need to know what they are looking at.</p>
+    <div className="meta">
+      <span>components/navigation/Breadcrumb.jsx</span><span>window.MeridianDesignSystem_962c43.Breadcrumb</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items</span><span>since: 1.7.0</span><span>7 new tokens · 0 new layers</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Orientation in a hierarchy, not history.">
+    <p>A breadcrumb answers two questions and no others: <strong>where am I</strong>, and <strong>what contains this</strong>. It is a static path through a tree the product actually has — site → area → line → work order — not a record of how the user got here. If the trail would differ depending on which link the user followed, it is history, and history belongs to the browser's back button.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Show the ancestors of this page, 3+ levels deep','Breadcrumb','This component.'],
+      ['Get back to the previous page','Browser back · a back Link','A trail is a hierarchy, not a stack. Never render "Back" as a crumb.'],
+      ['Move between top-level areas of the product','Sidebar','A breadcrumb is not primary navigation and cannot carry it.'],
+      ['Switch between views of this page','Tabs','Siblings of the current view, not ancestors of it.'],
+      ['Show progress through a flow','A step indicator','Steps are sequential and incomplete; crumbs are complete and static.'],
+      ['Show the page title','Heading','The last crumb is a miniature of the title, not a replacement for it.'],
+      ['Show one parent, in a two-level app','Link with a back chevron','Cheaper, clearer, and honest about the depth.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> at 3+ levels, above the page title, when deep pages are linkable and reachable from search.</li>
+      <li><strong>Use</strong> when the hierarchy is real and stable — a tree the URL reflects. A trail that has to be invented per page will be wrong per page.</li>
+      <li><strong>Do not use</strong> as the only way up. The trail is 12px text; a page whose primary escape is a breadcrumb has no primary escape.</li>
+      <li><strong>Do not use</strong> in a dialog, a drawer or a wizard. Those are layers over a page, and the page below still has the trail.</li>
+    </ul>
+    <div className="demo col">
+      <div className="head">
+        <Breadcrumb items={TRAIL} />
+        <h4>Line 4</h4>
+        <Text size="xs" tone="tertiary">Assembly · Days shift · 06:00–14:00 CET</Text>
+      </div>
+      <Text size="xs" tone="tertiary">The trail sits above the title and repeats its last word deliberately: the crumb orients, the heading names.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A nav landmark, an ordered list, and one crumb that is text.">
+    <div className="demo col">
+      <Breadcrumb items={DEEP} maxItems={4} />
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        {[['1','Landmark — <nav aria-label="Breadcrumb"> wrapping an <ol>. The list is ordered because the order is the meaning.'],
+          ['2','Root crumb — the top of the hierarchy, optionally with one icon. Usually the tenant, site or workspace.'],
+          ['3','Ancestor crumb — an <a> with a real href. No underline at rest, --breadcrumb-text; underlined on hover.'],
+          ['4','Overflow — a "…" trigger opening a Menu of the skipped middle levels. Present only past maxItems.'],
+          ['5','Separator — chevron-right at --breadcrumb-separator, aria-hidden. Decoration: the list already conveys sequence.'],
+          ['6','Current crumb — the page you are on. A <span aria-current="page">, --weight-medium, --breadcrumb-text-current. Not a link, not underlined, not pressable.'],
+          ['7','Truncation — each crumb caps at 220px and ellipses. The trail never wraps to a second line (§11).']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+    </div>
+    <p>The current crumb being plain text is the anatomical decision that matters most. A link to the page you are already on is a control the user must press to discover it does nothing — and screen readers announce it as a link like any other, so the one crumb that tells you where you are is the one that lies. <code>aria-current="page"</code> says it instead, and the medium weight shows it.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Small on purpose.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['items','Array<string | BreadcrumbItem>','—','Root first, current page last. A bare string is a label-only crumb.'],
+      ['size','\u2018sm\u2019 | \u2018md\u2019','md','11px or 12px trail (§05).'],
+      ['variant','\u2018chevron\u2019 | \u2018slash\u2019','chevron','Separator glyph only (§04).'],
+      ['maxItems','number','4','Collapse the middle past this count. Minimum 3; a smaller number is ignored, 0 disables collapse.'],
+      ['label','string','\u2018Breadcrumb\u2019','Accessible name of the landmark. Change it only when a page has two trails, which it should not.'],
+      ['onNavigate','(item) => void','—','Called instead of window.location for a crumb chosen from the overflow menu. Pass your router\u2019s push.'],
+      ['style','CSSProperties','—','Merged onto the nav. Width belongs here.'],
+    ]}/>
+    <T cols={['BreadcrumbItem','Type','Notes']} rows={[
+      ['label','string','One or two words. The node\u2019s name, not its type ("Line 4", not "Production line 4").'],
+      ['href','string','Required on every crumb but the last. Missing hrefs warn in the console — a trail you cannot climb is decoration.'],
+      ['icon','string','Lucide 0.469.0 name. Normally the root crumb only; icons on every crumb turn a sentence into a toolbar.'],
+    ]}/>
+    <p>There is no <code>onClick</code>, no <code>current</code> flag and no <code>separator</code> string. The last item is the current page by position, because a trail with two current crumbs or none is a bug the type system should make unrepresentable. Router integration is by <code>href</code> plus your framework's link interception, with <code>onNavigate</code> only for the collapsed menu, whose rows are commands rather than anchors.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="One trail, two glyphs.">
+    <div className="demo col">
+      <Row label="chevron"><Breadcrumb items={TRAIL} /></Row>
+      <Row label="slash"><Breadcrumb variant="slash" items={TRAIL} /></Row>
+      <Row label="collapsed"><Breadcrumb items={DEEP} maxItems={4} /></Row>
+      <Row label="no collapse"><Breadcrumb items={DEEP} maxItems={0} /></Row>
+    </div>
+    <T cols={['Variant','Reads as','Use']} rows={[
+      ['chevron','Direction — "inside", one level down.','Default. Product hierarchies: site, area, line, asset.'],
+      ['slash','A path.','Trails that genuinely are paths: repositories, folders, file trees, config namespaces. The glyph borrows a convention the user already knows.'],
+    ]}/>
+    <ul>
+      <li><strong>Pick one per product and keep it.</strong> Two separator styles in one console read as two different hierarchies.</li>
+      <li><strong>No "with background" variant.</strong> A breadcrumb bar with its own surface competes with the page header it belongs to; the trail is text on the page.</li>
+      <li><strong>No icon-only crumbs</strong> beyond the root. A trail of glyphs is unreadable and untranslatable.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two, both small.">
+    <T cols={['Size','Type','Icon','Separator','Use']} rows={[
+      ['sm','--text-2xs (11px)','12px','12px','Drawers, dense inspector headers, a trail above an sm page title.'],
+      ['md','--text-xs (12px)','14px','14px','Default. Page headers.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="sm"><Breadcrumb size="sm" items={TRAIL} /></Row>
+      <Row label="md"><Breadcrumb size="md" items={TRAIL} /></Row>
+    </div>
+    <p>Both sizes are below body text, and deliberately: the trail is metadata about the page, ranked under the title and under the page's own content. There is no <code>lg</code> — a breadcrumb large enough to read as a heading has started competing with the heading, and users then read the trail first and the page name second.</p>
+    <p>The consequence is a target smaller than this system's 44px minimum, which is accepted for one reason: every crumb duplicates navigation that exists elsewhere (the sidebar, the parent page's table). A breadcrumb is never the only route to its destinations, so a missed tap costs a second press, not access.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Four, and one of them is 'not interactive'.">
+    <T cols={['State','Applies to','Treatment']} rows={[
+      ['Rest','Ancestor crumb','--breadcrumb-text, no underline. Quieter than a Link in prose, because a standalone trail is not inside a text block.'],
+      ['Hover','Ancestor crumb','--breadcrumb-text-hover plus an underline. The underline is what proves it is a link, and it appears the moment the pointer arrives.'],
+      ['Focus','Ancestor crumb · overflow','--breadcrumb-focus-ring on --radius-xs. Keyboard focus only.'],
+      ['Current','Last crumb','--breadcrumb-text-current at --weight-medium, aria-current="page". No hover, no underline, no pointer cursor, no focus — it is text.'],
+      ['Overflow rest / open','\u2026 trigger','--breadcrumb-overflow-text; the Menu it opens carries its own states (Menu §06).'],
+      ['Disabled','—','Does not exist. A crumb that cannot be reached should not be in the trail; if a level has no page, drop the crumb rather than dimming it.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="rest / hover"><Breadcrumb items={TRAIL} /></Row>
+      <Row label="focus"><Breadcrumb items={[{label:'Tab into this trail',href:'#a',icon:'factory'},{label:'Assembly',href:'#b'},{label:'Line 4'}]} /></Row>
+      <Row label="overflow"><Breadcrumb items={DEEP} maxItems={3} /></Row>
+    </div>
+    <p>There is no visited state. A trail is not a set of results to work through, and a differently-coloured ancestor would imply the hierarchy had changed rather than that the user had been there.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="It is a list of links. That is the whole story.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab · ⇧Tab','Steps through the ancestor links in trail order, then the overflow trigger if present. The current crumb is not a stop — it is text.'],
+      ['Enter','Follows the focused crumb. Native anchor behaviour, so ⌘/Ctrl-click, middle-click and "copy link" all work.'],
+      ['Arrows','Nothing. A breadcrumb is not a composite widget: there is no roving tabindex, no orientation, no cursor. Adding one would make three crumbs harder to use, not easier.'],
+      ['On the overflow','Enter · Space opens the Menu; from there Menu §07 applies — arrows, typeahead, Escape back to the trigger.'],
+    ]}/>
+    <p>Three or four extra tab stops at the top of a page is the honest cost of a breadcrumb, and part of why it is not for shallow hierarchies. It is also why the trail is early in the DOM and inside a <code>nav</code> landmark: a keyboard or screen-reader user who does not want the trail can skip the landmark in one move.</p>
+    <div className="demo"><Breadcrumb items={DEEP} maxItems={4} /><Text size="xs" tone="tertiary">Tab through: two links, the <kbd>…</kbd> menu, one more link, then the current crumb is skipped.</Text></div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="A landmark, an ordered list, and aria-current.">
+    <ul>
+      <li><strong>Landmark.</strong> <code>&lt;nav aria-label="Breadcrumb"&gt;</code> — named, because a page with an unnamed second nav landmark gives a screen-reader user two identical entries in the landmark list.</li>
+      <li><strong>Ordered list.</strong> <code>&lt;ol&gt;</code>/<code>&lt;li&gt;</code>, so the sequence is structural. "List, 4 items, item 3 of 4" is orientation that no amount of styling conveys.</li>
+      <li><strong><code>aria-current="page"</code></strong> on the last crumb, which is a <code>span</code>, not a link and not an <code>aria-disabled</code> link. This is the single most important line in the component.</li>
+      <li><strong>Separators are <code>aria-hidden</code>.</strong> The chevron is decoration; the slash variant is a text node hidden the same way, so a trail is never read as "Tilburg slash Assembly slash Line 4".</li>
+      <li><strong>Icons carry no meaning.</strong> The root icon is decorative and hidden — the label beside it is the name.</li>
+      <li><strong>The overflow trigger has a real name</strong> — "Show 3 skipped levels" — because "…" announces as nothing. Its Menu is labelled "Skipped levels".</li>
+      <li><strong>Colour is never the only cue.</strong> Ancestors underline on hover and carry a focus ring; the current crumb is distinguished by weight and by <code>aria-current</code>, not by tint alone.</li>
+      <li><strong>Truncated labels keep their full text</strong> in the accessible name — an ellipsis is a visual measure, not an abbreviation of the page's identity.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="Almost none, and that is the specification.">
+    <T cols={['Moment','Motion','Tokens']} rows={[
+      ['Hover','Colour change; the underline appears instantly.','color --duration-fast --ease-out'],
+      ['Focus','Ring appears instantly.','—'],
+      ['Overflow menu','Menu\u2019s own 90ms drop-in.','--duration-instant · --ease-out'],
+      ['Trail change','None. A new page has a new trail; it does not animate in.','—'],
+      ['Collapse / expand','None. The collapse is a layout decision made at render, not a transition.','—'],
+      ['Reduced motion','Nothing left to reduce.','—'],
+    ]}/>
+    <p>An animated underline that grows from the left, a trail that slides in on navigation, crumbs that fade in sequence — all of these have been shipped by someone, and all of them animate furniture the user reads in a quarter of a second and then ignores. The trail is the first thing on the page; anything moving there delays the page's actual content and draws the eye upward, away from it.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="Names, not descriptions.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Use the node's own name:</strong> "Tilburg", "Assembly", "Line 4", "WO-88431".</li>
+        <li><strong>Match the destination's page title.</strong> A crumb reading "Assembly" must land on a page titled "Assembly".</li>
+        <li><strong>Keep it to one or two words.</strong> The trail is one line and each crumb caps at 220px.</li>
+        <li><strong>Ids are fine when ids are the name</strong> — a work order really is called WO-88431.</li>
+        <li><strong>One icon at the root</strong>, when the root is a tenant or site the user switches between.</li>
+        <li><strong>Sentence case</strong>, no trailing punctuation, no "›" typed into the labels.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>Type names.</strong> "Production line 4" where the tree says "Line 4"; "Site: Tilburg" where the crumb is the site.</li>
+        <li><strong>"Home".</strong> Name the root: the tenant, the site, the workspace.</li>
+        <li><strong>"Back" as the first crumb.</strong> That is history, and it is the browser's job.</li>
+        <li><strong>The page's own long title</strong> as the last crumb. It is the title in miniature, and the title is right below it.</li>
+        <li><strong>Counts, badges or states</strong> in a crumb. The trail says where, not how it is doing.</li>
+        <li><strong>Invented levels</strong> to make the trail look complete. A crumb with no page is not a crumb.</li>
+      </ul></div>
+    </div>
+    <p>Labels are also the one place a hierarchy's inconsistencies show up publicly. If the sidebar calls it "Areas", the table header calls it "Area" and the crumb calls it "Assembly line group", the product has three names for one thing — and the breadcrumb is where a user finally notices.</p>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Collapse the middle, never the ends.">
+    <ul>
+      <li><strong>Past <code>maxItems</code> the middle collapses</strong> into a <code>…</code> menu: the root stays (it orients), the parent and the current page stay (the parent is the crumb people actually press). Nothing is ever silently dropped — the skipped levels are all in the menu.</li>
+      <li><strong>Each crumb truncates at 220px</strong> with an ellipsis; long names shorten rather than pushing the trail wider.</li>
+      <li><strong>The trail never wraps.</strong> Two lines of crumbs has no readable order and doubles the header height on exactly the small screens that can least afford it — collapse further instead (<code>{'maxItems={3}'}</code>).</li>
+      <li><strong>Below ~480px, consider one crumb.</strong> The parent link plus a chevron — "‹ Assembly" — is often the entire useful content of a trail on a phone, and it is a real target.</li>
+      <li><strong>Never hide it at a breakpoint.</strong> If the trail is worth rendering on a desktop it is worth rendering on a phone, in some form. Hiding orientation on the device most likely to have arrived from a link is backwards.</li>
+      <li><strong>The overflow menu inherits Menu's placement</strong> — it flips and shifts to stay in the viewport, so a collapsed trail works in a narrow drawer with no configuration.</li>
+    </ul>
+    <div className="demo col">
+      <div className="narrow"><Breadcrumb items={DEEP} maxItems={3} /></div>
+      <div className="narrow"><Breadcrumb items={[{label:'Torque head assembly, station 3',href:'#a'},{label:'WO-88431'}]} /></div>
+      <Text size="xs" tone="tertiary">280px: collapsed to root · … · parent · current, and a long ancestor label truncated at its cap.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Six, and the first two are the common ones.">
+    <div className="two">
+      <div className="pane dont"><h3>The two that matter</h3><ul>
+        <li><strong>A linked current crumb.</strong> A link to this page is a dead control, and it removes the one signal that says which crumb you are on. Text plus <code>aria-current</code>, always.</li>
+        <li><strong>A breadcrumb as history.</strong> If the trail depends on the route the user took, it is a back stack. Users read a trail as structure and will be misled the first time it differs between two arrivals at the same page.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Also don't</h3><ul>
+        <li><strong>A trail in a two-level app.</strong> "Alarms › Alarm 3" is a back link with extra chrome.</li>
+        <li><strong>A breadcrumb as the primary way up.</strong> 12px text is not a navigation system; the sidebar is.</li>
+        <li><strong>Dropdowns on every crumb</strong> to switch siblings. That is a tree, or a Select next to the title — a trail that is eight menus is no longer telling you where you are.</li>
+        <li><strong>Trails inside dialogs, drawers or wizards.</strong> The layer is not a place in the hierarchy.</li>
+        <li><strong>Truncating the current crumb to "…"</strong> so the trail fits. Collapse the middle; the ends are the point.</li>
+        <li><strong>Two trails on one page.</strong> A page has one position in one hierarchy.</li>
+      </ul></div>
+    </div>
+    <p className="warn">The failure to watch for in review is a trail assembled from the router's history rather than from the resource's ancestors. It passes every click-through demo — the demo always arrives the same way — and breaks for the first user who lands from a deep link, which is precisely the user the breadcrumb exists for.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="What the code does, and why it does it that way.">
+    <ul>
+      <li><strong>The last item is the current page by position</strong>, not by a flag. There is no way to render two current crumbs or none, and no prop for a product to get it wrong.</li>
+      <li><strong>It draws its own anchors instead of wrapping <code>Link</code>.</strong> Link's contract is a resting underline, action colour and an <code>href</code> requirement; a trail needs no resting underline, secondary colour, per-size type and a last item with no anchor at all. Wrapping Link would mean fighting four of its defaults, and would tie the trail's colours to the link palette (§ token note below).</li>
+      <li><strong>Missing <code>href</code>s warn once per trail change.</strong> A silently non-clickable ancestor is the failure users report as "the breadcrumb is broken", and it is invisible in a screenshot review.</li>
+      <li><strong>Collapse takes the first crumb and the last two</strong>, hiding the rest, and only when <code>items.length &gt; maxItems</code> and <code>maxItems &gt;= 3</code>. Below three there is nothing left to collapse into, so the guard refuses rather than producing a trail of ellipses.</li>
+      <li><strong>The overflow is a <code>Menu</code>, not bespoke.</strong> Placement, flipping, the viewport gutter, typeahead, Escape and focus return are all Menu's, already reviewed. The rows are commands (Menu has no <code>href</code> support), which is why <code>onNavigate</code> exists — without it the rows fall back to <code>window.location.assign</code>, correct for an MPA and wrong inside a router.</li>
+      <li><strong>Separators are outside the crumb's box</strong> and <code>aria-hidden</code>, so a hover underline never runs under the chevron and a copied trail does not carry glyphs.</li>
+      <li><strong>Focus-visible is read before drawing the ring</strong>, matching Tabs and Accordion: a mouse press on a crumb navigates without leaving a ring behind.</li>
+      <li><strong>Each crumb caps at <code>max-width: 220px</code></strong> with <code>text-overflow: ellipsis</code>. A fixed cap rather than a share of the container, because a trail whose crumbs resize as siblings are added is unreadable at every intermediate width.</li>
+      <li><strong>7 tokens, no reference to <code>--link-*</code>.</strong> The trail is quieter than a link by intent; retargeting the link palette for prose must not brighten every page header in the product.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--breadcrumb-text','--breadcrumb-text-hover','--breadcrumb-text-current','--breadcrumb-separator','--breadcrumb-icon','--breadcrumb-overflow-text','--breadcrumb-focus-ring'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Wiring it into a product.">
+    <pre>{`import { Breadcrumb } from '@meridian/navigation';
+
+// Build the trail from the RESOURCE's ancestors, never from history.
+const trail = [
+  { label: site.name, href: \`/sites/\${site.id}\`, icon: 'factory' },
+  { label: area.name, href: \`/sites/\${site.id}/areas/\${area.id}\` },
+  { label: line.name, href: \`/lines/\${line.id}\` },
+  { label: order.code },                       // current page — no href
+];
+
+<PageHeader
+  above={<Breadcrumb items={trail} maxItems={4} onNavigate={(i) => router.push(i.href)} />}
+  title={order.code}
+/>
+
+// A path-shaped hierarchy.
+<Breadcrumb variant="slash" size="sm" items={path.map((p, i, all) => (
+  { label: p.name, href: i === all.length - 1 ? undefined : p.url }))} />`}</pre>
+    <ul>
+      <li><strong>Derive the trail server-side with the resource</strong>, in one payload. A trail assembled from three client fetches renders in three stages, and the page header jumps twice before the user has read the title.</li>
+      <li><strong>Do not render a placeholder trail while loading.</strong> Skeleton crumbs are furniture pretending to be orientation. Render the trail when you know it; the title can arrive first.</li>
+      <li><strong>Pass <code>onNavigate</code> in any SPA.</strong> Ancestor crumbs are real anchors your router already intercepts, but the collapsed menu's rows are not — without <code>onNavigate</code> they do a full page load.</li>
+      <li><strong>Keep <code>label</code> identical to the destination's page title.</strong> The mismatch between crumb and title is the most-reported inconsistency in products with a trail.</li>
+      <li><strong>Do not put the trail inside the <code>&lt;h1&gt;</code></strong> or use headings for crumbs. The trail is a nav landmark; the page has exactly one h1 and it is the title below.</li>
+      <li><strong>Testing hooks:</strong> the landmark is <code>nav[aria-label="Breadcrumb"]</code>, ancestors are its <code>a[href]</code> in order, and the current page is <code>[aria-current="page"]</code>. The container also carries <code>[data-breadcrumb="chevron|slash"]</code>. Assert that exactly one element has <code>aria-current</code>.</li>
+    </ul>
+    <div className="demo col">
+      <div className="head">
+        <Breadcrumb items={DEEP} maxItems={4} />
+        <h4>WO-88431</h4>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap',paddingTop:4}}>
+          <Badge tone="warning" dot>Awaiting parts</Badge>
+          <Text size="xs" tone="tertiary">Opened 3 Sep · Torque head, station 3</Text>
+        </div>
+      </div>
+    </div>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

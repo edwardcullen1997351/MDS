@@ -1,0 +1,917 @@
+{
+  "assembly": "ra-plant-operations-dashboard",
+  "version": "0.2.0",
+  "executedAt": "2026-09-29T04:36:26.080Z",
+  "storybookBaseUrl": "http://127.0.0.1:6008",
+  "sourceStressChecks": "pass",
+  "scenarioMatrix": [
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "complete",
+      "elapsedMs": 43487,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "module-loading",
+      "elapsedMs": 2575,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "dataTableSummaries": 2,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "module-error",
+      "elapsedMs": 879,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "dataTableSummaries": 2,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "partial",
+      "elapsedMs": 896,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 4,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "restricted-module",
+      "elapsedMs": 1464,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "dataTableSummaries": 2,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "empty-queue",
+      "elapsedMs": 949,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": false,
+        "priorityCards": 0,
+        "priorityRows": 0,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "stress-long-content",
+      "elapsedMs": 842,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile-narrow",
+      "width": 320,
+      "height": 844,
+      "scenario": "stress-max-priority",
+      "elapsedMs": 1713,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 320,
+        "clientWidth": 320,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 50,
+        "priorityRows": 50,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "complete",
+      "elapsedMs": 958,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "module-loading",
+      "elapsedMs": 884,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "dataTableSummaries": 2,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "module-error",
+      "elapsedMs": 1106,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "dataTableSummaries": 2,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "partial",
+      "elapsedMs": 972,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 4,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "restricted-module",
+      "elapsedMs": 882,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "dataTableSummaries": 2,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "empty-queue",
+      "elapsedMs": 883,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": false,
+        "priorityCards": 0,
+        "priorityRows": 0,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "stress-long-content",
+      "elapsedMs": 879,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "scenario": "stress-max-priority",
+      "elapsedMs": 1754,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": true,
+        "priorityCards": 50,
+        "priorityRows": 50,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "complete",
+      "elapsedMs": 915,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "module-loading",
+      "elapsedMs": 849,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "dataTableSummaries": 2,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "module-error",
+      "elapsedMs": 868,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "dataTableSummaries": 2,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "partial",
+      "elapsedMs": 907,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 4,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "restricted-module",
+      "elapsedMs": 877,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "dataTableSummaries": 2,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "empty-queue",
+      "elapsedMs": 933,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": false,
+        "priorityCards": 0,
+        "priorityRows": 0,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "stress-long-content",
+      "elapsedMs": 968,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 26,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "scenario": "stress-max-priority",
+      "elapsedMs": 1944,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 50,
+        "priorityRows": 50,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "complete",
+      "elapsedMs": 941,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1425,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "module-loading",
+      "elapsedMs": 869,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1425,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "dataTableSummaries": 2,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "module-error",
+      "elapsedMs": 880,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1425,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "dataTableSummaries": 2,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "partial",
+      "elapsedMs": 944,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1425,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 4,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "restricted-module",
+      "elapsedMs": 1104,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1425,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "dataTableSummaries": 2,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "empty-queue",
+      "elapsedMs": 1194,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1425,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": false,
+        "visiblePriorityList": false,
+        "priorityCards": 0,
+        "priorityRows": 0,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "stress-long-content",
+      "elapsedMs": 993,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1425,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 2,
+        "priorityRows": 2,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "scenario": "stress-max-priority",
+      "elapsedMs": 1927,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 25,
+        "incompleteCount": 2
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1425,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "dataTableSummaries": 3,
+        "visiblePriorityTable": true,
+        "visiblePriorityList": false,
+        "priorityCards": 50,
+        "priorityRows": 50,
+        "dashboardWidgets": 3,
+        "kpis": 4
+      }
+    }
+  ],
+  "assemblyStates": [
+    {
+      "assemblyState": "loading",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 20,
+        "incompleteCount": 1
+      },
+      "hasHorizontalScroll": false,
+      "overlappingControls": 0,
+      "textSample": "Inspection controls - current state: loading\nLoading plant operations dashboard\nLoading content..."
+    },
+    {
+      "assemblyState": "offline",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 21,
+        "incompleteCount": 0
+      },
+      "hasHorizontalScroll": false,
+      "overlappingControls": 0,
+      "textSample": "Inspection controls - current state: offline\nplant operations dashboard is unavailable\n\nThe plant service did not respond. No entered values were discarded.\n\nRetry"
+    },
+    {
+      "assemblyState": "restricted",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 21,
+        "incompleteCount": 0
+      },
+      "hasHorizontalScroll": false,
+      "overlappingControls": 0,
+      "textSample": "Inspection controls - current state: restricted\nAccess restricted\n\nYour current plant role cannot view plant operations dashboard. Request access from the PL-04 administrator.\n\nRequest access"
+    },
+    {
+      "assemblyState": "stale",
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 23,
+        "incompleteCount": 3
+      },
+      "hasHorizontalScroll": false,
+      "overlappingControls": 0,
+      "textSample": "Inspection controls - current state: stale\nData may be stale. Last successful refresh: 28 Sep 2026, 15:10 (IST).\nSURYODAYA AUTOCOMP - CHAKAN PL-04 - CANDIDATE\n-\nAs of 24 Sep 2026, 18:00 IST\nPlant operations overview\n\nOutput, quality, line a"
+    }
+  ],
+  "actionOutcomes": [
+    {
+      "actionOutcome": "success",
+      "found": true,
+      "pendingMs": 22,
+      "outcomeMs": 8407,
+      "toastMatched": true,
+      "textSample": "Inspection controls - current state: ready\nSURYODAYA AUTOCOMP - CHAKAN PL-04 - CANDIDATE\n-\nAs of 24 Sep 2026, 18:00 IST\nPlant operations overview\n\nOutput, quality, line alerts, and priority actions across the current production horizon.\n\nPast 24 Hours\nPast 7 Days\nPast 30 Days\nPast 7 Days\n▼\nExport snapshot (PDF)\nAccepted output\nOn plan\n\n14,820 pcs\n\n+12.4 % vs last week\nFirst-pass yield\nHealthy\n\n98.6 %\n\n+0.8 pt\nOpen line alerts\nAttention\n\n3 alerts\n\n-2 since yesterday\nCycle time\nHealthy\n\n142 s\n\n-18"
+    },
+    {
+      "actionOutcome": "failure",
+      "found": true,
+      "pendingMs": 25,
+      "outcomeMs": 2934,
+      "toastMatched": true,
+      "textSample": "Inspection controls - current state: ready\nSURYODAYA AUTOCOMP - CHAKAN PL-04 - CANDIDATE\n-\nAs of 24 Sep 2026, 18:00 IST\nPlant operations overview\n\nOutput, quality, line alerts, and priority actions across the current production horizon.\n\nPast 24 Hours\nPast 7 Days\nPast 30 Days\nPast 7 Days\n▼\nExport snapshot (PDF)\nAccepted output\nOn plan\n\n14,820 pcs\n\n+12.4 % vs last week\nFirst-pass yield\nHealthy\n\n98.6 %\n\n+0.8 pt\nOpen line alerts\nAttention\n\n3 alerts\n\n-2 since yesterday\nCycle time\nHealthy\n\n142 s\n\n-18"
+    },
+    {
+      "actionOutcome": "restricted",
+      "found": true,
+      "pendingMs": 21,
+      "outcomeMs": 631,
+      "toastMatched": true,
+      "textSample": "Inspection controls - current state: ready\nSURYODAYA AUTOCOMP - CHAKAN PL-04 - CANDIDATE\n-\nAs of 24 Sep 2026, 18:00 IST\nPlant operations overview\n\nOutput, quality, line alerts, and priority actions across the current production horizon.\n\nPast 24 Hours\nPast 7 Days\nPast 30 Days\nPast 7 Days\n▼\nExport snapshot (PDF)\nAccepted output\nOn plan\n\n14,820 pcs\n\n+12.4 % vs last week\nFirst-pass yield\nHealthy\n\n98.6 %\n\n+0.8 pt\nOpen line alerts\nAttention\n\n3 alerts\n\n-2 since yesterday\nCycle time\nHealthy\n\n142 s\n\n-18"
+    }
+  ]
+}

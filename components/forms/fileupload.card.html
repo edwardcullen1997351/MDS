@@ -1,0 +1,62 @@
+<!-- @dsCard group="Components" viewport="820x460" name="File selection & upload" subtitle="FileDropzone selects and validates; FileItem represents one file. Neither uploads." -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>File selection &amp; upload</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--surface-card);padding:20px;font-family:var(--font-sans)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}.stack{display:flex;flex-direction:column;gap:8px;min-width:0}.cap{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}a,a:hover{color:var(--text-link)}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { FileDropzone, FileItem, Field, Text, Icon } = window.MeridianDesignSystem_962c43;
+/* fileGlyph() is a lowercase export, so it stays bundle-internal and never
+   lands on the window namespace — a card cannot call it. This mirrors the
+   map in FileDropzone.jsx so the glyph NAMES are still rendered and a bad
+   Lucide name still surfaces as Icon's console warning. */
+const GLYPH_MIRROR = {pdf:'file-text',csv:'file-spreadsheet',jpg:'file-image',dwg:'file-box',xml:'file-code',zip:'file-archive',unknown:'file'};
+const GLYPH_SAMPLES = ['BRK-4820-A_rev-C.pdf','BOM_BRK-4820-A_rev-C.csv','fixture-photo.jpg','BRK-4820-A.dwg','routing.xml','evidence.zip','setup-note.unknown'];
+function Demo(){
+  const [files,setFiles]=React.useState([
+    {id:1,name:'BRK-4820-A_rev-C.pdf',size:2438144,state:'complete',meta:'Sheet 1 of 2'},
+    {id:2,name:'BOM_BRK-4820-A_rev-C.csv',size:18944,state:'uploading',progress:64},
+    {id:3,name:'press-setup-notes.docx',size:31457280,state:'failed',error:'Over the 20 MB limit'},
+  ]);
+  const [note,setNote]=React.useState('');
+  return (
+  <div className="grid">
+    <div className="stack">
+      <span className="cap">ECR-2291 · routing change · attachments</span>
+      <Field label="Revised drawing and BOM" hint="Anjali Deshmukh · Chakan plant (PL-04)">
+        <FileDropzone multiple accept=".pdf,.dwg,.csv" maxSize={20*1024*1024} maxFiles={5}
+          currentCount={files.length}
+          label="Drop the revised drawing and BOM here, or browse"
+          hint="PDF, DWG or CSV · up to 20 MB each · 5 files"
+          onSelect={(ok,bad)=>{
+            setFiles(f=>[...f,...ok.map((x,i)=>({id:Date.now()+i,name:x.name,size:x.size,state:'queued'}))]);
+            setNote(bad.length?bad.length+' file(s) refused — '+bad.map(b=>b.reason).join(', '):'');
+          }} />
+      </Field>
+      {note && <Text size="xs" tone="critical">{note}</Text>}
+      <Text size="xs" tone="tertiary">The dropzone returns accepted and rejected lists. It uploads nothing.</Text>
+    </div>
+    <div className="stack">
+      <span className="cap">FileItem · four states</span>
+      {files.map(f=>(
+        <FileItem key={f.id} name={f.name} size={f.size} meta={f.meta} state={f.state}
+          progress={f.progress} error={f.error}
+          onRemove={()=>setFiles(list=>list.filter(x=>x.id!==f.id))}
+          onRetry={f.state==='failed'?()=>setFiles(list=>list.map(x=>x.id===f.id?{...x,state:'uploading',progress:0,error:undefined}:x)):undefined} />
+      ))}
+      <FileItem name="queued-example.dwg" size={870400} state="queued" onRemove={()=>{}} />
+      <Text size="xs" tone="tertiary">state and progress are props — the surface owns transport.</Text>
+      <span className="cap" style={{marginTop:6}}>fileGlyph() · for rows rendered outside FileItem · map mirrored here (lowercase exports are not on the namespace)</span>
+      <div style={{display:'flex',flexWrap:'wrap',gap:'10px 16px'}}>
+        {GLYPH_SAMPLES.map(n=>(
+          <span key={n} style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:'var(--text-2xs)',color:'var(--text-tertiary)'}}>
+            <Icon name={GLYPH_MIRROR[n.split('.').pop()]} size="sm" /><span style={{fontFamily:'var(--font-mono)'}}>{n.split('.').pop()}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

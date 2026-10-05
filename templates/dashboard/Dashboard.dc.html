@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Layout · Dashboard" description="Simultaneous overview of independently meaningful modules — the 07:15 shift-handover dashboard at Chakan (PL-04): output against plan, OEE by line, open nonconformances, overnight breakdowns, material shortages, despatch adherence and the week's losses, on the 12-column grid with shared scope controls." -->
+<helmet><script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary)}</style>
+</helmet>
+<div style="min-height:100vh">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Container" size="full" py="{{ 7 }}" hint-size="100%,100%">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 6 }}" hint-size="100%,100%">
+
+<sc-if value="{{ harnessNotes }}" hint-placeholder-val="{{ true }}">
+<div data-harness="remove-on-copy" style="border:var(--border-width) dashed var(--border-strong);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Harness · remove on copy</span>
+<a href="../../specs/layouts/Dashboard.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§14</a>
+</div>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty;line-height:1.55">Dashed blocks and the <code style="font-family:var(--font-mono)">harness*</code> tweaks are scaffolding — delete them when you copy this template. Seven modules, each independently comprehensible: read any one alone and it still says what it is about, which plant, which shift (§10). The tweaks under <em>Layout properties</em> are the real §03 choices — grid column count, differentiated or equal spans, where the material-shortage module sits in the order, and whether scope is shared in the header or carried per module. <em>Simulate available width</em> steps through the three §11 forms; the modules keep their order in every one, because the visual reflow is span arithmetic on one DOM order and never a re-placement (§08). Module-level loading and failure — the OEE read, the logistics gateway — belong to the modules, not to the frame: there is no whole-dashboard spinner here.</p>
+</div>
+</sc-if>
+
+<div style="display:flex;flex-direction:column;gap:12px;border-bottom:var(--border-hairline);padding-bottom:16px">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 1 · dashboard header — heading, context and the shared controls whose scope every module inherits</span>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Breadcrumb" items="{{ crumbs }}" size="sm" hint-size="100%,18px"></x-import>
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px 24px">
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:var(--weight-light);letter-spacing:-0.018em">Plant performance — shift handover</h1>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">Suryodaya Autocomp Ltd · Chakan plant (PL-04) · 2026-09-08 07:15 (IST)</span>
+</div>
+<p style="margin:0;font-size:var(--text-sm);color:var(--text-secondary);max-width:96ch;text-wrap:pretty">Shalini Rao, Meera Nair, Vikram Bhosale, Anjali Deshmukh and the shift supervisors stand at this screen for eleven minutes every morning. Nobody reads it top to bottom: each of them scans for the one module that is theirs, and then for whatever is red.</p>
+<sc-if value="{{ sharedControls }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px;padding:12px 14px;background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-md)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);flex:0 0 100%">Applies to every module below</span>
+<label style="display:flex;flex-direction:column;gap:5px;font-size:var(--text-2xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Area
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ areaOptions }}" value="{{ area }}" onChange="{{ onArea }}" size="sm" aria-label="Scope every module to an area" hint-size="230px,30px"></x-import>
+</label>
+<label style="display:flex;flex-direction:column;gap:5px;font-size:var(--text-2xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Shift
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ shiftOptions }}" value="{{ shift }}" onChange="{{ onShift }}" size="sm" aria-label="Scope every module to a shift" hint-size="200px,30px"></x-import>
+</label>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary);padding-bottom:6px">{{ scopeReadout }}</span>
+</div>
+</sc-if>
+<sc-if value="{{ localControls }}" hint-placeholder-val="{{ false }}">
+<p style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty">Shared controls withdrawn — every module states and carries its own scope. Nothing in the header may then be read as applying to the grid.</p>
+</sc-if>
+</div>
+
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 2 · module grid — {{ gridReadout }}</span>
+</sc-if>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Grid" columns="{{ columns }}" gap="{{ 5 }}" align="stretch" hint-size="100%,900px">
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.GridItem" span="{{ spanFull }}" hint-size="100%,280px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Card" title="Output against plan — shift C, 2026-09-07 into 2026-09-08" subtitle="{{ outputSubtitle }}" headingLevel="{{ 2 }}" padding="none" hint-size="100%,280px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Table" caption="Output against plan by line, shift C" columns="{{ outputColumns }}" rows="{{ outputRows }}" rowKey="line" density="compact" minWidth="700px" hint-size="100%,240px"></x-import>
+</x-import>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.GridItem" span="{{ spanHalf }}" hint-size="100%,300px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Card" title="OEE by line, last shift" subtitle="{{ oeeSubtitle }}" headingLevel="{{ 2 }}" padding="md" hint-size="100%,300px">
+<sc-if value="{{ oeeLoading }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:8px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Skeleton" lines="{{ 6 }}" delay="{{ 200 }}" hint-size="100%,140px"></x-import>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">Reading availability, performance and quality from MES — this module only.</span>
+</div>
+</sc-if>
+<sc-if value="{{ oeeReady }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+<sc-for list="{{ oeeRows }}" as="o" hint-placeholder-count="6">
+<div style="display:flex;flex-direction:column;gap:5px;min-width:0">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px">
+<span style="font-size:var(--text-xs);color:var(--text-primary)">{{ o.name }}</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-secondary)">{{ o.readout }}</span>
+</div>
+<div role="meter" aria-label="{{ o.meterLabel }}" aria-valuenow="{{ o.value }}" aria-valuemin="0" aria-valuemax="100" style="height:6px;border-radius:var(--radius-full);background:var(--surface-sunken);overflow:hidden">
+<sc-if value="{{ o.good }}" hint-placeholder-val="{{ true }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Box" width="{{ o.width }}" height="{{ 6 }}" background="status-success-solid" hint-size="60%,6px"></x-import>
+</sc-if>
+<sc-if value="{{ o.fair }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Box" width="{{ o.width }}" height="{{ 6 }}" background="status-warning-solid" hint-size="60%,6px"></x-import>
+</sc-if>
+<sc-if value="{{ o.poor }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Box" width="{{ o.width }}" height="{{ 6 }}" background="status-critical-solid" hint-size="60%,6px"></x-import>
+</sc-if>
+</div>
+</div>
+</sc-for>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty">Target 75% · a level, not work in flight, so these are meters rather than <code style="font-family:var(--font-mono)">Progress</code>.</span>
+</div>
+</sc-if>
+</x-import>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.GridItem" span="{{ spanHalf }}" hint-size="100%,300px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Card" title="Nonconformances open" subtitle="{{ qualitySubtitle }}" headingLevel="{{ 2 }}" padding="md" hint-size="100%,300px">
+<div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+<div style="display:flex;flex-wrap:wrap;gap:10px 26px">
+<sc-for list="{{ qualityFigures }}" as="f" hint-placeholder-count="4">
+<div style="display:flex;flex-direction:column;gap:2px">
+<sc-if value="{{ f.plain }}" hint-placeholder-val="{{ true }}">
+<span style="font-family:var(--font-mono);font-size:var(--text-xl);font-weight:var(--weight-light);color:var(--text-primary)">{{ f.value }}</span>
+</sc-if>
+<sc-if value="{{ f.warning }}" hint-placeholder-val="{{ false }}">
+<span style="font-family:var(--font-mono);font-size:var(--text-xl);font-weight:var(--weight-light);color:var(--status-warning-solid)">{{ f.value }}</span>
+</sc-if>
+<sc-if value="{{ f.critical }}" hint-placeholder-val="{{ false }}">
+<span style="font-family:var(--font-mono);font-size:var(--text-xl);font-weight:var(--weight-light);color:var(--status-critical-solid)">{{ f.value }}</span>
+</sc-if>
+<span style="font-size:var(--text-2xs);color:var(--text-tertiary);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-family:var(--font-mono)">{{ f.label }}</span>
+</div>
+</sc-for>
+</div>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.DescriptionList" items="{{ qualityItems }}" layout="rows" size="sm" divided="{{ true }}" termWidth="164px" responsive="{{ true }}" hint-size="100%,150px"></x-import>
+<a href="../conditional-input/ConditionalInput.dc.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Disposition the oldest NC &rarr;</a>
+</div>
+</x-import>
+</x-import>
+
+<sc-if value="{{ shortageEarly }}" hint-placeholder-val="{{ true }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.GridItem" span="{{ spanThird }}" hint-size="100%,280px">
+<dc-import name="ShortageModule" items="{{ shortages }}" local="{{ localControls }}" subtitle="{{ shortageSubtitle }}" hint-size="100%,280px"></dc-import>
+</x-import>
+</sc-if>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.GridItem" span="{{ spanThird }}" hint-size="100%,280px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Card" title="Breakdowns overnight" subtitle="{{ maintSubtitle }}" headingLevel="{{ 2 }}" padding="md" hint-size="100%,280px">
+<div style="display:flex;flex-direction:column;gap:11px;min-width:0">
+<sc-for list="{{ breakdowns }}" as="b" hint-placeholder-count="3">
+<div style="display:flex;flex-direction:column;gap:3px;padding-bottom:9px;border-bottom:var(--border-subtle);min-width:0">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-primary)">{{ b.asset }}</span>
+<span style="font-size:var(--text-xs);color:var(--text-secondary);flex:1 1 120px;min-width:0">{{ b.cause }}</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-critical)">{{ b.down }}</span>
+</div>
+<span style="font-size:var(--text-2xs);color:var(--text-tertiary)">{{ b.who }}</span>
+</div>
+</sc-for>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ mttr }}</span>
+</div>
+</x-import>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.GridItem" span="{{ spanThird }}" hint-size="100%,280px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Card" title="Despatch adherence" subtitle="{{ despatchSubtitle }}" headingLevel="{{ 2 }}" padding="md" hint-size="100%,280px">
+<sc-if value="{{ despatchDown }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="danger" title="Despatch figures could not be read" live="on" size="sm" action="{{ despatchRetry }}" hint-size="100%,140px">The logistics gateway did not answer (timeout, 30 s). This module is empty; every other module on the dashboard is current — a module that cannot load says so where it sits and never blanks the screen.</x-import>
+</sc-if>
+<sc-if value="{{ despatchUp }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+<div style="display:flex;flex-wrap:wrap;gap:10px 26px">
+<sc-for list="{{ despatchFigures }}" as="f" hint-placeholder-count="3">
+<div style="display:flex;flex-direction:column;gap:2px">
+<sc-if value="{{ f.plain }}" hint-placeholder-val="{{ true }}">
+<span style="font-family:var(--font-mono);font-size:var(--text-xl);font-weight:var(--weight-light);color:var(--text-primary)">{{ f.value }}</span>
+</sc-if>
+<sc-if value="{{ f.warning }}" hint-placeholder-val="{{ false }}">
+<span style="font-family:var(--font-mono);font-size:var(--text-xl);font-weight:var(--weight-light);color:var(--status-warning-solid)">{{ f.value }}</span>
+</sc-if>
+<span style="font-size:var(--text-2xs);color:var(--text-tertiary);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-family:var(--font-mono)">{{ f.label }}</span>
+</div>
+</sc-for>
+</div>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.DescriptionList" items="{{ despatchItems }}" layout="rows" size="sm" divided="{{ true }}" termWidth="152px" responsive="{{ true }}" hint-size="100%,120px"></x-import>
+</div>
+</sc-if>
+</x-import>
+</x-import>
+
+<sc-if value="{{ shortageLate }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.GridItem" span="{{ spanThird }}" hint-size="100%,280px">
+<dc-import name="ShortageModule" items="{{ shortages }}" local="{{ localControls }}" subtitle="{{ shortageSubtitle }}" hint-size="100%,280px"></dc-import>
+</x-import>
+</sc-if>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.GridItem" span="{{ spanFull }}" hint-size="100%,240px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Card" title="Where the week went — losses by cause, 2026-W37" subtitle="{{ lossSubtitle }}" headingLevel="{{ 2 }}" padding="none" hint-size="100%,240px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Table" caption="Losses by cause, week 2026-W37" columns="{{ lossColumns }}" rows="{{ lossRows }}" rowKey="cause" density="compact" minWidth="640px" hint-size="100%,200px"></x-import>
+</x-import>
+</x-import>
+
+</x-import>
+
+<sc-if value="{{ harnessInspector }}" hint-placeholder-val="{{ true }}">
+<div data-harness="remove-on-copy" style="border:var(--border-width) dashed var(--border-strong);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Layout state · §03 properties and §11 form as applied</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px 20px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="7">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:132px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty;line-height:1.6">The seven modules are authored in one order and rendered in that order at every width; the responsive forms change only how many columns each module spans (§11). The module-ordering tweak moves the shortage module in the DOM, not by <code style="font-family:var(--font-mono)">order</code> or <code style="font-family:var(--font-mono)">grid-area</code> — a visual placement that disagrees with document order is the defect §08 forbids.</p>
+</div>
+</sc-if>
+
+</x-import>
+</x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1040},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Light theme&quot;,&quot;Dark theme&quot;],&quot;default&quot;:&quot;Light theme&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;,&quot;label&quot;:&quot;Color theme&quot;},&quot;gridColumns&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;12-column system grid&quot;,&quot;8-column system grid&quot;],&quot;default&quot;:&quot;12-column system grid&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties (§03)&quot;,&quot;label&quot;:&quot;Grid column count&quot;},&quot;moduleSpans&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Differentiated — full, half and third spans&quot;,&quot;Equal — every module the same span&quot;],&quot;default&quot;:&quot;Differentiated — full, half and third spans&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties (§03)&quot;,&quot;label&quot;:&quot;Module spans&quot;},&quot;moduleOrder&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Material shortages in the first viewport&quot;,&quot;Material shortages after quality and maintenance&quot;],&quot;default&quot;:&quot;Material shortages in the first viewport&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties (§03)&quot;,&quot;label&quot;:&quot;Module ordering&quot;},&quot;controlScope&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Shared — the header scopes every module&quot;,&quot;Local — each module carries its own scope&quot;],&quot;default&quot;:&quot;Shared — the header scopes every module&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties (§03)&quot;,&quot;label&quot;:&quot;Control scope&quot;},&quot;availableWidth&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Expanded — multiple columns&quot;,&quot;Intermediate — reduced spans&quot;,&quot;Constrained — single ordered stream&quot;],&quot;default&quot;:&quot;Expanded — multiple columns&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Responsive (§11)&quot;,&quot;label&quot;:&quot;Simulate available width&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:2500,&quot;step&quot;:100,&quot;default&quot;:700,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;,&quot;label&quot;:&quot;MES read latency (OEE module)&quot;},&quot;logisticsDown&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;,&quot;label&quot;:&quot;Logistics gateway is down&quot;},&quot;harnessRegionLabels&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;,&quot;label&quot;:&quot;Region labels&quot;},&quot;harnessNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;,&quot;label&quot;:&quot;Explanatory notes&quot;},&quot;harnessInspector&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;,&quot;label&quot;:&quot;Layout state inspector&quot;}}">
+// Shift-handover dashboard, PL-04 Chakan, 2026-09-08 07:15 (IST). Every module
+// is one read against one system; none of them depends on another.
+const LINES = [
+  { line: 'P-2 press', part: 'BRK-4820-A', plan: 4200, actual: 3860, oee: 71.4, sup: 'Sandeep Kulkarni' },
+  { line: 'P-5 press', part: 'PLT-6601', plan: 3000, actual: 3120, oee: 82.1, sup: 'Sandeep Kulkarni' },
+  { line: 'P-8 press', part: 'HSG-3120', plan: 1800, actual: 940, oee: 43.6, sup: 'Ganesh Shinde' },
+  { line: 'A-1 assembly', part: 'BRG assy', plan: 2400, actual: 2355, oee: 88.0, sup: 'Rupali Jadhav' },
+  { line: 'A-2 assembly', part: 'GSK-8801', plan: 5600, actual: 5180, oee: 79.2, sup: 'Rupali Jadhav' },
+  { line: 'Machine shop cell', part: 'HSG-3360-B', plan: 640, actual: 512, oee: 66.8, sup: 'Kiran Wagh' }
+];
+const SHORTAGES = [
+  { part: 'BRK-4820-B', desc: 'Caliper bracket forging, RH — Nashik Forge', open: '2,400 Nos', holds: 'Holds WO-561205 on P-2 shift B; six days past promise, no revised date.' },
+  { part: 'BRG-6304-C3', desc: 'Ball bearing 6304 C3 — Sahyadri Bearings', open: '900 Nos', holds: 'Holds WO-561190 on A-1 shift C; supplier offered 400 Nos on 2026-09-11.' },
+  { part: 'TL-FM-63', desc: 'Face mill body — Deccan Machine Supply', open: '6 Nos', holds: 'Eleven days late; VMC-11 running its last body, tool room escalated by Priya Iyer.' }
+];
+const BREAKDOWNS = [
+  { asset: 'PR-08', cause: 'Crank clutch solenoid valve failed', down: '3 h 20 m', who: 'Attended 23:40, restored 03:00 (IST) · Vikram Bhosale · WO-M-4471 raised' },
+  { asset: 'WSH-01', cause: 'Wash pump seal leak', down: '1 h 05 m', who: 'Attended 02:15, restored 03:20 (IST) · standby pump fitted' },
+  { asset: 'CMM-02', cause: 'Air supply pressure low', down: '40 m', who: 'Attended 05:05, restored 05:45 (IST) · inspection queue cleared by 06:30' }
+];
+const LOSSES = [
+  { cause: 'Unplanned downtime', hours: 18.4, share: 41, owner: 'Vikram Bhosale', note: 'PR-08 clutch valve twice, WSH-01 seal, CMM-02 air' },
+  { cause: 'Die and tool change', hours: 9.2, share: 21, owner: 'Priya Iyer', note: 'P-2 and P-5 changeovers running 22 min over standard' },
+  { cause: 'Material short', hours: 6.6, share: 15, owner: 'Anjali Deshmukh', note: 'Bracket forgings and 6304 bearings' },
+  { cause: 'Quality rework', hours: 4.1, share: 9, owner: 'Meera Nair', note: 'Bore oversize on HSG-3360-B, 42 Nos' },
+  { cause: 'Manpower short', hours: 2.3, share: 5, owner: 'Shalini Rao', note: 'Two operators absent on shift C' },
+  { cause: 'Other, uncoded', hours: 4.0, share: 9, owner: '\u2014', note: 'Coded at the weekly review' }
+];
+const num = (n) => Number(n).toLocaleString('en-IN');
+const rupee = (n) => '\u20B9' + Number(n).toLocaleString('en-IN');
+
+class Component extends DCLogic {
+  state = { area: 'Whole plant (PL-04)', shift: 'Shift C — 22:45 to 06:45', oeeLoading: true, despatchFailed: false };
+
+  syncTheme() {
+    const isDark = String(this.prop('theme', 'Light theme')).indexOf('Dark') === 0;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }
+
+  componentDidMount() {
+    this.syncTheme();
+    // REPLACE: stands in for this module's own MES read —
+    //   GET /api/mes/oee?site=PL-04&shift=C
+    this.t = setTimeout(() => this.setState({ oeeLoading: false }), this.props.latency ?? 700);
+  }
+  componentWillUnmount() { clearTimeout(this.t); }
+  componentDidUpdate(prev) {
+    if (this.props.theme !== prev.theme) {
+      this.syncTheme();
+    }
+    if (this.props.latency !== prev.latency) {
+      clearTimeout(this.t);
+      this.setState({ oeeLoading: true });
+      this.t = setTimeout(() => this.setState({ oeeLoading: false }), this.props.latency ?? 700);
+    }
+  }
+
+  prop(name, fallback) { return this.props[name] ?? fallback; }
+
+  renderVals() {
+    const s = this.state;
+    const width = String(this.prop('availableWidth', 'Expanded — multiple columns'));
+    const base = String(this.prop('gridColumns', '12-column system grid')).indexOf('8-column') === 0 ? 8 : 12;
+    const intermediate = width.indexOf('Intermediate') === 0;
+    const constrained = width.indexOf('Constrained') === 0;
+    const columns = constrained ? 1 : (intermediate ? Math.min(base, 8) : base);
+    const equal = String(this.prop('moduleSpans', 'Differentiated — full, half and third spans')).indexOf('Equal') === 0;
+    const third = Math.max(1, Math.round(columns / 3));
+    const half = Math.max(1, Math.round(columns / 2));
+    const spanFull = constrained ? 1 : columns;
+    const spanHalf = constrained ? 1 : (equal ? third : (intermediate ? half : half));
+    const spanThird = constrained ? 1 : (intermediate ? half : third);
+    const shortageEarly = String(this.prop('moduleOrder', 'Material shortages in the first viewport')).indexOf('first viewport') > -1;
+    const shared = String(this.prop('controlScope', 'Shared — the header scopes every module')).indexOf('Shared') === 0;
+    const scopeLine = shared ? s.area + ' \u00b7 ' + s.shift : 'scoped in this module';
+    const despatchDown = !!this.props.logisticsDown || s.despatchFailed;
+    const oeeTone = (v) => v >= 80 ? 'var(--status-success-solid)' : (v >= 65 ? 'var(--status-warning-solid)' : 'var(--status-critical-solid)');
+    const planTotal = LINES.reduce((a, l) => a + l.plan, 0);
+    const actualTotal = LINES.reduce((a, l) => a + l.actual, 0);
+
+    return {
+      crumbs: [{ label: 'Plant operations', href: '#' }, { label: 'Chakan (PL-04)', href: '#' }, { label: 'Shift handover' }],
+      columns,
+      spanFull, spanHalf, spanThird,
+      gridReadout: columns + ' column' + (columns > 1 ? 's' : '') + ' \u00b7 spans ' + spanFull + '/' + spanHalf + '/' + spanThird + ' \u00b7 seven modules in one authored order',
+      sharedControls: shared,
+      localControls: !shared,
+      areaOptions: ['Whole plant (PL-04)', 'Press shop', 'Assembly', 'Machine shop'],
+      area: s.area,
+      onArea: (e) => this.setState({ area: e.target.value }),
+      shiftOptions: ['Shift C — 22:45 to 06:45', 'Shift B — 14:45 to 22:45', 'Shift A — 06:45 to 14:45', 'All three shifts'],
+      shift: s.shift,
+      onShift: (e) => this.setState({ shift: e.target.value }),
+      scopeReadout: 'every module reads ' + s.area + ' \u00b7 ' + s.shift.split(' \u2014 ')[0],
+
+      outputSubtitle: scopeLine + ' \u00b7 ' + num(actualTotal) + ' of ' + num(planTotal) + ' planned (' + Math.round((actualTotal / planTotal) * 100) + '%)',
+      outputColumns: [
+        { key: 'line', header: 'Line', width: '168px' },
+        { key: 'part', header: 'Running', mono: true, width: '132px' },
+        { key: 'plan', header: 'Plan', align: 'right', mono: true, width: '92px', render: (r) => num(r.plan) },
+        { key: 'actual', header: 'Actual', align: 'right', mono: true, width: '96px', render: (r) => num(r.actual) },
+        { key: 'var', header: 'Variance', align: 'right', mono: true, width: '112px', render: (r) => (r.actual - r.plan >= 0 ? '+' : '') + num(r.actual - r.plan) },
+        { key: 'pct', header: 'Attainment', align: 'right', mono: true, width: '112px', render: (r) => Math.round((r.actual / r.plan) * 100) + '%' },
+        { key: 'sup', header: 'Supervisor', wrap: true }
+      ],
+      outputRows: LINES,
+
+      oeeLoading: s.oeeLoading,
+      oeeReady: !s.oeeLoading,
+      oeeSubtitle: scopeLine + ' \u00b7 target 75%',
+      oeeRows: LINES.map((l) => ({
+        name: l.line,
+        readout: l.oee.toFixed(1) + '%',
+        value: l.oee,
+        width: l.oee + '%',
+        good: l.oee >= 80,
+        fair: l.oee >= 65 && l.oee < 80,
+        poor: l.oee < 65,
+        meterLabel: 'OEE on ' + l.line + ', shift C'
+      })),
+
+      qualitySubtitle: scopeLine + ' \u00b7 internal PPM against a target of 1,500',
+      qualityFigures: [
+        { value: '14', label: 'NCs open', plain: true },
+        { value: '6', label: 'Awaiting disposition', warning: true },
+        { value: '2,180', label: 'Internal PPM', critical: true },
+        { value: '3', label: 'With supplier', plain: true }
+      ],
+      qualityItems: [
+        { term: 'Oldest open NC', value: 'NC-2609-041 \u00b7 bore \u00d892 H7 oversize on HSG-3360-B, 42 Nos, raised 2026-09-04' },
+        { term: 'Held stock', value: '318 Nos across four lots \u00b7 ' + rupee(742000) },
+        { term: 'Quality manager', value: 'Meera Nair \u00b7 quality@suryodaya.co.in' }
+      ],
+
+      shortages: SHORTAGES,
+      shortageEarly,
+      shortageLate: !shortageEarly,
+      shortageSubtitle: scopeLine + ' \u00b7 against the released work orders for 2026-09-08',
+
+      maintSubtitle: scopeLine + ' \u00b7 5 h 05 m lost to breakdowns',
+      breakdowns: BREAKDOWNS,
+      mttr: 'Week to date: 6 breakdowns \u00b7 MTTR 1 h 48 m \u00b7 maintenance head Vikram Bhosale',
+
+      despatchSubtitle: scopeLine + ' \u00b7 customer schedules due 2026-09-08',
+      despatchDown,
+      despatchUp: !despatchDown,
+      despatchRetry: null,
+      despatchFigures: [
+        { value: '6 / 9', label: 'Schedules despatched', warning: true },
+        { value: '92.4%', label: 'Adherence, week', plain: true },
+        { value: rupee(4260000), label: 'Value pending', plain: true }
+      ],
+      despatchItems: [
+        { term: 'At risk today', value: 'Two schedules for the caliper bracket assembly — waiting on the RH forging shortage' },
+        { term: 'Next pickup', value: '2026-09-08 16:30 (IST) \u00b7 gate 3 \u00b7 transporter Deccan Roadlines' }
+      ],
+
+      lossSubtitle: scopeLine.split(' \u00b7 ')[0] + ' \u00b7 44.6 hours lost, all lines, week to date',
+      lossColumns: [
+        { key: 'cause', header: 'Cause', width: '196px' },
+        { key: 'hours', header: 'Hours', align: 'right', mono: true, width: '92px', render: (r) => r.hours.toFixed(1) },
+        { key: 'share', header: 'Share', align: 'right', mono: true, width: '84px', render: (r) => r.share + '%' },
+        { key: 'owner', header: 'Owner', width: '150px' },
+        { key: 'note', header: 'What it was', wrap: true }
+      ],
+      lossRows: LOSSES,
+
+      harnessLabels: this.prop('harnessRegionLabels', true),
+      harnessNotes: this.prop('harnessNotes', true),
+      harnessInspector: this.prop('harnessInspector', true),
+      stateRows: [
+        { k: 'grid columns', v: String(columns) + (constrained ? ' \u00b7 single ordered stream' : (intermediate ? ' \u00b7 intermediate' : ' \u00b7 expanded')) },
+        { k: 'spans', v: 'full ' + spanFull + ' \u00b7 half ' + spanHalf + ' \u00b7 third ' + spanThird + (equal ? ' \u00b7 equal-span profile' : ' \u00b7 differentiated') },
+        { k: 'modules', v: '7 \u00b7 one DOM order at every width' },
+        { k: 'module order', v: shortageEarly ? 'shortages 4th \u2014 in the first viewport' : 'shortages 6th \u2014 after quality and maintenance' },
+        { k: 'control scope', v: shared ? 'shared \u00b7 ' + s.area + ' \u00b7 ' + s.shift.split(' \u2014 ')[0] : 'local \u00b7 each module states its own' },
+        { k: 'module states', v: (s.oeeLoading ? 'OEE loading' : 'OEE ready') + ' \u00b7 ' + (despatchDown ? 'despatch failed' : 'despatch ready') + ' \u00b7 module-owned, not frame states' },
+        { k: 'first viewport', v: 'output against plan, OEE, quality' + (shortageEarly ? ', shortages' : '') }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!-- @dsCard group="Components" viewport="780x420" name="Navigation — step" subtitle="Multi-stage process navigation: linear validation gates, stage completion tracking, and responsive view states" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Step Navigation</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--surface-card);padding:20px;font-family:var(--font-sans)}
+.row{display:flex;flex-direction:column;gap:20px}
+.col{display:flex;flex-direction:column;gap:10px}
+.lbl{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold)}
+.stepper-bar{display:flex;align-items:center;width:100%;padding:14px 18px;background:var(--background-page);border:var(--border-hairline);border-radius:var(--radius-md)}
+.step-item{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;background:none;border:none;cursor:pointer;padding:0}
+.step-item:disabled{cursor:not-allowed;opacity:0.4}
+.step-circle{width:28px;height:28px;border-radius:var(--radius-full);border:2px solid var(--border-hairline);background:var(--surface-card);color:var(--text-tertiary);font-family:var(--font-mono);font-size:var(--text-xs);font-weight:bold;display:flex;align-items:center;justify-content:center;transition:all 0.15s ease}
+.step-item.active .step-circle{border-color:var(--action-solid);color:var(--action-solid);box-shadow:0 0 0 3px var(--status-info-soft)}
+.step-item.completed .step-circle{border-color:var(--status-success-solid);background:var(--status-success-solid);color:#fff}
+.step-item.error .step-circle{border-color:var(--status-critical-solid);color:var(--status-critical-solid)}
+.step-name{font-size:var(--text-2xs);font-weight:var(--weight-medium);color:var(--text-secondary);text-align:center}
+.step-item.active .step-name{color:var(--text-primary);font-weight:bold}
+.step-line{flex:1;height:2px;background:var(--border-hairline);margin:0 -6px 18px -6px}
+.step-line.filled{background:var(--status-success-solid)}
+.stepper-pill{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--background-page);border:var(--border-hairline);border-radius:var(--radius-md)}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const STAGES = [
+  { id: '1', name: 'Material BOM' },
+  { id: '2', name: 'Line Setup' },
+  { id: '3', name: 'Die Clearance' },
+  { id: '4', name: 'QA Sign-off' },
+  { id: '5', name: 'E-Way Dispatch' }
+];
+
+function Demo(){
+  const [step, setStep] = React.useState(2);
+  const completed = [0, 1];
+
+  return (
+    <div className="row">
+      <div className="col">
+        <span className="lbl">Horizontal Stepper (Manufacturing Job Order)</span>
+        <div className="stepper-bar">
+          {STAGES.map((s, i) => (
+            <React.Fragment key={s.id}>
+              <button
+                type="button"
+                className={`step-item ${completed.includes(i) ? 'completed' : ''} ${i === step ? 'active' : ''}`}
+                disabled={!completed.includes(i) && i !== step}
+                onClick={() => setStep(i)}
+              >
+                <div className="step-circle">{completed.includes(i) ? '✓' : s.id}</div>
+                <div className="step-name">{s.name}</div>
+              </button>
+              {i < STAGES.length - 1 && (
+                <div className={`step-line ${completed.includes(i) ? 'filled' : ''}`} />
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+
+      <div className="col">
+        <span className="lbl">Compact Stepper Pill (Shopfloor Tablet & Kiosk)</span>
+        <div className="stepper-pill">
+          <span style={{fontSize:'var(--text-xs)',fontFamily:'var(--font-mono)'}}>
+            STAGE <strong>{step + 1} OF {STAGES.length}</strong>: <span style={{color:'var(--text-primary)',fontWeight:'bold'}}>{STAGES[step].name}</span>
+          </span>
+          <div style={{display:'flex',gap:6}}>
+            {STAGES.map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  width:20,
+                  height:6,
+                  borderRadius:999,
+                  background: completed.includes(i) ? 'var(--status-success-solid)' : (i === step ? 'var(--action-solid)' : 'var(--border-hairline)')
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

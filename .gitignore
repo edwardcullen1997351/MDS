@@ -1,0 +1,35 @@
+# Dependencies and generated build output
+node_modules/
+dist/
+storybook-static/
+coverage/
+
+# Tool caches and temporary output
+.turbo/
+.impeccable-cache/
+.tmp/
+.cache/
+/.agents/
+playwright-report/
+test-results/
+
+# Bundled Impeccable integration pending public redistribution review
+/.github/skills/impeccable/
+/.github/hooks/impeccable.json
+/.github/agents/impeccable-*.agent.md
+
+# Local generation scripts and workspace thumbnail
+/scratch/
+/.thumbnail
+
+# Local environment and debug files
+.env*
+!.env.example
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Operating-system files
+.DS_Store
+Thumbs.db

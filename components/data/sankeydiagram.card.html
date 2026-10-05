@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sankey Diagram Component Showcase · Meridian Design System</title>
+  <link rel="stylesheet" href="../../tokens/tokens.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+    }
+    body {
+      margin: 0;
+      padding: 32px 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .showcase-header {
+      max-width: 1120px;
+      margin: 0 auto 32px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: #e0e7ff;
+      color: #3730a3;
+      margin-bottom: 8px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin: 0;
+    }
+    .demo-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+    .demo-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .demo-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+    .demo-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 0 0 16px;
+    }
+  </style>
+
+  <!-- React & Babel for live Card preview -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+
+  <header class="showcase-header">
+    <div class="badge">Data Visualization · 10</div>
+    <h1>Sankey Diagram (Quantitative Flow)</h1>
+    <p class="subtitle">
+      Multi-stage quantitative transfer and conversion visualization where link ribbon thickness directly represents flow volume. Features deterministic column staging, non-crossing ribbon stacking, connected path isolation, source-target gradients, and accessible flow tables.
+    </p>
+  </header>
+
+  <main class="demo-grid">
+    <!-- Live Demo 1: Plant Electrical Energy Flow -->
+    <section class="demo-card">
+      <div class="demo-title">1. Plant Electrical Energy Flow & Transformation (Chakan Plant PL-04)</div>
+      <div class="demo-desc">Energy sources (Grid 33kV & Rooftop Solar) &rarr; Substation Transformers &rarr; Shop Floors &rarr; Useful Mechanical/Thermal Work vs. Heat/Friction Loss (kWh). Hover or click any flow to isolate its pathway.</div>
+      <div id="demo-root-1"></div>
+    </section>
+
+    <!-- Live Demo 2: Raw Steel Material Mass Balance Flow -->
+    <section class="demo-card">
+      <div class="demo-title">2. Raw Steel Material Mass Balance Flow (Metric Tonnes / Month)</div>
+      <div class="demo-desc">CRCA Steel Inflow &rarr; Blanking & Slitting &rarr; Stamping Press Lines &rarr; OEM Finished Body Panels vs. Scrap Metal Recovery.</div>
+      <div id="demo-root-2"></div>
+    </section>
+
+    <!-- Live Demo 3: Plant Water & Cooling Circuit -->
+    <section class="demo-card">
+      <div class="demo-title">3. Industrial Water Circuit & Recycling Balance (kL / Day)</div>
+      <div class="demo-desc">Water intake (MIDC Supply & Rainwater) &rarr; Water Treatment Plant &rarr; E-Coat CED, Cooling Towers, Domestic &rarr; ETP/STP Recycled Water.</div>
+      <div id="demo-root-3"></div>
+    </section>
+  </main>
+
+  <script type="text/babel">
+    const { useState, useMemo, useRef, useCallback } = React;
+
+    const VIZ_COLORS = [
+      '#2563eb', '#0d9488', '#d97706', '#7c3aed', '#db2777', '#4b5563', '#0284c7', '#16a34a'
+    ];
+
+    const PATTERN_PRESETS = [
+      { id: 'pat-diagonal', name: 'Diagonal Lines', transform: 'rotate(45 0 0)', strokeWidth: 1.5, stroke: 'rgba(255,255,255,0.35)' },
+      { id: 'pat-dots', name: 'Stippled Dots', type: 'circle', r: 1.2, fill: 'rgba(255,255,255,0.45)' },
+      { id: 'pat-cross', name: 'Crosshatch', strokeWidth: 1, stroke: 'rgba(255,255,255,0.35)' },
+      { id: 'pat-horizontal', name: 'Horizontal Stripe', strokeWidth: 1.5, stroke: 'rgba(255,255,255,0.35)' },
+      { id: 'pat-vertical', name: 'Vertical Stripe', strokeWidth: 1.5, stroke: 'rgba(255,255,255,0.35)' }
+    ];
+
+    function formatVizValue(val, unit = '', locale = 'en-IN') {
+      if (val == null || isNaN(val)) return '—';
+      const num = Number(val);
+      if (unit === '₹' || unit === 'INR') return '₹' + num.toLocaleString(locale);
+      if (unit === '%') return num.toFixed(1) + '%';
+      return num.toLocaleString(locale) + (unit ? ' ' + unit : '');
+    }
+
+    function computeSankeyLayout({ nodes: rawNodes = [], links: rawLinks = [], width = 760, height = 440, nodeWidth = 20, nodePadding = 18, align = 'justify' } = {}) {
+      if (!rawNodes || rawNodes.length === 0) return { nodes: [], links: [], stages: [] };
+      const nodeMap = new Map();
+      const nodes = rawNodes.map((n, idx) => {
+        const id = n.id !== undefined ? String(n.id) : 'node-' + idx;
+        const nodeObj = { ...n, id, label: n.label || n.name || id, category: n.category || n.label || id, inLinks: [], outLinks: [], inValue: 0, outValue: 0, value: 0, column: 0 };
+        nodeMap.set(id, nodeObj);
+        return nodeObj;
+      });
+
+      const links = [];
+      rawLinks.forEach((l, idx) => {
+        const sId = String(typeof l.source === 'object' ? l.source.id : l.source);
+        const tId = String(typeof l.target === 'object' ? l.target.id : l.target);
+        const sourceNode = nodeMap.get(sId);
+        const targetNode = nodeMap.get(tId);
+        const val = Math.max(0, Number(l.value) || 0);
+        if (sourceNode && targetNode && val > 0) {
+          const linkObj = { id: l.id || 'link-' + sId + '-' + tId + '-' + idx, source: sourceNode, target: targetNode, value: val, category: l.category || sourceNode.category };
+          sourceNode.outLinks.push(linkObj);
+          targetNode.inLinks.push(linkObj);
+          sourceNode.outValue += val;
+          targetNode.inValue += val;
+          links.push(linkObj);
+        }
+      });
+
+      nodes.forEach(n => { n.value = Math.max(n.inValue, n.outValue); });
+
+      let remaining = [...nodes];
+      let roots = remaining.filter(n => n.inLinks.length === 0);
+      if (roots.length === 0) roots = [remaining[0]];
+      roots.forEach(n => { n.column = 0; });
+      let maxCol = 0;
+
+      const visited = new Set(roots.map(n => n.id));
+      let queue = [...roots];
+      while (queue.length > 0) {
+        const curr = queue.shift();
+        curr.outLinks.forEach(link => {
+          const target = link.target;
+          target.column = Math.max(target.column, curr.column + 1);
+          if (target.column > maxCol) maxCol = target.column;
+          if (!visited.has(target.id)) { visited.add(target.id); queue.push(target); }
+        });
+      }
+
+      if (align === 'justify' && maxCol > 0) {
+        nodes.forEach(n => { if (n.outLinks.length === 0 && n.column < maxCol) n.column = maxCol; });
+      }
+
+      const stageColumns = [];
+      for (let c = 0; c <= maxCol; c++) stageColumns.push([]);
+      nodes.forEach(n => { stageColumns[n.column].push(n); });
+
+      let maxColVal = 0;
+      stageColumns.forEach(col => {
+        const sum = col.reduce((acc, n) => acc + n.value, 0);
+        if (sum > maxColVal) maxColVal = sum;
+      });
+
+      const availH = height - 40;
+      const maxNodesInCol = Math.max(1, ...stageColumns.map(c => c.length));
+      const ky = maxColVal > 0 ? (availH - (maxNodesInCol - 1) * nodePadding) / maxColVal : 1;
+
+      const colSpacing = maxCol > 0 ? (width - nodeWidth - 40) / maxCol : 0;
+      stageColumns.forEach((colNodes, colIdx) => {
+        const colX = 20 + colIdx * colSpacing;
+        const totalNodeH = colNodes.reduce((sum, n) => sum + Math.max(6, n.value * ky), 0);
+        const totalColH = totalNodeH + (colNodes.length - 1) * nodePadding;
+        let curY = 20 + Math.max(0, (availH - totalColH) / 2);
+        colNodes.forEach(n => {
+          n.x = colX;
+          n.y = curY;
+          n.width = nodeWidth;
+          n.height = Math.max(6, n.value * ky);
+          curY += n.height + nodePadding;
+        });
+      });
+
+      nodes.forEach(n => {
+        n.outLinks.sort((a, b) => a.target.y - b.target.y);
+        n.inLinks.sort((a, b) => a.source.y - b.source.y);
+      });
+
+      nodes.forEach(n => {
+        let sy = n.y;
+        n.outLinks.forEach(l => {
+          l.y0 = sy;
+          l.width = Math.max(1.5, l.value * ky);
+          sy += l.width;
+        });
+        let ty = n.y;
+        n.inLinks.forEach(l => {
+          l.y1 = ty;
+          if (!l.width) l.width = Math.max(1.5, l.value * ky);
+          ty += l.width;
+        });
+      });
+
+      return { nodes, links, stages: stageColumns, ky };
+    }
+
+    function createSankeyRibbonPath({ link, curvature = 0.5 }) {
+      if (!link || !link.source || !link.target) return '';
+      const x0 = link.source.x + link.source.width;
+      const x1 = link.target.x;
+      const y0 = link.y0;
+      const y1 = link.y1;
+      const w = link.width || 2;
+      const dx = Math.max(10, (x1 - x0) * curvature);
+      return `M ${x0} ${y0} C ${x0 + dx} ${y0}, ${x1 - dx} ${y1}, ${x1} ${y1} L ${x1} ${y1 + w} C ${x1 - dx} ${y1 + w}, ${x0 + dx} ${y0 + w}, ${x0} ${y0 + w} Z`;
+    }
+
+    function SankeyDiagram({ nodes: inputNodes, links: inputLinks, width = 760, height = 420, unit = '', locale = 'en-IN', title = '', subtitle = '' }) {
+      const [selectedId, setSelectedId] = useState(null);
+      const [hoveredItem, setHoveredItem] = useState(null);
+      const [showModal, setShowModal] = useState(false);
+      const containerRef = useRef(null);
+
+      const { nodes, links, stages } = useMemo(() => {
+        return computeSankeyLayout({ nodes: inputNodes, links: inputLinks, width, height });
+      }, [inputNodes, inputLinks, width, height]);
+
+      const categoryColorMap = useMemo(() => {
+        const map = new Map();
+        nodes.forEach((node, idx) => {
+          const cat = node.category || node.label || node.id;
+          if (!map.has(cat)) {
+            map.set(cat, { color: VIZ_COLORS[map.size % VIZ_COLORS.length], pattern: PATTERN_PRESETS[map.size % PATTERN_PRESETS.length] });
+          }
+        });
+        return map;
+      }, [nodes]);
+
+      const activePathSets = useMemo(() => {
+        const activeNodeIds = new Set();
+        const activeLinkIds = new Set();
+        const activeTarget = hoveredItem?.item || (selectedId ? (nodes.find(n => n.id === selectedId) || links.find(l => l.id === selectedId)) : null);
+
+        if (!activeTarget) return { nodeIds: activeNodeIds, linkIds: activeLinkIds, isActive: false };
+
+        if (activeTarget.source && activeTarget.target) {
+          activeLinkIds.add(activeTarget.id);
+          activeNodeIds.add(activeTarget.source.id);
+          activeNodeIds.add(activeTarget.target.id);
+        } else {
+          activeNodeIds.add(activeTarget.id);
+          const dq = [activeTarget];
+          while (dq.length > 0) {
+            const curr = dq.shift();
+            curr.outLinks?.forEach(l => {
+              activeLinkIds.add(l.id);
+              if (!activeNodeIds.has(l.target.id)) { activeNodeIds.add(l.target.id); dq.push(l.target); }
+            });
+          }
+          const uq = [activeTarget];
+          while (uq.length > 0) {
+            const curr = uq.shift();
+            curr.inLinks?.forEach(l => {
+              activeLinkIds.add(l.id);
+              if (!activeNodeIds.has(l.source.id)) { activeNodeIds.add(l.source.id); uq.push(l.source); }
+            });
+          }
+        }
+        return { nodeIds: activeNodeIds, linkIds: activeLinkIds, isActive: true };
+      }, [hoveredItem, selectedId, nodes, links]);
+
+      return (
+        <div style={{ position: 'relative', width, fontFamily: 'system-ui, sans-serif' }} ref={containerRef}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: 600, color: '#0f172a' }}>{title}</div>
+              <div style={{ fontSize: '12px', color: '#64748b' }}>{subtitle}</div>
+            </div>
+            <button
+              onClick={() => setShowModal(true)}
+              style={{ fontSize: '11px', fontWeight: 500, padding: '4px 8px', borderRadius: '4px', border: '1px solid #cbd5e1', background: '#ffffff', cursor: 'pointer' }}
+            >
+              Accessible Table (Alt+F11)
+            </button>
+          </div>
+
+          <svg width={width} height={height} style={{ display: 'block', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '6px', overflow: 'hidden' }}>
+            <defs>
+              {links.map(link => {
+                const sStyle = categoryColorMap.get(link.source.category || link.source.label) || { color: '#2563eb' };
+                const tStyle = categoryColorMap.get(link.target.category || link.target.label) || { color: '#0d9488' };
+                return (
+                  <linearGradient key={'grad-' + link.id} id={'grad-' + link.id} gradientUnits="userSpaceOnUse" x1={link.source.x + link.source.width} y1={0} x2={link.target.x} y2={0}>
+                    <stop offset="0%" stopColor={sStyle.color} stopOpacity={0.65} />
+                    <stop offset="100%" stopColor={tStyle.color} stopOpacity={0.65} />
+                  </linearGradient>
+                );
+              })}
+            </defs>
+
+            <g>
+              {links.map(link => {
+                const ribbonD = createSankeyRibbonPath({ link, curvature: 0.5 });
+                const isPathActive = activePathSets.linkIds.has(link.id);
+                const isDimmed = activePathSets.isActive && !isPathActive;
+                const isSelected = link.id === selectedId;
+
+                return (
+                  <path
+                    key={link.id}
+                    d={ribbonD}
+                    fill={`url(#grad-${link.id})`}
+                    stroke={isSelected ? '#0f172a' : (isPathActive ? 'rgba(15,23,42,0.4)' : 'rgba(255,255,255,0.2)')}
+                    strokeWidth={isSelected ? 1.5 : 0.5}
+                    opacity={isDimmed ? 0.12 : (isPathActive ? 0.9 : 0.55)}
+                    onClick={() => setSelectedId(link.id === selectedId ? null : link.id)}
+                    onMouseEnter={(e) => {
+                      const rect = containerRef.current?.getBoundingClientRect();
+                      setHoveredItem({ type: 'link', item: link, clientX: e.clientX - (rect?.left || 0), clientY: e.clientY - (rect?.top || 0) });
+                    }}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    style={{ cursor: 'pointer', transition: 'opacity 0.2s ease' }}
+                  />
+                );
+              })}
+
+              {nodes.map((node, index) => {
+                const isSelected = node.id === selectedId;
+                const isPathActive = activePathSets.nodeIds.has(node.id);
+                const isDimmed = activePathSets.isActive && !isPathActive;
+                const catStyle = categoryColorMap.get(node.category || node.label) || { color: VIZ_COLORS[index % VIZ_COLORS.length] };
+                const isLeft = node.column === 0;
+                const isRight = node.column === (stages.length - 1);
+
+                return (
+                  <g
+                    key={node.id}
+                    transform={`translate(${node.x}, ${node.y})`}
+                    onClick={() => setSelectedId(node.id === selectedId ? null : node.id)}
+                    onMouseEnter={(e) => {
+                      const rect = containerRef.current?.getBoundingClientRect();
+                      setHoveredItem({ type: 'node', item: node, clientX: e.clientX - (rect?.left || 0), clientY: e.clientY - (rect?.top || 0) });
+                    }}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <rect
+                      x={0}
+                      y={0}
+                      width={node.width}
+                      height={node.height}
+                      fill={catStyle.color}
+                      stroke={isSelected ? '#0f172a' : '#ffffff'}
+                      strokeWidth={isSelected ? 2 : 1}
+                      rx="3"
+                      opacity={isDimmed ? 0.3 : 1.0}
+                    />
+                    <text
+                      x={isRight ? -8 : (isLeft ? node.width + 8 : node.width / 2)}
+                      y={node.height / 2 + 4}
+                      textAnchor={isRight ? 'end' : (isLeft ? 'start' : 'middle')}
+                      fontSize="11px"
+                      fontWeight="600"
+                      fill="#0f172a"
+                      style={{ pointerEvents: 'none', paintOrder: 'stroke', stroke: 'rgba(255,255,255,0.85)', strokeWidth: 3 }}
+                    >
+                      {node.label}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          </svg>
+
+          {hoveredItem && (
+            <div style={{ position: 'absolute', left: Math.min(hoveredItem.clientX + 14, width - 210), top: Math.max(10, Math.min(hoveredItem.clientY - 20, height - 90)), background: '#0f172a', color: '#ffffff', padding: '8px 12px', borderRadius: '6px', fontSize: '11px', pointerEvents: 'none', zIndex: 60, boxShadow: '0 10px 15px -3px rgba(0,0,0,0.3)' }}>
+              {hoveredItem.type === 'link' ? (
+                <>
+                  <div style={{ fontWeight: 600, fontSize: '12px' }}>{hoveredItem.item.source.label} &rarr; {hoveredItem.item.target.label}</div>
+                  <div style={{ marginTop: '4px' }}>Flow: <strong style={{ color: '#38bdf8' }}>{formatVizValue(hoveredItem.item.value, unit, locale)}</strong></div>
+                  <div>% of {hoveredItem.item.source.label}: <strong>{((hoveredItem.item.value / hoveredItem.item.source.value) * 100).toFixed(1)}%</strong></div>
+                </>
+              ) : (
+                <>
+                  <div style={{ fontWeight: 600, fontSize: '12px' }}>{hoveredItem.item.label}</div>
+                  <div style={{ marginTop: '4px' }}>Net Flow: <strong style={{ color: '#38bdf8' }}>{formatVizValue(hoveredItem.item.value, unit, locale)}</strong></div>
+                </>
+              )}
+            </div>
+          )}
+
+          {showModal && (
+            <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(15, 23, 42, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '16px' }} onClick={() => setShowModal(false)}>
+              <div style={{ backgroundColor: '#ffffff', borderRadius: '8px', maxWidth: '640px', width: '100%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+                <div style={{ padding: '12px 16px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600 }}>Flow Data: {title}</h3>
+                  <button onClick={() => setShowModal(false)} style={{ border: 'none', background: 'transparent', fontSize: '18px', cursor: 'pointer' }}>&times;</button>
+                </div>
+                <div style={{ overflowY: 'auto', padding: '16px' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc', borderBottom: '2px solid #cbd5e1' }}>
+                        <th style={{ padding: '6px 8px', textAlign: 'left' }}>Source</th>
+                        <th style={{ padding: '6px 8px', textAlign: 'left' }}>Target</th>
+                        <th style={{ padding: '6px 8px', textAlign: 'right' }}>Transfer Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {links.map(l => (
+                        <tr key={l.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '6px 8px', fontWeight: 600 }}>{l.source.label}</td>
+                          <td style={{ padding: '6px 8px', fontWeight: 600 }}>{l.target.label}</td>
+                          <td style={{ padding: '6px 8px', textAlign: 'right' }}>{formatVizValue(l.value, unit, locale)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Dataset 1: Plant Electrical Energy Flow
+    const energyFlowData = {
+      nodes: [
+        { id: 'grid', label: 'Grid Power (33kV)', category: 'Grid' },
+        { id: 'solar', label: 'Rooftop Solar (1.2MW)', category: 'Solar' },
+        { id: 'substation', label: 'Main Substation Transformers', category: 'Substation' },
+        { id: 'press', label: 'Press Shop (Stamping)', category: 'Press Shop' },
+        { id: 'weld', label: 'Robotic Welding Cell', category: 'Welding' },
+        { id: 'paint', label: 'Paint & E-Coat Shop', category: 'Paint' },
+        { id: 'machining', label: 'CNC Toolroom', category: 'Machining' },
+        { id: 'useful', label: 'Useful Mechanical/Thermal Output', category: 'Output' },
+        { id: 'loss', label: 'Heat & Conversion Loss', category: 'Loss' }
+      ],
+      links: [
+        { source: 'grid', target: 'substation', value: 4100 },
+        { source: 'solar', target: 'substation', value: 1100 },
+        { source: 'substation', target: 'press', value: 1950 },
+        { source: 'substation', target: 'weld', value: 1400 },
+        { source: 'substation', target: 'paint', value: 1250 },
+        { source: 'substation', target: 'machining', value: 600 },
+        { source: 'press', target: 'useful', value: 1650 },
+        { source: 'press', target: 'loss', value: 300 },
+        { source: 'weld', target: 'useful', value: 1180 },
+        { source: 'weld', target: 'loss', value: 220 },
+        { source: 'paint', target: 'useful', value: 980 },
+        { source: 'paint', target: 'loss', value: 270 },
+        { source: 'machining', target: 'useful', value: 510 },
+        { source: 'machining', target: 'loss', value: 90 }
+      ]
+    };
+
+    // Dataset 2: Steel Mass Balance Flow
+    const steelMassData = {
+      nodes: [
+        { id: 'crca-coils', label: 'CRCA Steel Coils', category: 'Raw Material' },
+        { id: 'blanking', label: 'Blanking & Shearing Line', category: 'Blanking' },
+        { id: 'transfer-press', label: '800T Transfer Press Line', category: 'Pressing' },
+        { id: 'tandem-press', label: '400T Tandem Press Line', category: 'Pressing' },
+        { id: 'finished-panels', label: 'OEM Prime Body Panels', category: 'Finished' },
+        { id: 'scrap-recirc', label: 'Scrap Baling (Recycled)', category: 'Scrap' }
+      ],
+      links: [
+        { source: 'crca-coils', target: 'blanking', value: 1850 },
+        { source: 'blanking', target: 'transfer-press', value: 1150 },
+        { source: 'blanking', target: 'tandem-press', value: 520 },
+        { source: 'blanking', target: 'scrap-recirc', value: 180 },
+        { source: 'transfer-press', target: 'finished-panels', value: 960 },
+        { source: 'transfer-press', target: 'scrap-recirc', value: 190 },
+        { source: 'tandem-press', target: 'finished-panels', value: 440 },
+        { source: 'tandem-press', target: 'scrap-recirc', value: 80 }
+      ]
+    };
+
+    // Dataset 3: Plant Water Circuit Balance
+    const waterCircuitData = {
+      nodes: [
+        { id: 'midc-water', label: 'MIDC Water Supply', category: 'Intake' },
+        { id: 'rain-water', label: 'Rainwater Harvesting', category: 'Intake' },
+        { id: 'wtp', label: 'Water Treatment Plant (RO)', category: 'WTP' },
+        { id: 'ced-bath', label: 'CED Paint Bath', category: 'Process' },
+        { id: 'cooling-towers', label: 'Shop Cooling Towers', category: 'Process' },
+        { id: 'domestic-use', label: 'Plant Domestic / Canteen', category: 'Domestic' },
+        { id: 'etp-recycle', label: 'ETP Treated Water (Gardening/Flushing)', category: 'Recycle' },
+        { id: 'evap-loss', label: 'Evaporation / Consumptive Loss', category: 'Loss' }
+      ],
+      links: [
+        { source: 'midc-water', target: 'wtp', value: 240 },
+        { source: 'rain-water', target: 'wtp', value: 80 },
+        { source: 'wtp', target: 'ced-bath', value: 110 },
+        { source: 'wtp', target: 'cooling-towers', value: 150 },
+        { source: 'wtp', target: 'domestic-use', value: 60 },
+        { source: 'ced-bath', target: 'etp-recycle', value: 85 },
+        { source: 'ced-bath', target: 'evap-loss', value: 25 },
+        { source: 'cooling-towers', target: 'evap-loss', value: 110 },
+        { source: 'cooling-towers', target: 'etp-recycle', value: 40 },
+        { source: 'domestic-use', target: 'etp-recycle', value: 55 },
+        { source: 'domestic-use', target: 'evap-loss', value: 5 }
+      ]
+    };
+
+    ReactDOM.render(
+      <SankeyDiagram
+        nodes={energyFlowData.nodes}
+        links={energyFlowData.links}
+        unit="kWh"
+        title="Suryodaya Autocomp · Plant Electrical Energy Balance (PL-04)"
+        subtitle="Hourly transformation from grid & solar intake to mechanical work vs. losses"
+        width={760}
+        height={420}
+      />,
+      document.getElementById('demo-root-1')
+    );
+
+    ReactDOM.render(
+      <SankeyDiagram
+        nodes={steelMassData.nodes}
+        links={steelMassData.links}
+        unit="MT"
+        title="Raw Steel Material Mass Balance Flow"
+        subtitle="Monthly raw coil input through blanking and stamping to OEM finished panels vs. scrap"
+        width={760}
+        height={380}
+      />,
+      document.getElementById('demo-root-2')
+    );
+
+    ReactDOM.render(
+      <SankeyDiagram
+        nodes={waterCircuitData.nodes}
+        links={waterCircuitData.links}
+        unit="kL"
+        title="Industrial Water Circuit & Recycling Balance"
+        subtitle="Daily water intake, process distribution (CED, cooling towers) and ETP recovery"
+        width={760}
+        height={380}
+      />,
+      document.getElementById('demo-root-3')
+    );
+  </script>
+</body>
+</html>

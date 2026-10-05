@@ -1,0 +1,387 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="Switch" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Switch — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+td.num,th.num{text-align:right;font-family:var(--font-mono)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:5px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.rows{display:flex;flex-direction:column;gap:10px}
+.settingrow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:var(--border-hairline)}
+.grey{filter:grayscale(1)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Switch, Checkbox, CheckboxGroup, Button, Field, Icon, Badge } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows,numCols=[]}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i} className={numCols.includes(i)?'num':''}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={(j===0?'k ':'')+(numCols.includes(j)?'num':'')}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Settings(){
+  const [hold,setHold] = React.useState(true);
+  const [page,setPage] = React.useState(false);
+  return (
+    <div className="rows" style={{width:420}}>
+      <Switch label="Auto-hold on fault" description="Holds the work order when a fault stops the line."
+        checked={hold} onChange={(e) => setHold(e.target.checked)} />
+      <Switch label="Page maintenance on faults" description="Routes to the on-call rotation."
+        checked={page} onChange={(e) => setPage(e.target.checked)} />
+    </div>
+  );
+}
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>Switch</h1>
+    <p className="lede">A setting that takes effect the moment it is flipped. That single sentence decides everything: there is no save button, so the flip is a write; there is no cancel, so a destructive setting does not belong here; and the label must name a state rather than an action, because the control already is the action.</p>
+    <div className="meta">
+      <span>components/forms/Switch.jsx</span><span>window.MeridianDesignSystem_962c43.Switch</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 1 open items</span><span>since: 1.0.0 · revised 1.2.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Immediate. Everything else follows from that.">
+    <p>A Switch turns something on or off now. It belongs on settings surfaces, in panel headers and in row-level controls — anywhere the result is visible without a submit. If the user would expect to press Save afterwards, the control is a <code>Checkbox</code>, and choosing wrongly between the two is the most common mistake in this pair.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Flip a setting that applies immediately','Switch','This component.'],
+      ['Set a boolean that applies on save','Checkbox','A checkbox implies a pending form; a switch implies a live system.'],
+      ['Several booleans under one question','CheckboxGroup','A set is answered together, then saved.'],
+      ['One of several options','RadioGroup','A switch has one option and two states — not two options.'],
+      ['Run something once','Button','A switch stores state; an action does not.'],
+      ['Show whether something IS on, read-only','Badge, or text','Never a disabled switch as a status light (§06).'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> for live settings: auto-hold, paging, live-follow, feature flags, notification routing.</li>
+      <li><strong>Do not use</strong> in a form with a Save button. Two save models on one surface means nobody knows which controls have taken effect.</li>
+      <li><strong>Do not use</strong> for anything destructive or expensive. There is no confirm step; if the flip needs one, it is a Button that opens a Dialog.</li>
+      <li><strong>Do not use</strong> as an indicator. A switch is an input, and a disabled one still reads as “you may be able to change this”.</li>
+    </ul>
+    <div className="demo">
+      <Settings />
+      <div className="rows" style={{width:220}}>
+        <Checkbox label="Email a weekly digest" description="Applied when you save." />
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Track, knob, label, description — and a knob that carries a hairline.">
+    <div className="demo"><Switch label="Auto-hold on fault" description="Holds the work order when a fault stops the line." defaultChecked /></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Track</strong> — 34 × 20 px at md, fully rounded (<code>--radius-pill</code>). Grey when off, action blue when on: the colour is the state, and the knob position confirms it.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Track border</strong> — <code>--switch-border</code>. The off track is only 1.60:1 against a card, so the border is what identifies the control: <code>--border-control</code> at 4.74:1, retargeted from <code>--surface-track</code> in 1.2.0 (§08).</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Knob</strong> — 16 px circle, <code>--switch-knob</code>, with <code>--switch-knob-shadow</code>. Off, it carries a 1 px <code>--switch-knob-border</code> hairline, because white on a grey track is 1.60:1; on, it sits on action blue at 6.98:1 and needs none.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Label</strong> — 13 px primary, 12 px gap from the track (wider than a checkbox's 8 px: the track is a wider object and needs the air). Inside the <code>&lt;label&gt;</code>, so it is the name and part of the target.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Description</strong> — 12 px tertiary, indented to the label text, <em>outside</em> the label and linked with <code>aria-describedby</code>. On a switch this line states what happens when it is on (§13).</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>Target</strong> — the label row is at least <code>--control-h-sm</code> tall. The 20 px track is never the target.</span></div>
+      <div className="callout"><span className="cnum">7</span><span><strong>Hidden input</strong> — <code>&lt;input type="checkbox" role="switch"&gt;</code>: a real checkbox for the keyboard and the form, with the switch role so it announces “on”/“off” instead of “checked”.</span></div>
+    </div>
+    <T cols={['Region','Value (md)','Token']} rows={[
+      ['Track','34 × 20 px','--radius-pill'],
+      ['Knob','16 px','--switch-knob · --switch-knob-shadow'],
+      ['Knob travel','14 px','—'],
+      ['Gap track → label','12 px','--space-3'],
+      ['Description indent','46 px (track + gap)','—'],
+      ['Target row','28 comfortable / 24 compact / 34 expanded','--control-h-sm'],
+      ['Focus','3 px ring','--input-focus-ring'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Six props. No tone, no loading, no confirm.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['label',<span className="t">ReactNode</span>,'—','The accessible name, phrased as the ON state. Warns if there is no label and no aria-label.'],
+      ['description',<span className="t">ReactNode</span>,'—','What happens while it is on. Announced as the description.'],
+      ['checked',<span className="t">boolean</span>,<span className="t">false</span>,'With onChange the control is controlled; without it, this seeds the initial state.'],
+      ['size',<span className="t">'sm' | 'md'</span>,<span className="t">'md'</span>,'28×16 or 34×20. §05.'],
+      ['disabled',<span className="t">boolean</span>,<span className="t">false</span>,'Reserved for a setting that is genuinely unavailable — not for read-only status.'],
+      ['onChange',<span className="t">(e) => void</span>,'—','Read e.target.checked. This is where the write happens.'],
+      ['style',<span className="t">CSSProperties</span>,'—','Layout only, on the outer wrapper.'],
+      ['…rest',<span className="t">InputHTMLAttributes</span>,'—','name, value, aria-label, aria-describedby, data-*.'],
+    ]}/>
+    <p><strong>There is no <code>loading</code> or pending state</strong>, and that is a real decision rather than an omission. A switch whose write is slow enough to need a spinner is a switch that can fail, and a failure needs a message — which is a <code>Toast</code> plus reverting <code>checked</code>, not a third visual state inside a 20 px track. Keep the control optimistic and handle the failure at surface level (§14).</p>
+    <p><strong>There is no tone.</strong> A red switch would mean the ON state is dangerous, which is exactly the case that should not be a switch at all.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="No variant prop. Three placements.">
+    <T cols={['Placement','Shape','Note']} rows={[
+      ['Settings list','label + description, md','The default. One switch per row, description carrying the consequence.'],
+      ['Settings row, justified','label left, switch right','Use a row layout and put the Switch at the end — the pattern below. The label is still the switch\u2019s own label.'],
+      ['Toolbar / panel header','size="sm", aria-label only','"Follow live data" beside a chart. No visible label, so the name must be passed.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="list"><Settings /></Row>
+      <Row label="justified">
+        <div style={{width:420}}>
+          <div className="settingrow"><span>Auto-hold on fault</span><Switch aria-label="Auto-hold on fault" defaultChecked /></div>
+          <div className="settingrow" style={{borderBottom:'none'}}><span>Page maintenance on faults</span><Switch aria-label="Page maintenance on faults" /></div>
+        </div>
+      </Row>
+      <Row label="toolbar"><span style={{display:'inline-flex',alignItems:'center',gap:12,padding:'6px 12px',border:'var(--border-hairline)',borderRadius:'var(--radius-sm)'}}><span style={{fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>Line 3 · OEE</span><Switch size="sm" aria-label="Follow live data" defaultChecked /></span></Row>
+    </div>
+    <p><strong>In the justified row the visible text is not a <code>&lt;label&gt;</code></strong>, so the switch needs <code>aria-label</code> with the same words. Two names would be worse than one: never give it both a visible label and a different <code>aria-label</code>.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two, and no lg.">
+    <T cols={['size','Track','Knob','Travel','Use']} numCols={[]} rows={[
+      ['sm','28 × 16 px','12 px','12 px','Toolbars, panel headers, table rows — beside 12 px text.'],
+      ['md','34 × 20 px','16 px','14 px','Default. Settings lists and forms.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="sm"><Switch size="sm" label="Follow live data" defaultChecked /></Row>
+      <Row label="md"><Switch size="md" label="Follow live data" defaultChecked /></Row>
+    </div>
+    <p><strong>There is no <code>lg</code>.</strong> A switch is already the widest binary control in the system; scaling it up makes a settings page look like a phone. Touch surfaces get their headroom from density instead — the target row grows to 34 px under <code>expanded</code> while the track stays 34 × 20.</p>
+    <T cols={['Density','Target row','Track']} numCols={[1,2]} rows={[
+      ['compact','24 px','unchanged'],
+      ['comfortable','28 px','unchanged'],
+      ['expanded','34 px','unchanged'],
+    ]}/>
+  </Sec>
+
+  <Sec n="06" title="States" note="Seven. Two of them were wrong before 1.2.0.">
+    <T cols={['State','Track / knob','Notes']} rows={[
+      ['Off','--switch-track grey, --switch-border (4.74:1), knob left with its own hairline','The border identifies the control; the hairline keeps the white knob visible on grey.'],
+      ['Off hover','--switch-border-hover (7.78:1)','New in 1.2.0. Border only — a track that tints on hover reads as half-on.'],
+      ['On','--switch-track-checked (action), knob right, no knob border','White on action blue is 6.98:1.'],
+      ['On hover','--switch-track-checked-hover (action 700)','Track and border deepen together, matching Button primary.'],
+      ['Focus visible','3 px --input-focus-ring on the track','Gated on :focus-visible.'],
+      ['Disabled off','--switch-track-disabled, --switch-border-disabled, knob in --switch-knob-disabled','Plainly inert.'],
+      ['Disabled on','disabled track, knob right in --switch-knob-disabled','Fixed in 1.2.0: the knob stayed white on the disabled grey track — 1.15:1, effectively invisible — so the ON state had to be read from a gap rather than a knob. It is now --text-disabled at 2.27:1. The track stays disabled-grey in both states, deliberately: an inert control should not carry the action colour.'],
+    ]}/>
+    <div className="demo">
+      <div className="rows" style={{width:200}}>
+        <Switch label="Off" />
+        <Switch label="On" defaultChecked />
+      </div>
+      <div className="rows" style={{width:240}}>
+        <Switch label="Disabled, off" disabled />
+        <Switch label="Disabled, on" disabled checked />
+        <Switch label="Disabled with description" description="Locked by the plant policy." disabled checked />
+      </div>
+    </div>
+    <div className="demo col">
+      <Row label="greyscale"><span className="grey" style={{display:'inline-flex',gap:24}}><Switch label="Off" /><Switch label="On" defaultChecked /></span></Row>
+    </div>
+    <p className="warn"><strong>Never a disabled switch as a status light.</strong> A greyed switch says “this control exists but you cannot use it”, not “this feature is on”. If the state is read-only, print it — a <code>Badge</code>, or text. And if the reason for disabling matters, say it in the description, because a disabled control cannot be focused and its reason is never announced.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="A checkbox underneath, so Space toggles.">
+    <T cols={['Key','Behaviour','Note']} rows={[
+      ['Tab / Shift-Tab','Focuses. Each switch is its own tab stop.','Switches are independent by nature — there is no group construct for them.'],
+      ['Space','Toggles, and the setting applies immediately.','The write happens on keypress. That is the contract, not a risk to mitigate with a confirm.'],
+      ['Enter','Submits the form, if there is one.','A settings surface usually has none, so Enter does nothing.'],
+      ['Click on the label','Toggles.','The description sits outside the label and does not toggle, so a long consequence line stays selectable.'],
+      ['Arrow keys','Nothing.','Some platforms use ← → on a switch; on the web the role is checkbox-based, and adding arrows would diverge from every other control here.'],
+    ]}/>
+    <ul>
+      <li><strong>Space is a live write.</strong> Nothing in this component debounces or confirms it, so the handler must be safe to call repeatedly — a keyboard user will hit Space twice to see what happens.</li>
+      <li><strong>Do not intercept Space</strong> to open a confirm dialog. If a confirm is needed the control is wrong (§01).</li>
+      <li><strong>Never remove the focus ring on a switch in a toolbar.</strong> With <code>aria-label</code> and no visible text, the ring is the only thing that tells a keyboard user where they are.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="The role, the boundary, and the knob.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Role & name','<input type="checkbox" role="switch"> in a <label>: announced as "switch, on"/"switch, off" rather than "checkbox, checked", which matches what the control looks like. Warns when unnamed.'],
+      ['Control boundary (1.4.11)','Resolved in 1.2.0. --switch-border was --surface-track — the same colour as the fill, so the control had no boundary and the off track measured 1.60:1 against a card. It is now --border-control: 4.74:1 on a card, 4.46:1 on the page band, 6.96:1 in dark. Hover 7.78:1.'],
+      ['State indication (1.4.11)','Two cues, not one: knob POSITION plus track colour. In greyscale the position still reads, which is the test in §06.'],
+      ['Knob contrast','Off, the white knob on the grey track is only 1.60:1, so it carries a 1 px --switch-knob-border hairline at 4.74:1. On, it sits on action blue at 6.98:1 and the hairline is dropped — a border there would read as a ring inside the fill.'],
+      ['Disabled state legibility','A disabled switch keeps the knob position as its state cue, and the knob is now --switch-knob-disabled (2.27:1 on the disabled track). Before 1.2.0 it stayed white at 1.15:1 — legal under the disabled exemption, but the ON state had to be read from the gap beside the knob rather than the knob itself. The track is disabled-grey in both states by design: an inert control does not carry the action colour.'],
+      ['Description (1.3.1)','description sits outside the label with an id, referenced by aria-describedby. Inside the label it became part of the NAME, so the control announced label + consequence as one long name.'],
+      ['Focus (2.4.7)','3 px --input-focus-ring, :focus-visible-gated. Critical for a toolbar switch with no visible label.'],
+      ['Target size (2.5.8)','The label row is at least --control-h-sm (28 / 24 / 34 px). The 20 px track alone would fail.'],
+      ['Status vs control (4.1.2)','A switch is an input. Read-only state uses a Badge or text, never a disabled switch (§06).'],
+      ['Change of context (3.2.2)','The flip may change data on screen, but it must not navigate, open a dialog, or move focus. A switch that changes context on toggle is a 3.2.2 failure.'],
+      ['Reduced motion','A 140 ms knob translate and colour change. Under prefers-reduced-motion the browser-level policy applies; there is nothing large enough to need a bespoke rule.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="wrong"><span style={{display:'inline-flex',alignItems:'center',gap:12}}><Switch aria-label="Retention locked on" disabled checked /><span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>a disabled switch used as a status light</span></span></Row>
+      <Row label="right"><span style={{display:'inline-flex',alignItems:'center',gap:12}}><Badge tone="success">On</Badge><span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>read-only state, stated as state</span></span></Row>
+    </div>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="One 140 ms translate. It is the only moving part in the system.">
+    <T cols={['Change','Duration','Easing','Property']} rows={[
+      ['Knob position','140 ms','--ease-out','transform: translateX'],
+      ['Track colour','140 ms','--ease-out','background-color'],
+      ['Border colour','140 ms','--ease-out','border-color'],
+      ['Focus ring','140 ms','--ease-out','box-shadow'],
+      ['Knob size','—','—','never — no squash, no stretch'],
+    ]}/>
+    <ul>
+      <li><strong>The knob is the one thing in Meridian that travels</strong>, and it earns it: the movement <em>is</em> the state change, in the same 140 ms as every colour transition, so a settings list of switches settles together.</li>
+      <li><strong><code>transform</code>, not <code>left</code>.</strong> Fixed in 1.2.0 — animating <code>left</code> triggers layout on every frame and breaks the system rule that only opacity, transform, colour and shadow are animated.</li>
+      <li><strong>No overshoot, no spring.</strong> A bouncing knob suggests the setting is still settling, when the write has already happened.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="Name the state, never the action.">
+    <T cols={['Slot','Job','Write','Not']} rows={[
+      ['Label','The thing, phrased as its ON state','Auto-hold on fault','Enable auto-hold · Turn on auto-hold · Auto-hold?'],
+      ['Description','What happens while it is on','Holds the work order when a fault stops the line.','Toggle this setting'],
+      ['Toolbar aria-label','The same words the row would have shown','Follow live data','Live · Toggle'],
+      ['Disabled reason','Where the lock comes from','Locked by the plant policy.','Not available'],
+    ]}/>
+    <ul>
+      <li><strong>“Enable X” is always wrong.</strong> The switch is the enabling; the label names what is enabled. “Enable auto-hold” read with the state becomes “enable auto-hold, off”, which takes a moment to parse.</li>
+      <li><strong>No On/Off text beside the track.</strong> The track colour and knob position say it, and a redundant word doubles what has to change on every flip.</li>
+      <li><strong>Never a question.</strong> “Auto-hold on fault?” implies an answer to submit.</li>
+      <li><strong>Never a negative.</strong> “Suppress paging” switched on means paging is off — the same double negative banned on Checkbox.</li>
+      <li><strong>The description says what happens while ON</strong>, in the present tense, not what the switch does.</li>
+      <li><strong>Keep labels to one line.</strong> A settings list is scanned down the left edge.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="One per row, and the track never moves to the left on mobile.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','One switch per row, full width, expanded density (34 px rows). Keep the track on the LEFT with the label beside it — the justified pattern puts a 34 px target at the far edge of a phone, where it is hardest to reach.'],
+      ['tablet ≥ 600','Either layout. Justified rows work from here, where the row is short enough that label and control are read as one line.'],
+      ['desktop ≥ 1024','As authored. Settings lists usually justify: label left, switch right, hairline between rows.'],
+      ['ultrawide ≥ 1600','Keep the settings list inside --measure-narrow. A justified row 900 px wide separates the label from the control it names.'],
+    ]}/>
+    <div className="demo col" style={{maxWidth:320}}>
+      <Switch label="Page maintenance on faults" description="Routes to the on-call rotation, day or night." />
+      <Switch label="Auto-hold on fault" description="Holds the work order when a fault stops the line." defaultChecked />
+    </div>
+    <ul>
+      <li><strong>The description indents to the label text</strong> (track width + 12 px), so it aligns under the label at every width.</li>
+      <li><strong>Do not stack switches in two columns.</strong> Each one is an independent live write; a grid invites mis-taps on the neighbour.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Use it only where the flip applies immediately.</li>
+        <li>Label the state, not the action.</li>
+        <li>Put the consequence in <code>description</code>.</li>
+        <li>Persist on change, and revert on failure with a Toast.</li>
+        <li><code>aria-label</code> for a toolbar switch.</li>
+        <li>State read-only status as a Badge.</li>
+        <li>Keep the handler safe to call twice.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>A Switch in a form with a Save button.</li>
+        <li>“Enable …” as the label.</li>
+        <li>On/Off text beside the track.</li>
+        <li>A disabled switch as a status light.</li>
+        <li>A confirm dialog on toggle.</li>
+        <li>A destructive setting behind a switch.</li>
+        <li>A spinner inside the track.</li>
+        <li>Two switches for a one-of-two choice.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this component invites.</strong> A Switch on a form that also has a Save button. Half the controls on the surface have already taken effect and half have not, and nothing on screen says which — so the operator presses Save expecting it to apply everything, or navigates away believing nothing was written. If a surface has a Save button, every control on it is a Checkbox.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="What ships, and the four defects closed in 1.2.0.">
+    <ul>
+      <li><strong><code>&lt;input type="checkbox" role="switch"&gt;</code>, hidden inside a <code>&lt;label&gt;</code></strong>, with the track and knob as sibling spans. A real checkbox gives the keyboard, the form value and the toggling; the role changes only how it is announced.</li>
+      <li><strong>The knob moves with <code>transform: translateX</code></strong> — <code>md</code> travels 14 px, <code>sm</code> 12 px, computed from the track and knob sizes. It animated <code>left</code> before 1.2.0, which triggers layout every frame and breaks the system's rule that only opacity, transform, colour and shadow are animated.</li>
+      <li><strong>The knob carries a hairline only when off.</strong> White on the grey track is 1.60:1; on the action fill it is 6.98:1, so the border is dropped when checked rather than kept for symmetry — a hairline inside the blue fill reads as a second ring.</li>
+      <li><strong>The disabled knob is visible.</strong> It keeps its position — the primary state cue — and now takes <code>--switch-knob-disabled</code> at 2.27:1 on the disabled track; it was white at 1.15:1, so a locked-on switch was read from the gap beside the knob rather than the knob itself. The track stays <code>--switch-track-disabled</code> whether on or off: an inert control should not paint itself in the action colour.</li>
+      <li><strong>The description moved out of the label</strong> and is linked with <code>aria-describedby</code> from a <code>useId</code> id, indented to the label text (track + 12 px).</li>
+      <li><strong>Hover is border-only when off</strong>, and track + border together when on. A grey track that tints on hover reads as half-on.</li>
+      <li><strong>The focus ring is <code>:focus-visible</code>-gated</strong>, and the target row is <code>--control-h-sm</code>.</li>
+      <li><strong>One console warning:</strong> no accessible name. Rendering is unaffected.</li>
+      <li><strong>Five new tokens</strong> in 1.2.0: <code>--switch-track-checked-hover</code>, <code>--switch-border-hover</code>, <code>--switch-border-checked-hover</code>, <code>--switch-knob-border</code>, <code>--switch-knob-disabled</code>. <code>--switch-border</code> was retargeted from <code>--surface-track</code> to <code>--border-control</code>.</li>
+      <li><strong>Tokens consumed:</strong></li>
+    </ul>
+    <div className="tokenlist">
+      <span>--switch-track</span><span>--switch-track-checked</span><span>--switch-track-checked-hover</span><span>--switch-track-disabled</span><span>--switch-border</span><span>--switch-border-hover</span><span>--switch-border-checked</span><span>--switch-border-checked-hover</span><span>--switch-border-disabled</span><span>--switch-knob</span><span>--switch-knob-border</span><span>--switch-knob-disabled</span><span>--switch-knob-shadow</span><span>--radius-pill</span><span>--input-focus-ring (borrowed)</span><span>--control-h-sm (target)</span><span>--space-3</span><span>--text-sm · --text-xs</span><span>--leading-snug</span><span>--duration-fast · --ease-out</span>
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { Switch } from '@meridian/ds';
+
+// the flip IS the write — optimistic, with a revert on failure
+const [hold, setHold] = React.useState(settings.autoHold);
+
+async function toggleHold(next) {
+  setHold(next);                       // optimistic
+  try {
+    await api.setAutoHold(next);
+  } catch (e) {
+    setHold(!next);                    // revert
+    toast.critical('Could not save auto-hold. Try again.');
+  }
+}
+
+<Switch label="Auto-hold on fault"
+  description="Holds the work order when a fault stops the line."
+  checked={hold} onChange={(e) => toggleHold(e.target.checked)} />
+
+// a toolbar switch has no visible label, so name it
+<Switch size="sm" aria-label="Follow live data" checked={live}
+  onChange={(e) => setLive(e.target.checked)} />
+
+// locked by policy: say why, and keep the state truthful
+<Switch label="Retain raw samples" description="Locked by the plant policy."
+  disabled checked />`}</pre>
+    <ul>
+      <li><strong>Optimistic, then revert.</strong> This is the whole integration pattern: set state immediately, write, and on failure put it back and raise a <code>Toast</code>. It is why the component has no pending state (§03) — the surface owns the failure, because only the surface can explain it.</li>
+      <li><strong>The handler must be idempotent-safe.</strong> Space twice, or a double click, fires twice; debounce in the caller if the endpoint cannot take it.</li>
+      <li><strong>Never navigate or open a dialog on toggle</strong> (3.2.2). Data on screen may change; context may not.</li>
+      <li><strong>Testing.</strong> <code>getByRole('switch', {'{ name: /auto-hold on fault/i }'})</code> — the role is the point, so assert it rather than <code>checkbox</code>. Assert <code>aria-checked</code> flips, that <code>onChange</code> fires on Space, and that a disabled ON switch renders its knob at the end of its travel in <code>--switch-knob-disabled</code>. Assert the description is in <code>aria-describedby</code> and NOT in the accessible name.</li>
+      <li><strong>Lint.</strong> Flag a <code>Switch</code> on a surface that also renders a submit <code>Button</code>, a label starting with “Enable”/“Turn on”, a <code>disabled</code> <code>Switch</code> with no <code>description</code>, and a bare <code>&lt;input role="switch"&gt;</code>.</li>
+      <li><strong>Frozen 4 Sep 2026.</strong> API closed: <code>label</code>, <code>description</code>, <code>checked</code>, <code>size</code>, <code>disabled</code>, <code>onChange</code>, <code>style</code>, plus native input attributes.</li>
+      <li><strong>Breaking, visual:</strong> every off switch gains a real boundary and a knob hairline, and a disabled switch's knob is now visible against its track. A Switch with a <code>description</code> renders a wrapper <code>&lt;span&gt;</code> with the description outside the label. Pull <code>styles.css</code> and <code>_ds_bundle.js</code> together.</li>
+      <li><strong>Closed as decided — no pending/loading state.</strong> Optimistic plus revert is the pattern; a spinner in a 20 px track cannot carry a failure message (§03).</li>
+      <li><strong>Closed as decided — no <code>lg</code>, and no On/Off text.</strong> Density gives touch headroom; the track already says the state.</li>
+      <li><strong>Open — no <code>SwitchGroup</code>, and none is planned.</strong> Switches are independent live writes with no shared question, so the <code>fieldset</code>/<code>legend</code> scaffolding that <code>CheckboxGroup</code> and <code>RadioGroup</code> need does not apply: a settings list is a list of headings and rows, which is a surface pattern, not a form control. If a set of switches ever does answer one question, that set wanted checkboxes and a Save button.</li>
+      <li><strong>Closed in 1.19.0 — <code>tokens.json</code> regenerated.</strong> still outstanding from the Input, Checkbox, Radio and now Switch freezes. Run <code>npm run build-tokens</code> before release. The Input, Checkbox, Radio and Switch tokens are all in the mirror.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

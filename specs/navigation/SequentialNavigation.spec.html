@@ -1,0 +1,524 @@
+<!-- @dsCard group="Specs · Navigation" viewport="1120x760" name="Sequential Navigation" subtitle="Ordered Sequence Navigation System — adjacent step transitions, contextual title previews, boundary termination, and deterministic progression" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Sequential Navigation — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:68ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:74ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:76ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-direction:column;gap:16px}
+.demo-row{display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:120px;padding-top:6px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.badge-tier{display:inline-block;padding:2px 8px;font-family:var(--font-mono);font-size:var(--text-2xs);letter-spacing:var(--tracking-caps);text-transform:uppercase;border-radius:var(--radius-full);background:var(--status-info-soft);color:var(--status-info-solid)}
+
+/* Mock Sequential Styles */
+.mock-seq-card-container{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%}
+.mock-seq-card{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 18px;display:flex;flex-direction:column;gap:4px;text-decoration:none;cursor:pointer;transition:border-color 0.15s ease,box-shadow 0.15s ease,transform 0.15s ease}
+.mock-seq-card:hover:not(.disabled){border-color:var(--border-focus);box-shadow:var(--shadow-sm);transform:translateY(-1px)}
+.mock-seq-card.disabled{opacity:0.4;cursor:not-allowed;pointer-events:none}
+.mock-seq-dir{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);display:flex;align-items:center;gap:6px}
+.mock-seq-title{font-size:var(--text-sm);font-weight:var(--weight-semibold);color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mock-seq-sub{font-size:var(--text-xs);color:var(--text-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mock-seq-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);width:100%}
+.mock-seq-progress-track{flex:1;height:4px;background:var(--surface-sunken);border-radius:var(--radius-full);margin:0 20px;overflow:hidden;position:relative}
+.mock-seq-progress-fill{height:100%;background:var(--action-solid);border-radius:var(--radius-full);transition:width 0.24s cubic-bezier(0,0,0.2,1)}
+
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.mock-seq-card-container{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Button, IconButton, Badge, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section id={`sec-${n}`}>
+    <div className="sec-head">
+      <span className="num">§{n}</span>
+      <h2>{title}</h2>
+      {note && <div className="sec-note">{note}</div>}
+    </div>
+    <div className="body">{children}</div>
+  </section>
+);
+
+const SOP_SEQUENCE = [
+  { id: 'SOP-01', title: 'Pre-flight Safety Interlocks & E-Stop Test', sub: 'Chakan PL-04 Press Shop · Line 1', duration: '5 min' },
+  { id: 'SOP-02', title: 'Hydraulic Oil Level & Viscosity Check', sub: 'Reservoir Tank R-02 (ISO VG 68)', duration: '8 min' },
+  { id: 'SOP-03', title: 'Die Bed Alignment & Bolster Clamping', sub: 'Lower Bolster Platen · 500T Press', duration: '12 min' },
+  { id: 'SOP-04', title: 'Pressure Relief Valve Calibration', sub: 'Main Cylinder Relief (280 bar)', duration: '10 min' },
+  { id: 'SOP-05', title: 'Blank Holder Cushion Stroke Setup', sub: 'Nitrogen Gas Spring Cushion Unit', duration: '15 min' },
+  { id: 'SOP-06', title: 'Part Lubrication Reservoir & Spray Nozzles', sub: 'Deep Draw Emulsion Fluid Tank', duration: '6 min' },
+  { id: 'SOP-07', title: 'Trial Cycle & Micro-inch Jog Verification', sub: 'Single Stamping Stroke Verification', duration: '10 min' },
+  { id: 'SOP-08', title: 'Full Auto Production Handover & Sign-off', sub: 'Shift Incharge: Sandeep Kulkarni', duration: '4 min' },
+];
+
+function InteractiveSequentialDemo() {
+  const [currentIndex, setCurrentIndex] = React.useState(2); // Die Bed Alignment
+  const [variant, setVariant] = React.useState('preview-cards'); // preview-cards | standard-bar | progress-strip | single-direction
+  const [allowWrap, setAllowWrap] = React.useState(false);
+
+  const total = SOP_SEQUENCE.length;
+  const currentStep = SOP_SEQUENCE[currentIndex];
+  const prevStep = currentIndex > 0 ? SOP_SEQUENCE[currentIndex - 1] : (allowWrap ? SOP_SEQUENCE[total - 1] : null);
+  const nextStep = currentIndex < total - 1 ? SOP_SEQUENCE[currentIndex + 1] : (allowWrap ? SOP_SEQUENCE[0] : null);
+
+  const handlePrev = () => {
+    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
+    else if (allowWrap) setCurrentIndex(total - 1);
+  };
+
+  const handleNext = () => {
+    if (currentIndex < total - 1) setCurrentIndex(currentIndex + 1);
+    else if (allowWrap) setCurrentIndex(0);
+  };
+
+  const pct = Math.round(((currentIndex + 1) / total) * 100);
+
+  return (
+    <div className="demo">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px',borderBottom:'var(--border-hairline)',paddingBottom:'12px'}}>
+        <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
+          <span className="eyebrow">Interactive Rig</span>
+          <Badge tone="info">SOP-MCH-042</Badge>
+          <span style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+            Step {currentIndex + 1} of {total} ({pct}%)
+          </span>
+        </div>
+        <div style={{display:'flex',gap:'12px',alignItems:'center'}}>
+          <label style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-2xs)',display:'flex',alignItems:'center',gap:'6px',cursor:'pointer'}}>
+            <input type="checkbox" checked={allowWrap} onChange={e => setAllowWrap(e.target.checked)} />
+            Circular Wrapping
+          </label>
+          <div style={{display:'flex',gap:'4px'}}>
+            {['preview-cards', 'standard-bar', 'progress-strip', 'single-direction'].map(v => (
+              <button
+                key={v}
+                onClick={() => setVariant(v)}
+                style={{
+                  padding:'4px 8px',
+                  borderRadius:'var(--radius-xs)',
+                  border:'var(--border-hairline)',
+                  background: variant === v ? 'var(--action-solid)' : 'var(--surface-card)',
+                  color: variant === v ? '#fff' : 'var(--text-secondary)',
+                  fontFamily:'var(--font-mono)',
+                  fontSize:'var(--text-2xs)',
+                  cursor:'pointer'
+                }}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Current Step Content Simulation */}
+      <div style={{background:'var(--surface-sunken)',padding:'18px 20px',borderRadius:'var(--radius-md)',border:'var(--border-subtle)',display:'flex',flexDirection:'column',gap:'8px'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <span style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>
+            CURRENT SEQUENCE ITEM · {currentStep.id}
+          </span>
+          <span style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-2xs)',color:'var(--text-tertiary)'}}>
+            Est. Duration: {currentStep.duration}
+          </span>
+        </div>
+        <div style={{fontSize:'var(--text-lg)',fontWeight:'var(--weight-semibold)',color:'var(--text-primary)'}}>
+          {currentStep.title}
+        </div>
+        <div style={{fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+          {currentStep.sub} · Operating Station #4, Chakan Plant PL-04. Verify tool alignment tolerance within ±0.02 mm before continuing.
+        </div>
+      </div>
+
+      {/* Variant Previews */}
+      {variant === 'preview-cards' && (
+        <nav aria-label="SOP sequence navigation" className="mock-seq-card-container">
+          <button
+            type="button"
+            className={`mock-seq-card ${!prevStep ? 'disabled' : ''}`}
+            onClick={handlePrev}
+            disabled={!prevStep}
+            aria-label={prevStep ? `Previous: ${prevStep.id} ${prevStep.title}` : 'No previous step'}
+            style={{textAlign:'left'}}
+          >
+            <div className="mock-seq-dir">
+              <span>← PREVIOUS STEP</span>
+              {prevStep && <span style={{color:'var(--text-secondary)'}}>({prevStep.id})</span>}
+            </div>
+            <div className="mock-seq-title">
+              {prevStep ? prevStep.title : 'Beginning of Sequence'}
+            </div>
+            <div className="mock-seq-sub">
+              {prevStep ? prevStep.sub : 'No earlier stages available'}
+            </div>
+          </button>
+
+          <button
+            type="button"
+            className={`mock-seq-card ${!nextStep ? 'disabled' : ''}`}
+            onClick={handleNext}
+            disabled={!nextStep}
+            aria-label={nextStep ? `Next: ${nextStep.id} ${nextStep.title}` : 'No next step'}
+            style={{textAlign:'right'}}
+          >
+            <div className="mock-seq-dir" style={{justifyContent:'flex-end'}}>
+              {nextStep && <span style={{color:'var(--text-secondary)'}}>({nextStep.id})</span>}
+              <span>NEXT STEP →</span>
+            </div>
+            <div className="mock-seq-title">
+              {nextStep ? nextStep.title : 'Sequence Complete'}
+            </div>
+            <div className="mock-seq-sub">
+              {nextStep ? nextStep.sub : 'Final stage reached'}
+            </div>
+          </button>
+        </nav>
+      )}
+
+      {variant === 'standard-bar' && (
+        <nav aria-label="SOP sequence navigation" className="mock-seq-bar">
+          <Button
+            variant="secondary"
+            disabled={!prevStep}
+            onClick={handlePrev}
+            aria-label={prevStep ? `Go to previous step: ${prevStep.title}` : 'Previous step unavailable'}
+          >
+            ← Previous: {prevStep ? prevStep.id : 'Start'}
+          </Button>
+
+          <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'2px'}}>
+            <span style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-xs)',fontWeight:'var(--weight-semibold)'}}>
+              Step {currentIndex + 1} of {total}
+            </span>
+            <span style={{fontSize:'var(--text-2xs)',color:'var(--text-tertiary)'}}>
+              Suryodaya ERP · Sequential Reader
+            </span>
+          </div>
+
+          <Button
+            variant="primary"
+            disabled={!nextStep}
+            onClick={handleNext}
+            aria-label={nextStep ? `Go to next step: ${nextStep.title}` : 'Next step unavailable'}
+          >
+            Next: {nextStep ? nextStep.id : 'Complete'} →
+          </Button>
+        </nav>
+      )}
+
+      {variant === 'progress-strip' && (
+        <nav aria-label="SOP sequence navigation" className="mock-seq-bar" style={{flexDirection:'column',gap:'12px',alignItems:'stretch'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <span style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-2xs)',color:'var(--text-tertiary)'}}>
+              PROGRESS: {pct}% COMPLETED
+            </span>
+            <span style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-2xs)',color:'var(--text-tertiary)'}}>
+              {total - currentIndex - 1} STEPS REMAINING
+            </span>
+          </div>
+          <div className="mock-seq-progress-track" style={{margin:'0',width:'100%'}}>
+            <div className="mock-seq-progress-fill" style={{width: `${pct}%`}}></div>
+          </div>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:'4px'}}>
+            <Button variant="ghost" disabled={!prevStep} onClick={handlePrev}>
+              ← {prevStep ? `${prevStep.id}: ${prevStep.title.slice(0, 24)}...` : 'Sequence Start'}
+            </Button>
+            <span style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+              {currentIndex + 1} / {total}
+            </span>
+            <Button variant="secondary" disabled={!nextStep} onClick={handleNext}>
+              {nextStep ? `${nextStep.id}: ${nextStep.title.slice(0, 24)}...` : 'Finish'} →
+            </Button>
+          </div>
+        </nav>
+      )}
+
+      {variant === 'single-direction' && (
+        <nav aria-label="SOP sequence navigation" className="mock-seq-bar" style={{justifyContent:'flex-end'}}>
+          <div style={{marginRight:'auto',display:'flex',alignItems:'center',gap:'8px'}}>
+            <Badge tone="warning">Guided Sequence</Badge>
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>
+              Backward jumping restricted during live machine calibration.
+            </span>
+          </div>
+          <Button
+            variant="primary"
+            disabled={!nextStep}
+            onClick={handleNext}
+            aria-label={nextStep ? `Continue to ${nextStep.title}` : 'Sequence completed'}
+          >
+            {nextStep ? `Continue to ${nextStep.id} →` : 'Acknowledge & Complete'}
+          </Button>
+        </nav>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div className="page">
+      <div className="masthead">
+        <div className="eyebrow">Meridian Design System · Navigation Architecture · System 8 of 8</div>
+        <h1>Sequential Navigation</h1>
+        <p className="lede">
+          Moves directly to the preceding or following destination in a fixed, ordered sequence. Provides contextual preview titles, deterministic traversal, boundary handling, and optional progression telemetry without requiring multi-stage form state persistence.
+        </p>
+        <div className="meta">
+          <span>SPEC: MDS-NAV-SEQ-08</span>
+          <span>STATUS: FROZEN (0 OPEN ITEMS)</span>
+          <span>CATEGORY: NAV-SYSTEM</span>
+          <span>W3C: LANDMARK / DIRECTIONAL LINK PATTERN</span>
+          <span>ENTERPRISE: CHAKAN PL-04</span>
+        </div>
+      </div>
+
+      {/* §01 Purpose & Intent */}
+      <Sec n="01" title="Purpose & Intent" note="Why Sequential Navigation exists and its architectural boundaries.">
+        <p>
+          <strong>Sequential Navigation</strong> provides direct, adjacent movement between ordered items within a deterministic sequence. Unlike Pagination (which chunks large homogeneous data sets into indexed pages) or Step Navigation (which enforces data entry dependencies and validation gates), Sequential Navigation is optimized for reading, reviewing, and traversing linear content streams such as Standard Operating Procedures (SOPs), machine calibration manuals, preventive maintenance work orders, audit chapters, and operator training modules.
+        </p>
+        <ul>
+          <li><strong>Direct Adjacent Traversal:</strong> Exposes explicit previous and next controls that bind to immediate predecessor and successor entities.</li>
+          <li><strong>Contextual Destination Awareness:</strong> Surfaces destination labels and subtitles (e.g. <em>"Next: Die Bed Alignment"</em>) to eliminate ambiguous generic actions.</li>
+          <li><strong>Deterministic Sequence Source:</strong> Guarantees that the order of traversal is fixed, predictable, and does not alter unexpectedly during active browsing.</li>
+          <li><strong>Boundary Integrity:</strong> Terminates at the natural boundaries of the sequence unless circular wrapping is explicitly declared by the host workflow.</li>
+        </ul>
+      </Sec>
+
+      {/* §02 Anatomy & Composition */}
+      <Sec n="02" title="Anatomy & Composition" note="Required visual, positional, and context components.">
+        <p>
+          The component hierarchy consists of directional interactive controls, optional contextual preview cards, sequence index counters, and progress meters:
+        </p>
+        <table>
+          <thead>
+            <tr><th>Element</th><th>Requirement</th><th>Semantics / Role</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td className="k">SequentialNav (Root)</td><td>Required</td><td><code>&lt;nav aria-label="..."&gt;</code></td><td>Landmark container establishing the sequential navigation boundary.</td></tr>
+            <tr><td className="k">Previous Control</td><td>Required</td><td><code>&lt;button&gt;</code> or <code>&lt;a&gt;</code></td><td>Navigates to the immediately preceding destination in the sequence.</td></tr>
+            <tr><td className="k">Next Control</td><td>Required</td><td><code>&lt;button&gt;</code> or <code>&lt;a&gt;</code></td><td>Navigates to the immediately succeeding destination in the sequence.</td></tr>
+            <tr><td className="k">Direction Label</td><td>Optional</td><td><code>&lt;span&gt;</code></td><td>Directional indicator (e.g. <em>"← Previous Step"</em>, <em>"Next Chapter →"</em>).</td></tr>
+            <tr><td className="k">Destination Title</td><td>Optional</td><td><code>&lt;div&gt;</code></td><td>Human-readable title of the target destination.</td></tr>
+            <tr><td className="k">Position Indicator</td><td>Optional</td><td><code>&lt;span aria-live="polite"&gt;</code></td><td>Exposes current sequence position (e.g. <em>"Step 3 of 8"</em>).</td></tr>
+            <tr><td className="k">Progress Meter</td><td>Optional</td><td><code>&lt;div role="progressbar"&gt;</code></td><td>Visual progress track rendering completion percentage across the sequence.</td></tr>
+          </tbody>
+        </table>
+      </Sec>
+
+      {/* §03 Properties & Design Tokens */}
+      <Sec n="03" title="Properties & Design Tokens" note="MDS design token bindings for colors, spacing, and elevation.">
+        <p>
+          All sequential navigation elements utilize standardized MDS design tokens:
+        </p>
+        <div className="tokenlist">
+          <div><code>--surface-card</code>: Preview card container fill</div>
+          <div><code>--surface-sunken</code>: Inactive progress track fill</div>
+          <div><code>--action-solid</code>: Active progress fill & primary action</div>
+          <div><code>--border-hairline</code>: Standard boundary delimiter</div>
+          <div><code>--border-focus</code>: Hover/focus state accent stroke</div>
+          <div><code>--radius-md</code>: 8px card corner radius</div>
+          <div><code>--font-mono</code>: Sequence IDs and counter telemetry</div>
+          <div><code>--shadow-xs</code> / <code>--shadow-sm</code>: Card elevation</div>
+        </div>
+      </Sec>
+
+      {/* §04 Variants */}
+      <Sec n="04" title="Variants" note="Supported structural presentations for varied workflows.">
+        <table>
+          <thead>
+            <tr><th>Variant Key</th><th>Structure</th><th>Use Case</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="k">preview-cards</td>
+              <td>Dual contextual cards with direction, title, and metadata preview.</td>
+              <td>Document readers, SOP guides, maintenance manuals, and training chapters.</td>
+            </tr>
+            <tr>
+              <td className="k">standard-bar</td>
+              <td>Horizontal bar with Previous/Next buttons flanking a centered step counter.</td>
+              <td>Modal walkthroughs, inspection checklists, and drawing sheet viewers.</td>
+            </tr>
+            <tr>
+              <td className="k">progress-strip</td>
+              <td>Compact strip with top progress bar, step pills, and directional buttons.</td>
+              <td>Long multi-item audit questionnaires and work order executions.</td>
+            </tr>
+            <tr>
+              <td className="k">single-direction</td>
+              <td>Forward-only continuation button with sequence destination badge.</td>
+              <td>Guided linear onboarding, mandatory safety checklists, and initial setups.</td>
+            </tr>
+          </tbody>
+        </table>
+      </Sec>
+
+      {/* §05 Sizes & Density */}
+      <Sec n="05" title="Sizes & Density" note="Component dimensions across device contexts.">
+        <table>
+          <thead>
+            <tr><th>Size</th><th>Target Context</th><th>Card Padding</th><th>Min Button Height</th><th>Font Scale</th></tr>
+          </thead>
+          <tbody>
+            <tr><td className="k">sm</td><td>Sidebars, inspector panels, split panes</td><td>8px 12px</td><td>28px</td><td>11px / 12px</td></tr>
+            <tr><td className="k">md (default)</td><td>Standard desktop views, ERP forms</td><td>14px 18px</td><td>36px</td><td>12px / 14px</td></tr>
+            <tr><td className="k">lg</td><td>Shopfloor touch kiosks, tablets, rugged panels</td><td>18px 24px</td><td>44px (touch safe)</td><td>13px / 16px</td></tr>
+          </tbody>
+        </table>
+      </Sec>
+
+      {/* §06 States & Interactions */}
+      <Sec n="06" title="States & Interactions" note="State progression from interactive to disabled boundaries.">
+        <div className="demo">
+          <div className="staterow">
+            <span className="lbl">Default:</span>
+            <span style={{color:'var(--text-secondary)'}}>Subtle border, standard background, readable destination title.</span>
+          </div>
+          <div className="staterow">
+            <span className="lbl">Hover:</span>
+            <span style={{color:'var(--text-primary)',fontWeight:'var(--weight-semibold)'}}>Accent border, -1px elevation shift, surface highlight.</span>
+          </div>
+          <div className="staterow">
+            <span className="lbl">Focus-Visible:</span>
+            <span style={{color:'var(--text-primary)'}}>2px solid <code>--border-focus</code> outline with 2px offset.</span>
+          </div>
+          <div className="staterow">
+            <span className="lbl">Disabled / Boundary:</span>
+            <span style={{color:'var(--text-tertiary)'}}>Opacity 0.4, <code>cursor: not-allowed</code>, <code>aria-disabled="true"</code> at sequence start/end.</span>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §07 Keyboard Navigation */}
+      <Sec n="07" title="Keyboard Navigation" note="Deterministic keyboard controls.">
+        <ul>
+          <li><kbd>Tab</kbd> / <kbd>Shift + Tab</kbd>: Move focus between Previous and Next controls.</li>
+          <li><kbd>Enter</kbd> / <kbd>Space</kbd>: Activate the focused directional control.</li>
+          <li><kbd>Alt + LeftArrow</kbd> (or <kbd>[</kbd>): Global shortcut to trigger Previous step (when shortcut mode is enabled).</li>
+          <li><kbd>Alt + RightArrow</kbd> (or <kbd>]</kbd>): Global shortcut to trigger Next step.</li>
+          <li><kbd>Home</kbd> / <kbd>End</kbd>: Jump to first or last destination in sequence (optional, when configured).</li>
+        </ul>
+      </Sec>
+
+      {/* §08 Accessibility & Screen Readers */}
+      <Sec n="08" title="Accessibility & Screen Readers" note="W3C APG, WCAG 2.2 AA/AAA compliance.">
+        <ul>
+          <li><strong>Landmark Declaration:</strong> Must be wrapped in <code>&lt;nav aria-label="Sequential navigation"&gt;</code> to avoid colliding with primary/local navigation landmarks.</li>
+          <li><strong>Descriptive Accessible Names:</strong> Directional buttons MUST NOT rely solely on visual icons. Use descriptive labels like <code>aria-label="Previous step: SOP-02 Die Bed Alignment"</code>.</li>
+          <li><strong>Boundary Semantics:</strong> Inactive boundary controls must carry <code>aria-disabled="true"</code> and be excluded from tab order (or native <code>disabled</code> attribute).</li>
+          <li><strong>Progress Announcement:</strong> If a progress bar is present, use <code>role="progressbar"</code> with <code>aria-valuenow</code>, <code>aria-valuemin="1"</code>, and <code>aria-valuemax="8"</code>.</li>
+        </ul>
+      </Sec>
+
+      {/* §09 Motion & Transitions */}
+      <Sec n="09" title="Motion & Transitions" note="Smooth, predictable visual feedback.">
+        <p>
+          Hover and state transitions use standard MDS timing (<code>150ms cubic-bezier(0,0,0.2,1)</code>). Card elevation shifts by <code>-1px</code> on hover. Progress bar fill smoothly transitions width at <code>240ms</code>. All animations respect <code>prefers-reduced-motion: reduce</code> by dropping transform and width transitions to 0ms.
+        </p>
+      </Sec>
+
+      {/* §10 Content Rules & Internationalization */}
+      <Sec n="10" title="Content Rules & Internationalization" note="Standard conventions for plant documentation and multilingual deployments.">
+        <ul>
+          <li><strong>Destination Clarity:</strong> Always display the exact sequence identifier and title (e.g. <em>"SOP-03: Die Bed Alignment"</em>) instead of plain <em>"Next"</em>.</li>
+          <li><strong>Directional Terms:</strong> English: <em>Previous / Next</em>; Hindi: <em>पिछला / अगला</em>; Marathi: <em>मागील / पुढील</em>.</li>
+          <li><strong>Deterministic Order:</strong> Do not dynamically reorder items in an active sequence based on user interaction or filters.</li>
+        </ul>
+      </Sec>
+
+      {/* §11 Responsive Design & Touch */}
+      <Sec n="11" title="Responsive Design & Touch" note="Adaptation for mobile, handheld barcode scanners, and shopfloor tablets.">
+        <p>
+          On viewports below 860px, dual preview cards automatically stack vertically (Previous on top, Next on bottom, or Next primary on top with Previous secondary below). Touch targets meet the 44×44px minimum touch target size.
+        </p>
+      </Sec>
+
+      {/* §12 Anti-patterns & Usage Boundaries */}
+      <Sec n="12" title="Anti-patterns & Boundaries" note="Where NOT to use Sequential Navigation.">
+        <div className="two">
+          <div className="pane do">
+            <h3>Do</h3>
+            <ul>
+              <li>Use for linear reading of SOPs, machine operating instructions, and training chapters.</li>
+              <li>Include step title and sequence counter to provide strong positional context.</li>
+              <li>Disable or omit boundary controls at the start and end of non-wrapping sequences.</li>
+            </ul>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <ul>
+              <li>Do NOT use for paginating large data tables or query result sets (use <strong>Pagination</strong>).</li>
+              <li>Do NOT use for transactional wizard forms with validation blockers (use <strong>Step Navigation</strong>).</li>
+              <li>Do NOT create icon-only directional buttons without accessible label text.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §13 Implementation Details */}
+      <Sec n="13" title="Implementation Details" note="Interactive Reference Rig with Live Switcher.">
+        <InteractiveSequentialDemo />
+      </Sec>
+
+      {/* §14 Developer Notes */}
+      <Sec n="14" title="Developer Notes" note="API contracts and props specification.">
+        <pre>{`interface SequentialItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  href?: string;
+  metadata?: Record<string, any>;
+}
+
+interface SequentialNavigationProps {
+  items: SequentialItem[];
+  currentIndex: number;
+  onNavigate?: (newIndex: number, item: SequentialItem) => void;
+  variant?: 'preview-cards' | 'standard-bar' | 'progress-strip' | 'single-direction';
+  size?: 'sm' | 'md' | 'lg';
+  allowWrap?: boolean;
+  showProgress?: boolean;
+  ariaLabel?: string;
+  className?: string;
+}`}</pre>
+      </Sec>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script></body></html>

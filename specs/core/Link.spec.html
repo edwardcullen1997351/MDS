@@ -1,0 +1,333 @@
+<!-- @dsCard group="Specs · Core" viewport="1080x760" name="Link" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Link — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+td.num,th.num{text-align:right;font-family:var(--font-mono)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px}
+.staterow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.grey{filter:grayscale(1)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Link, Button, Icon } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows,numCols=[]}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i} className={numCols.includes(i)?'num':''}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={(j===0?'k ':'')+(numCols.includes(j)?'num':'')}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Core · Component specification</span>
+    <h1>Link</h1>
+    <p className="lede">Navigation. A Link goes somewhere; a Button does something. Everything else about this component follows from that one sentence — the element it renders, the keys that work, and why its underline is a contract rather than a preference.</p>
+    <div className="meta">
+      <span>components/core/Link.jsx</span><span>window.MeridianDesignSystem_962c43.Link</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 0 open items</span><span>since: 1.1.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Link vs Button is the only decision that matters.">
+    <p>A Link changes where you are. It renders a real <code>&lt;a href&gt;</code>, so the browser gives you middle-click, ⌘-click, right-click → copy address, the status bar preview, and the back button. None of that can be reproduced on a <code>&lt;button&gt;</code>.</p>
+    <T cols={['You want to…','Component','Element','Announced as']} rows={[
+      ['Go to a page, a doc, an external site','Link','<a href>','link'],
+      ['Run an action that must read inline in prose','Button variant="link"','<button>','button'],
+      ['Run a committed action with weight','Button','<button>','button'],
+      ['Move between panels of one screen','Tabs','<button role="tab">','tab'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> for in-prose references, breadcrumbs, resource lists, table cells that open a record, and external destinations.</li>
+      <li><strong>Do not use</strong> for anything without a destination. A Link with no <code>href</code> is not focusable in the tab order, does not respond to Enter, and is announced as plain text — the component warns.</li>
+      <li><strong>Do not use</strong> a Link styled as a button, or a Button that navigates. Middle-click and ⌘-click silently do nothing on a button, which users notice.</li>
+      <li><strong>Do not use</strong> for a destructive or state-changing action, however small. Links get prefetched, crawled and opened in new tabs.</li>
+    </ul>
+    <div className="demo col">
+      <Row label="link"><p style={{margin:0}}>Readings are averaged over the shift — see the <Link href="#/oee">OEE method</Link> for the formula.</p></Row>
+      <Row label="button"><p style={{margin:0}}>Averaged over the shift. <Button variant="link">Recalculate now</Button> — an action, so a button.</p></Row>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Three parts, and one of them is invisible.">
+    <div className="demo" style={{gap:28}}>
+      <Link href="#/docs">Internal link</Link>
+      <Link href="https://example.com" external>External link</Link>
+      <Link href="#/line/3" tone="subtle" underline="hover">Subtle standalone</Link>
+    </div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Label</strong> — the link text. It inherits the type size, weight and family of whatever contains it; a Link never sets its own size (§05).</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Underline</strong> — at rest for links in prose, at 2 px offset so descenders stay readable. This is the accessibility contract, not decoration (§08).</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>External glyph</strong> — <code>arrow-up-right</code> at 14 px, inheriting the link colour. Set inside an <code>inline-flex</code> so the underline runs beneath both label and glyph, and the pair reads as one target.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Announced suffix</strong> — a visually hidden “(opens in a new tab)” on every external link. The glyph is a visual cue only; without this a screen-reader user gets no warning before the context switches.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>No box.</strong> No padding, no background, no border, no height. A Link that needs a box is a Button.</span></div>
+    </div>
+    <T cols={['Region','Value','Token']} rows={[
+      ['Colour','action blue','--link-foreground'],
+      ['Underline offset','2 px','—'],
+      ['External glyph','14 px, currentColor','--icon-xs'],
+      ['Glyph gap','6 px','--icon-gap-tight'],
+      ['Focus','2 px outline at 2 px offset','--focus-border · --focus-offset'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Six props. No size, no disabled — both are deliberate.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['href',<span className="t">string</span>,<span style={{color:'var(--text-critical)'}}>required</span>,'Destination. Warns if missing, because the result is not a link at all.'],
+      ['children',<span className="t">ReactNode</span>,<span style={{color:'var(--text-critical)'}}>required</span>,'The label. Text, not blocks — see §10 for what it must say.'],
+      ['tone',<span className="t">'default' | 'subtle' | 'inverse'</span>,<span className="t">'default'</span>,'default = action blue. subtle = secondary text colour, for breadcrumbs and metadata. inverse = on an inverse surface.'],
+      ['underline',<span className="t">'always' | 'hover'</span>,<span className="t">'always'</span>,'"hover" is legal ONLY for a standalone link outside a text block. §08.'],
+      ['external',<span className="t">boolean</span>,<span className="t">false</span>,'target="_blank" + rel="noopener noreferrer" + glyph + the announced suffix.'],
+      ['showExternalIcon',<span className="t">boolean</span>,<span className="t">true</span>,'Suppresses the glyph only — the announcement always stays.'],
+      ['style',<span className="t">CSSProperties</span>,'—','Layout only.'],
+      ['…rest',<span className="t">AnchorHTMLAttributes</span>,'—','onClick (for router interception), download, hrefLang, aria-*, data-*.'],
+    ]}/>
+    <p><strong>There is no <code>disabled</code>.</strong> HTML has no disabled anchor: the attribute does nothing, and the usual workarounds (<code>pointer-events: none</code>, <code>aria-disabled</code>) leave a focusable element that announces as a link and goes nowhere. If a destination is unavailable, render plain text or omit it.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Three tones. The tone answers “how loud should this be?”">
+    <T cols={['tone','Colour','Use','Underline']} rows={[
+      ['default','--link-foreground (blue-600), 6.98:1 on a card','Prose, resource lists, anything that must be found.','always in prose'],
+      ['subtle','--link-foreground-subtle (text-secondary), steps to text-primary on hover','Breadcrumbs, footers, metadata rows, table cells — places where one blue link per row would be noise.','hover'],
+      ['inverse','--link-foreground-inverse (blue-200), 10.96:1 on --surface-inverse','On an inverse surface: a dark banner, an inverse footer.','always — enforced, not advised (§13)'],
+    ]}/>
+    <div className="demo col">
+      <Row label="default"><p style={{margin:0}}>See the <Link href="#/a">changeover runbook</Link> before starting.</p></Row>
+      <Row label="subtle"><span style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:'var(--text-sm)',color:'var(--text-tertiary)'}}><Link href="#/b" tone="subtle" underline="hover">Plant</Link><Icon name="chevron-right" size="xs" /><Link href="#/c" tone="subtle" underline="hover">Tilburg</Link><Icon name="chevron-right" size="xs" /><span style={{color:'var(--text-primary)',fontWeight:'var(--weight-semibold)'}}>Line 3</span></span></Row>
+      <Row label="inverse"><span style={{display:'inline-flex',gap:16,padding:'10px 14px',background:'var(--surface-inverse)',borderRadius:'var(--radius-sm)'}}><Link href="#/d" tone="inverse">Privacy</Link><Link href="#/e" tone="inverse">Terms</Link><Link href="#/f" tone="inverse" external>Status</Link></span></Row>
+    </div>
+    <p><strong><code>subtle</code> is not a licence to hide a link.</strong> It works because it sits in a structure that is obviously navigational — a breadcrumb trail, a footer row. Inside a paragraph it would be a link with no cue at all, which is the failure in §08.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="None. A link is text.">
+    <p>Link has no <code>size</code> prop and sets no font size. It inherits the type of its container, which is the only behaviour that works: a link inside 12 px metadata must be 12 px, and the same component inside a 20 px lede must be 20 px.</p>
+    <T cols={['Context','Type size','Link renders at']} numCols={[]} rows={[
+      ['Body prose','--text-base','the same'],
+      ['Table cell, metadata row','--text-xs','the same'],
+      ['Card title','--text-md','the same'],
+      ['Inverse footer','--text-sm','the same'],
+    ]}/>
+    <div className="demo col">
+      <Row label="12px"><span style={{fontSize:'var(--text-xs)'}}>Reported by <Link href="#/g">J. Vermeer</Link> at 14:32</span></Row>
+      <Row label="13px"><span style={{fontSize:'var(--text-sm)'}}>Reported by <Link href="#/g">J. Vermeer</Link> at 14:32</span></Row>
+      <Row label="16px"><span style={{fontSize:'var(--text-base)'}}>Reported by <Link href="#/g">J. Vermeer</Link> at 14:32</span></Row>
+    </div>
+    <p>The external glyph is the one fixed dimension — 14 px at every type size. It is a mark beside text rather than a scaling part of the letterform, and 14 px reads correctly from 12 px through 20 px.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Five. Colour deepens; the underline is the constant.">
+    <T cols={['State','Colour','Underline','Notes']} rows={[
+      ['Rest','--link-foreground · 6.98:1 on a card','on (prose) / off (standalone)','—'],
+      ['Hover','--link-foreground-hover · 9.43:1','on','Deepens rather than lightens, so contrast improves on hover.'],
+      ['Active / press','--link-foreground-active · 11.85:1','on','Deepest step. No movement.'],
+      ['Hover / press on inverse','two steps away from the surface','on','The inverse ramp always moves AWAY from --surface-inverse, which flips with the theme: light theme brightens (blue-200 → blue-100 → white, 10.96 → 14.10 → 17.82:1), dark theme darkens (blue-700 → blue-800 → grey-950, 8.87 → 11.15 → 18.20:1). Same three-step shape either way.'],
+      ['Focus visible','unchanged','unchanged','2 px outline at 2 px offset — an outline, not the buttons’ box-shadow ring (§13).'],
+      ['Visited','not styled','—','Deliberate: in an operations console the same record is opened repeatedly, so a visited colour would mark most of the UI as stale. §14.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="rest / hover"><p style={{margin:0}}>Hover and press <Link href="#/h">this link</Link>, then Tab to it to see the focus outline.</p></Row>
+      <Row label="subtle hover"><Link href="#/i" tone="subtle" underline="hover">Underlines only on hover</Link></Row>
+    </div>
+    <p><strong>No disabled state, and no loading state.</strong> Navigation either exists or it does not.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Native anchor. The differences from Button are the point.">
+    <T cols={['Key','Behaviour','vs Button']} rows={[
+      ['Tab / Shift-Tab','Focuses. An anchor with an href is in the tab order; without one it is not.','same'],
+      ['Enter','Navigates.','same'],
+      ['Space','Nothing — scrolls the page, as it does anywhere in text.','DIFFERENT: a Button activates on Space. This is why an action must not be a Link.'],
+      ['⌘/Ctrl-Enter, ⌘-click, middle-click','Opens in a new tab.','Buttons cannot do this at all.'],
+      ['Right-click','Browser link menu: copy address, open in new window.','Buttons have no equivalent.'],
+    ]}/>
+    <ul>
+      <li><strong>The Space difference is the accessibility argument in one line.</strong> A user who has learned that Space activates buttons will press it on a link-styled action and nothing will happen.</li>
+      <li>Never intercept Enter, and never add a <code>keydown</code> handler to make Space work — that produces a control that is a link to assistive tech and a button to the keyboard.</li>
+      <li>A router <code>onClick</code> is fine, provided the <code>href</code> stays real so modifier-clicks and the status bar keep working.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="This component has one hard requirement, and it is measured.">
+    <p className="warn"><strong>The underline is not a style choice.</strong> WCAG 1.4.1 allows colour as the sole cue for a link inside a block of text only if the link contrast against the surrounding text is at least 3:1 <em>and</em> a non-colour cue appears on hover and focus. Measured in this system: <strong><code>--text-link</code> against <code>--text-primary</code> is 2.56:1</strong> in light and <strong>2.18:1</strong> in dark; against <code>--text-secondary</code> it is <strong>1.12:1</strong>. All below 3:1 — so a link in prose <strong>must</strong> be underlined at rest, which is why <code>underline</code> defaults to <code>always</code>.</p>
+    <div className="demo col">
+      <Row label="in colour"><p style={{margin:0}}>The pump was replaced during the <Link href="#/j" underline="hover">June changeover</Link> and has run since.</p></Row>
+      <Row label="greyscale"><p style={{margin:0}} className="grey">The pump was replaced during the <Link href="#/j" underline="hover">June changeover</Link> and has run since.</p></Row>
+      <Row label="correct"><p style={{margin:0}} className="grey">The pump was replaced during the <Link href="#/j">June changeover</Link> and has run since.</p></Row>
+    </div>
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Role & name','Native <a href>. The accessible name is the link text, so §10’s content rules are an accessibility requirement, not style guidance.'],
+      ['Colour independence (1.4.1)','Underlined at rest in prose. underline="hover" is reserved for standalone links, which are not "inside a block of text" and so fall outside the rule.'],
+      ['Text contrast','--link-foreground 6.98:1 on a card, 6.57:1 on the page band; hover 9.43:1; active 11.85:1. Dark theme: 7.70:1 on a card, 8.35:1 on the page. Inverse tone on --surface-inverse: 10.96 / 14.10 / 17.82:1 in light, 8.87 / 11.15 / 18.20:1 in dark. All clear 4.5:1 for normal text.'],
+      ['Inverse cue','An inverse link is 1.63:1 against surrounding inverse text in light, 2.05:1 in dark — both further below 3:1 than the default tone. The resting underline is therefore its only cue, and tone="inverse" with underline="hover" is refused outright (§13), not merely discouraged.'],
+      ['Focus (2.4.7, 2.4.11)','2 px outline at 2 px offset, from base.css. An outline rather than a box-shadow so it wraps correctly when a link breaks across two lines — a box-shadow would draw one rectangle around both fragments.'],
+      ['New tab (3.2.5)','external adds a visually hidden "(opens in a new tab)". The glyph alone is a visual cue; opening a new context unannounced is a change of context without warning.'],
+      ['Security','rel="noopener noreferrer" on every external link, so the opened page cannot reach window.opener.'],
+      ['Target size (2.5.8)','Inline links are exempt (text inside a sentence). A standalone link in a list or table should sit in a row with at least 24 px of height.'],
+      ['Reduced motion','Only a 140 ms colour transition; nothing to reduce.'],
+    ]}/>
+    <p><strong>Resolved in 1.1.0 — the element default was wrong too.</strong> <code>tokens/base.css</code> styled bare <code>&lt;a&gt;</code> with <code>text-decoration: none</code>, underlining on hover only, so every hand-written anchor in a consuming app was a 1.4.1 failure at rest. Bare anchors are now underlined at rest, with the hover rule reduced to a colour step. A standalone link may still drop the underline, but only through <code>&lt;Link underline="hover"&gt;</code>, which carries the exemption explicitly rather than by omission.</p>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="Colour only, 140 ms — the same contract as every control.">
+    <T cols={['Change','Duration','Easing','Property']} rows={[
+      ['Hover / press colour','140 ms','--ease-out','color'],
+      ['Underline appearing (underline="hover")','0 ms','—','text-decoration — instant, deliberately'],
+      ['Focus outline','0 ms','—','outline'],
+    ]}/>
+    <ul>
+      <li><strong>The underline does not animate.</strong> A growing or sliding underline is a marketing-site flourish; here it delays the one cue that says the text is a link.</li>
+      <li>Never animate the external glyph — no drift on hover.</li>
+      <li>No colour transition on <code>underline="hover"</code> links in a breadcrumb: the trail would shimmer as the pointer crosses it. The tone change is enough.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="The link text is the accessible name, so vague text is a defect.">
+    <T cols={['Context','Write','Not']} rows={[
+      ['In prose','see the OEE method','click here · read more · this link'],
+      ['External','Status page','https://status.example.com/incidents'],
+      ['Record','Line 3 · WO-4471','View · Open · Details'],
+      ['Docs','changeover runbook','documentation'],
+    ]}/>
+    <ul>
+      <li><strong>The text must make sense read alone.</strong> Screen-reader users navigate by a list of links, out of context — “read more” repeated nine times is nine identical entries.</li>
+      <li><strong>Link the noun, not the sentence.</strong> Underline the two or three words that name the destination; a whole underlined clause is hard to read and hard to hit.</li>
+      <li><strong>Never a bare URL</strong> as the label — it is read out character by character. Name the destination.</li>
+      <li><strong>No “opens in a new tab” in the visible text</strong> — <code>external</code> announces it and draws the glyph.</li>
+      <li><strong>Sentence case, no trailing punctuation inside the link.</strong> The full stop belongs to the sentence, outside the underline.</li>
+      <li>Identical text must lead to identical destinations. Two “Line 3” links going to different places is a 2.4.4 failure.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Links reflow with their text. Two things need care.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','Inline links wrap mid-phrase; the focus outline wraps with them, which is why it is an outline and not a ring. A standalone link in a list needs a 44 px row to be a comfortable target — the row provides it, not the link.'],
+      ['tablet ≥ 600','Unchanged.'],
+      ['desktop ≥ 1024','Unchanged. Hover previews the destination in the status bar — one more reason the href must be real.'],
+      ['ultrawide ≥ 1600','Unchanged. Prose stays inside --measure-prose, so link density per line does not rise.'],
+    ]}/>
+    <div className="demo col" style={{maxWidth:300}}>
+      <p style={{margin:0}}>A link near the end of a line will <Link href="#/k">wrap across two lines like this one does</Link> and stay one target.</p>
+      <Row label="external"><Link href="https://example.com" external>Wrapping external link with a long label</Link></Row>
+    </div>
+    <ul>
+      <li><strong>An external link’s glyph must not orphan.</strong> The <code>inline-flex</code> wrapper keeps glyph and label together — but a long external label can still push the whole unit to the next line. Keep external labels to two or three words.</li>
+      <li>Never truncate a link with an ellipsis. A half-named destination is worse than a wrapped one.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Keep <code>href</code> real, even with a router <code>onClick</code>.</li>
+        <li>Underline links in prose.</li>
+        <li>Name the destination in the text.</li>
+        <li>Use <code>external</code> rather than hand-rolling <code>target</code> and <code>rel</code>.</li>
+        <li>Reach for <code>Button variant="link"</code> when there is no destination.</li>
+        <li>Use <code>subtle</code> only inside an obviously navigational structure.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li><code>href="#"</code> with an <code>onClick</code> that does the real work.</li>
+        <li><code>underline="hover"</code> inside a sentence.</li>
+        <li>“Click here”, “read more”, or a bare URL as the label.</li>
+        <li>A disabled link, or <code>pointer-events: none</code> to fake one.</li>
+        <li>A Link with padding and a background, pretending to be a Button.</li>
+        <li><code>target="_blank"</code> without the announcement.</li>
+        <li>A <code>keydown</code> handler to make Space activate it.</li>
+        <li>A link that triggers a destructive action.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this component invites.</strong> <code>&lt;a href="#" onClick={'{'}doThing{'}'}&gt;</code> — it looks right, and it is the most common accessibility defect on the web. It announces as a link, so users expect navigation; ⌘-click opens a blank page; the back button breaks; and screen-reader users get a link list full of “#”. If it does something, it is a Button.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="How the shipped component behaves.">
+    <ul>
+      <li><strong>Renders a real <code>&lt;a href&gt;</code></strong> with no wrapper element, so the browser’s own link affordances all work.</li>
+      <li><strong>Hover and press are React state</strong>, matching Button and IconButton, so the three components resolve colour the same way.</li>
+      <li><strong>Focus is inherited from <code>base.css</code></strong>, not set here: <code>2 px outline</code> at <code>--focus-offset</code>. This differs from the buttons’ 3 px box-shadow ring <em>on purpose</em> — an inline link can break across lines, and a box-shadow would draw a single rectangle spanning both fragments and the text between them. An outline fragments correctly.</li>
+      <li><strong><code>external</code> does four things at once</strong>: <code>target="_blank"</code>, <code>rel="noopener noreferrer"</code>, the <code>arrow-up-right</code> glyph, and the hidden announcement. They ship together because any one of them alone is a defect.</li>
+      <li><strong>The external wrapper is <code>inline-flex</code></strong> so the underline runs under label and glyph as one target. The trade is that the unit cannot break between label and glyph (§11).</li>
+      <li><strong>Visited is not styled.</strong> In a console the same record is opened dozens of times a shift; a visited colour would mark most of the interface as stale. This is a deliberate departure from the web default.</li>
+      <li><strong>Two console warnings, one of them corrective:</strong> a missing <code>href</code>; and <code>tone="inverse"</code> with <code>underline="hover"</code>, which is overridden back to <code>always</code> rather than merely flagged. An inverse link with no resting underline is the total-failure case of the rule in §08 — 1.63:1 against its own body text with no non-colour cue — so the component refuses it.</li>
+      <li><strong>Tokens consumed:</strong></li>
+    </ul>
+    <div className="tokenlist">
+      <span>--link-foreground</span><span>--link-foreground-hover</span><span>--link-foreground-active</span><span>--link-foreground-subtle</span><span>--link-foreground-subtle-hover</span><span>--link-foreground-inverse-hover</span><span>--link-foreground-inverse-active</span><span>--link-foreground-inverse</span><span>--icon-gap-tight</span><span>--focus-border (via base.css)</span><span>--focus-offset (via base.css)</span>
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { Link } from '@meridian/ds';
+
+// in prose — underlined by default, and that is not negotiable
+<p>Averaged over the shift; see the <Link href="/docs/oee">OEE method</Link>.</p>
+
+// standalone, in a breadcrumb — hover underline is legal here
+<Link href="/plant/tilburg" tone="subtle" underline="hover">Tilburg</Link>
+
+// external — one prop, four behaviours
+<Link href="https://status.example.com" external>Status page</Link>
+
+// with a router: keep the href real so modifier-clicks still work
+<Link href={'/lines/' + id} onClick={(e) => { e.preventDefault(); navigate('/lines/' + id); }}>
+  Line {id}
+</Link>`}</pre>
+    <ul>
+      <li><strong>Routers.</strong> Pass <code>onClick</code> and keep a real <code>href</code>. Never <code>href="#"</code>. If your router ships its own link component, wrap it rather than replacing this one, so the tone and underline policy still apply.</li>
+      <li><strong>Testing.</strong> <code>getByRole('link', {'{ name: /oee method/i }'})</code>. For an external link assert all four behaviours — <code>target</code>, <code>rel</code>, the glyph, and that the accessible name contains “opens in a new tab”. Assert <code>text-decoration</code> is <code>underline</code> for a prose link; that is the contract, so it deserves a test.</li>
+      <li><strong>Lint.</strong> Adherence rules should flag <code>href="#"</code>, a bare <code>&lt;a&gt;</code> where Link is available, <code>target="_blank"</code> without <code>rel</code>, and the link texts in §10’s “not” column.</li>
+      <li><strong>Server rendering.</strong> Hover and press are client state; SSR output is the rest colour, so no hydration flash.</li>
+      <li><strong>Frozen 4 Sep 2026.</strong> The API is closed: <code>href</code>, <code>children</code>, <code>tone</code>, <code>underline</code>, <code>external</code>, <code>showExternalIcon</code>, <code>style</code>. All three items open at the first draft are resolved.</li>
+      <li><strong>(1) The <code>base.css</code> default is fixed</strong> — bare anchors underline at rest (§08). This is a visual change across every consuming surface: prose gains underlines it did not have. It ships as a fix rather than a breaking change because the previous behaviour was an accessibility defect, not a design decision.</li>
+      <li><strong>(2) The nav-row question moved to the console kit</strong>, where it belongs: <code>Chrome.jsx</code> draws sidebar rows as buttons, and converting them to real anchors requires giving the kit routes. That is a routing decision about the kit, and it would have stayed open here forever. Logged in <code>ui_kits/console/README.md</code>.</li>
+      <li><strong>(3) Visited styling is closed as decided</strong>, not deferred: off, for the reason in §13 — in a console the same record is opened dozens of times a shift, so a visited colour would mark most of the interface as stale. Revisit only if a docs-style surface is added, which would be a new decision rather than an unfinished one.</li>
+      <li><strong>Two bare anchors were converted</strong> on the same pass — the “Forgot password?” link in the console kit and its template twin. Both are standalone links, so both use <code>underline="hover"</code>. There are now no hand-written anchors left in the project.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

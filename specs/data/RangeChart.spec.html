@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Range Chart · 14-Section Specification Standard</title>
+  <link rel="stylesheet" href="../../tokens/tokens.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+    }
+    body {
+      margin: 0;
+      padding: 40px 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .spec-container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .spec-header {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 24px;
+      margin-bottom: 36px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #a7f3d0;
+      margin-top: 8px;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      color: #0f172a;
+    }
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+    p, li {
+      font-size: 14px;
+      color: #334155;
+    }
+    ul, ol {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      background: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="spec-container">
+    <header class="spec-header">
+      <div class="badge">Data Visualization Standard · Component 13 of 13</div>
+      <h1>Range Chart Specification Standard</h1>
+      <div class="status-tag">
+        <span>✓</span> status: frozen 9 Sep 2026 · 0 open items
+      </div>
+    </header>
+
+    <!-- 1. Purpose & Analytical Intent -->
+    <section>
+      <h2>1. Purpose & Analytical Intent</h2>
+      <p>
+        The <code>RangeChart</code> component represents data where the relationship, distance, or uncertainty between two quantitative endpoints (lower and upper bounds) is itself the primary analytical object. It is used to:
+      </p>
+      <ul>
+        <li><strong>Analyze Bounded Tolerances:</strong> Evaluate physical tolerance bands (Lower Spec Limit, Upper Spec Limit) and central dimensions in CNC machining.</li>
+        <li><strong>Track Before/After Transformations:</strong> Compare endpoint shifts (e.g. cycle time reduction before and after Kaizen interventions).</li>
+        <li><strong>Communicate Statistical Uncertainty:</strong> Represent confidence intervals (e.g., 95% CI) around batch estimates.</li>
+        <li><strong>Continuous Variation Envelopes:</strong> Visualize continuous thermal, pressure, or vibration bands over time.</li>
+      </ul>
+    </section>
+
+    <!-- 2. Anatomy & Hierarchy -->
+    <section>
+      <h2>2. Anatomy & Hierarchy</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Element</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>Interval Connector / Bar</code></td>
+            <td>Visual Mark</td>
+            <td>The floating bar, link line, or shaded area connecting the lower and upper bounds.</td>
+          </tr>
+          <tr>
+            <td><code>Endpoint Marks</code></td>
+            <td>Visual Anchor</td>
+            <td>Whiskers, dots, or caps demarcating the discrete lower and upper boundary values.</td>
+          </tr>
+          <tr>
+            <td><code>Center Estimate</code></td>
+            <td>Point Mark</td>
+            <td>Optional central tick, diamond, or dot representing the mean, median, or measured sample value.</td>
+          </tr>
+          <tr>
+            <td><code>Target Baseline</code></td>
+            <td>Reference Line</td>
+            <td>Global reference line marking engineering targets or process specifications (e.g. nominal 50.000 mm).</td>
+          </tr>
+          <tr>
+            <td><code>Interval Semantics Metadata</code></td>
+            <td>Semantic Label</td>
+            <td>Explicit annotation declaring whether the range represents min-max, 95% CI, tolerance, or before-after delta.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 3. Data Model & Input Contract -->
+    <section>
+      <h2>3. Data Model & Input Contract</h2>
+      <pre><code>export type IntervalSemantics = 'min-max' | 'ci-95' | 'tolerance-band' | 'before-after' | 'target-actual' | 'custom';
+
+export interface RangeDataItem {
+  id?: string;
+  label?: string;
+  lower: number; // Lower bound / start value
+  upper: number; // Upper bound / end value
+  center?: number; // Central estimate (mean, median, actual)
+  target?: number; // Engineering target / nominal
+  status?: 'nominal' | 'warning' | 'critical' | 'info' | 'neutral';
+  intervalSemantics?: IntervalSemantics | string;
+  isImproved?: boolean; // For dumbbell directional change
+  metadata?: Record<string, any>;
+}
+
+export interface RangeChartProps {
+  data: RangeDataItem[];
+  variant?: 'interval-bar' | 'dumbbell' | 'error-bar' | 'range-area';
+  orientation?: 'horizontal' | 'vertical';
+  width?: number;
+  height?: number;
+  title?: string;
+  subtitle?: string;
+  unit?: string;
+  targetLine?: number | { value: number; label?: string };
+  showCenterEstimate?: boolean;
+  showDirectLabels?: boolean;
+  showControls?: boolean;
+  showSearch?: boolean;
+}</code></pre>
+    </section>
+
+    <!-- 4. Visual Encoding & Aesthetics -->
+    <section>
+      <h2>4. Visual Encoding & Aesthetics</h2>
+      <ul>
+        <li><strong>Status Colors:</strong> Nominal (<code>#16a34a</code>), Warning (<code>#d97706</code>), Critical (<code>#dc2626</code>), Neutral (<code>#64748b</code>).</li>
+        <li><strong>Dumbbell Directionality:</strong> Start nodes are rendered in neutral gray (<code>#64748b</code>); End nodes are color-coded in Emerald (<code>#16a34a</code>) if improved or Ruby (<code>#dc2626</code>) if regressed.</li>
+        <li><strong>WCAG 1.4.1 Non-Color Differentiation:</strong> Critical bars feature 45° diagonal hatch lines (<code>#rc-hatch-critical</code>), and Warning bars feature 45° dashed hatch lines (<code>#rc-hatch-warning</code>).</li>
+        <li><strong>Halo Elevation:</strong> SVG drop shadow filters (<code>feDropShadow</code>) and 1.5px white border halos ensure pin clarity on high-density displays.</li>
+      </ul>
+    </section>
+
+    <!-- 5. Included Variants -->
+    <section>
+      <h2>5. Included Variants</h2>
+      <ul>
+        <li><code>interval-bar</code>: Floating horizontal/vertical range bar bounded between lower and upper limits with optional central diamond/tick.</li>
+        <li><code>dumbbell</code>: Two distinct endpoint markers connected by a link to highlight Before vs After or Planned vs Actual changes.</li>
+        <li><code>error-bar</code>: Central estimate point (mean/median) with lower and upper uncertainty whiskers (e.g. 95% Confidence Interval).</li>
+        <li><code>range-area</code>: Continuous chronological sequence / time-series shaded confidence envelope with a central trend line.</li>
+      </ul>
+    </section>
+
+    <!-- 6. Primitive & Core Component Composition -->
+    <section>
+      <h2>6. Primitive & Core Component Composition</h2>
+      <ul>
+        <li><strong>Primitives:</strong> <code>Box</code>, <code>Text</code>, <code>Heading</code>, <code>Surface</code>, <code>Container</code>.</li>
+        <li><strong>Core Components:</strong> <code>Tooltip</code> (hover contextual metadata), <code>Skeleton</code> (data loading placeholder), <code>EmptyState</code> (zero data or no search matches).</li>
+        <li><strong>Controls:</strong> <code>SearchField</code> (filter categories), Sort selector (sort by spread, lower bound, upper bound, category name).</li>
+      </ul>
+    </section>
+
+    <!-- 7. Visualization-Native Elements & Engine Math -->
+    <section>
+      <h2>7. Visualization-Native Elements & Engine Math</h2>
+      <p>
+        The component incorporates Section 18 math from <code>viz-core.js</code>:
+      </p>
+      <ul>
+        <li><strong>Domain Padding:</strong> <code>calculateRangeExtents</code> computes global min, max, span, and adds an 8% buffer to prevent endpoint clipping.</li>
+        <li><strong>Spread & Delta Math:</strong>
+          <pre><code>spread = |upper - lower|;
+delta = upper - lower;
+pctChange = ((upper - lower) / |lower|) * 100;</code></pre>
+        </li>
+        <li><strong>Area Band Polygon:</strong> <code>createRangeBandPath</code> generates an enclosed SVG polygon connecting all upper boundary coordinates in forward order, and returning via lower coordinates in reverse order.</li>
+      </ul>
+    </section>
+
+    <!-- 8. Interactive Behaviors & Gestures -->
+    <section>
+      <h2>8. Interactive Behaviors & Gestures</h2>
+      <ul>
+        <li><strong>Spread Sorting:</strong> Dynamically order categories by interval magnitude ($upper - lower$) to identify operations with highest variation.</li>
+        <li><strong>Hover Inspection:</strong> Hovering any bar, dumbbell, or whisker displays a rich floating tooltip with lower/upper limits, spread, center estimate, and delta.</li>
+        <li><strong>Row Selection:</strong> Clicking any category row triggers active selection highlighting and keyboard focus.</li>
+      </ul>
+    </section>
+
+    <!-- 9. Layout Templates & Responsiveness -->
+    <section>
+      <h2>9. Layout Templates & Responsiveness</h2>
+      <ul>
+        <li><strong>Horizontal Orientation:</strong> Ideal for long category names (CNC dimensions, press line operations).</li>
+        <li><strong>Direct Labels:</strong> Direct numeric labels on endpoints prevent reading errors when navigating wide viewports.</li>
+      </ul>
+    </section>
+
+    <!-- 10. Accessibility (WCAG 2.2 AA & Section 508) -->
+    <section>
+      <h2>10. Accessibility (WCAG 2.2 AA & Section 508)</h2>
+      <ul>
+        <li><strong>WCAG 1.4.1 (Use of Color):</strong> Non-color diagonal hatch patterns distinguish warning and critical intervals.</li>
+        <li><strong>Explicit Semantic Labels:</strong> Screen readers announce interval meaning (e.g. <em>"Cylinder Bore: 95% CI from 82.49 to 82.52 mm, center 82.518 mm"</em>) rather than raw numbers.</li>
+        <li><strong>Accessible Data Table (<kbd>Alt+F11</kbd>):</strong> Full accessible table modal exposing all category names, interval constructs, limits, center estimates, spreads, and status codes.</li>
+      </ul>
+    </section>
+
+    <!-- 11. State Matrix & Edge Cases -->
+    <section>
+      <h2>11. State Matrix & Edge Cases</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>Component Behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Zero Spread ($Lower = Upper$)</td>
+            <td>Renders a discrete point / tick mark without crashing bar layout math.</td>
+          </tr>
+          <tr>
+            <td>Inverted Bounds ($Lower > Upper$)</td>
+            <td>Normalized automatically via <code>Math.min</code> / <code>Math.max</code> with directional indicator.</td>
+          </tr>
+          <tr>
+            <td>Null / Missing Center Estimate</td>
+            <td>Gracefully omits central point marker without disrupting the outer interval bar.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 12. Performance & Rendering Budgets -->
+    <section>
+      <h2>12. Performance & Rendering Budgets</h2>
+      <ul>
+        <li><strong>Render Time:</strong> Sub-5ms initial SVG render for 100+ interval rows.</li>
+        <li><strong>Bundle Budget:</strong> Zero external dependencies (No D3 or Chart.js); pure React + SVG rendering under 18KB.</li>
+      </ul>
+    </section>
+
+    <!-- 13. Manufacturing Domain Implementation -->
+    <section>
+      <h2>13. Manufacturing Domain Implementation (Suryodaya Autocomp Ltd)</h2>
+      <ul>
+        <li><strong>Entity:</strong> Suryodaya Autocomp Ltd (Chakan Plant PL-04, Pune).</li>
+        <li><strong>Metrology & Tooling:</strong> CNC machining tolerances (LSL/USL) in millimeters ($\text{mm}$) and micrometers ($\mu\text{m}$).</li>
+        <li><strong>Continuous Improvement (Kaizen):</strong> Press line cycle time reduction in seconds ($\text{s}$).</li>
+        <li><strong>Metallurgical Testing:</strong> Steel coil tensile yield strength in MegaPascals ($\text{MPa}$).</li>
+        <li><strong>Thermal Processing:</strong> Heat treatment furnace temperature variation in Celsius ($^\circ\text{C}$).</li>
+      </ul>
+    </section>
+
+    <!-- 14. Verification & Validation Checklist -->
+    <section>
+      <h2>14. Verification & Validation Checklist</h2>
+      <ul>
+        <li>[x] All 4 variants (interval-bar, dumbbell, error-bar, range-area) fully implemented.</li>
+        <li>[x] Explicit interval semantics metadata enforced across tooltips and accessible modal.</li>
+        <li>[x] WCAG 1.4.1 hatch patterns active for warning and critical intervals.</li>
+        <li>[x] Accessible table modal bound to <kbd>Alt+F11</kbd>.</li>
+        <li>[x] Zero open items · Status frozen 9 Sep 2026.</li>
+      </ul>
+    </section>
+  </div>
+
+</body>
+</html>

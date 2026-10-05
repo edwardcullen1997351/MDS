@@ -1,0 +1,276 @@
+<!-- @dsCard group="Specs · Composite" viewport="1080x900" name="DateRangePicker" subtitle="Full specification — two dates, one interval: ordering, cross-field validation, endpoint identity" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>DateRangePicker — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px 28px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:118px;padding-top:8px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:14px 0 0}
+.log{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+.frame{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:16px}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { DateRangePicker, Field, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{flex:'1 1 420px',minWidth:0}}>{children}</div></div>;
+
+function Spec(){
+/* The compiled bundle lags a same-turn component by one compile; without this
+   an undefined export throws inside render and blanks the whole document. */
+if (!DateRangePicker) return <div className="page"><div className="masthead"><span className="eyebrow">Composite · Component specification</span><h1>DateRangePicker</h1><p className="lede">The design-system bundle has not been recompiled with <code>components/composite/DateRangePicker.jsx</code> yet — reload once it has.</p></div></div>;
+const [main,setMain] = React.useState(['2026-09-01','2026-09-30']);
+const [inv,setInv] = React.useState(['2026-09-14','2026-09-03']);
+const [part,setPart] = React.useState(['2026-09-14',undefined]);
+const [gate,setGate] = React.useState({valid:true,reason:null});
+const [dev,setDev] = React.useState([undefined,undefined]);
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Composite · Component specification</span>
+    <h1>DateRangePicker</h1>
+    <p className="lede">A standardized control for one bounded temporal interval: a start date and an end date whose semantic and validation relationship is owned by the composition.</p>
+    <div className="meta">
+      <span>Status · stable</span>
+      <span>Primitives · Box, Text</span>
+      <span>Core · DatePicker, Icon · optional Field</span>
+      <span>Follows · Composite spec standard</span>
+    </div>
+  </div>
+
+  <Sec n="§01" title="Purpose" note="Why the composition exists at all">
+    <p>DateRangePicker standardizes the entry of two dates that together mean one interval, and owns the relationship between them. Two dates on a form are not a range until something says which is the start, that the end may not precede it, what happens while only one is filled, and how a violation of that ordering is announced.</p>
+    <ul>
+      <li><strong>Why a composite rather than two DatePickers.</strong> Two independent instances establish no ordering, no cross-field validation, no shared value, no programmatic relationship between the endpoints and no range-level API. Each one is correct in isolation and the pair is meaningless — which is exactly the class of contract the composite tier exists for.</li>
+      <li><strong>Why not <code>DatePicker range</code>.</strong> That is <em>one</em> control: one shared panel, two inputs separated by an arrow, and ends that <em>swap</em> when picked out of order. It is the right control for "pick a window on a calendar" — presets included. It is the wrong control when each endpoint needs its own visible name, its own bounds, its own hint and its own error association, which is what a form asks for. The two coexist deliberately; §13 states the boundary.</li>
+      <li><strong>What it deliberately does not do.</strong> It carries no domain rules — no maximum duration, no fiscal calendars, no blackout periods, no "not more than 90 days". Those are the consumer's, expressed through <code>min</code>/<code>max</code>, <code>isDateDisabled</code> and <code>error</code>.</li>
+    </ul>
+    <div className="demo col">
+      <DateRangePicker label="Report window" value={main} onChange={setMain} min="2026-01-01" max="2026-12-31" hint="Both dates are inclusive." />
+      <span className="log">value · [{main[0]||'—'}, {main[1]||'—'}]</span>
+    </div>
+  </Sec>
+
+  <Sec n="§02" title="Anatomy" note="Two endpoints, each identified in words">
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong><code>Box</code> — required.</strong> The composite structure: a <code>role="group"</code> wrapper named by <code>label</code>, holding the endpoints in temporal DOM order.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Start <code>DatePicker</code> — required.</strong> Keeps all of its own behaviour: typed ISO entry, the panel, the grid keyboard, clear.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>End <code>DatePicker</code> — required.</strong> Same control, its own id, its own bounds derived from the start.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong><code>Text</code> — required, twice.</strong> The endpoint labels, rendered as real <code>&lt;label&gt;</code> elements pointing at their inputs. This is what identifies the two temporal roles; an arrow between two boxes does not.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong><code>Text</code> — optional.</strong> Range-level <code>hint</code> under the pair, and per-endpoint <code>startHint</code>/<code>endHint</code> under their own control (§10).</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>Message region — required, always mounted.</strong> A <code>role="alert"</code> span under the pair carrying the range-level failure, described to both endpoints. Mounted empty rather than inserted with its text — Field's own hardening lesson.</span></div>
+      <div className="callout"><span className="cnum">7</span><span><strong><code>Field</code> — optional, outside.</strong> When the surrounding form supplies the heading and the error, the composite defers: the Field's label heads the group and its message flows into both endpoints (§13).</span></div>
+    </div>
+    <p>Relationship rules: start precedes end in the DOM in every arrangement; each endpoint has a name of its own; no endpoint is identified by position or by a separator glyph alone; and range-level messages sit under the pair, not inside one field.</p>
+  </Sec>
+
+  <Sec n="§03" title="Properties" note="One range contract">
+    <T cols={['Prop','Type','Default','Meaning']} rows={[
+      ['label','string','—','Names the range as a whole. Required outside a Field; the visible heading when there is no Field.'],
+      ['value','[start, end]','—','The range. ISO \u2019YYYY-MM-DD\u2019 strings; either end may be undefined.'],
+      ['onChange','(next) => void','—','Emits the next pair — never one date, never an event, never a Date.'],
+      ['startLabel / endLabel','string',"'Start' / 'End'",'Endpoint terminology (§10).'],
+      ['min / max','string','—','Outer inclusive ISO bounds, applied to both endpoints.'],
+      ['constrain','boolean','true','Derive each endpoint\u2019s bounds from the other, so a panel cannot invert the range (§06).'],
+      ['allowPartial','boolean','false','Whether one filled end is a valid intermediate value (§06, §14).'],
+      ['error','ReactNode','—','Consumer message; shown instead of the derived one and marks both endpoints. For domain rules the composite does not know.'],
+      ['hint','ReactNode','—','A rule about the interval. Described to both endpoints.'],
+      ['startHint / endHint','ReactNode','—','A rule about one endpoint (§10).'],
+      ['layout',"'auto' | 'inline' | 'stacked'","'auto'",'Arrangement only (§11).'],
+      ['size',"'sm' | 'md' | 'lg'","'md'",'One control height for both endpoints (§05).'],
+      ['disabled / readOnly','boolean','false','Both endpoints together.'],
+      ['clearable','boolean','true','The × on each endpoint.'],
+      ['weekStartsOn / isDateDisabled','0 | 1 · (iso) => boolean','1 · —','Passed to both panels unchanged.'],
+      ['onValidityChange','({valid, reason}) => void','—','Fires when range validity changes — a form\u2019s submit gate (§14).'],
+    ]} />
+    <p><code>presets</code> is deliberately absent: a preset sets both endpoints at once, which needs one shared panel — that is <code>DatePicker range</code>. Passing it here warns and does nothing.</p>
+  </Sec>
+
+  <Sec n="§05" title="Sizes" note="Two controls, one height">
+    <Row label="sm"><DateRangePicker label="Accrual period, small" size="sm" value={main} onChange={setMain} /></Row>
+    <Row label="md"><DateRangePicker label="Accrual period, default" value={main} onChange={setMain} /></Row>
+    <Row label="lg"><DateRangePicker label="Accrual period, touch" size="lg" value={main} onChange={setMain} /></Row>
+    <ul>
+      <li><strong>One prop sizes both endpoints.</strong> Two date fields of different heights in one row is not a range, it is a mistake — and neither picker can see the other to prevent it.</li>
+      <li><strong>Size also sets the wrap threshold.</strong> The width below which <code>layout="auto"</code> stacks is per size, because it is the width at which <code>YYYY-MM-DD</code> plus the clear and calendar buttons stops fitting (§11).</li>
+      <li><strong><code>lg</code> is the touch size</strong>, inherited from <code>DatePicker</code>.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§06" title="States" note="The cross-value states are the composite's own">
+    <Row label="Empty"><DateRangePicker label="Empty range" value={[undefined,undefined]} onChange={()=>{}} /></Row>
+    <Row label="Start only"><DateRangePicker label="Start-only range" value={part} onChange={setPart} allowPartial /></Row>
+    <Row label="Partial invalid"><DateRangePicker label="Complete range required" value={part} onChange={setPart} /></Row>
+    <Row label="Complete"><DateRangePicker label="Complete range" value={main} onChange={setMain} /></Row>
+    <Row label="Invalid order"><DateRangePicker label="Inverted range" value={inv} onChange={setInv} constrain={false} /></Row>
+    <Row label="Out of bounds"><DateRangePicker label="Bounded range" value={['2025-12-30','2026-03-01']} onChange={()=>{}} min="2026-01-01" max="2026-12-31" constrain={false} /></Row>
+    <Row label="Disabled"><DateRangePicker label="Disabled range" value={main} onChange={()=>{}} disabled /></Row>
+    <Row label="Read-only"><DateRangePicker label="Read-only range" value={main} onChange={()=>{}} readOnly /></Row>
+    <ul>
+      <li><strong>Cross-value invalidity is owned here and nowhere else.</strong> An end before its start is not an invalid <em>date</em> — both values are perfectly good dates — so no <code>DatePicker</code> can detect it. The composite reports it, marks <em>both</em> endpoints (the fault is the relationship, not either value) and states the rule in one message under the pair.</li>
+      <li><strong>Bounds failures mark one endpoint.</strong> A start before <code>min</code> is that endpoint's problem, and marking its partner would send the user looking in the wrong field.</li>
+      <li><strong>Partial is a state, and whether it is <em>invalid</em> is a decision.</strong> Default: a half-filled range is invalid, because most forms have no meaning for an open interval and a range that quietly submits one end produces a report nobody asked for. <code>allowPartial</code> opts into the other reading — a filter or a saved view, where "everything after the 1st" is legitimate.</li>
+      <li><strong>The partial message waits to be earned.</strong> Entry is sequential, so an endpoint is only reported missing once it has been <em>visited and left</em> — a form that reddens between two keystrokes teaches people to ignore it. Ordering and bounds failures do not wait: those concern a value the user already committed. (A blur into the endpoint's own calendar button or panel is not leaving it.)</li>
+      <li><strong>Prevention and reporting are separate mechanisms.</strong> <code>constrain</code> (default) derives the end's <code>min</code> from the start and the start's <code>max</code> from the end, so the panel cannot produce an inverted range. Typed entry and incoming controlled values can still invert it, so the invalid state exists regardless — and the derived constraint is <em>withdrawn</em> while the pair is already inverted, or the bounds computed from a broken value would leave the user no day to click.</li>
+      <li><strong>Ends are never swapped.</strong> <code>DatePicker range</code> swaps, and is right to: one panel, two presses, the second press means "the other end". Here each endpoint is a separately named field the user typed into deliberately; moving their entry into the other field edits something they did not touch. The pair is reported invalid instead.</li>
+      <li><strong>Disabled and read-only are aggregate.</strong> Half a range is not an editable value.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§08" title="Accessibility" note="Relationships created by the composition">
+    <ul>
+      <li><strong>Each endpoint has a distinct accessible identity.</strong> Both labels are real <code>&lt;label for&gt;</code> elements pointing at their own input ids — not <code>aria-label</code> strings, not placeholders, and never position ("the left one"). The group carries the subject; the labels carry the roles.</li>
+      <li><strong>The pair is programmatically one thing.</strong> <code>role="group"</code> named by <code>label</code> is what makes "Report window / Start / End" readable as one range instead of two unrelated date fields on a form.</li>
+      <li><strong>Range validation is associated, not merely displayed.</strong> The message region is referenced from both endpoints through <code>aria-describedby</code>, and it is a permanently-mounted <code>role="alert"</code>: a live region inserted into the DOM together with its text is announced unreliably. Endpoint-specific hints are described to their own control only.</li>
+      <li><strong>Reading and focus order follow temporal order.</strong> Start, then end, in the DOM, at every width and in every arrangement — no <code>order</code>, no <code>row-reverse</code>, no visual-only rearrangement (§11).</li>
+      <li><strong>Invalidity reaches assistive technology.</strong> Each implicated endpoint gets <code>aria-invalid</code>, so the failure is not carried by a red border alone.</li>
+      <li><strong>Endpoint ids never collide, and never double up.</strong> Each endpoint has its own id from one scope, so it carries exactly one <code>&lt;label&gt;</code>. Inside a <code>Field</code>, the group is named by the Field's label through <code>aria-labelledby</code> and the Field is told to stop aiming its <code>htmlFor</code> at a single control — borrowing the Field's id for the start input made that label a <em>second</em> label on it, announced as "Shift period First shift" beside a partner announced as just "Last shift".</li>
+      <li><strong>Each panel keeps <code>DatePicker</code>'s dialog and grid semantics.</strong> The composite re-implements none of it, and does not link the two panels: two independent dialogs, each named for its endpoint.</li>
+    </ul>
+    <div className="warn"><p>The most common failure of this component is a range whose endpoints are distinguished only by an arrow glyph between two identically named date fields. It looks unambiguous on screen and is unusable by anyone not looking at it.</p></div>
+  </Sec>
+
+  <Sec n="§10" title="Content rules" note="What keeps the interval interpretable">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Use one pair of endpoint words across the product — "Start"/"End", or "First shift"/"Last shift".</li>
+        <li>Name the range for what it bounds: "Report window", "Accrual period".</li>
+        <li>Put interval rules in <code>hint</code> ("Both dates are inclusive") and endpoint rules in <code>startHint</code>/<code>endHint</code>.</li>
+        <li>Keep both endpoints in the same format — ISO, mono, from <code>DatePicker</code>.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li>Mix vocabularies: "From" on one endpoint, "End date" on the other.</li>
+        <li>Let a dash or arrow be the only thing saying which end is which.</li>
+        <li>Put an endpoint rule in the range hint, where it reads as applying to both.</li>
+        <li>Format one endpoint differently from the other, or reformat either to a locale format — <code>05/09/2026</code> is two different days.</li>
+      </ul></div>
+    </div>
+    <div className="demo col">
+      <DateRangePicker label="Shift period" value={main} onChange={setMain} startLabel="First shift" endLabel="Last shift"
+        hint="Both dates are inclusive." startHint="Must be a production day." />
+    </div>
+  </Sec>
+
+  <Sec n="§11" title="Responsive" note="Arrangement changes; the value model does not">
+    <div className="frame" style={{maxWidth:300}}>
+      <DateRangePicker label="Narrow container" size="sm" value={main} onChange={setMain} />
+    </div>
+    <div className="frame">
+      <DateRangePicker label="Wide container" value={main} onChange={setMain} />
+    </div>
+    <ul>
+      <li><strong>Inline until a whole date no longer fits.</strong> <code>layout="auto"</code> lets the two endpoints sit side by side and wrap to a column when a side falls below the width of <code>YYYY-MM-DD</code> plus its clear and calendar buttons — the point at which an inline range starts clipping its own values. The threshold is per <code>size</code> (§05).</li>
+      <li><strong>Temporal order is invariant.</strong> Stacked or inline, start comes first in the DOM and in the tab order. The arrangement is flex direction and wrapping only.</li>
+      <li><strong>The value model never changes with width.</strong> No endpoint is dropped, merged into a single field, or replaced by a "select a range" sheet at a smaller size — a control that changes shape may not also change its contract.</li>
+      <li><strong><code>inline</code> and <code>stacked</code> are promises the caller makes</strong> about a container they know: a fixed filter bar, a narrow drawer. Everything else is <code>auto</code>.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§12" title="Anti-patterns" note="Recurring misuses">
+    <ul>
+      <li><strong>Two loose DatePickers for one range.</strong> Nothing orders them, nothing validates the pair, nothing tells assistive technology they are related, and every consumer re-implements the cross-field rule slightly differently.</li>
+      <li><strong>Contradictory values with no invalid state.</strong> An end before its start, accepted silently, becomes a report with no rows and a support ticket. Either prevent it (<code>constrain</code>) or report it — never neither.</li>
+      <li><strong>Faking an open-ended interval.</strong> Leaving one end empty to mean "and onwards" is not supported: an empty end is <em>missing</em>, and the two cannot be told apart. A control that means "from here on" needs that in its contract.</li>
+      <li><strong>Domain rules inside the component.</strong> A 90-day cap, a fiscal-quarter restriction or a blackout window is business logic; it arrives as <code>min</code>/<code>max</code>, <code>isDateDisabled</code> or <code>error</code>. Baking it in makes the next product fork the component.</li>
+      <li><strong>Swapping the user's entries.</strong> Correct in <code>DatePicker range</code>'s one-panel interaction, wrong across two named fields (§06).</li>
+      <li><strong>Using it to pick a window on a calendar.</strong> If there is no form, no per-endpoint validation and the user wants presets and one panel, this composite is the heavier, worse answer — use <code>DatePicker range</code>.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§13" title="Implementation notes" note="Constraints not visible from the API">
+    <ul>
+      <li><strong>One range model, two related values.</strong> The composite holds no copy of either date: <code>value</code> is the pair, and every change emits a whole new pair. Consumers never infer the relationship from two separate states, which is the failure mode two loose pickers guarantee.</li>
+      <li><strong>Cross-field validation lives at the composite level</strong>, computed from the current pair on every render — ordering first, then bounds, then partiality. Nothing about it is stored, so there is no stale error to clear.</li>
+      <li><strong>Each endpoint gets its own <code>FieldContext</code>.</strong> This is the load-bearing detail: <code>DatePicker</code> reads <code>FieldContext</code> for its id, <code>aria-describedby</code>, <code>aria-invalid</code> and <code>aria-required</code>, so two pickers under ONE Field would take the same id — two controls, one id, and a label pointing at whichever the browser found first. The composite therefore consumes the outer Field itself and republishes a distinct context per endpoint, merging the Field's own <code>describedBy</code> and invalid state into both.</li>
+      <li><strong>The composite claims the Field's label as a group name.</strong> Both endpoint ids come from the composite's own scope, and on mount it calls <code>claimGroup()</code> on the Field context; the Field's label keeps its element and styling but drops <code>htmlFor</code>, and the group references it with <code>aria-labelledby</code>. Without that, the Field's label and the start endpoint's label both aimed at the start input — and browsers <em>concatenate</em> multiple <code>&lt;label for&gt;</code>, so one endpoint absorbed the group's name and its partner did not. <code>claimGroup</code> is additive on <code>Field</code>: a Field can no longer tell whether its child is one control or a named group, so the group tells it.</li>
+      <li><strong>Each <code>DatePicker</code> keeps its own selection behaviour.</strong> Typed ISO parsing, the panel, the grid keyboard, the clear affordance and the value format are untouched; the composite adds bounds and reads results.</li>
+      <li><strong>Derived bounds tighten, never mutate.</strong> The end's <code>min</code> is the later of the outer <code>min</code> and the start; the start's <code>max</code> is the earlier of the outer <code>max</code> and the end. Nothing else about either picker changes, and the derivation is suspended while the pair is inverted (§06).</li>
+      <li><strong>The endpoint label is a <code>&lt;label&gt;</code>, not an <code>aria-label</code>.</strong> <code>Text as="label" htmlFor=&#123;endpointId&#125;</code> — so the visible word and the accessible name are the same string and cannot drift apart.</li>
+      <li><strong>Development-time warnings</strong> cover a non-array <code>value</code>, a missing <code>label</code> outside a Field, <code>min</code> after <code>max</code>, and <code>presets</code> (which belongs to <code>DatePicker range</code>).</li>
+    </ul>
+    <div className="tokenlist">
+      {['--date-range-gap','--field-label-text','--field-error-text','--field-message-gap','--datepicker-* (via DatePicker)','--control-h-sm / -md / -lg'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="§14" title="Developer notes" note="Integration contract">
+    <div className="demo col">
+      <DateRangePicker label="Export window" value={dev} onChange={setDev} min="2026-01-01" max="2026-12-31" onValidityChange={setGate} />
+      <span className="log">[{dev[0]||'—'}, {dev[1]||'—'}] · valid {String(gate.valid)}{gate.reason ? ' · ' + gate.reason : ''}</span>
+    </div>
+    <pre>{`const [range, setRange] = React.useState([undefined, undefined]);
+
+<DateRangePicker
+  label="Export window"
+  value={range}
+  onChange={setRange}          // (next) => next is always [start, end]
+  min="2026-01-01" max="2026-12-31"
+  onValidityChange={({ valid, reason }) => setCanSubmit(valid)}
+/>
+
+// a filter, where an open interval is a legitimate value
+<DateRangePicker label="Created between" value={range} onChange={setRange} allowPartial />`}</pre>
+    <ul>
+      <li><strong>One range contract.</strong> <code>value</code> in, <code>[start, end]</code> out, always both ends — a consumer never receives a bare date and never has to remember which field emitted it.</li>
+      <li><strong>Partial validity is declared, not guessed.</strong> <code>allowPartial</code> states whether a half-filled range is a legal intermediate value. It is <code>false</code> by default because most forms cannot use an open interval, and a range that submits with one end missing silently changes what was asked for; a filter or saved view opts in. Note that the <em>message</em> is deferred until the endpoint is visited and left (§06) while <code>onValidityChange</code> reports the truth immediately — a submit gate should not depend on where the caret has been.</li>
+      <li><strong>Changing one endpoint changes only that endpoint.</strong> The other is passed through untouched — no clamping, no clearing, no swapping. If the result is inconsistent it is reported, and the user fixes the field they meant to fix.</li>
+      <li><strong>Validity is pushed, not polled.</strong> <code>onValidityChange</code> fires when validity or its reason changes, so a submit button has a gate without the consumer re-deriving the ordering rule.</li>
+      <li><strong>No duration limits.</strong> The composite will not cap a range at 30 or 90 days; that is a domain rule, and it belongs in <code>min</code>/<code>max</code>, <code>isDateDisabled</code> or an <code>error</code> the consumer computes.</li>
+      <li><strong>The value format is <code>DatePicker</code>'s, unchanged.</strong> ISO <code>'YYYY-MM-DD'</code> strings, never <code>Date</code> objects — a <code>Date</code> is a timestamp with a timezone, and local-midnight → <code>toISOString()</code> files a date against the previous day west of Greenwich. A range picker that introduced its own format would put that bug back twice.</li>
+    </ul>
+  </Sec>
+
+  <p className="omitted">Omitted, per the composite spec standard: §04 Variants (the arrangement is a property and the endpoints are fixed — there is no second semantically distinct form) · §07 Keyboard (the composition introduces no key: each endpoint keeps <code>DatePicker</code>'s field and grid contract, and the only coordination is tab order, which §08 and §11 own) · §09 Motion (no composite-owned transition; each panel animates itself).</p>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

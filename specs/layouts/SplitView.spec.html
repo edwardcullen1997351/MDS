@@ -1,0 +1,200 @@
+<!-- @dsCard group="Specs · Layouts" viewport="1080x760" name="Split view" subtitle="Full specification — two substantial work surfaces held side by side: what the frame owns, the ratios it names, what it does when neither pane fits, and why it is not master–detail" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Split view — layout template specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+.mock{padding:14px;display:flex;gap:10px;background:var(--background-page);min-height:150px}
+.mock.stack{flex-direction:column}
+.col{display:flex;flex-direction:column;gap:7px;min-width:0}
+.ml{font-size:10px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+.bar{height:8px;border-radius:3px;background:var(--surface-sunken);border:var(--border-hairline)}
+.bar.h{height:14px;background:var(--surface-card)}
+.blk{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:8px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:96ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Layout template</span>
+  <h1>Split view</h1>
+  <p class="lede">Kavita Joshi is writing rev D of a machining routing against the rev C the shop is running this morning. She does not look rev C up once and remember it: every cycle time she changes has to be defensible against the one it replaces, operation by operation, and the moment the two are on different screens the comparison becomes a memory test. This layout presents two substantial work surfaces at the same time — both readable, either or both editable — for exactly that. Neither pane is the detail generated by selecting something in the other; that is a different frame with a different contract.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/layout-template-spec-standard.card.html">Layout template spec standard §01–§14</a></span><span>Regions: 5 (4 required, 1 optional)</span><span>Reference implementation: <a href="split-view-reference.card.html">card</a> · <a href="../../templates/split-view/SplitView.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — routing change ECN-2026-0412, HSG-3360-B</span><span>Sections included: 10 of 14</span><span style="color:var(--text-primary)">status: frozen 8 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <p>Present two substantial work surfaces simultaneously where users benefit from viewing, referencing, editing or comparing both without repeatedly changing context. The test is <em>mutual substance</em>: each pane would be a defensible screen on its own, and the work happens in the traffic between them. If one side only exists to describe what is selected on the other, or only exists because there was room, this is the wrong frame.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>A draft edited against the released version it replaces — routing, BOM, price list, specification.</li><li>Two views of the same subject that must be reconciled: planned against actual, source against rendered output.</li><li>An editing surface and the evidence being transcribed from it, where the transcription is line by line rather than read once.</li></ul></div>
+      <div class="pane dont"><h3>Not this layout</h3><ul><li><strong>One pane shows the current selection from the other.</strong> That is master–detail: selection identity, correspondence, stale content and empty state are its contract, and none of them are specified here.</li><li><strong>Two unrelated modules that merely fit beside one another.</strong> Adjacency is not a relationship.</li><li><strong>One work surface and one reference strip.</strong> Use <a href="Sidebar.spec.html">sidebar</a>: a pane is not the same claim as a sidebar, and the difference is whether the smaller side is substantial.</li><li><strong>Two lateral roles around a dominant centre.</strong> That is <a href="HolyGrail.spec.html">holy grail</a>; split view has no centre.</li></ul></div>
+    </div>
+    <p><strong>Applicable interaction patterns.</strong> <em>Primary:</em> none — the frame hosts patterns rather than implying one. <em>Supported:</em> <a href="../patterns/CollectionEditing.spec.html">collection editing</a>, <a href="../patterns/ExplicitSave.spec.html">explicit save</a>. Where a pane is edited and committed, the dirty model, the commit and the discard are the pattern's; this frame adds only that the material being edited against stays visible while it happens, and that the commit belongs to the pane that owns the edits — never to the workspace.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <table><thead><tr><th>#</th><th>Region</th><th>Requirement</th><th>What it owns</th></tr></thead><tbody>
+      <tr><td class="k">1</td><td class="k">Shared workspace</td><td>Required</td><td>The frame's outer measure, the two-pane structure, the orientation and ratio (§03), and the one subject both panes are about. Owns the <code>h1</code> where the screen has one. It is not a third pane: content that belongs to neither side belongs above them, briefly, or nowhere.</td></tr>
+      <tr><td class="k">2</td><td class="k">Primary pane</td><td>Required</td><td>A substantial work surface with its own heading, its own content and — where it is edited — its own commit. "Primary" is a naming convention for the pane the task starts in, not a promise that it is bigger or that the other is subordinate.</td></tr>
+      <tr><td class="k">3</td><td class="k">Secondary pane</td><td>Required</td><td>The second substantial surface, with its own heading and content. <strong>Neither pane is inherently the detail generated by selecting an object in the other.</strong> Each pane stands up alone; if one goes blank when nothing is selected in its neighbour, this is master–detail.</td></tr>
+      <tr><td class="k">4</td><td class="k">Boundary</td><td>Required</td><td>The visible separation between the panes — a <code>Divider</code>, or a change of surface plus space. It is required because two adjacent work surfaces with no boundary read as one confused one. It is a separation, not a control: nothing about it may suggest dragging unless §13's conditions are met.</td></tr>
+      <tr><td class="k">5</td><td class="k">Pane toolbars</td><td>Optional</td><td>Per-pane action strips. Each belongs to its pane, sits inside it, and acts only on it. A toolbar that acts on both panes is workspace furniture and belongs in region 1 — the commonest way this frame gets muddled is an action whose scope the user cannot infer from where it sits.</td></tr>
+    </tbody></table>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — two surfaces that each stand alone</div><div class="mock"><div class="col" style="flex:1"><span class="ml">2 · draft rev D — edited</span><div class="blk"><div class="bar h"></div><div class="bar"></div><div class="bar"></div><div class="bar" style="width:70%"></div></div></div><div class="col" style="flex:1"><span class="ml">3 · released rev C — read</span><div class="blk"><div class="bar h"></div><div class="bar"></div><div class="bar"></div><div class="bar" style="width:70%"></div></div></div></div><div class="why">Both panes are full routings. Remove either and the other is still a screen someone would open. The traffic between them — this cycle time against that one — is the task.</div></div>
+      <div class="no"><div class="cap">Don't — a list and what it selected</div><div class="mock"><div class="col" style="flex:0 0 40%"><span class="ml">2 · rows</span><div class="blk" style="border-color:var(--status-critical-border)"><div class="bar"></div><div class="bar" style="background:var(--surface-sunken)"></div><div class="bar"></div></div></div><div class="col" style="flex:1"><span class="ml">3 · the selected row</span><div class="blk" style="border-color:var(--status-critical-border)"><div class="bar h"></div><div class="bar"></div></div></div></div><div class="why">The right pane has nothing to say until the left one is used, and goes stale when it changes. Calling it a split does not give the product an empty state, a selection identity or a correspondence rule — master–detail does.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Properties</h2><span class="sec-note">Conditional — included: three choices change the frame's contract</span></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Values</th><th>Default</th><th>Effect</th></tr></thead><tbody>
+      <tr><td class="k">orientation</td><td><code>horizontal</code> · <code>vertical</code></td><td><code>horizontal</code></td><td>Horizontal — panes side by side — is the default and suits line-by-line comparison, where the eye travels across a row. Vertical is for content that demands width in both panes: wide tables, drawings, long measures. Choose by what the content needs, not by what fits.</td></tr>
+      <tr><td class="k">ratio</td><td>equal · intentionally asymmetric</td><td>equal</td><td>Equal says the two surfaces are peers. Asymmetric says one carries more work in this product and is a stated decision, not a leftover. Any asymmetry must be justifiable in a sentence; if it cannot be, it is equal. Named ratios live in §05.</td></tr>
+      <tr><td class="k">paneOverflow</td><td>per-pane scroll · workspace scroll</td><td>per-pane scroll</td><td>Per-pane scroll keeps the two surfaces independently navigable — necessary when the panes are compared at different points. Workspace scroll keeps them locked in one flow, which is right when they are read together top to bottom and wrong when they are compared. One choice for the screen, stated; not one per pane.</td></tr>
+    </tbody></table>
+    <p>Which pane is "primary" is naming, not configuration, and the presence of pane toolbars is composition. Pane <em>contents</em> are not a property of this frame — only that both are substantial (§01).</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Sizes</h2><span class="sec-note">Conditional — included: the system names ratios so products stop inventing them</span></div>
+  <div class="body">
+    <table><thead><tr><th>Ratio</th><th>Tracks</th><th>Use</th></tr></thead><tbody>
+      <tr><td class="k">equal</td><td><code>1fr 1fr</code></td><td>The default. Two peers compared line by line — neither surface has a claim on more room.</td></tr>
+      <tr><td class="k">3:2</td><td><code>3fr 2fr</code></td><td>One pane is edited and the other consulted, and the edited one carries more columns or controls.</td></tr>
+      <tr><td class="k">2:1</td><td><code>2fr 1fr</code></td><td>The furthest asymmetry the frame allows. Beyond this the smaller pane stops being a work surface, and the honest frame is <a href="Sidebar.spec.html">sidebar</a>.</td></tr>
+    </tbody></table>
+    <p><strong>Three named ratios, and no others.</strong> Products may standardize a useful ratio where their content repeatedly demands it, but an arbitrary number does not become a named layout variant: <code>57/43</code> is a tuning decision inside one screen, not a system size. Ratios apply to the space left after each pane's functional minimum is met — a ratio that would push either pane below its minimum is not honoured; §11 is.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§06</span><h2>States</h2><span class="sec-note">Conditional — included: the sequential form makes the frame hold an active pane</span></div>
+  <div class="body">
+    <table><thead><tr><th>State</th><th>When</th><th>Contract</th></tr></thead><tbody>
+      <tr><td class="k">both panes</td><td>Enough width or height for both minimums</td><td>Both surfaces co-visible at the declared ratio. The frame's normal state and the one it exists for.</td></tr>
+      <tr><td class="k">sequential</td><td>Neither pane can hold its functional minimum (§11)</td><td>One pane is shown at a time through an explicit switch. The frame holds <em>which</em> pane is active, restores each pane's scroll and internal state when it returns, and never loses uncommitted edits in the pane that is not showing — a draft that disappears because the user looked at the other side is a data-loss defect, not a layout one.</td></tr>
+    </tbody></table>
+    <p>That is the whole state model. Editing, dirtiness and commit belong to the pattern in play, not to the frame; the frame's only obligation towards them is the one above — switching panes is not a commit and never discards.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>Accessibility</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Every pane's heading is explicitly bound to its contents.</strong> Each pane is a labelled region — a landmark or section named by its own heading, with the pane's content programmatically inside it. Two unlabelled adjacent surfaces are indistinguishable to anyone not seeing the boundary, and the boundary is the only thing carrying the distinction visually.</li>
+      <li><strong>Heading levels run down the document.</strong> The workspace owns the <code>h1</code>; both panes start at <code>h2</code>. The primary pane's heading is not a level higher because of its name.</li>
+      <li><strong>Do not imply resizing that does not exist.</strong> The boundary is presentational: no grab cursor, no handle affordance, no <code>separator</code> role, unless the product has actually implemented a resizer.</li>
+      <li><strong>If pane sizing becomes user-adjustable, the mechanism carries its own semantics</strong> — a focusable <code>separator</code> with <code>aria-orientation</code>, <code>aria-valuenow</code> and its bounds, arrow keys adjusting in defined increments, and a way back to the default. Pointer-only resizing is not an accessible resizer, and this system ships no splitter component that provides any of it (§13).</li>
+      <li><strong>The sequential switch is a real control.</strong> Where §11 converts to one pane at a time, the switch is <code>Tabs</code> or equivalent with its own keyboard semantics and a visible current state; showing a pane moves nothing about focus that the control does not own.</li>
+      <li><strong>Each pane scrolls to its own focus.</strong> With per-pane scroll (§03), focus moving into a pane must bring the focused control into view — two independently scrolled surfaces make an off-screen focus ring twice as easy to lose.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Content rules</h2><span class="sec-note">Conditional — included: the frame only pays off if the two panes are comparable</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Each pane's heading names what is in that pane, not its position.</strong> "Draft rev D" and "Released rev C" are two subjects; "Left" and "Right" are two directions, and they stop being true the moment §11 stacks or switches them.</li>
+      <li><strong>Comparable panes share ordering, units and terminology.</strong> If two surfaces are meant to be read against each other, the same operation appears in the same sequence with the same units and the same words on both sides. Differently sorted panes make the reader do the diff by hand, which is the work the frame promised to remove.</li>
+      <li><strong>Say what each pane is for when it is not obvious.</strong> Where one pane is editable and the other is a record, that asymmetry is stated in the panes, not inferred from which controls happen to be disabled.</li>
+      <li><strong>An action's scope is legible from where it sits.</strong> Pane toolbars act on their pane; anything acting on both belongs to the workspace. Never place a workspace-scope commit inside one pane.</li>
+      <li><strong>Neither pane's content may depend on the other being present.</strong> Copy that reads "compared with the panel on the right" breaks in the sequential form and in the vertical orientation. Refer to the other pane by its name.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§11</span><h2>Responsive</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Expanded.</strong> Both panes coexist at the declared ratio, each above its functional minimum.</li>
+      <li><strong>Each pane declares a functional minimum</strong> — the measure below which that surface stops being usable for its own work, not a token width. It is a stated number and it is what triggers everything below.</li>
+      <li><strong>When neither pane can retain its minimum, convert to sequential presentation:</strong> stacking where both panes remain fully present in one flow, or <code>Tabs</code> or another explicit pane-switching mechanism where they do not. Choose one per screen and state it.</li>
+      <li><strong>Do not preserve "split" semantics by reducing both panes below usability.</strong> Two half-width surfaces that each need a horizontal scrollbar have kept the shape and lost the frame's entire purpose.</li>
+      <li><strong>Changing orientation is a legitimate intermediate step.</strong> A horizontal split whose panes need width may become a vertical one before it becomes sequential — the panes are unchanged, and comparison survives a stack better than it survives a squeeze.</li>
+      <li><strong>The sequential form keeps both panes reachable and intact.</strong> Same panes, same contents, same names, same state; a pane switch is navigation, never a commit or a discard (§06).</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — convert to an explicit pane switch</div><div class="mock stack"><span class="ml">switch · draft | released</span><div class="blk" style="padding:5px"><div class="bar" style="width:56%"></div></div><span class="ml">the active pane, full width</span><div class="blk"><div class="bar h"></div><div class="bar"></div><div class="bar"></div></div></div><div class="why">On the process engineer's tablet at the machine, one routing at full width and one tap to the other beats two columns neither of which shows a whole operation row.</div></div>
+      <div class="no"><div class="cap">Don't — keep the split at any cost</div><div class="mock"><div class="col" style="flex:1"><span class="ml">2 · below minimum</span><div class="blk" style="border-color:var(--status-critical-border)"><div class="bar h" style="width:88%"></div><div class="bar" style="width:60%"></div></div></div><div class="col" style="flex:1"><span class="ml">3 · below minimum</span><div class="blk" style="border-color:var(--status-critical-border)"><div class="bar h" style="width:88%"></div><div class="bar" style="width:60%"></div></div></div></div><div class="why">Seven columns of routing in 300px means both panes scroll sideways, the operation numbers leave the viewport, and the comparison the layout exists for is no longer possible in either pane.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Anti-patterns</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>One pane exists solely to display the current selection from the other.</strong> Use master–detail; the contract you need is selection identity and staleness, and this frame has none of it.</li>
+      <li><strong>Two unrelated modules that merely fit beside one another.</strong> A dashboard of adjacent widgets is not a split view, and calling it one imports a comparison promise the screen cannot keep.</li>
+      <li><strong>A pane that is really a sidebar.</strong> If one side is a narrow reference strip, say so and use <a href="Sidebar.spec.html">sidebar</a> — the ratio floor in §05 exists to catch this.</li>
+      <li><strong>Implying a splitter the product has not built.</strong> A grab cursor or handle on the boundary with no drag behind it, or a drag with no keyboard equivalent, are both defects.</li>
+      <li><strong>Arbitrary ratios promoted to named variants.</strong> §05 names three; a product's one-off tuning is not a fourth.</li>
+      <li><strong>Panes sorted or ordered differently from each other</strong> when they are meant to be compared. The reader ends up doing the diff the frame promised.</li>
+      <li><strong>A workspace-level commit inside one pane</strong>, or a pane toolbar that silently acts on both.</li>
+      <li><strong>Losing an uncommitted draft when the sequential form switches panes.</strong> The most damaging failure this frame can ship, and the easiest to miss at desk width.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§13</span><h2>Implementation notes</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Two tracks, one declaration.</strong> Build the workspace with <code>Grid</code>/<code>GridItem</code> and compose the panes from <code>Box</code>, <code>Surface</code> and <code>Stack</code>; the boundary is a <code>Divider</code> or a border on the second pane. Each track is <code>minmax(&lt;functional minimum&gt;, &lt;ratio&gt;fr)</code> — the minimum in the track is §11's trigger written down, and without it the frame squeezes instead of converting.</li>
+      <li><strong>Both tracks need <code>min-width: 0</code>, and in the vertical orientation <code>min-height: 0</code>.</strong> A wide table in either pane will otherwise push its track past the ratio and take the space from its neighbour silently.</li>
+      <li><strong>Per-pane scroll needs a bounded pane.</strong> A scroll container with no height constraint does not scroll; give the pane a maximum height and let its body flex, rather than nesting a scrolling pane inside a page that also scrolls.</li>
+      <li><strong>The system contains no dedicated splitter component, so a user-resizable divider must not be assumed.</strong> Treat the ratio as a declared property. A product that genuinely needs resizing builds it deliberately, with the keyboard semantics of §08 and persistence of its own — and until it does, the boundary must not hint at it.</li>
+      <li><strong>The panes are siblings, not nested.</strong> Never place one pane inside the other's DOM subtree to achieve the visual; document order is pane 2 then pane 3, in both orientations and in the sequential form.</li>
+      <li><strong>Do not synchronize scroll unless the product asked for it.</strong> Locked scrolling is a feature with its own rules — row correspondence, what happens when the panes differ in length — and it is not part of this frame.</li>
+      <li><strong>The frame holds only §06's active-pane state.</strong> Draft state, dirtiness and commit live in the pane that owns them, and must survive a pane switch and an orientation change without being remounted.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted">Omitted, with reasons — §04 Variants: one structural form; orientation and ratio are properties (§03) with the standard ratios named in §05, and the sequential arrangement is a §11 consequence rather than a standing choice. · §07 Keyboard: the frame introduces no keyboard relationship between panes — focus runs in document order, the sequential switch is <code>Tabs</code> and carries its own semantics, and the resizer semantics that <em>would</em> belong here are stated in §08 as a condition on a mechanism this system does not ship. · §09 Motion: the frame owns no structural motion — panes do not collapse or expand, the responsive conversion is not an event the user caused, and the sequential switch's transition belongs to <code>Tabs</code>. · §14 Developer notes: nothing technical remains once §13 is written — no slot API, no routing or persistence responsibility beyond §06's active pane, no per-pane data boundary the panes do not own themselves.</p>
+<p class="omitted">Applies to: this layout template · Section set and include/omit tests: <a href="../../guidelines/layout-template-spec-standard.card.html">layout template spec standard</a> · Register: <a href="layouts.card.html">layouts index</a></p>
+</div>
+</body></html>

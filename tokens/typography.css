@@ -1,0 +1,84 @@
+:root{
+/* ── FAMILIES ──────────────────────────────────────────────────────────
+   Two families, two jobs. Sans for everything human, mono for everything
+   machine-generated or numeric. There is no third family. */
+--font-sans:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+--font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+--font-display:var(--font-sans);
+
+/* ── SCALE ─────────────────────────────────────────────────────────────
+   14px UI base. Steps are deliberately tight in the UI range (11–22) so a
+   dense screen has hierarchy without size jumps, and open sharply above it. */
+--text-2xs:11px;
+--text-xs:12px;
+--text-sm:13px;
+--text-base:14px;
+--text-md:15px;
+--text-lg:16px;
+--text-xl:18px;
+--text-2xl:22px;
+--text-3xl:28px;
+--text-4xl:36px;
+--text-5xl:48px;
+--text-6xl:64px;
+
+/* ── RESPONSIVE SIZES ──────────────────────────────────────────────────
+   Only display type is fluid. UI text is fixed at every breakpoint: a
+   34px control with 13px label must be identical on a floor tablet and a
+   1440px desk monitor, or muscle memory breaks. Fluid range runs from the
+   tablet breakpoint (600px) to the desktop breakpoint (1024px). */
+--display-sm:clamp(22px,1.6rem + 1vw,28px); /* @kind other */
+--display-md:clamp(26px,1.4rem + 2.2vw,36px); /* @kind other */
+--display-lg:clamp(30px,1.2rem + 3.6vw,48px); /* @kind other */
+--display-xl:clamp(34px,1rem + 5.4vw,64px); /* @kind other */
+
+/* ── WEIGHTS ───────────────────────────────────────────────────────────
+   300 is display-only. Body 400, controls and tabs 500, headings 600.
+   700 exists for a single emphasised word inside body copy. */
+--weight-light:300;
+--weight-regular:400;
+--weight-medium:500;
+--weight-semibold:600;
+--weight-bold:700;
+
+/* ── LINE HEIGHTS ──────────────────────────────────────────────────────*/
+--leading-none:1;      /* numerics, single-line metrics, badges */
+--leading-tight:1.2;   /* headings */
+--leading-snug:1.35;   /* multi-line labels, table cells that wrap */
+--leading-normal:1.5;  /* body and UI default */
+--leading-relaxed:1.65;/* long-form docs only */
+--leading-display:1.05; /* @kind font */
+
+/* ── LETTER SPACING ────────────────────────────────────────────────────
+   Negative as size grows, positive for small caps. Optical, not decorative. */
+--tracking-display:-0.022em;
+--tracking-heading:-0.014em;
+--tracking-body:-0.006em;
+--tracking-label:0.02em;
+--tracking-caps:0.08em;
+--tracking-mono:0em; /* @kind font */
+
+/* ── PARAGRAPH SPACING & MEASURE ───────────────────────────────────────
+   Paragraph gap is a space step, not an em, so prose keeps the 4px grid.
+   Measure is capped in ch: past ~70 characters the eye loses the line. */
+--paragraph-gap:var(--space-4);
+--paragraph-gap-tight:var(--space-2);
+--paragraph-gap-loose:var(--space-6);
+--measure-prose:68ch; /* @kind other */
+--measure-narrow:46ch; /* @kind other */
+--measure-hint:52ch; /* @kind other */
+
+/* ── CODE TYPOGRAPHY ───────────────────────────────────────────────────
+   Mono runs one step below its sans neighbour: IBM Plex Mono has a larger
+   x-height than Public Sans, so matched sizes read as bigger. */
+--code-font:var(--font-mono);
+--code-size:12px;
+--code-size-block:12.5px;
+--code-leading:1.55;
+--code-tab-size:2; /* @kind other */
+--code-inline-pad-y:1px;
+--code-inline-pad-x:5px;
+--code-inline-background:var(--surface-sunken);
+--code-block-pad:var(--space-3);
+--numeric-figures:tabular-nums; /* @kind other */
+}

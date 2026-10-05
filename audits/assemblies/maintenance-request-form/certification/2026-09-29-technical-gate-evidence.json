@@ -1,0 +1,151 @@
+{
+  "assembly": "ra-maintenance-request-form",
+  "version": "0.1.0",
+  "executedAt": "2026-10-02T09:15:03.264Z",
+  "storybookBaseUrl": "http://127.0.0.1:6006",
+  "sourceChecks": "pass",
+  "viewports": [
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 24,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "statusRegions": 2,
+        "switches": [
+          {
+            "label": "Run equipment diagnostics",
+            "describedBy": "_r_7_-desc"
+          },
+          {
+            "label": "Notify maintenance planner",
+            "describedBy": "_r_8_-desc"
+          }
+        ],
+        "formFields": 9,
+        "actionButtons": [
+          "Set string",
+          "Set string",
+          "Set string",
+          "Ready▼",
+          "Ready with realistic values▼",
+          "Success▼",
+          "Draft saved▼",
+          "Corrective maintenance▼",
+          "Cancel",
+          "Save as Draft",
+          "Submit request"
+        ]
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 24,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "statusRegions": 2,
+        "switches": [
+          {
+            "label": "Run equipment diagnostics",
+            "describedBy": "_r_7_-desc"
+          },
+          {
+            "label": "Notify maintenance planner",
+            "describedBy": "_r_8_-desc"
+          }
+        ],
+        "formFields": 9,
+        "actionButtons": [
+          "Set string",
+          "Set string",
+          "Set string",
+          "Ready▼",
+          "Ready with realistic values▼",
+          "Success▼",
+          "Draft saved▼",
+          "Corrective maintenance▼",
+          "Cancel",
+          "Save as Draft",
+          "Submit request"
+        ]
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 24,
+        "incompleteCount": 3
+      },
+      "layout": {
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "statusRegions": 2,
+        "switches": [
+          {
+            "label": "Run equipment diagnostics",
+            "describedBy": "_r_7_-desc"
+          },
+          {
+            "label": "Notify maintenance planner",
+            "describedBy": "_r_8_-desc"
+          }
+        ],
+        "formFields": 9,
+        "actionButtons": [
+          "Set string",
+          "Set string",
+          "Set string",
+          "Ready▼",
+          "Ready with realistic values▼",
+          "Success▼",
+          "Draft saved▼",
+          "Corrective maintenance▼",
+          "Cancel",
+          "Save as Draft",
+          "Submit request"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "action": "submit-success",
+      "found": true,
+      "pendingMs": 62,
+      "outcomeMs": 1822,
+      "textSample": "Inspection controls - current state: ready\nCHAKAN PLANT PL-04 · CANDIDATE REFERENCE ASSEMBLY\nCreate maintenance request\n\nRecord the equipment issue, classify the work, and dispatch it to maintenance planning.\n\nMaintenance request submitted successfully.\n1. Request details\n\nIdentify the affected equipment and maintenance classification.\n\nRequest title *\n\nUse a specific equipment and fault summary; avoid personal or customer data.\n\nMaintenance class *\nCorrective maintenance\nPreventive maintenance\n"
+    },
+    {
+      "action": "draft-failure",
+      "found": true,
+      "pendingMs": 46,
+      "outcomeMs": 446,
+      "textSample": "Inspection controls - current state: ready\nCHAKAN PLANT PL-04 · CANDIDATE REFERENCE ASSEMBLY\nCreate maintenance request\n\nRecord the equipment issue, classify the work, and dispatch it to maintenance planning.\n\nDraft save failed. Entries are preserved locally.\n1. Request details\n\nIdentify the affected equipment and maintenance classification.\n\nRequest title *\n\nUse a specific equipment and fault summary; avoid personal or customer data.\n\nMaintenance class *\nCorrective maintenance\nPreventive mainte"
+    }
+  ]
+}

@@ -1,0 +1,480 @@
+<!-- @dsCard group="Specs · Data" viewport="1080x760" name="LineChart" subtitle="Full specification — trajectory, trends, and rates: temporal ordering, multi-channel dashes, missing-data policies, and accessible tabular fallback" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>LineChart — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:74ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:74ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-direction:column;gap:16px}
+.st{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+.st th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+.st td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+.st tr:last-child td{border-bottom:none}
+.st td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);padding-bottom:4px;display:block}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+
+<script type="text/babel">
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table className="st"><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+
+// Plant Datasets (Suryodaya Autocomp Ltd — Chakan PL-04, Pune)
+const SPINDLE_DATA = [
+  { time: '06:00', val: 1.2 },
+  { time: '08:00', val: 1.4 },
+  { time: '10:00', val: 1.8 },
+  { time: '12:00', val: 2.7 },
+  { time: '14:00', val: 2.1 },
+  { time: '16:00', val: 1.5 },
+  { time: '18:00', val: 1.6 },
+  { time: '20:00', val: 1.9 },
+  { time: '22:00', val: 1.3 },
+];
+
+const SHIFT_TRAJECTORY_DATA = [
+  { hour: 'H1', 'Shift A': 52, 'Shift B': 48, 'Shift C': 38 },
+  { hour: 'H2', 'Shift A': 55, 'Shift B': 51, 'Shift C': 42 },
+  { hour: 'H3', 'Shift A': 58, 'Shift B': 53, 'Shift C': 44 },
+  { hour: 'H4', 'Shift A': 48, 'Shift B': 56, 'Shift C': 40 },
+  { hour: 'H5', 'Shift A': 59, 'Shift B': 58, 'Shift C': 46 },
+  { hour: 'H6', 'Shift A': 62, 'Shift B': 54, 'Shift C': 45 },
+  { hour: 'H7', 'Shift A': 60, 'Shift B': 52, 'Shift C': 43 },
+  { hour: 'H8', 'Shift A': 64, 'Shift B': 55, 'Shift C': 48 },
+];
+
+const STEPPED_TEMP_DATA = [
+  { step: '06:00', temp: 250 },
+  { step: '08:30', temp: 650 },
+  { step: '11:00', temp: 850 },
+  { step: '14:00', temp: 850 },
+  { step: '16:30', temp: 450 },
+  { step: '19:00', temp: 150 },
+];
+
+function MiniLineChart({ data, xKey, yKey, series, variant = 'single', unit = '', height = 180 }) {
+  const isStepped = variant === 'stepped';
+  const seriesList = series || [{ key: yKey, color: 'var(--viz-1, #2563eb)', dash: 'none' }];
+
+  const allVals = data.flatMap(d => seriesList.map(s => Number(d[s.key]) || 0));
+  const minVal = Math.min(...allVals) * 0.9;
+  const maxVal = Math.max(...allVals) * 1.1;
+
+  const getX = (idx) => 40 + (idx / Math.max(1, data.length - 1)) * 420;
+  const getY = (val) => (height - 30) - ((val - minVal) / (maxVal - minVal || 1)) * (height - 50);
+
+  return (
+    <svg width="100%" height={height} viewBox={`0 0 500 ${height}`} style={{ overflow: 'visible', background: 'var(--surface-sunken)', borderRadius: 'var(--radius-sm)', padding: 12 }}>
+      {/* Gridlines */}
+      <line x1="40" y1={height - 30} x2="480" y2={height - 30} stroke="var(--border-strong)" strokeWidth="1.2" />
+      <line x1="40" y1="20" x2="480" y2="20" stroke="var(--border-subtle)" strokeDasharray="2 2" />
+
+      {/* X Labels */}
+      {data.map((d, i) => {
+        if (i % 2 !== 0 && i !== data.length - 1) return null;
+        const x = getX(i);
+        return (
+          <text key={i} x={x} y={height - 12} textAnchor="middle" fontSize="9" fontFamily="var(--font-sans)" fill="var(--text-tertiary)">{d[xKey]}</text>
+        );
+      })}
+
+      {/* Lines & Points */}
+      {seriesList.map(s => {
+        const pts = data.map((d, i) => ({ x: getX(i), y: getY(Number(d[s.key]) || 0) }));
+        let pathD = `M ${pts[0].x} ${pts[0].y}`;
+        for (let i = 1; i < pts.length; i++) {
+          if (isStepped) {
+            pathD += ` H ${pts[i].x} V ${pts[i].y}`;
+          } else {
+            pathD += ` L ${pts[i].x} ${pts[i].y}`;
+          }
+        }
+
+        return (
+          <g key={s.key}>
+            <path d={pathD} fill="none" stroke={s.color} strokeWidth="2" strokeDasharray={s.dash !== 'none' ? s.dash : undefined} />
+            {pts.map((p, i) => (
+              <circle key={i} cx={p.x} cy={p.y} r="3" fill="var(--surface-card)" stroke={s.color} strokeWidth="2" />
+            ))}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function Spec() {
+  const [theme, setTheme] = React.useState('light');
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  return (
+    <div className="page">
+      <div className="masthead">
+        <span className="eyebrow">Data Visualization · Component specification</span>
+        <h1>LineChart</h1>
+        <p className="lede">Shows change, trajectory, trend, and rate across an ordered, usually temporal, domain. Connects consecutive sequential observations with geometric line segments. Enforces strict temporal ordering, multi-channel stroke differentiation, explicit missing-data policies, crosshair tracking, and accessible tabular fallback.</p>
+        <div className="meta">
+          <span>status: frozen 9 Sep 2026 · 0 open items</span>
+          <span>since: 1.3.0</span>
+          <span>source: components/data/LineChart.jsx</span>
+          <span>infrastructure: components/data/viz-core.js</span>
+        </div>
+      </div>
+
+      {/* §01 Purpose */}
+      <Sec n="§01" title="Purpose" note="Ordered domain and trajectory analysis">
+        <p>The Line Chart answers the analytical question: <em>"How does a quantitative measure change, evolve, or accelerate over an ordered continuous or temporal domain?"</em> Connecting points with a line implies sequential progression, rates of change, and intermediate continuity between measurements.</p>
+
+        <T
+          cols={["You want to...", "Use this visualization", "Instead of...", "Why"]}
+          rows={[
+            ["Show continuous trajectory over time (e.g. 24-hr spindle vibration telemetry)", "LineChart (Single / Multi-Series)", "BarChart", "Temporal continuity and rates of change are communicated through line slope; bars fragment continuous sequences into isolated blocks."],
+            ["Track discrete phase setpoint transitions (e.g. furnace annealing recipes)", "LineChart (Stepped)", "LineChart (Linear)", "Values hold steady across an interval and transition instantaneously; diagonal lines would falsely imply gradual continuous heating."],
+            ["Compare relative growth across unlike baselines (e.g. tool insert wear % from t0)", "LineChart (Indexed)", "Multi-Line (Raw)", "Raw metric scales obscure relative acceleration; rebasing all series to 0% at t0 reveals true comparative degradation rates."],
+            ["Compare discrete categories with no temporal sequence (e.g. plant scrap by workshop)", "BarChart", "LineChart", "Connecting unordered categories with a line segment is a severe chart crime that fabricates fictitious trends."]
+          ]}
+        />
+
+        <div className="two">
+          <div className="pane do">
+            <h3>Do</h3>
+            <p>Ensure the horizontal X-axis represents a strictly ordered, usually chronological, sequence (timestamps, shift hours, part cycles, engine RPM steps).</p>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <p>Never connect discrete, unordered categorical entities (e.g. connecting Line 1 to Line 2 to Line 3) with a line. Unordered data belongs in a <code>BarChart</code>.</p>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §02 Anatomy */}
+      <Sec n="§02" title="Anatomy" note="Structural regions and line marks">
+        <p>The Line Chart comprises an SVG coordinate canvas containing continuous paths, point markers, crosshairs, reference limits, and accessible screen-reader layers.</p>
+
+        <T
+          cols={["Part", "Role", "DOM Type", "Token Assignment"]}
+          rows={[
+            ["Plot Region", "Inner coordinate bounding box where line paths and crosshairs render", "SVG <g>", "Layer 0–5 coordinate system via viz-core.js"],
+            ["Temporal X-Axis", "Ordered chronological axis with formatted timestamp ticks", "SVG <line>, <text>", "--font-sans, --text-2xs, --text-tertiary"],
+            ["Quantitative Y-Axis", "Continuous numerical scale with ticks and unit labels", "SVG <line>, <text>", "--font-mono, --text-2xs, --text-tertiary"],
+            ["Series Line Path", "Continuous path connecting consecutive data observations", "SVG <path>", "--viz-1 through --viz-6, strokeWidth: 2px"],
+            ["Point Marks", "Geometric glyphs (circle, square, diamond) at observation coordinates", "SVG <circle>, <rect>", "Fill: --surface-card, Stroke: series color"],
+            ["Hover Crosshair", "Vertical tracking guide line displaying exact coordinates at pointer", "SVG <line>", "--border-strong (1.2px dashed)"],
+            ["Reference Line", "Upper/Lower Control Limits (UCL/LCL) or benchmark targets", "SVG <line>, <text>", "--status-danger-solid, --action-solid (1.5px dashed)"],
+            ["Tolerance Band", "Shaded acceptable operating window spanning Y min/max", "SVG <rect>", "--status-critical-soft, --status-warning-soft"],
+            ["Tooltip Card", "Floating inspection card revealing exact values and deltas", "HTML <div>", "--surface-card, --shadow-md, z-index: 50"],
+            ["Legend", "Interactive multi-channel legend with stroke dashes and symbols", "HTML <button>", "--text-xs, --text-secondary, click to isolate"],
+            ["Tabular View", "Accessible fallback data table with full screen-reader support", "HTML <table>", "--surface-sunken, --border-hairline, Alt+F11 toggle"]
+          ]}
+        />
+      </Sec>
+
+      {/* §03 Properties */}
+      <Sec n="§03" title="Properties" note="API surface and configuration">
+        <p>LineChart accepts sequential time-series records with configurable curve interpolation, comparison modes, and missing telemetry policies.</p>
+
+        <T
+          cols={["Prop", "Type", "Default", "Contract & Behavior"]}
+          rows={[
+            ["data", "any[]", "[]", "Array of ordered sequential records."],
+            ["xKey", "string", "'timestamp'", "Object key representing the ordered temporal dimension."],
+            ["yKey", "string", "'value'", "Object key representing the primary quantitative measure."],
+            ["series", "(string | LineSeriesConfig)[]", "null", "Multi-series keys with colors, stroke dashes, and point symbols."],
+            ["variant", "'single'|'multi'|'stepped'|'indexed'|'small-multiples'", "'single'", "Trajectory layout and comparison variant."],
+            ["interpolation", "'linear'|'step'|'step-after'|'monotone'|'smooth'", "'linear'", "Path curve math. Enforces linear or step to prevent spline hallucination."],
+            ["compareMode", "'absolute'|'indexed'", "'absolute'", "'indexed' rebases all series to 0% at t0 for relative comparison."],
+            ["missingValuePolicy", "'dashed'|'gap'|'zero'", "'dashed'", "Explicit policy for handling missing/null telemetry points."],
+            ["pointVisibility", "'always'|'hover'|'never'|'endpoints'", "'hover'", "Controls rendering of observation circle/square glyphs."],
+            ["unit", "string", "''", "Measurement unit ('mm/s', '°C', 'ppm', '₹', '%', 'RPM'). Formatted via en-IN."],
+            ["referenceLines", "LineReferenceConfig[]", "[]", "Control limit or benchmark lines ({ value, label, tone })."],
+            ["thresholdBands", "LineThresholdBandConfig[]", "[]", "Shaded tolerance regions ({ min, max, label, tone })."],
+            ["showCrosshair", "boolean", "true", "Displays vertical dashed crosshair tracking line on hover/focus."],
+            ["showTableToggle", "boolean", "true", "Displays accessible table switcher button (Alt+F11)."]
+          ]}
+        />
+
+        <p><strong>Refused capabilities:</strong></p>
+        <ul>
+          <li><strong>No 3D ribbons or perspective tubes.</strong> Falsifies trajectory elevation and obscures data points.</li>
+          <li><strong>No uncontrolled spline overshooting.</strong> Aggressive cubic smoothing that invents fictitious peaks or troughs beyond actual data points is strictly refused.</li>
+          <li><strong>No silent bridging across missing telemetry.</strong> Connecting through sensor outages without a declared policy is forbidden.</li>
+        </ul>
+      </Sec>
+
+      {/* §04 Variants */}
+      <Sec n="§04" title="Variants" note="Trajectory modes and analytical forms">
+        <p>Five standardized variants address distinct temporal questions.</p>
+
+        <div className="demo">
+          <span className="lbl">1. Continuous Single-Series (CNC Spindle Vibration — mm/s over 24H)</span>
+          <MiniLineChart data={SPINDLE_DATA} xKey="time" yKey="val" unit="mm/s" height={150} />
+
+          <span className="lbl" style={{ marginTop: 12 }}>2. Multi-Series with Multi-Channel Dashes (Shift Hourly Output Rate)</span>
+          <MiniLineChart
+            data={SHIFT_TRAJECTORY_DATA}
+            xKey="hour"
+            series={[
+              { key: 'Shift A', color: 'var(--viz-1)', dash: 'none' },
+              { key: 'Shift B', color: 'var(--viz-2)', dash: '5 4' },
+              { key: 'Shift C', color: 'var(--viz-3)', dash: '2 3' }
+            ]}
+            height={160}
+          />
+
+          <span className="lbl" style={{ marginTop: 12 }}>3. Stepped Line (Furnace Annealing Temperature Steps — °C)</span>
+          <MiniLineChart data={STEPPED_TEMP_DATA} xKey="step" yKey="temp" variant="stepped" unit="°C" height={150} />
+        </div>
+      </Sec>
+
+      {/* §05 Sizes */}
+      <Sec n="§05" title="Sizes & Density" note="Stroke weights, markers, and padding">
+        <p>Line stroke widths, marker point glyphs, and axis padding scale with <code>[data-density]</code>.</p>
+
+        <T
+          cols={["Density Mode", "Line Stroke Width", "Point Marker Radius", "Crosshair Stroke", "Label Typography"]}
+          rows={[
+            ["compact", "1.5px (primary) / 1px (bg)", "2.5px rest / 4px hover", "1px dashed", "--text-2xs (10px)"],
+            ["comfortable (default)", "2px (primary) / 1.5px (bg)", "3.5px rest / 5px hover", "1.2px dashed", "--text-xs (12px)"],
+            ["expanded", "3px (primary) / 2px (bg)", "5px rest / 7px hover", "1.5px dashed", "--text-sm (14px)"]
+          ]}
+        />
+      </Sec>
+
+      {/* §06 States */}
+      <Sec n="§06" title="States" note="Interactive tracking and missing data">
+        <p>Line and point states communicate focus, active tracking, series isolation, and missing telemetry.</p>
+
+        <T
+          cols={["State", "Trigger", "Visual Treatment", "Contrast Ratio"]}
+          rows={[
+            ["Rest", "Default rendering", "Solid or dashed series stroke at 1.0 opacity, points subtle/hidden", "≥ 3:1 graphical contrast against surface"],
+            ["Hover / Crosshair Tracking", "Pointer moves across plot region", "Vertical dashed crosshair aligns to nearest timestamp, active point expands, tooltip card displayed", "≥ 3:1 graphical, 4.5:1 text"],
+            ["Selected / Pinned", "Click or Space activation", "Crosshair and point pinned; onSelect callback fires", "≥ 3:1 boundary contrast"],
+            ["Dimmed (Isolate)", "Legend series click isolates single line", "Unselected series reduced to 0.25 opacity", "Distinct visual separation"],
+            ["Missing Telemetry Gap", "Data record contains null / undefined", "Broken dashed line with 'No Telemetry' badge in tooltip", "Prevents false interpolation through downtime"],
+            ["Loading", "loading=true prop set", "Pulsing skeleton waveform with mer-skeleton-sweep", "aria-busy='true' set on region"],
+            ["Empty", "data=[] or null", "Centered empty icon with descriptive message", "No misleading zero line drawn"]
+          ]}
+        />
+      </Sec>
+
+      {/* §07 Keyboard */}
+      <Sec n="§07" title="Keyboard" note="Chronological traversal and shortcuts">
+        <p>The chart container receives focus as a single Tab-stop. Arrow keys navigate chronologically along the trajectory.</p>
+
+        <T
+          cols={["Key", "Action", "Contract Guarantee"]}
+          rows={[
+            ["Tab / Shift+Tab", "Focus chart container / exit", "Container receives 2px focus ring; does not trap keyboard."],
+            ["Arrow Right", "Advance to next chronological point", "Moves active crosshair forward along X-axis; reveals tooltip readout."],
+            ["Arrow Left", "Step to previous chronological point", "Moves active crosshair backward along X-axis."],
+            ["Arrow Up / Down", "Switch active series in multi-line", "Shifts focus highlight between concurrent series at current timestamp."],
+            ["Home / End", "Jump to first / last timestamp", "Immediately moves crosshair to initial (t0) or final observation."],
+            ["Enter / Space", "Pin active timestamp / drill-down", "Pins inspection card and fires onSelect callback."],
+            ["Escape", "Clear crosshair / dismiss tooltip", "Hides active crosshair and clears series isolation."],
+            ["Alt + F11", "Toggle accessible data table", "Immediately swaps graphical SVG canvas for accessible HTML <table>."]
+          ]}
+        />
+      </Sec>
+
+      {/* §08 Accessibility */}
+      <Sec n="§08" title="Accessibility" note="WCAG 2.1/2.2 AA compliance and multi-channel encoding">
+        <p>LineChart complies with WCAG 2.1/2.2 AA through multi-channel stroke differentiation and accessible landmark structures.</p>
+
+        <T
+          cols={["WCAG Rule", "Requirement", "Implementation Contract"]}
+          rows={[
+            ["1.1.1 Non-text Content", "Text alternative for trajectories", "<desc> element summarizes total observations, time window, and overall trend; Alt+F11 provides full HTML table."],
+            ["1.3.1 Info and Relationships", "Semantic role structure", "role='graphics-document', aria-roledescription='line chart', series lines carry role='graphics-symbol'."],
+            ["1.4.1 Use of Color", "Color not the sole carrier", "Series use distinct stroke dashes (solid, dashed, dotted, dash-dot) and point glyphs (circle, square, diamond)."],
+            ["1.4.3 Contrast (Minimum)", "Text contrast ≥ 4.5:1", "Axis labels, tick values, and tooltip copy meet 4.5:1 against --surface-card."],
+            ["1.4.11 Non-text Contrast", "UI component & graphics ≥ 3:1", "All line strokes, gridlines, baselines, and control limits meet ≥ 3:1 against surface."],
+            ["2.5.7 Dragging Movements", "Non-dragging alternative for zoom/brush", "Zooming/brushing provides companion step buttons and numeric input bounds."]
+          ]}
+        />
+
+        <div className="two">
+          <div className="pane do">
+            <h3>Do</h3>
+            <p>Always combine distinct stroke dash patterns with distinct point shapes when plotting 3 or more concurrent series so they remain legible in monochrome.</p>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <p>Don't plot 5 solid lines of identical 2px thickness differentiated by color hue alone. Operators with Deuteranopia or printed monochrome reports cannot tell them apart.</p>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §09 Motion */}
+      <Sec n="§09" title="Motion" note="Progressive drawing and crosshair glide">
+        <p>Transitions communicate trajectory progression without delaying operator comprehension.</p>
+
+        <T
+          cols={["Transition", "Duration Token", "Timing Curve", "Reduced Motion Override"]}
+          rows={[
+            ["Initial Path Drawing", "250ms (--motion-base)", "cubic-bezier(0.2, 0, 0, 1)", "Instantaneous 0ms draw"],
+            ["Data Stream Point Shift", "180ms (--motion-fast)", "ease-out", "Instantaneous 0ms update"],
+            ["Crosshair Glide", "90ms (--motion-instant)", "ease-out", "Immediate coordinate snap"]
+          ]}
+        />
+      </Sec>
+
+      {/* §10 Content Rules */}
+      <Sec n="§10" title="Content Rules" note="Number formatting and Indian plant taxonomy">
+        <p>Timestamps and units strictly adhere to Indian Standard Time (IST) and shop-floor engineering metrics.</p>
+
+        <T
+          cols={["Metric Type", "Correct Format (en-IN)", "Incorrect Format", "Rationale"]}
+          rows={[
+            ["Spindle Vibration", "2.7 mm/s", "2.7 mmps / 2.7", "Standard metric vibration velocity unit."],
+            ["Furnace Temperature", "850 °C", "850 deg / 850C", "Strict Celsius temperature notation."],
+            ["Timestamp Sequence", "14:30 IST / 2026-09-09", "2:30 PM", "24-hour military timestamp in Indian Standard Time."],
+            ["Missing Telemetry", "No Telemetry (10:00–12:00)", "0.0 / N/A", "Explicitly names the condition as sensor dropout, not zero reading."]
+          ]}
+        />
+      </Sec>
+
+      {/* §11 Responsive */}
+      <Sec n="§11" title="Responsive" note="Adaptive decimation across viewports">
+        <p>The chart adapts to narrow viewports through intelligent tick decimation rather than coordinate squishing.</p>
+
+        <T
+          cols={["Breakpoint / Container", "Layout Behavior", "Label & Tooltip Adaptation"]}
+          rows={[
+            ["Desktop (≥ 1024px)", "Full continuous trajectory with all ticks", "Floating crosshair inspection card, side-by-side legend."],
+            ["Tablet (768px – 1023px)", "X-axis ticks decimated by 2x", "Legend wrapped horizontally below plot area."],
+            ["Mobile (< 768px)", "X-axis ticks decimated to start, mid, end points", "Touch scrubbing crosshair with fixed bottom data tray."],
+            ["Micro-widget (< 240px)", "Sparkline mode", "Hides axes, gridlines, and legends; displays trajectory curve + summary stat."]
+          ]}
+        />
+      </Sec>
+
+      {/* §12 Anti-patterns */}
+      <Sec n="§12" title="Anti-patterns" note="Visual chart crimes and plant failures">
+        <div className="warn" style={{ marginBottom: 16 }}>
+          <p><strong>The Fictitious Continuity Failure:</strong> Connecting an unmonitored 4-hour machine downtime gap with a smooth continuous line made an emergency press pump breakdown appear as normal steady operation. At the Chakan plant, this led maintenance supervisors to overlook a ruptured hydraulic seal until catastrophic piston seizure occurred. <strong>Never connect through missing data without an explicit broken dashed line.</strong></p>
+        </div>
+
+        <div className="two">
+          <div className="pane do">
+            <ul>
+              <li>Always verify that the X-axis domain has strict sequential ordering.</li>
+              <li>Use broken dashed lines or gaps for missing telemetry periods.</li>
+              <li>Differentiate multi-series lines using distinct stroke dashes and point glyphs.</li>
+              <li>Provide accessible data table toggle for all analytical charts.</li>
+            </ul>
+          </div>
+          <div className="pane dont">
+            <ul>
+              <li>Never use a Line Chart for discrete, unordered categories.</li>
+              <li>Never apply excessive cubic spline smoothing that creates false peaks.</li>
+              <li>Never use dual non-zero Y-axes that falsely imply correlation.</li>
+              <li>Never differentiate concurrent lines solely by subtle color hues.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §13 Implementation Notes */}
+      <Sec n="§13" title="Implementation Notes" note="Scale math and tokens consumed">
+        <p>Line coordinates and paths derive mathematically from <code>createLinearScale</code> and <code>createLinePath</code> in <code>components/data/viz-core.js</code>.</p>
+
+        <div className="lbl">Design Tokens Consumed</div>
+        <div className="tokenlist">
+          <div><code>--viz-1</code> Primary series blue (#2563eb)</div>
+          <div><code>--viz-2</code> Secondary series teal (#0d9488)</div>
+          <div><code>--viz-3</code> Tertiary series amber (#d97706)</div>
+          <div><code>--viz-4</code> Quaternary series purple (#7c3aed)</div>
+          <div><code>--viz-5</code> Quinary series pink (#db2777)</div>
+          <div><code>--viz-6</code> Senary series slate (#4b5563)</div>
+          <div><code>--surface-card</code> Container fill</div>
+          <div><code>--surface-sunken</code> Background canvas</div>
+          <div><code>--border-hairline</code> Frame boundaries</div>
+          <div><code>--border-strong</code> Crosshair & ticks</div>
+          <div><code>--border-subtle</code> 1px dashed gridlines</div>
+          <div><code>--status-critical-solid</code> UCL ceiling breach</div>
+        </div>
+      </Sec>
+
+      {/* §14 Developer Notes */}
+      <Sec n="§14" title="Developer Notes" note="Integration, telemetry streaming, and governance">
+        <pre>{`import { LineChart } from '@meridian/design-system';
+
+export function SpindleVibrationMonitor({ telemetryFeed }) {
+  return (
+    <LineChart
+      title="CNC Spindle Vibration Telemetry (24-Hour)"
+      caption="Chakan plant PL-04 Line 2 bearing monitoring"
+      data={telemetryFeed}
+      xKey="time"
+      yKey="vibration"
+      unit="mm/s"
+      referenceLines={[{ value: 2.5, label: 'UCL (2.5 mm/s)', tone: 'danger' }]}
+      onSelect={(point) => openDiagnosticInspector(point.time)}
+    />
+  );
+}`}</pre>
+
+        <p><strong>Automated Testing Assertions:</strong></p>
+        <ul>
+          <li><strong>Chronological order check:</strong> Verify X-axis points are strictly ordered without backtracking.</li>
+          <li><strong>Missing data policy check:</strong> Verify null records render as broken dashed segments with <code>strokeDasharray="2 3"</code>.</li>
+          <li><strong>ARIA semantics:</strong> Verify root contains <code>role="graphics-document"</code> and series contain <code>role="graphics-symbol"</code>.</li>
+          <li><strong>Keyboard navigation:</strong> Simulate <kbd>ArrowRight</kbd> to confirm crosshair moves to next timestamp.</li>
+          <li><strong>Tabular toggle:</strong> Verify pressing <kbd>Alt+F11</kbd> swaps SVG for an accessible <code>&lt;table&gt;</code> element.</li>
+        </ul>
+
+        <div className="lbl" style={{ marginTop: 12 }}>Governance Status</div>
+        <T
+          cols={["Item", "Status", "Decision & Rationale"]}
+          rows={[
+            ["Temporal ordering mandate", "Closed as decided", "Line connections restricted strictly to ordered/temporal domains."],
+            ["Multi-channel line differentiation", "Closed as decided", "Dashes + point glyphs required on 3+ concurrent series."],
+            ["Missing data policy", "Closed as decided", "Mandatory broken dashed lines or gaps; silent interpolation through outages refused."]
+          ]}
+        />
+      </Sec>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

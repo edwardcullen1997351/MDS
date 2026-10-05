@@ -1,0 +1,44 @@
+<!-- @dsCard group="Components" viewport="880x620" name="DateTimePicker — one moment, two controls" subtitle="Composite: assembly, partial behaviour, combined validation — a UTC instant edited on the Site's clock" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>DateTimePicker</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--surface-card);padding:20px;font-family:var(--font-sans)}.col{display:flex;flex-direction:column;gap:22px;max-width:620px}.lbl{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);margin-bottom:8px}.narrow{max-width:280px}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { DateTimePicker, Field, Text } = window.MeridianDesignSystem_962c43;
+const IST = 'Asia/Kolkata';        // Indian Standard Time, UTC+5:30, no DST
+/* The two daylight-saving states — a clock time that does not exist, and one
+   that happens twice — cannot occur in IST, so they are demonstrated in the
+   spec (§06) on a zone that transitions rather than here. */
+function Demo(){
+  if (!DateTimePicker) return <Text tone="secondary">The bundle has not been recompiled with <code>components/composite/DateTimePicker.jsx</code> yet — reload once it has.</Text>;
+  const [at,setAt] = React.useState('2026-09-14T07:00:00Z');
+  const [floating,setFloating] = React.useState({date:'2026-09-14',time:undefined});
+  const [bounded,setBounded] = React.useState(undefined);
+  return (
+  <div className="col">
+    <div>
+      <div className="lbl">An instant — stored UTC, edited on the Site's clock</div>
+      <DateTimePicker label="Fault occurred" zone={IST} value={at} onChange={(v)=>v&&setAt(v)} step={15}
+        hint="Shown on the site's clock — Indian Standard Time, where the record belongs." />
+      <Text size="xs" tone="tertiary" family="mono">stored · {at}</Text>
+    </div>
+    <div>
+      <div className="lbl">Bounded, inside a Field</div>
+      <Field label="Outage start" hint="Must fall inside the approved window.">
+        <DateTimePicker zone={IST} value={bounded} onChange={(v)=>setBounded(v)} min="2026-09-01T06:00" max="2026-09-30T22:00" step={30} />
+      </Field>
+    </div>
+    <div>
+      <div className="lbl">A floating wall clock — no zone, and it never pretends to have one</div>
+      <DateTimePicker label="Shift template cut-off" value={floating} onChange={(v,p)=>setFloating(p)} />
+    </div>
+    <div>
+      <div className="lbl">Stacks when the container narrows — order stays date then time</div>
+      <div className="narrow"><DateTimePicker label="Reading taken" size="sm" zone={IST} value={at} onChange={(v)=>v&&setAt(v)} /></div>
+    </div>
+  </div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Direct manipulation of order — interaction pattern</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.sec-note{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+.body{display:flex;flex-direction:column;gap:14px;min-width:0}
+p{margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty}
+ul,ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px;max-width:82ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--surface-sunken)}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.7;color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.mn{font-size:10px;color:var(--text-secondary);line-height:1.5}
+.mb{align-self:flex-start;height:26px;padding:0 10px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:10px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.mb.q{background:var(--surface-sunken);color:var(--text-primary);border:var(--border-hairline)}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-warning-soft);color:var(--text-warning)}
+.ma.bad{background:var(--status-critical-soft);color:var(--text-critical)}
+.ma.ok{background:var(--status-success-soft);color:var(--text-success)}
+.rows{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-card)}
+.rows div{display:flex;align-items:center;gap:7px;padding:5px 7px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);border-bottom:var(--border-subtle)}
+.rows div:last-child{border-bottom:none}
+.rows div.on{background:var(--surface-sunken);color:var(--text-primary)}
+.rows div.lift{background:var(--status-info-soft);color:var(--text-primary)}
+.rows .id{color:var(--text-primary);flex:1 1 auto}
+.rows .gr{color:var(--text-tertiary);flex:none}
+.ind{height:2px;background:var(--action-solid);border-bottom:none!important;padding:0!important}
+.mcount{font-size:10px;font-family:var(--font-mono);color:var(--text-tertiary)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+
+<div class="masthead">
+<span class="eyebrow">Interaction pattern</span>
+<h1>Direct manipulation of order</h1>
+<p class="lede">Changing the sequence of a collection, or an item's membership of one, by moving the item itself — with the order held as committed state that only a successful commit may write, a refused move that returns the item to the index it came from, a keyboard route that is the same operation rather than a substitute for it, and a resulting position stated in the collection's own terms.</p>
+<div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: SortableCollection (or List/Table + IconButton), Button</span><span>Reference implementation: <a href="direct-manipulation-of-order-reference.card.html">card</a> · <a href="../../templates/direct-manipulation-of-order/DirectManipulationOfOrder.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — resequencing the routing of BRK-4820-A, and subcontracting one of its operations</span><span>Sections included: 15 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+<div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+<div class="body">
+<p>The routing for <code>BRK-4820-A</code> runs blank, pierce, deburr, wash, bore, harden, inspect, pack. Sandeep Kulkarni wants deburr done before pierce, because the pierce tool is picking up burr from the blank and the bench is idle at 06:00 (IST). He is not editing a field: the thing he wants to change is <em>which operation comes after which</em>, and the fastest honest way to say that is to take op 30 and put it above op 20. The pattern owns everything between picking the operation up and the routing actually changing: what the collection shows while an item is in hand, which positions will accept it, where the item goes when MES refuses the sequence, and what a user who cannot use a pointer does instead.</p>
+<p><strong>Use it when</strong> the order of a collection, or an item's membership of one of two collections, is itself the data — and the user's mental model of the change is "this goes there".</p>
+<div class="two">
+<div class="pane do"><h3>Appropriate</h3><ul><li>Sequence that has meaning downstream — routing operations, inspection steps, a picking sequence, priority in a dispatch queue.</li><li>Membership between two named collections where the move is the decision: in-house against subcontract, this line against that line.</li><li>Small, surveyable collections where the user can see both the item and its destination at once.</li></ul></div>
+<div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>Changing values on the items.</strong> Adjusting an operation's cycle time in place is <a href="CollectionEditing.spec.html">collection editing</a>. Order is not a field, and a draft of a field is not a proposed position.</li><li><strong>Sorting.</strong> A user re-sorting by work centre is asking for a different <em>view</em> of the same data; nothing is committed and nothing is theirs to keep. Sorting is owned by <code>Table</code>, and a collection that can be sorted and reordered must say which one it is currently showing (§18).</li><li><strong>One operation applied to many chosen items.</strong> Subcontracting six operations at once from a selection is <a href="BulkSelectionAction.spec.html">bulk selection and action</a> — one snapshot, one operation, per-item outcomes.</li><li><strong>Ranking by typed number.</strong> Where the collection is long, or the destination is off screen, a sequence field edited in place is kinder than a drag across a scrolling container, and it is <a href="CollectionEditing.spec.html">collection editing</a>.</li><li><strong>Moving a file, a card between board columns, or a node in a tree,</strong> where the containers are the product's primary navigation. The move contract below still applies; the surrounding structure is not this system's to specify.</li></ul></div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+<div class="body">
+<table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+<tr><td class="k">Mechanics</td><td><a href="../composite/SortableCollection.spec.html"><code>SortableCollection</code></a></td><td>Required where available. Supplies the grab, the modal keyboard grab, the insertion indicator, the per-position legality check, bounded auto-scroll, the position text and the announcements — the rows below marked <em>composite</em> come with it. It owns no commit, so everything this spec says about order as committed state, optimism, rollback and atomicity remains the consumer's. Hand-building the mechanics from <code>List</code> + <code>IconButton</code> is legitimate only where the composite cannot be used, and then this section is the checklist.</td></tr>
+<tr><td class="k">Collection</td><td><code>List</code> or <code>Table</code></td><td>Required. Supplies the items and their stable identities. Its own row order renders the committed order — it does not hold the proposed one (§20). <code>List</code> is the usual choice: <code>ListItem</code> takes no <code>onClick</code>, which is the correct refusal here — the row is not the control.</td></tr>
+<tr><td class="k">Grab handle</td><td><code>IconButton</code> · <em>composite</em></td><td>Required. A real, focusable, named control on each movable row — "Move op 30 Deburr". It is what makes the move reachable by keyboard, announced to assistive technology, and distinguishable from a stray drag on the row. A row draggable only by its whole surface has no affordance and no accessible name.</td></tr>
+<tr><td class="k">Explicit move controls</td><td><code>IconButton</code> pair · <em>composite</em>, or a <code>Menu</code></td><td>Required where the destination can be off screen, and never wrong to include: "Move up", "Move down", or "Move to position…". These are not a fallback for the drag — they are the same operation with a different input (§11).</td></tr>
+<tr><td class="k">Commit and revert</td><td><code>Button</code></td><td>Required under <code>commitTiming: pending</code>, and required as a revert under either timing: the user who moved the wrong operation needs one control that puts the sequence back, named after what it restores.</td></tr>
+<tr><td class="k">Position and legality</td><td><code>Badge</code>, <code>Tag</code></td><td>Required where any position is refused. The reason a row will not accept the item — a pinned fixture, a work centre that does not exist at the destination — is stated in text on the row, not only by a cursor that turns into a slash.</td></tr>
+<tr><td class="k">Move in flight</td><td><code>Progress</code></td><td>Required where the commit is slow enough to notice, and reported against the item being moved. The collection stays readable.</td></tr>
+<tr><td class="k">Refusal and rollback</td><td><code>Alert</code></td><td>Required, persistent, named after the item and stating the sequence the routing now holds. Never a timed <code>Toast</code>: an expiring message takes the only statement that the move did not happen with it. <code>Snackbar</code> is legitimate for a <em>successful</em> move, where it carries the undo.</td></tr>
+<tr><td class="k">Announcement region</td><td>A polite live region · <em>composite</em></td><td>Required. Every completed move, refusal and rollback is stated in text (§12), because the visual result of a move is a row that looks exactly like every other row.</td></tr>
+</tbody></table>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+<div class="body">
+<ol>
+<li><strong>Read.</strong> The collection renders the committed order. Nothing is in hand, and each movable row carries a handle with an accessible name that includes the item.</li>
+<li><strong>Grab.</strong> The user takes an item — pointer press on the handle, or <kbd>Space</kbd>/<kbd>Enter</kbd> on it. The pattern records the item's identity <em>and its origin index</em>, and enters grabbed state. The committed order has not changed.</li>
+<li><strong>Propose.</strong> The user moves the item. A proposed index exists at all times while grabbed, is shown where it would land, and is checked against the declared legality rules — an illegal position is refused under <code>dropLegality</code> and the reason is available in text.</li>
+<li><strong>Release or abandon.</strong> Release on a legal position requests the move. <kbd>Escape</kbd>, or a release outside the collection, abandons: the item returns to its origin index and nothing is requested.</li>
+<li><strong>Move.</strong> Under <code>commitTiming: optimistic</code> the collection shows the new order at once, marked as not yet confirmed; under <code>pending</code> the item stays where it was and the proposed order is shown alongside. Either way the canonical order is untouched until the response.</li>
+<li><strong>Resolution.</strong> On success the canonical order is replaced and the resulting position is announced. On failure the order returns under <code>rollbackTarget</code>, the failure is stated persistently, and the routing's actual sequence is named.</li>
+</ol>
+<p>Steps 2 and 4 are a pair, and the origin index recorded in step 2 is what makes step 4 and the rollback in step 6 possible. A pattern that records only "an item is being dragged" can abandon a move but cannot put the item back where it was, which is why so many implementations drop a refused item at the end of the list.</p>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+<div class="body">
+<ul>
+<li><strong>Order and membership are committed state, not a rendering accident.</strong> The collection holds a sequence of identities. A move is a transformation of that sequence, requested once and applied once — not a mutation of a DOM node's position that state is later reconciled to.</li>
+<li><strong>A grab records identity and origin index.</strong> Both. Identity survives a refresh that reorders other items; the origin index is the only thing that can honestly answer "put it back".</li>
+<li><strong>A proposed index always exists while grabbed, and it is never the same thing as the committed index.</strong> Nothing downstream — a cost roll-up, a printed routing sheet, a capacity calculation — reads the proposed order.</li>
+<li><strong>Legality is declared, not discovered on release.</strong> Which positions accept the item is a rule over the item and the collection, evaluated for every candidate position while the item is in hand. A rule that can only be evaluated by the service is not legality; it is failure (§10).</li>
+<li><strong>An abandoned move has no side effects.</strong> <kbd>Escape</kbd>, a release outside the collection, a release on the origin index, and a release on a refused position all resolve to the same thing: the committed order, unrequested and unannounced as a change.</li>
+<li><strong>The commit is the only writer of order.</strong> Canonical order changes on a successful commit and at no other moment. An optimistic view is a claim about the future, labelled as such.</li>
+<li><strong>A move is single-shot until it resolves,</strong> guarded at the state transition. A second move of the same item while the first is in flight is refused, not queued: two sequence writes racing on one routing is how an operation ends up twice in the list.</li>
+<li><strong>A refused move returns the item to its origin index under <code>rollbackTarget</code>,</strong> and never to the end of the collection. "Back where it was" is the user's expectation and the only rollback that does not silently reorder something else.</li>
+<li><strong>A superseded response writes nothing.</strong> A response that arrives after a newer move of the same item, after a revert, or after the item left the collection is discarded with a recorded reason.</li>
+<li><strong>A transfer is one commit over two collections.</strong> Removal from the source and insertion into the destination succeed together or neither is applied (§06).</li>
+</ul>
+<div class="vp">
+<div class="yes"><div class="cap">Do</div><div class="mock"><div class="rows"><div><span class="gr">20</span><span class="id">Pierce · PR-03</span></div><div class="lift"><span class="gr">30</span><span class="id">Deburr · DB-01</span><span>moving</span></div></div><span class="mcount">committed = [10,20,30,40,…] · proposed = [10,30,20,40,…] · origin = 2</span><span class="mn">Not yet confirmed by MES. The released routing still runs pierce before deburr.</span></div><p class="why">Two sequences, one origin index. The optimistic view is labelled, the routing sheet still prints the committed order, and a refusal has somewhere exact to put op 30 back.</p></div>
+<div class="no"><div class="cap">Don't</div><div class="mock"><div class="rows"><div><span class="gr">20</span><span class="id">Pierce · PR-03</span></div><div><span class="gr">40</span><span class="id">Wash · WS-01</span></div><div class="on"><span class="gr">30</span><span class="id">Deburr · DB-01</span></div></div><span class="mcount">ops.splice(from,1); ops.push(item) — on the canonical array</span></div><p class="why">The canonical sequence was mutated on drop and the refusal has appended op 30 to the end, after pack. Nothing recorded where it came from, so the routing is now wrong in a way the user did not ask for and cannot undo.</p></div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+<div class="body">
+<table><thead><tr><th>Property</th><th>Options</th><th>What it decides</th></tr></thead><tbody>
+<tr><td class="k">commitTiming</td><td><code>optimistic</code> · <code>pending</code></td><td>Whether the collection shows the new order before the service agrees. <code>optimistic</code> is right where the move almost always succeeds and the user is making several in a row — and obliges the unconfirmed marking and the rollback of §10. <code>pending</code> is right where a refusal is common or expensive, as a released routing's is: the sequence the shop floor is working to should not appear to have changed until it has.</td></tr>
+<tr><td class="k">rollbackTarget</td><td><code>origin-index</code> · <code>service-order</code></td><td>Where a refused or superseded move leaves the collection. <code>origin-index</code> restores the sequence as the user last saw it committed, and is the default. <code>service-order</code> re-reads the canonical order from the service and is only correct where the refusal implies the local order was already stale — it must then say the sequence changed for a second reason.</td></tr>
+<tr><td class="k">dropLegality</td><td><code>refuse-on-hover</code> · <code>refuse-on-drop</code></td><td>When an illegal position is refused. <code>refuse-on-hover</code> declines to show an insertion point at all and states why on the blocking row — the honest default, because it never lets the user believe a position is available. <code>refuse-on-drop</code> accepts the gesture and then explains, which is defensible only where legality is expensive to evaluate for every candidate position.</td></tr>
+<tr><td class="k">transferAtomicity</td><td><code>all-or-nothing</code> · <code>per-item</code></td><td>Transfer variant only (§06). <code>all-or-nothing</code> is the default and the safe one: a routing operation is never simultaneously in-house and subcontracted. <code>per-item</code> is only for a multi-item transfer whose items are genuinely independent, and then it owes the per-item outcome reporting of <a href="BulkSelectionAction.spec.html">bulk selection and action</a>.</td></tr>
+<tr><td class="k">announcementScope</td><td><code>position-and-neighbours</code> · <code>position-only</code></td><td>How much of the result is stated. <code>position-and-neighbours</code> — "op 30 Deburr is now 2 of 8, after op 10 Blank and before op 20 Pierce" — is what a user who cannot see the list needs, and is the default for sequences with meaning. <code>position-only</code> is for long collections where naming neighbours on every move becomes noise.</td></tr>
+</tbody></table>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§06</span><h2>Variants</h2></div>
+<div class="body">
+<p>Two forms, one contract for the grab, the legality check and the rollback — and a materially different commit.</p>
+<table><thead><tr><th>Variant</th><th>What changes</th><th>What it must additionally guarantee</th></tr></thead><tbody>
+<tr><td class="k">Reorder within one collection</td><td>The sequence of identities changes; membership does not. One collection, one write.</td><td>Every other item's position is a consequence of the move, and the announcement says so where it matters — moving op 30 up moves op 20 down, and a user who was told only about op 30 has half the change.</td></tr>
+<tr><td class="k">Transfer between two collections</td><td>Membership changes, and both collections' contents change in one action. Order within the destination may also be part of the move.</td><td>One commit for both sides under <code>transferAtomicity: all-or-nothing</code>; both counts restated after it; a rollback that restores <em>both</em> collections, including the item's index in the source. An item may never be rendered in both collections, and never in neither.</td></tr>
+</tbody></table>
+<p>They are one pattern because the failure that makes both of them dangerous is the same failure — a move applied to the view and not to state, with no record of where the item came from. Where a product's transfer is between more than two collections, the contract is unchanged and the announcement must name the source and destination, since "moved" no longer identifies either.</p>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+<div class="body">
+<table><thead><tr><th>State</th><th>What is true</th><th>What is displayed</th></tr></thead><tbody>
+<tr><td class="k">at rest</td><td>Committed order. Nothing in hand.</td><td>The sequence, its positions, and a named handle on each movable row. Rows that cannot move say why.</td></tr>
+<tr><td class="k">grabbed</td><td>An item is in hand. Identity and origin index recorded. No proposed change yet.</td><td>The item marked as in hand, its origin position still stated, the legal destinations distinguishable, and the way out (<kbd>Escape</kbd>) named.</td></tr>
+<tr><td class="k">proposing</td><td>A proposed index exists and is legal.</td><td>Where the item would land, and — under <code>pending</code> — the proposed sequence beside the committed one.</td></tr>
+<tr><td class="k">refused position</td><td>The proposed index breaks a declared rule. Still fully grabbed.</td><td>The rule, on the row that blocks it, in text. No insertion point under <code>refuse-on-hover</code>.</td></tr>
+<tr><td class="k">moving</td><td>A legal move is in flight. Canonical order unchanged.</td><td>Progress naming the item; under <code>optimistic</code> the new order marked unconfirmed; the item's controls inert; the rest of the collection readable.</td></tr>
+<tr><td class="k">move failed</td><td>The commit failed. The collection is back to the committed order.</td><td>The cause, the sequence the collection now holds in the collection's own terms, and a retry of the same move.</td></tr>
+<tr><td class="k">moved</td><td>Canonical order replaced.</td><td>The new sequence, one announcement of the resulting position, and — where offered — an undo naming the reverse move.</td></tr>
+</tbody></table>
+<p class="warn"><strong>"Moving" and "moved" are not the same claim, and an optimistic collection must never make the second while doing the first.</strong> A routing that drops the unconfirmed marking the instant the row lands has told the line supervisor that deburr now precedes pierce; if MES then refuses the sequence, the correction arrives against a list that has already been read, and possibly already printed.</p>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§10</span><h2>Error handling</h2></div>
+<div class="body">
+<ul>
+<li><strong>A failed move restores the order the user last saw committed,</strong> under <code>rollbackTarget</code>. The item goes back to its origin index — not to the end, not to the position the service happened to return, unless <code>service-order</code> was declared and the second change is stated.</li>
+<li><strong>The rollback is perceivable, not silent.</strong> A refused move that quietly snaps back looks like a gesture that failed to register, and the user repeats it. The failure is stated persistently, in an <code>Alert</code> that names the item and the sequence the collection now holds: "The routing still runs op 20 Pierce before op 30 Deburr."</li>
+<li><strong>Failure is not illegality.</strong> A position refused by a declared rule (§04) is a legality refusal, resolved without any request; a position the service rejects is a failure. The two never share a message, because only one of them is worth retrying.</li>
+<li><strong>Retry re-requests the move the user currently intends,</strong> which is the move as it stands at the moment of retry. Where the collection has changed underneath in the meantime, the retry is re-evaluated for legality first.</li>
+<li><strong>A transfer fails as one thing.</strong> Under <code>all-or-nothing</code>, either side failing rolls both back, and the message states both collections' contents. A message that reports the destination alone leaves the user unsure whether the operation is still costed in-house.</li>
+<li><strong>An unknown outcome claims neither.</strong> Where the request times out, the pattern says the sequence may or may not have been accepted, shows the last known committed order, and offers a re-read of the canonical order — never a blind retry, which on a sequence write can apply the same move twice.</li>
+<li><strong>An item withdrawn mid-move ends the move and keeps the explanation.</strong> The pattern says which item left, why, and what the attempted position was.</li>
+<li><strong>The collection never fails with the move.</strong> One refused move leaves the rest of the collection readable and movable.</li>
+</ul>
+<div class="vp">
+<div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma bad">Op 30 Deburr was not moved<br><span class="mh">MES refused the sequence — op 50 Bore is pinned to fixture FX-2210, which requires op 20 Pierce complete. Nothing was changed: the routing still runs 10 · 20 · 30 · 40 · 50, and op 30 is back at position 3 of 8.</span></div><div class="mb">Retry moving op 30 Deburr above op 20 Pierce</div></div><p class="why">Cause, consequence and the actual sequence, with the item returned to the index it came from — so the supervisor knows what the shop floor is working to and what retry will send.</p></div>
+<div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma bad">Couldn't save the order.</div><div class="rows"><div><span class="gr">10</span><span class="id">Blank · PR-02</span></div><div class="on"><span class="gr">30</span><span class="id">Deburr · DB-01</span></div><div><span class="gr">20</span><span class="id">Pierce · PR-03</span></div></div></div><p class="why">The list still shows the move that was refused. The routing on screen and the routing in MES now disagree, nothing says which is real, and the next person to open the screen releases a sequence that was rejected.</p></div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§11</span><h2>Input &amp; interaction modalities</h2></div>
+<div class="body">
+<p>This is the section the pattern exists for. A drag is a compound gesture spanning several components, and no component in this system owns it — so the pattern must state what the gesture is, and what the same operation is for everyone who is not making it.</p>
+<ul>
+<li><strong>The keyboard route is the same operation, not an alternative feature.</strong> Grab on the handle (<kbd>Space</kbd> or <kbd>Enter</kbd>), move the proposed index (<kbd>↑</kbd>/<kbd>↓</kbd>, or <kbd>←</kbd>/<kbd>→</kbd> in a horizontal collection), drop (<kbd>Space</kbd> or <kbd>Enter</kbd>), abandon (<kbd>Escape</kbd>). It runs the same legality checks, produces the same commit, and returns to the same origin index. If the keyboard path is implemented as a separate "move up" that skips the legality check, the two paths will disagree, and the one nobody tested is the accessible one.</li>
+<li><strong>Grab mode is modal, and says so.</strong> While an item is grabbed by keyboard, the arrow keys move the item and not the focus, and the row states that it is in hand and how to get out. Silently swallowing arrow keys is how a user loses the list.</li>
+<li><strong>Every move is reachable without a drag, always.</strong> Explicit "move up" / "move down" / "move to position" controls stand beside the handle. They are not a degraded mode: a supervisor on a tablet with gloves on will use them by preference, and a destination twenty rows away is faster typed than dragged.</li>
+<li><strong>Touch: the grab is deliberate and the target is big.</strong> The handle is a full touch target at the system's minimum, and a drag starts from the handle rather than from the row, so a scroll gesture on the list is never mistaken for a move. Where a long press initiates a drag on the row, it has a stated duration and is accompanied by a state change the user can see before they move.</li>
+<li><strong>Hover is never load-bearing.</strong> Any affordance revealed on hover — the handle, the move controls — is also present on focus and permanently present on touch. A handle that appears on hover does not exist on a shop-floor tablet.</li>
+<li><strong>Auto-scroll during a pointer drag is bounded and interruptible,</strong> and the pattern requires an alternative to it: a destination the user must scroll to while holding an item is the case the explicit move controls exist for.</li>
+<li><strong>Pointer cancellation is honoured.</strong> A lost pointer capture, a released button outside the window, or a system interruption abandons the move — it does not commit whatever index was last proposed.</li>
+</ul>
+<div class="vp">
+<div class="yes"><div class="cap">Do</div><div class="mock"><div class="rows"><div class="lift"><span class="gr">⠿</span><span class="id">Op 30 Deburr — in hand</span><span>3 of 8</span></div><div class="ind"></div><div><span class="gr">20</span><span class="id">Pierce · PR-03</span></div></div><span class="mh">↑ ↓ to move · Space to drop above op 20 Pierce · Esc to leave it at 3</span><div style="display:flex;gap:6px"><div class="mb q">Move up</div><div class="mb q">Move to position…</div></div></div><p class="why">One operation, three inputs. The keyboard route grabs, proposes and drops through the same state machine, and the explicit controls make a destination off screen reachable at all.</p></div>
+<div class="no"><div class="cap">Don't</div><div class="mock"><div class="rows"><div class="on"><span class="gr">⠿</span><span class="id">Op 30 Deburr</span></div><div><span class="gr">20</span><span class="id">Pierce · PR-03</span></div></div><span class="mh">Drag rows to reorder.</span></div><p class="why">A handle that is a decorative glyph on a <code>div</code>, no focus stop, no keys, no move controls. The routing sequence — the thing the shop floor works to — is editable only by someone with a working mouse.</p></div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+<div class="body">
+<ul>
+<li><strong>The handle is a control with a name that includes the item.</strong> "Move op 30 Deburr" — not "Drag", and not an unlabelled glyph. A column of eight handles all called "Reorder" is unusable.</li>
+<li><strong>Grabbed state is announced, and so is the way out.</strong> On grab: "Op 30 Deburr grabbed, position 3 of 8. Use up and down arrows to move, Space to drop, Escape to cancel." The instruction is part of the announcement because the modal keys are not discoverable.</li>
+<li><strong>Each proposed position is announced as the user passes it,</strong> politely, naming the position and its neighbours under <code>announcementScope</code>, and naming a refusal with its reason where the position is illegal. A move made blind is a move made by guess.</li>
+<li><strong>The result is announced in the collection's own terms,</strong> once: position, total, and — under <code>position-and-neighbours</code> — what it now follows and precedes. "Moved" is not a result.</li>
+<li><strong>Focus stays with the item through the move and after it.</strong> The handle of the moved row keeps focus at its new position, so a user making several moves is not returned to the top of the list between them. On abandon, focus stays on the handle at the origin index.</li>
+<li><strong>A refusal or a failure is announced where the user is,</strong> and a failure is an alert, because the user's belief about the sequence is now wrong.</li>
+<li><strong>Position is stated in text, not carried by order alone.</strong> Each row states its sequence number, so a change of order is perceivable to a user reading one row at a time.</li>
+<li><strong>Reduced motion does not remove the information.</strong> Where a move animates, the announcement carries the whole result independently; where motion is reduced, the result is still stated in full.</li>
+</ul>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+<div class="body">
+<ul>
+<li><strong>Items are named by what they are, not by their index.</strong> "Op 30 Deburr · DB-01", never "row 3" — an index is the thing being changed and cannot also be the name.</li>
+<li><strong>A result states position out of total, and what it changed.</strong> "Op 30 Deburr is now 2 of 8 — after op 10 Blank, before op 20 Pierce." A bare "Order updated" tells a planner nothing they can check against the routing sheet.</li>
+<li><strong>A refusal names the rule and the blocking item.</strong> "Op 50 Bore is pinned to fixture FX-2210 and must follow op 20 Pierce" — not "Invalid position", which names neither the rule nor anything the user can move instead.</li>
+<li><strong>Failure copy states that the order did not change, in the collection's own sequence, before it explains the cause.</strong> "Not moved" first, mechanism second.</li>
+<li><strong>Undo is named as the reverse move,</strong> not as "Undo": "Put op 30 Deburr back to position 3". The user has made several moves and needs to know which one is coming back.</li>
+<li><strong>Transfer copy names both sides and both counts.</strong> "Op 60 Harden moved to Subcontract · Nashik Forge &amp; Machine Works — 2 subcontracted, 6 in-house."</li>
+<li><strong>Instructions for the modal keys are stated where the mode begins,</strong> not in a help panel, and not only in a tooltip on a handle nobody has hovered.</li>
+</ul>
+<div class="vp">
+<div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma ok">Op 30 Deburr is now 2 of 8 — after op 10 Blank, before op 20 Pierce. Released to MES at 06:12 (IST).</div><div class="mb q">Put op 30 Deburr back to position 3</div></div><p class="why">The result is checkable against the routing sheet, and the way back names the move it reverses.</p></div>
+<div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma ok">Order updated.</div><div class="mb q">Undo</div></div><p class="why">Four moves in, "Undo" is a guess about which one, and "Order updated" does not say whether the sequence MES holds is the one on screen.</p></div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§16</span><h2>Internationalization</h2></div>
+<div class="body">
+<ul>
+<li><strong>Direction is part of the operation in a horizontal collection.</strong> Under RTL, <kbd>←</kbd> moves the item <em>later</em> in the sequence and <kbd>→</kbd> moves it earlier: the arrow keys follow the reading direction, because the user is moving the item through the list as they read it, not through screen space.</li>
+<li><strong>Sequence words and direction words are not interchangeable.</strong> The rule is stated in sequence terms — earlier, later, before op 20 — and where a control must be spatial, "move up" belongs to a vertical collection only. A horizontal collection whose control says "move left" is wrong in half the world's locales and ambiguous in the rest.</li>
+<li><strong>Insertion indicators mirror; the sequence does not.</strong> Position 1 is first in the reading order, which under RTL is the rightmost. The number stated in text is the source of truth for anyone the mirroring confuses.</li>
+<li><strong>Announcements state numbers, not directions, wherever both would do.</strong> "Now 2 of 8" is direction-free and survives translation; "moved up one" does not survive being read in a mirrored list.</li>
+<li><strong>Position numerals follow the locale,</strong> and the collection's own numbering — a routing's op numbers are identifiers, not positions, and are never localised or renumbered by a move (§18).</li>
+</ul>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§17</span><h2>Performance</h2></div>
+<div class="body">
+<ul>
+<li><strong>The proposed index is local and immediate.</strong> Nothing about following the user's pointer or arrow key may wait on the network; legality is evaluated locally from declared rules (§04), which is why legality is declared.</li>
+<li><strong>The move is guarded at the state transition,</strong> not by disabling the handle: a second grab can be initiated before the disabled attribute lands, and two sequence writes on one routing can produce a duplicated operation.</li>
+<li><strong>Each move carries a request identity,</strong> and only the current one for that collection may write canonical order — a response arriving after a newer move, a revert, or a withdrawal writes nothing.</li>
+<li><strong>Optimism is a declared policy with an obligation attached.</strong> Under <code>optimistic</code> the unconfirmed marking is not optional and the rollback is not optional; without both, optimism is a lie told quickly.</li>
+<li><strong>A slow move is reported against the item,</strong> with progress naming it. A page-level spinner over a per-item move hides which operation is waiting, and blocks the collection the user was reading.</li>
+<li><strong>Several moves in succession are ordinary use.</strong> Where the service accepts one sequence write at a time, the pattern says so — the second grab is refused with the first named — rather than allowing an interleaving it cannot reconcile.</li>
+</ul>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+<div class="body">
+<table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+<tr><td class="k">Dropped on its own origin index</td><td>No move, no request, no announcement of a change. It is an abandon, not a zero-length move.</td></tr>
+<tr><td class="k">Item removed while grabbed</td><td>The move ends, the pattern states which item left and why, and no request is sent. Never a grab left holding an identity that no longer exists.</td></tr>
+<tr><td class="k">Another user reorders the collection underneath</td><td>The grab holds its identity, the origin index is re-derived from the new committed order, and the change is announced. Where the item's own position moved, the move is re-evaluated for legality before it commits.</td></tr>
+<tr><td class="k">Collection is sorted by a column</td><td>Reordering is unavailable while a sort other than the collection's own sequence is applied, and says so: dragging a row in a list sorted by work centre asks a question — "before which operation?" — that the view cannot answer. Restore the sequence order to reorder.</td></tr>
+<tr><td class="k">Collection is filtered or paged</td><td>Moving an item relative to rows that are hidden is refused or explicitly scoped; "position 3 of 8 shown" is not a position in a routing of forty. State the scope, or disable the move.</td></tr>
+<tr><td class="k">Destination off screen</td><td>The explicit move controls are the answer (§11). Auto-scroll is a convenience and never the only route.</td></tr>
+<tr><td class="k">Rapid repeated moves</td><td>Each is a distinct request with its own identity; the collection may refuse a second while one is in flight, but must never apply two out of order.</td></tr>
+<tr><td class="k">Move resolves after the context changed</td><td>Discarded if it belongs to a superseded move, a reverted one, or a withdrawn item. Canonical order is written only by the move that is still current.</td></tr>
+<tr><td class="k">Single-item collection, or an item with no legal destination</td><td>The handle is absent or disabled with a stated reason, and the row says it cannot move. Never a handle that grabs and refuses everywhere.</td></tr>
+<tr><td class="k">Pinned or fixed items</td><td>Stated on the row, and they hold their positions as other items move around them — op 70 Final inspect stays last, and a move that would displace it is refused by rule (§04), not by the service.</td></tr>
+<tr><td class="k">Identifiers that look like positions</td><td>Op numbers are identities and are not renumbered by a move. Where the product does renumber on release, that is a separate, stated, confirmed step — not a side effect of a drag.</td></tr>
+<tr><td class="k">Transfer leaving a collection empty</td><td>Permitted where the domain permits it, and the empty collection states what it means — "No operations subcontracted" — rather than rendering as a broken drop target.</td></tr>
+</tbody></table>
+</div>
+</section>
+
+<section>
+<div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+<div class="body">
+<ul>
+<li><strong>Hold order as an array of identities, separate from the items.</strong> <code>order: ['OP10','OP20',…]</code> plus a map of items by id. A move is a pure transformation of that array; nothing reads a DOM index to find out what the sequence is.</li>
+<li><strong>Hold the grab as its own object:</strong> <code>{ id, originIndex, proposedIndex }</code>. All three, from the moment of grab. An implementation that stores only <code>draggingId</code> cannot implement <kbd>Escape</kbd>, cannot implement rollback, and will reach for "move to end".</li>
+<li><strong>Never write the canonical order before the commit succeeds.</strong> Under <code>optimistic</code>, render from a derived sequence — committed order plus the in-flight move — rather than by mutating the committed one. Rollback is then discarding the in-flight move, not computing an inverse.</li>
+<li><strong>Write legality as one function over (item, candidate index, collection)</strong> and call it from the pointer path, the keyboard path and the pre-commit check. One function is what makes the three paths agree; three implementations is what makes the keyboard one wrong.</li>
+<li><strong>Derive the state, do not store it.</strong> At rest, grabbed, proposing, refused, moving, failed and moved are all computable from the grab object, the legality result and the in-flight request. A stored <code>isDragging</code> flag is what leaves a list grabbed after its item disappears.</li>
+<li><strong>Tag each move with a monotonic request number</strong> and check it — plus current membership — before writing anything.</li>
+<li><strong>Send the move, not the array.</strong> <code>{ id, fromIndex, toIndex, baseRevision }</code> lets the service detect that the sequence moved underneath the user; posting the whole reordered array is a silent last-write-wins over anyone else's change. The service must therefore expose a sequence revision, and the response must be attributable to the request that asked for it.</li>
+<li><strong>Keep focus management with the transitions,</strong> not in the rows: grab focuses nothing new, a completed move keeps focus on the moved item's handle at its new index, an abandon keeps it at the origin. Rows that claim focus on mount fight the pattern and lose the user's place.</li>
+<li><strong>Implement the keyboard path first</strong> — or better, do not implement it: <a href="../composite/SortableCollection.spec.html"><code>SortableCollection</code></a> is this state machine, and its one <code>canDrop</code> is what keeps the two input paths in agreement. Where you must hand-build it, the keyboard path is the whole state machine with none of the pointer noise; built second, it becomes a bolted-on approximation of the pointer path.</li>
+<li><strong>For a transfer, hold both orders and commit once.</strong> The grab records the source collection as well as the origin index, and the rollback restores both arrays.</li>
+</ul>
+<p class="warn"><strong>Closed as decided, 7 Sep 2026 — promoted.</strong> The pointer and keyboard mechanics this pattern leans on — the grab handle, the insertion indicator, the modal keyboard grab with its live position readout, bounded auto-scroll and the per-position legality check — are now <a href="../composite/SortableCollection.spec.html"><code>SortableCollection</code></a>. Both promotion tests were met: the grab is aggregate state no row can hold alone, and a hand-rebuilt one loses the keyboard route, which is a consequence rather than a cosmetic difference. The split is exactly the one this spec was written around — the composite owns the mechanics and no commit at all, so everything in §04, §05, §08, §10, §16, §17 and §20 about order as committed state, optimism, rollback and atomicity stays here, with the consumer. Transfer (§06) stays a pattern for the same reason: its commit spans two collections. The composite ships unfrozen — its API closes once a consumer outside this design system has used it, per the <a href="../../guidelines/promotion-policy.card.html">promotion policy</a>.</p>
+</div>
+</section>
+
+<p class="omitted"><strong>Omitted sections and why.</strong>
+§07 Sizes — no coordinated sizing exists at the pattern level; the handle's touch-target minimum is a system-wide rule (§11) and the control sizes are the components' own.
+§09 Validation — a position is not judged for correctness. A rule known before the drop is drop legality, which is availability of a destination (§04, §05); a rule only the service knows is failure (§10). Merging them would offer a retry for a position that can never be legal.
+§13 Motion — an item may animate into its new position and a rollback may animate back, but no motion carries information the announcement does not, and none may delay it; the requirement that a rollback be perceivable rather than instant is stated as a failure rule in §10 and as an announcement rule in §12, where it can be met without motion at all.
+§15 Responsive — narrow viewports change which input is practical, not what the interaction is; that belongs to §11, which requires the explicit move controls unconditionally rather than as a small-screen fallback.
+§19 Anti-patterns — the refusals in §01, the separation rules in §04, the modality requirements in §11 and the failure rules in §10 cover the recurring misuses; a section restating them adds nothing.
+§21 Developer notes — the contract in §04, §05, §08, §10 and §20 is the whole contract; its two requirements of an API — a sequence revision, and a response attributable to the move that asked for it — are stated in §20.</p>
+</div></body></html>

@@ -1,0 +1,378 @@
+<!-- @dsCard group="Specs · Feedback" viewport="1080x760" name="Toast" subtitle="Full specification — transient notice: purpose, anatomy, queue, timing, keyboard, a11y" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Toast — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:flex-start;gap:16px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:6px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.stagebox{position:relative;width:100%;height:260px;border:var(--border-hairline);border-radius:var(--radius-md);background:var(--background-page);overflow:hidden}
+.stagebox .fake{position:absolute;inset:0;padding:14px;color:var(--text-tertiary);font-size:var(--text-xs)}
+.stack{display:flex;flex-direction:column;gap:var(--toast-gap)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Toast, Toaster, Button, IconButton, Badge, Text, Dialog, Card } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div>{children}</div></div>;
+
+function Spec(){
+return (
+<div className="page">
+  {/* One viewport for the whole page — mounted once, exactly as a product would. */}
+  <Toaster position="bottom-right" maxVisible={3} />
+
+  <div className="masthead">
+    <span className="eyebrow">Feedback · Component specification</span>
+    <h1>Toast</h1>
+    <p className="lede">A short, transient notice that something happened — usually something the user just did. It is the only surface in this system that appears without being asked for, and every decision in it follows from that: it never takes focus, never blocks anything, never asks a question, and a failure notice never expires on its own. If the user must read it, act on it, or find it again later, it was never a toast.</p>
+    <div className="meta">
+      <span>components/feedback/Toast.jsx</span><span>window.MeridianDesignSystem_962c43.Toast · Toaster</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items</span><span>since: 1.0.0 · revised 1.7.0</span><span>14 tokens · --z-toast (700)</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Confirmation, after the fact, that can be missed.">
+    <p>Use a toast to confirm a completed action whose result is not already visible on screen, or to report that one failed. "Work order created" when the list is behind a filter that hides it. "Line 4 held" from a row menu three screens away from the line's page. The test is simple: <strong>if every user missed this message, would anything break?</strong> If yes, it is not a toast.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Confirm an action whose result is off-screen','Toast','This component.'],
+      ['Report a failure the user should know about','Toast, tone="danger"','Persistent, dismissible, with an action if there is a retry.'],
+      ['Show that a form field is wrong','Field error','Errors belong beside the input that caused them, permanently.'],
+      ['Force a decision before continuing','Dialog','A toast has no answer to collect and disappears while the user thinks.'],
+      ['Announce a condition that persists','An inline banner','"Two lines are down" is state, not an event. State stays on the page.'],
+      ['Confirm something already visible','Nothing','A row that turns "Held" the moment you press Hold does not need a toast too.'],
+      ['Show progress of work in flight','The surface doing the work','A toast is not a progress bar; reuse one id if you must narrate start and end.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> for undo. A toast is the only good home for "Undo" — the action just happened, the window is short, and the offer disappears with it.</li>
+      <li><strong>Do not use</strong> for anything the user must act on. A toast that must be clicked is a modal with a countdown.</li>
+      <li><strong>Do not use</strong> for validation, for state, or for the result of something the user can see happening.</li>
+      <li><strong>Never queue toasts as a log.</strong> There is no history, no "notification centre" behind this component, and pretending otherwise loses data (§12).</li>
+    </ul>
+    <div className="demo">
+      <Button variant="secondary" onClick={()=>Toaster.success({title:'Work order created',message:'WO-88431 is queued for the Days shift.'})}>Success</Button>
+      <Button variant="secondary" onClick={()=>Toaster.show({title:'Line 4 held',message:'Downtime logged from 09:12.',action:<Button variant="link" size="sm" onClick={()=>Toaster.show('Hold reverted')}>Undo</Button>})}>Info with undo</Button>
+      <Button variant="secondary" onClick={()=>Toaster.warning({title:'Two windows skipped',message:'Maintenance has not run since 17 Aug.'})}>Warning</Button>
+      <Button variant="secondary" onClick={()=>Toaster.error({title:'Export failed',message:'The report service did not respond.',action:<Button variant="link" size="sm">Retry</Button>})}>Danger</Button>
+      <Button variant="ghost" onClick={()=>Toaster.dismissAll()}>Dismiss all</Button>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="An icon, two lines, one action, one dismiss.">
+    <div className="demo col">
+      <div className="stack">
+        <Toast tone="danger" title="Export failed" message="The report service did not respond." action={<Button variant="link" size="sm">Retry</Button>} onDismiss={()=>{}} />
+        <Toast tone="success" title="Work order created" message="WO-88431 is queued for the Days shift." onDismiss={()=>{}} />
+        <Toast tone="info" title="Line 4 held" onDismiss={()=>{}} />
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        {[['1','Viewport — one fixed-position region per app at --z-toast (700), inset by --toast-viewport-inset. pointer-events: none, so the page under it stays usable; only the toasts themselves take the pointer.'],
+          ['2','Tone icon — 16px, one of four --toast-icon-* colours. The tone\u2019s only visual carrier: the surface itself never tints.'],
+          ['3','Title — --text-sm, --weight-medium. A completed statement, past tense, no full stop.'],
+          ['4','Message — optional single line, --text-xs, --toast-message-text. One sentence, with a full stop.'],
+          ['5','Action — at most one Button variant="link", size sm. Undo, Retry, View logs. Never two.'],
+          ['6','Dismiss — a ghost IconButton labelled "Dismiss". Always present unless the toast expires on its own.'],
+          ['7','Overflow line — "+2 more" in mono 2xs when the queue is longer than maxVisible (§11).'],
+          ['8','Width — --toast-width (360px), fixed. Not the content\u2019s width: a stack of three toasts with three different widths reads as three different components.']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+    </div>
+    <p>The surface is <code>--surface-overlay</code> with <code>--elevation-4</code> and no tone tint. A red-filled failure toast in the corner of a plant console competes with the alarm colours in the data itself — and the operator has learned that red in this product means a line is down, not that an export did not work.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="A presentational Toast, and a Toaster that owns the queue.">
+    <T cols={['Toast prop','Type','Default','Notes']} rows={[
+      ['tone','\u2018info\u2019 | \u2018success\u2019 | \u2018warning\u2019 | \u2018danger\u2019','info','Icon and default lifetime (§04).'],
+      ['title','ReactNode','—','Required. What happened.'],
+      ['message','ReactNode','—','One sentence of detail. Omit when the title says everything.'],
+      ['action','ReactNode','—','One link Button. Two actions means it is a Dialog.'],
+      ['onDismiss','() => void','—','Renders the dismiss button when present.'],
+      ['live','\u2018off\u2019 | \u2018on\u2019','off','Announce this toast itself — only for a Toast rendered inline, outside Toaster.'],
+    ]}/>
+    <T cols={['Toaster','Type','Default','Notes']} rows={[
+      ['position','\u2018bottom-right\u2019 | \u2018top-right\u2019 | \u2018bottom-center\u2019 | \u2018top-center\u2019','bottom-right','One per product, chosen once (§04).'],
+      ['maxVisible','number','3','Rendered at once; the rest wait behind "+N more".'],
+      ['Toaster.show(spec)','(string | ToastSpec) => id','—','A bare string is shorthand for a title. Returns the id.'],
+      ['Toaster.success · warning · error','(string | ToastSpec) => id','—','Tone shorthands. error ⇒ tone="danger".'],
+      ['Toaster.dismiss(id) · dismissAll()','(id) => void · () => void','—','Programmatic removal — for a toast whose reason has gone away.'],
+    ]}/>
+    <T cols={['ToastSpec','Type','Notes']} rows={[
+      ['id','string','Reuse it to REPLACE a toast in place: "Exporting…" becomes "Export ready" without a second notice.'],
+      ['duration','number | null','Milliseconds, or null to persist. Defaults by tone (§04). Set it explicitly only with a reason.'],
+      ['dismissible','boolean','false removes the dismiss button — legal only for a toast that expires on its own.'],
+    ]}/>
+    <p>The store is module-level, so <code>Toaster.show()</code> works from a mutation handler, a socket callback or a route guard — anywhere without a component in scope. That is the whole reason for an imperative API in an otherwise declarative system: the code that knows the save succeeded is rarely the code that can render.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Four tones, and the tone sets the clock.">
+    <div className="demo col">
+      <div className="stack">
+        <Toast tone="info" title="Line 4 held" message="Downtime logged from 09:12." action={<Button variant="link" size="sm">Undo</Button>} onDismiss={()=>{}} />
+        <Toast tone="success" title="Work order created" onDismiss={()=>{}} />
+        <Toast tone="warning" title="Two maintenance windows skipped" message="Last service 17 Aug." onDismiss={()=>{}} />
+        <Toast tone="danger" title="Export failed" message="The report service did not respond." action={<Button variant="link" size="sm">Retry</Button>} onDismiss={()=>{}} />
+      </div>
+    </div>
+    <T cols={['Tone','Icon','Lifetime','Use']} rows={[
+      ['info','info','5s','Something happened that the user caused and cannot see. The home of Undo.'],
+      ['success','circle-check','5s','A create, save or send completed. Use sparingly — a product that congratulates every save is noise.'],
+      ['warning','triangle-alert','8s','It worked, but not entirely: partial import, skipped rows, degraded mode. Longer, because there is something to read.'],
+      ['danger','circle-alert','never','It failed. Persistent and dismissible: a failure the user has not read is not a failure they have been told about.'],
+    ]}/>
+    <ul>
+      <li><strong>Position is a product decision, made once.</strong> <code>bottom-right</code> is the default: out of the reading path, away from the page header, and the corner where a console's own controls are least dense. Top positions are for products whose bottom-right corner is already occupied.</li>
+      <li><strong>There is no "action" variant.</strong> A toast with an action is the same toast; it just gets read for longer, which is why warning and danger last longer than success.</li>
+      <li><strong>There is no loading tone.</strong> Reuse an <code>id</code> if you genuinely must narrate a long job, but a spinner in a toast is a progress bar with no home.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="One. Deliberately.">
+    <T cols={['Dimension','Value','Why']} rows={[
+      ['Width','--toast-width (360px), fixed','Fixed rather than content-sized so a stack reads as one component. 360px holds a title and a sentence at --text-xs without wrapping to three lines.'],
+      ['Height','Content','One or two lines plus an optional action row. Past four lines it is not a toast (§10).'],
+      ['Gap','--toast-gap (8px)','Between stacked toasts. Tight enough to read as a stack, loose enough that two surfaces do not merge.'],
+      ['Inset','--toast-viewport-inset (24px)','From the viewport edge, all positions.'],
+      ['Stack depth','maxVisible = 3','Past three, the fourth is queued behind "+N more" (§11).'],
+    ]}/>
+    <div className="demo col">
+      <div className="stack">
+        <Toast tone="success" title="Saved" onDismiss={()=>{}} />
+        <Toast tone="info" title="Shift handover recorded" message="Days → Swing at 14:00 CET, signed by M. Okonkwo." onDismiss={()=>{}} />
+      </div>
+      <Text size="xs" tone="tertiary">Same width, different height. There is no sm or lg toast: a small toast would not fit a sentence, and a large one is a Dialog with no buttons.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="06" title="States" note="Its states are about time, not interaction.">
+    <T cols={['State','Treatment']} rows={[
+      ['Entering','mer-slide-in-right (or mer-drop-in for top-center) over --duration-base. One toast animates; the stack does not reflow (§09).'],
+      ['Resting','Full opacity. No countdown ring, no progress bar, no fading as the timer runs — a message that dims while you read it is a message you are being rushed through.'],
+      ['Paused','Every visible toast holds its timer while the pointer is inside the viewport or focus is inside any toast. Timers are cleared, not merely extended.'],
+      ['Dismissed','Removed. No exit animation (§09).'],
+      ['Replaced','Same id, new content, in place. The timer restarts; the surface does not re-enter.'],
+      ['Queued','Beyond maxVisible: not rendered, counted in "+N more", promoted when a slot frees.'],
+      ['Persistent','duration: null (all danger toasts). No timer at all, dismiss button required.'],
+    ]}/>
+    <div className="demo col">
+      <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+        <Button variant="secondary" onClick={()=>{const id='export';Toaster.show({id,title:'Exporting…',message:'Preparing 1,204 rows.',duration:null,dismissible:false});window.setTimeout(()=>Toaster.show({id,tone:'success',title:'Export ready',message:'work-orders-5-sep.csv',action:<Button variant="link" size="sm">Download</Button>}),1800);}}>Replace in place (same id)</Button>
+        <Button variant="secondary" onClick={()=>{[1,2,3,4,5].forEach((n)=>Toaster.show({title:`Row ${n} imported`}))}}>Queue five</Button>
+      </div>
+      <Text size="xs" tone="tertiary">Hover the stack to hold the timers. Five at once shows three plus "+2 more".</Text>
+    </div>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="It does not take focus. It is reachable when you want it.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['(on appear)','Nothing. Focus does not move. A toast that steals focus interrupts typing and loses the user\u2019s place — the failure this component exists to avoid causing.'],
+      ['Tab','Reaches the toast\u2019s action and dismiss buttons in DOM order, which — with the viewport at the end of the document — is after the page\u2019s own content.'],
+      ['Enter · Space','Activates the focused action or dismiss. Native buttons.'],
+      ['Escape','Nothing, deliberately. Escape belongs to whatever layer the user is actually working in; a toast that eats it would close the wrong thing.'],
+      ['Focus inside','Pauses every visible toast\u2019s timer, so a keyboard user cannot lose the action they were tabbing towards.'],
+    ]}/>
+    <p>The honest problem with toasts and keyboards is <strong>reachability</strong>: an action that expires in five seconds is not reachable by someone tabbing through a page. This system's answer is not a shortcut — it is a rule: <em>never put an action in a toast that exists nowhere else</em>. Undo must also be available from the row or the audit trail; Retry must also be on the failed panel. The toast is the fast path, not the only path.</p>
+    <div className="demo col">
+      <Button variant="secondary" onClick={()=>Toaster.show({title:'Line 4 held',message:'Also undoable from the line\u2019s history.',duration:null,action:<Button variant="link" size="sm">Undo</Button>})}>Persistent toast with an action</Button>
+      <Text size="xs" tone="tertiary">Tab from here: page content first, then the toast's Undo and Dismiss. Focus inside holds the timer.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="One live region, and the tone decides how loudly.">
+    <ul>
+      <li><strong>One region, not one per toast.</strong> The viewport is <code>role="region" aria-live="polite" aria-relevant="additions"</code> with an accessible name ("Notifications"). A live region per toast means three simultaneous announcements racing; one region reads them in order.</li>
+      <li><strong>Critical toasts interrupt.</strong> A <code>danger</code> toast renders as <code>role="alert"</code> (assertive) inside the polite region — the one case where cutting across the current announcement is correct, because the alternative is a failure the user never hears.</li>
+      <li><strong>Never <code>aria-live="assertive"</code> for success.</strong> "Saved" interrupting a screen-reader user mid-sentence is worse than no confirmation at all.</li>
+      <li><strong>Focus is never moved.</strong> No focus trap, no autofocus, no scrim. The toast is not a layer the user is in.</li>
+      <li><strong>The dismiss button has a real name</strong> ("Dismiss"), and the icon is decorative. The tone icon is decorative too — the words carry the tone, which is why the title says "Export failed" rather than relying on a red glyph.</li>
+      <li><strong>The viewport is last in the DOM</strong> and <code>pointer-events: none</code> except on the toasts themselves, so it never intercepts a press meant for the page and never lands mid-way through the tab order.</li>
+      <li><strong>Timing is a WCAG problem, and 2.2.1 applies.</strong> Auto-dismiss is a time limit on reading: the pause-on-hover/focus behaviour, the "no action that exists only here" rule, and persistent danger toasts are what make it acceptable. A product that needs longer should raise <code>duration</code>, not add a shortcut.</li>
+      <li><strong>Reduced motion</strong> removes the slide entirely — the toast simply appears, which is also what it does for a user with animations off in the OS.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="One movement in, nothing out.">
+    <T cols={['Moment','Motion','Tokens']} rows={[
+      ['Enter (right positions)','mer-slide-in-right — 16px in from the edge it belongs to, with opacity.','--duration-base · --ease-out'],
+      ['Enter (top-center)','mer-drop-in — 4px down. Nothing slides sideways from a centre position.','--duration-base · --ease-out'],
+      ['Exit','None. The toast is removed.','—'],
+      ['Stack reflow','None. Remaining toasts jump to their new position.','—'],
+      ['Timer','No visual countdown. No ring, no shrinking bar.','—'],
+      ['Reduced motion','--duration-* collapse to 1ms and --motion-slide to 0: the toast appears in place.','prefers-reduced-motion'],
+    ]}/>
+    <p>The entrance earns its 200ms: a surface that appears without being asked for needs to show where it came from, or the user's eye has to search for what changed. Everything after that is removal, and removal is not worth animating — an exit transition means the dismiss press is followed by 140ms of a toast still being there, and in a stack of three it means two more toasts sliding under the pointer.</p>
+    <p>There is deliberately <strong>no countdown indicator</strong>. A shrinking bar turns a passive notice into a deadline, pulls the eye back to the corner repeatedly, and is exactly the kind of looping motion the motion layer forbids. If the lifetime matters enough to visualise, the message is not transient.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="Past tense, one line, no apology.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>State what happened, in the past tense:</strong> "Work order created", "Line 4 held", "Export failed".</li>
+        <li><strong>Name the object</strong> when there could be doubt: "WO-88431 created", not "Created".</li>
+        <li><strong>Put the detail in the message</strong>, as one sentence with a full stop: "Downtime logged from 09:12."</li>
+        <li><strong>Say what to do next in a failure</strong> — and make it a real action: "Retry", "View logs".</li>
+        <li><strong>Keep the title under about six words</strong> so 360px holds it on one line.</li>
+        <li><strong>Sentence case</strong>, no exclamation marks (house rule), no full stop in the title.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>"Success!"</strong>, "Done!", "Oops" — no exclamation marks, ever, and no cheer.</li>
+        <li><strong>Apologies or blame:</strong> "Sorry, something went wrong". Say what failed and what to do.</li>
+        <li><strong>Raw errors</strong> — status codes, stack traces, "ERR_CONN_RESET". Say it in operator language and link the detail.</li>
+        <li><strong>Instructions the user must follow later.</strong> Anything worth remembering cannot live in a five-second notice.</li>
+        <li><strong>Two actions</strong>, or an action that is really a question ("Keep / Discard"). That is a Dialog.</li>
+        <li><strong>Questions at all.</strong> A toast has no way to take an answer.</li>
+      </ul></div>
+    </div>
+    <p>One more content rule specific to a console: <strong>a toast must not be the only record of an operational event</strong>. "Line 4 held" belongs in the line's history whether or not anyone saw the toast — the notice is a courtesy for the operator who pressed the button, and the audit trail is the record.</p>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Full width at the bottom, and fewer of them.">
+    <ul>
+      <li><strong>The viewport is capped</strong> at <code>calc(100vw - 2 × inset)</code>, so a 360px toast becomes a full-width-minus-margins card on a 390px phone without any breakpoint.</li>
+      <li><strong>Prefer a bottom position on touch.</strong> Bottom-centre or bottom-right keeps the notice in the thumb's reach and out of the status bar and page header.</li>
+      <li><strong>Reduce <code>maxVisible</code> to 1 on small screens.</strong> Three stacked toasts on a phone cover the content the user was looking at; one plus "+2 more" does not.</li>
+      <li><strong>Never cover a fixed action bar.</strong> If the product has a bottom bar on mobile, raise the inset above it or move the toaster to the top — a toast that hides the Save button is a bug the user cannot dismiss fast enough.</li>
+      <li><strong>The stack grows away from the edge</strong> it is anchored to (upwards at the bottom, downwards at the top), so the newest toast is always closest to the corner and the oldest moves out of the way.</li>
+      <li><strong>One viewport per app, not per route.</strong> Two mounted <code>Toaster</code>s render the same queue twice, in two corners.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+        <Button variant="secondary" onClick={()=>{['Row 1 imported','Row 2 imported','Row 3 imported','Row 4 imported'].forEach((t,i)=>Toaster.show({id:`imp-${i}`,title:t}))}}>Four toasts (see "+1 more")</Button>
+        <Button variant="ghost" onClick={()=>Toaster.dismissAll()}>Clear</Button>
+      </div>
+      <Text size="xs" tone="tertiary">The queue is FIFO and the overflow line is counted, never silently dropped.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Six, and two of them are how toasts get abused.">
+    <div className="two">
+      <div className="pane dont"><h3>The two that matter</h3><ul>
+        <li><strong>A toast as the notification centre.</strong> There is no history behind this component. Every toast a user misses is gone — so anything that needs to be findable later belongs in an alarms page, an audit trail or an inbox, with the toast as at most a pointer to it.</li>
+        <li><strong>Errors that only exist as toasts.</strong> A failed save reported in a five-second corner notice, with the form still showing stale values, is data loss with a friendly face. Put the error on the thing that failed; the toast is the second copy.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Also don't</h3><ul>
+        <li><strong>Confirm the obvious.</strong> No toast for a toggle the user can see flip, or a row that visibly disappears.</li>
+        <li><strong>Stack five for one action</strong>. A bulk operation gets one toast with a count — "12 work orders closed" — not twelve toasts.</li>
+        <li><strong>Steal focus</strong> or trap it. Toasts are not layers.</li>
+        <li><strong>Auto-dismiss a failure.</strong> Danger tone is persistent for a reason; overriding <code>duration</code> on it is almost always wrong.</li>
+        <li><strong>Put a form, a link list or two buttons in one.</strong> 360px and five seconds is not a place to make decisions.</li>
+        <li><strong>Toast on page load.</strong> A notice about something the user did not just do has no context — that is a banner.</li>
+      </ul></div>
+    </div>
+    <p className="warn">The pattern to reject in review is the "toast for everything" product: every save, every filter, every navigation confirmed in the corner. Operators stop reading the corner within a shift, and the one toast that mattered — the export that failed — is the one they have trained themselves to ignore.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="What the code does, and why it does it that way.">
+    <ul>
+      <li><strong>The store is module-level, not context.</strong> A <code>Set</code> of listeners and one array; <code>Toaster.show()</code> is callable from anywhere, including code with no React scope. Context would force every call site to be a component or a hook, which is precisely where notices are not raised.</li>
+      <li><strong>Timers live in the viewport, not the store.</strong> Pausing has to hold <em>every visible</em> toast at once, and only the component knows about the pointer and focus. On pause the handles are cleared and re-created on resume, so a paused toast gets a full duration afterwards rather than the remainder.</li>
+      <li><strong>Same id replaces in place.</strong> One lookup in <code>push()</code>: an existing id is overwritten rather than appended, which is what makes "Exporting…" → "Export ready" one notice with a restarted timer instead of two competing ones.</li>
+      <li><strong>Lifetime is per tone, with <code>null</code> for danger.</strong> A single default (5s) is wrong for a sentence you must read, and 8s is wrong for "Saved". Products override <code>duration</code>; they rarely should.</li>
+      <li><strong><code>pointer-events: none</code> on the viewport, <code>auto</code> on each toast.</strong> A fixed 360px column at <code>--z-toast</code> otherwise swallows presses on whatever is under it — in a console, usually the table's last rows.</li>
+      <li><strong>The stack is <code>column-reverse</code> at bottom positions</strong>, so the newest toast is nearest the corner and older ones move away. The DOM order stays chronological, which is what the live region reads.</li>
+      <li><strong>Overflow is counted, not dropped.</strong> Beyond <code>maxVisible</code> the toasts stay in the queue and are promoted as slots free; the "+N more" line is text, not a control, because a menu of pending notices is an inbox.</li>
+      <li><strong>Danger uses <code>role="alert"</code> inside a polite region.</strong> Nesting an assertive role in a polite region is the standard way to have one region and two urgencies without two live regions racing.</li>
+      <li><strong><code>Toast</code> stays exported and presentational</strong> — it takes no timer, no id and no queue. That is what makes it usable in this specification, in a card, or inline in a panel with <code>live="on"</code>.</li>
+      <li><strong>Layered at <code>--z-toast</code> (700)</strong>, above <code>--z-popover</code> (650) and below <code>--z-tooltip</code> (800): a toast must be visible over an open menu, and must not cover a tooltip the user is actively pointing at.</li>
+      <li><strong>14 tokens, no reference to <code>--dialog-*</code>.</strong> Both are overlay surfaces by intent; a toast is not a small dialog and must not inherit its shadow or radius.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--toast-background','--toast-border','--toast-radius','--toast-shadow','--toast-title-text','--toast-message-text','--toast-icon-info','--toast-icon-success','--toast-icon-warning','--toast-icon-critical','--toast-dismiss-icon','--toast-overflow-text','--toast-width','--toast-gap','--toast-viewport-inset'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Wiring it into a product.">
+    <pre>{`import { Toaster } from '@meridian/feedback';
+
+// Once, at the app root — below the router, above nothing.
+<App>
+  <Routes />
+  <Toaster position="bottom-right" maxVisible={3} />
+</App>
+
+// From wherever the work happens. No hook, no component needed.
+async function holdLine(line) {
+  try {
+    await api.hold(line.id);
+    Toaster.show({
+      title: \`\${line.name} held\`,
+      message: 'Downtime logged from ' + fmtTime(Date.now()) + '.',
+      // Undo also exists in the line's history — the toast is the fast path.
+      action: <Button variant="link" size="sm" onClick={() => undoHold(line)}>Undo</Button>,
+    });
+  } catch (err) {
+    Toaster.error({ title: 'Could not hold ' + line.name, message: operatorMessage(err) });
+    // …and the panel that failed shows the error too.
+  }
+}
+
+// One long job, one notice, two states.
+const id = Toaster.show({ id: 'export', title: 'Exporting…', duration: null, dismissible: false });
+await runExport();
+Toaster.show({ id, tone: 'success', title: 'Export ready',
+  action: <Button variant="link" size="sm" onClick={download}>Download</Button> });`}</pre>
+    <ul>
+      <li><strong>One <code>Toaster</code> per app.</strong> Mounting it per route or per screen duplicates the queue.</li>
+      <li><strong>Every toast action must exist elsewhere.</strong> Undo in the record's history, Retry on the failed panel. This is the rule that makes auto-dismiss defensible (§08).</li>
+      <li><strong>Translate errors before they get here.</strong> <code>message</code> is operator language; the stack trace goes to your logger.</li>
+      <li><strong>Collapse bulk results.</strong> One toast with a count, not one per row — and if some rows failed, one warning toast with the count and a link to the detail.</li>
+      <li><strong>Do not toast what the screen already shows.</strong> The most common review note on this component, by a wide margin.</li>
+      <li><strong>Testing hooks:</strong> the viewport is <code>[data-toaster]</code> with the accessible name "Notifications", each toast is <code>[data-toast="info|success|warning|danger"]</code>, dismiss is a button named "Dismiss", and a danger toast is <code>[role="alert"]</code>. Drive state through <code>Toaster.show/dismiss</code> rather than rendering <code>Toast</code> directly.</li>
+    </ul>
+    <div className="demo">
+      <Button variant="primary" onClick={()=>Toaster.success({title:'12 work orders closed',message:'Two were already closed and were skipped.'})}>Bulk result — one toast</Button>
+      <Button variant="secondary" onClick={()=>Toaster.error({title:'Could not close 3 of 12',message:'They are assigned to another shift.',action:<Button variant="link" size="sm">View them</Button>})}>Partial failure</Button>
+    </div>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

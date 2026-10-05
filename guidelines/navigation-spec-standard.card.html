@@ -1,0 +1,212 @@
+<!-- @dsCard group="Governance" viewport="980x3800" name="Navigation spec standard" subtitle="The fourteen sections a Navigation System specification contains — wayfinding architecture, routing contracts, hierarchy rules, and orientation models" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Navigation System specification standard</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:32px}
+.wrap{max-width:1000px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0;max-width:76ch;color:var(--text-secondary);text-wrap:pretty}
+.rules{margin:24px 0 12px;padding:20px 22px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:10px}
+.rules.ships{margin:12px 0 32px;border-left:2px solid var(--status-info-solid)}
+.rules h2{margin:0 0 2px;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+p{margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:80ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:30px 0 12px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding:20px 0;border-bottom:var(--border-hairline)}
+.sec:last-child{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:7px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.badge{align-self:flex-start;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);padding:2px 8px;border-radius:var(--radius-full);white-space:nowrap}
+.req{background:var(--status-success-soft);color:var(--text-success)}
+.cond{background:var(--surface-sunken);color:var(--text-secondary)}
+.body{display:flex;flex-direction:column;gap:10px;min-width:0}
+.test{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:baseline}
+.test .t{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+.test p{color:var(--text-secondary)}
+.never{color:var(--text-tertiary)}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:2px}
+.pair div{padding:12px 14px;background:var(--surface-sunken);border-radius:var(--radius-sm)}
+.pair h4{margin:0 0 4px;font-size:var(--text-xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-regular)}
+.shape{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);background:var(--surface-sunken);border-radius:var(--radius-sm);padding:8px 10px}
+.sig{margin-top:36px;padding-top:12px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:12px}.test{grid-template-columns:1fr;gap:2px}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Governance · Authoring standard</span>
+<h1>Navigation System specification standard</h1>
+<p class="lede">A Navigation System is an architectural framework for wayfinding, orientation, hierarchical traversal, and destination routing across an application or multi-application suite. It owns the wayfinding model: how users locate where they are, discover where they can go, traverse levels (L1 global, L2 operational domain, L3 in-page workspace), resolve active routes, switch contexts, and recover origin trails. Its specification documents navigation-level responsibilities only — distinguishing wayfinding contracts from atomic components (which draw individual buttons or menus) and layout templates (which manage spatial grid regions). This page fixes the fourteen sections a Navigation System specification contains, their order and stable numbering, and what each section must answer.</p>
+
+<div class="rules">
+  <h2>How to apply it</h2>
+  <ul>
+    <li><strong>All fourteen sections are defined; numbers are stable identifiers.</strong> Like the <a href="core-spec-standard.card.html">core standard</a> and <a href="layout-template-spec-standard.card.html">layout standard</a>, sections §01 through §14 appear in exact ascending order. A cross-reference such as <code>§07 Keyboard</code> or <code>§08 Accessibility</code> retains the same meaning across all system specifications and is never renumbered.</li>
+    <li><strong>Wayfinding architecture, not generic UI chrome.</strong> A navigation specification does not merely list links. It specifies information hierarchy (L1/L2/L3), active state determination, deep-link persistence, state synchronization with URL/history, badge count rollup, permission filtering, and landmark demarcation.</li>
+    <li><strong>Navigation System vs Core Component vs Layout Template.</strong> A <a href="core-spec-standard.card.html">Core Component</a> (e.g. <code>Link</code>, <code>Menu</code>, <code>Tabs</code>) defines an atomic interactive control. A <a href="layout-template-spec-standard.card.html">Layout Template</a> (e.g. <code>Sidebar</code>, <code>MasterDetail</code>) defines spatial containers and scroll boundaries. A <strong>Navigation System</strong> (e.g. <code>AppShellNav</code>, <code>HierarchicalTreeNav</code>, <code>BreadcrumbTrail</code>, <code>CommandPalette</code>, <code>DrilldownNav</code>) defines the end-to-end wayfinding model, destination hierarchy, routing integration, and user orientation across screens.</li>
+    <li><strong>Unconditional clarity on routing and active identity.</strong> Every navigation spec must explicitly define how the active destination is computed (exact match vs prefix match vs ancestor match), how <code>aria-current="page"</code> is applied, and how URL changes synchronize with the navigation state.</li>
+    <li><strong>Real manufacturing ERP context.</strong> Examples, labels, badges, and scenarios follow the fixed plant setting: <strong>Suryodaya Autocomp Ltd — Chakan plant (PL-04), Pune</strong> — real plant domains (Work Orders, Maintenance, Quality NCs, Stores, Shift Planning), rupees formatted <code>en-IN</code>, IST time, Indian supplier and employee personas.</li>
+  </ul>
+</div>
+
+<div class="rules ships">
+  <h2>What every navigation system specification ships</h2>
+  <p>A Navigation System specification carries a status stamp in its masthead (<code>status: frozen &lt;date&gt; · N open items</code>) and is accompanied by a functional reference demonstration:</p>
+  <ul>
+    <li><strong>1 · The specification.</strong> <code>specs/navigation/&lt;System&gt;.spec.html</code> — sections §01–§14 in order, documenting the complete wayfinding and routing contract, with status stamp, geometry tables, ARIA landmark mappings, and keyboard tables.</li>
+    <li><strong>2 · Live reference implementation.</strong> Interactive working demo built with real system components, wired to simulated routing and plant-real data at realistic depth and volume (e.g. 4+ modules, nested sub-items, badge counts, plant selector).</li>
+    <li><strong>3 · Do/Don't visual pairs.</strong> Placed directly inside the sections whose rules they demonstrate (e.g. §06 States, §08 Accessibility, §10 Content rules, §12 Anti-patterns) with concise rationale.</li>
+  </ul>
+</div>
+
+<div class="groupline"><h2>The fourteen</h2><span>All present, in ascending order, in every Navigation System specification</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§01</span><h3>Purpose</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the wayfinding role of the navigation system, the information architecture tier it addresses, the user orientation problem it solves, and the explicit boundary against adjacent navigation structures.</p>
+    <div class="test"><span class="t">Must answer</span><p>Which IA level it serves (L1 Global Suite Shell, L2 Module/Domain Nav, L3 In-Page/Tab Nav, Contextual Jump/Switcher, or Ancestor Trail); when to choose this navigation system; when to use an alternative; and the routing relationship (URL-driven vs local view-state driven).</p></div>
+    <div class="test"><span class="t">Shape</span><p>Prose, an IA Tier Classification badge, a routing model statement, and a comparison table: “You need to… / Use this system / Instead of… / Why”.</p></div>
+    <div class="pair">
+      <div><h4>Do</h4><p>"Use L1 App Shell Navigation for primary domain switching across plant modules (Planning, Quality, Maintenance, Stores)."</p></div>
+      <div><h4>Don't</h4><p>"Use L1 App Shell Navigation to switch between sub-tabs of a single inspection record." In-page workspace switching belongs to L3 In-Page Tabs.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§02</span><h3>Anatomy</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines every structural zone, slot, item element, and boundary container that makes up the navigation system, including required and optional regions.</p>
+    <div class="test"><span class="t">Must answer</span><p>All regions: Shell/Container, Brand/Product Header, Plant/Environment Switcher, Primary Destination List, Group Headers, Collapsible Tree Nodes, Item Anatomy (Icon, Label, Trailing Badge/Counter, Chevron Expander, Shortcut Pill), Utility Footer (User Profile, Quick Actions, Help/Docs, Collapse Toggle), and Off-Canvas/Overlay Scaffolding.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Diagram or numbered structural callouts over a live instance, followed by a Structural Slot table detailing slot name, role, mandatory/optional status, and token assignments.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§03</span><h3>Properties</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the public configuration API, data contracts, item schema, router integration points, and event handlers exposed by the navigation system.</p>
+    <div class="test"><span class="t">Must answer</span><p>Navigation tree item schema (<code>id</code>, <code>label</code>, <code>href</code>, <code>icon</code>, <code>badge</code>, <code>children</code>, <code>permissions</code>), active destination key/path, collapsed/expanded controlled state, router adapter injection (<code>LinkComponent</code>, <code>onNavigate</code>), filter/search flags, and custom footer/header render slots. Explicitly documents refused properties (e.g. arbitrary raw HTML injections, deeply nested ad-hoc styling overrides).</p></div>
+    <div class="test"><span class="t">Shape</span><p>TypeScript prop interface, item data schema table, and dedicated refusal notes explaining why omitted properties are intentionally excluded.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§04</span><h3>Variants</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the standardized structural and behavioral modes the navigation system supports, and the specific use cases for each.</p>
+    <div class="test"><span class="t">Must answer</span><p>Allowed structural variants: Expanded Vertical Sidebar, Icon-Rail / Mini-Nav, Horizontal Topbar Navigation, Tree-Accordion Navigation, Drill-Down / Push Navigation, or Floating Command / Quick-Switcher. Clarifies what constitutes a legitimate variant vs an invalid cosmetic customization.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Variant comparison table detailing layout characteristics, cognitive load, recommended destination count range, and live preview rows for each mode.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§05</span><h3>Sizes</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines width, height, density dimensions, touch targets, and rhythmic spacing across all viewports and density modes.</p>
+    <div class="test"><span class="t">Must answer</span><p>Expanded width (e.g. <code>240px</code> / <code>280px</code>), collapsed rail width (e.g. <code>56px</code> / <code>64px</code>), topbar height, item row heights per density (<code>compact</code>: 32px, <code>comfortable</code>: 40px, <code>expanded</code>: 48px), icon bounding boxes, indent depth per nesting level (e.g. <code>16px</code> per level), touch target minimums (44px/48px), and maximum label truncation thresholds.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Geometry dimension table using semantic tokens (<code>--control-h-*</code>, <code>--space-*</code>, <code>--radius-*</code>), density matrix, and nested indentation visual guide.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§06</span><h3>States</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines all system-level and item-level interaction states, visual token assignments, active route resolution rules, and contrast measurements.</p>
+    <div class="test"><span class="t">Must answer</span><p>Item states: <code>rest</code>, <code>hover</code>, <code>active / current</code> (the active page), <code>ancestor-active</code> (parent of active child), <code>focus-visible</code>, <code>expanded / collapsed</code>, <code>disabled / restricted</code> (with tooltip rationale for lack of plant permission), <code>badge alert / unread</code>, and <code>skeleton / loading</code> during route transitions. Contrast ratios for text, icons, and active indicators against navigation surfaces (minimum 4.5:1 text, 3:1 graphical indicators).</p></div>
+    <div class="test"><span class="t">Shape</span><p>State transition matrix, active path resolution hierarchy rules, and live rendering for all item states with contrast verification.</p></div>
+    <div class="pair">
+      <div><h4>Do</h4><p>"Show ancestor items with subtle highlight and expanded tree branch when a deep child route (e.g. /quality/nc/NC-4081) is active."</p></div>
+      <div><h4>Don't</h4><p>"Mark both the parent category and child item with identical primary active pills." That confuses exact location with category membership.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§07</span><h3>Keyboard</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines keyboard navigation patterns, landmark jumping, roving tabindex, shortcut keys, and tree traversal mechanics.</p>
+    <div class="test"><span class="t">Must answer</span><p>Landmark cycling (<kbd>F6</kbd> / <kbd>Alt+F6</kbd> between navigation and main content), single Tab-stop entry with Arrow navigation (<kbd>↑</kbd>/<kbd>↓</kbd> across items, <kbd>→</kbd>/<kbd>←</kbd> to expand/collapse tree nodes or move between horizontal tabs), <kbd>Enter</kbd> / <kbd>Space</kbd> activation, <kbd>Home</kbd> / <kbd>End</kbd> bounds jumping, <kbd>Esc</kbd> to close flyouts/drawers, and global switcher shortcuts (<kbd>Ctrl+K</kbd> / <kbd>Cmd+K</kbd>).</p></div>
+    <div class="test"><span class="t">Shape</span><p>Key-to-action table, focus management flowchart on route change, and focus trap rules for modal mobile navigation drawers.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§08</span><h3>Accessibility</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the accessibility contract: ARIA landmark roles, accessible labeling, state attributes, skip affordances, screen reader announcements, and WCAG compliance.</p>
+    <div class="test"><span class="t">Must answer</span><p>Landmark structure (<code>&lt;nav aria-label="Primary Navigation"&gt;</code>), unique labels when multiple nav landmarks exist, <code>aria-current="page"</code> on current destination link, <code>aria-expanded</code> and <code>aria-controls</code> on collapsible parent nodes, <code>role="tree"</code> vs nested <code>&lt;ul&gt;</code> semantics, skip navigation link (<code>&lt;a href="#main-content" class="skip-link"&gt;</code>), and live region announcements on page/view transition (WCAG 1.3.1, 2.4.1, 2.4.7, 4.1.2, 4.1.3).</p></div>
+    <div class="test"><span class="t">Shape</span><p>WCAG compliance table with rule references, DOM semantic markup example, and screen reader output transcription.</p></div>
+    <div class="pair">
+      <div><h4>Do</h4><p>"Use aria-current='page' on the active navigation link and distinct aria-labels on primary, secondary, and breadcrumb &lt;nav&gt; landmarks."</p></div>
+      <div><h4>Don't</h4><p>"Use generic unlabeled &lt;nav&gt; elements or indicate active destination using CSS class styling alone without aria-current."</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§09</span><h3>Motion</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines transitions and micro-interactions for expanding, collapsing, drawer transitions, flyout submenus, and active pill indicators.</p>
+    <div class="test"><span class="t">Must answer</span><p>Sidebar width expand/collapse transition (<code>180ms cubic-bezier(0.2,0,0,1)</code>), off-canvas drawer slide-in/out (<code>200ms</code>), submenu accordion height disclosure, active pill glide/fade, hover indicator smoothing, and <code>prefers-reduced-motion</code> overrides (instant swap with opacity-only crossfade).</p></div>
+    <div class="test"><span class="t">Shape</span><p>Motion specification table listing Property, Duration Token, Timing Function, and Reduced Motion fallback.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§10</span><h3>Content rules</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines copy standards, label length constraints, grammatical casing, destination naming conventions, badge numeral formatting, and plant taxonomy.</p>
+    <div class="test"><span class="t">Must answer</span><p>Destination vs action naming (destinations are nouns/places like <em>Work Orders</em>, <em>Shop Floor Maintenance</em>; never imperative verbs like <em>Create Order</em>), maximum word count (1–3 words, max 24 characters before truncation), title capitalization, numeric badge format (exact up to 99, <code>99+</code> above), tooltip requirements on collapsed icon rails, and plant domain naming consistency.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Do/Don't terminology table with real shop-floor examples from Suryodaya Autocomp Ltd (Chakan plant), plus string length constraint table.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§11</span><h3>Responsive</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines how the navigation system adapts across Desktop, Tablet, and Mobile breakpoints, including drawer transformations and bottom navigation patterns.</p>
+    <div class="test"><span class="t">Must answer</span><p>Desktop (≥1024px: persistent expanded sidebar or topbar), Tablet (768px–1023px: icon rail or off-canvas drawer with overlay), Mobile (&lt;768px: off-canvas drawer modal or bottom navigation bar with 3–5 primary tabs), touch target scaling (minimum 44×44px / 48×48px), safe area insets (<code>env(safe-area-inset-bottom)</code>), and gesture support (swipe-to-close drawer).</p></div>
+    <div class="test"><span class="t">Shape</span><p>Breakpoint adaptation matrix with viewport thresholds, structural transformation rules, and narrow-screen layout previews.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§12</span><h3>Anti-patterns</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Identifies recurring navigation architecture mistakes that break wayfinding, trap keyboard focus, obscure critical destinations, or cause cognitive overload.</p>
+    <div class="test"><span class="t">Must answer</span><p>Explicit anti-patterns: placing destructive or transactional action buttons inside primary navigation lists; nesting navigation trees deeper than 3 levels without a drill-down pattern; using active state styling for temporary hover/selections; hiding primary workflow modules behind undiscoverable menus; mixing external web links and internal app routes without visual distinction; omitting skip links.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Do / Don't two-column guidance with realistic manufacturing plant consequence callout (e.g. operator unable to locate NC escalation route during Line 2 press stoppage).</p></div>
+    <div class="pair">
+      <div><h4>Do</h4><p>"Keep action buttons (like 'New Work Order' or 'Release Requisition') in the page header or toolbar, reserving navigation strictly for destinations."</p></div>
+      <div><h4>Don't</h4><p>"Embed primary form submit or record creation action buttons inside the primary navigation sidebar list."</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§13</span><h3>Implementation notes</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines internal architecture, DOM hierarchy, routing synchronization, scroll persistence, z-index layering, and design tokens consumed.</p>
+    <div class="test"><span class="t">Must answer</span><p>DOM landmark structure, scroll preservation in navigation sidebar across page loads, lazy loading of deep sub-tree branches, z-index token hierarchy (<code>--z-index-nav: 100</code>, <code>--z-index-drawer: 200</code>, <code>--z-index-overlay: 190</code>), performance considerations for large navigation trees, and complete inventory of color, typography, elevation, and spacing tokens consumed.</p></div>
+    <div class="test"><span class="t">Shape</span><p>DOM architecture diagram/code block, z-index coordination chart, and categorized token consumption list.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§14</span><h3>Developer notes</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines framework integration patterns, client-side routing adapters (React Router, Next.js, TanStack Router), role-based permission filtering, testing assertions, and specification freeze status.</p>
+    <div class="test"><span class="t">Must answer</span><p>Code examples showing router link delegation and programmatic navigation; route match strategy (strict vs prefix); role/permission-based dynamic item filtering; automated accessibility and keyboard test recipes (testing <code>aria-current</code>, focus rings, <kbd>F6</kbd> jumps, skip link); and open/closed governance item log with freeze date.</p></div>
+    <div class="test"><span class="t">Shape</span><p>TypeScript integration example, test assertion snippets, and status/open-item registry table.</p></div>
+  </div>
+</div>
+
+<p class="sig">Applies to: Navigation System specifications (<code>specs/navigation</code>) · Core Components keep <a href="core-spec-standard.card.html">their own section set</a> · Composite Components keep <a href="composite-spec-standard.card.html">theirs</a> · Layout Templates keep <a href="layout-template-spec-standard.card.html">theirs</a> · Interaction Patterns keep <a href="interaction-pattern-spec-standard.card.html">theirs</a> · Sections are numbered §01–§14 and never renumbered</p>
+</div>
+</body></html>

@@ -1,0 +1,190 @@
+<!-- @dsCard group="Governance" viewport="980x3720" name="Core spec standard" subtitle="The fourteen sections every Core Component specification contains — all of them, in order, with what each one must answer" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Core Component specification standard</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:32px}
+.wrap{max-width:1000px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0;max-width:76ch;color:var(--text-secondary);text-wrap:pretty}
+.rules{margin:24px 0 12px;padding:20px 22px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:10px}
+.rules.ships{margin:12px 0 32px;border-left:2px solid var(--status-info-solid)}
+.rules h2{margin:0 0 2px;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+p{margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:80ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:30px 0 12px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding:20px 0;border-bottom:var(--border-hairline)}
+.sec:last-child{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:7px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.badge{align-self:flex-start;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);padding:2px 8px;border-radius:var(--radius-full);white-space:nowrap}
+.req{background:var(--status-success-soft);color:var(--text-success)}
+.body{display:flex;flex-direction:column;gap:10px;min-width:0}
+.test{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:baseline}
+.test .t{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+.test p{color:var(--text-secondary)}
+.shape{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);background:var(--surface-sunken);border-radius:var(--radius-sm);padding:8px 10px}
+.sig{margin-top:36px;padding-top:12px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:12px}.test{grid-template-columns:1fr;gap:2px}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Governance · Authoring standard</span>
+<h1>Core Component specification standard</h1>
+<p class="lede">A Core Component is a single control with its own contract — <code>Button</code>, <code>Input</code>, <code>Switch</code>, <code>Table</code>, <code>FileDropzone</code>. Its specification is the whole contract, which is why it has no include tests: all fourteen sections appear in every one, in order, and a section with nothing to say is the strongest signal in this system that the component is not finished being thought about. This page fixes what each section must answer, so that any two core specs here can be read the same way — and so the next one is not written from whichever spec happened to be open.</p>
+
+<div class="rules">
+  <h2>How to apply it</h2>
+  <ul>
+    <li><strong>All fourteen, always.</strong> Unlike the <a href="composite-spec-standard.card.html">composite standard</a>, there is no include/omit test: a Core Component owns its sizes, its states, its keyboard, its motion and its content rules by definition, because there is no child component to inherit them from. If a section feels empty, the answer is a decision — “two sizes, and no <code>lg</code>, because …” — not an omission.</li>
+    <li><strong>Numbers are identifiers, not positions.</strong> <code>§08</code> is Accessibility in every spec in this system, core or composite, and cross-references rely on it. Never renumber.</li>
+    <li><strong>Say what the component refuses, and why.</strong> Every mature spec here spends real space on the props that do not exist: no <code>loading</code> on <code>Switch</code>, no <code>url</code> on <code>FileItem</code>, no <code>lg</code>, no tone. A refusal with a reason is the most durable thing a specification contains — it survives the next person who wants the prop.</li>
+    <li><strong>Write the failure the component invites.</strong> §12 closes with the one misuse that actually happens and what it costs, in plant terms. Not a list of style slips: the mistake a competent person makes.</li>
+    <li><strong>Record defects and their fix, with the version.</strong> §13 is where the system's history lives — what shipped wrong, what it measured, what it is now. Deleting that history is how a defect gets reintroduced two years later by someone who thought the old value looked cleaner.</li>
+    <li><strong>Every number is real.</strong> Contrast ratios, pixel geometry, durations and token names are checked against the implementation, not estimated. A spec that disagrees with its component is worse than no spec.</li>
+    <li><strong>Primitives are exempt.</strong> <code>Box</code>, <code>Stack</code>, <code>Text</code> and the rest are documented by their <code>.d.ts</code> and <code>.prompt.md</code> — see the <a href="primitives-policy.card.html">primitives policy</a>, which sets out what these fourteen sections would have said and why writing them would be theatre.</li>
+  </ul>
+</div>
+
+<div class="rules ships">
+  <h2>The masthead every core spec carries</h2>
+  <p>Above §01: an eyebrow (<code>Forms · Component specification</code>), the component name as <code>h1</code>, a lede that states the component's single defining idea in prose — not a feature list — and a mono meta line with the source path, the <code>window</code> export path, the status (<code>open</code>, or <code>frozen &lt;date&gt;</code> plus the open-item count) and the version it appeared in.</p>
+  <div class="shape">status: frozen 4 Sep 2026 · 1 open items&nbsp;&nbsp;·&nbsp;&nbsp;since: 1.0.0 · revised 1.2.0</div>
+  <p>The lede is load-bearing. “A setting that takes effect the moment it is flipped” decides most of <code>Switch</code>'s fourteen sections on its own, and a spec whose lede is a summary of its own table of contents usually has no such sentence yet.</p>
+</div>
+
+<div class="groupline"><h2>The fourteen</h2><span>All present, in ascending order, in every Core Component specification</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§01</span><h3>Purpose</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>What the component is for, in one idea, and the boundary against every neighbour that could be confused with it.</p>
+    <div class="test"><span class="t">Must answer</span><p>Where it is used; what it must never be used for; and — as a table — “you want to… / use this / why”, one row per adjacent component. The <code>Switch</code>/<code>Checkbox</code> pair is the model: the routing table is what stops the wrong control being chosen.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Prose, a routing table, a short use / do-not-use list, and a live demo of the correct case beside the tempting wrong one.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§02</span><h3>Anatomy</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Every region of the rendered control, named, with the reason it exists and the token that draws it.</p>
+    <div class="test"><span class="t">Must answer</span><p>Numbered callouts over a live instance — one per region, each saying what it does and why it is drawn that way (“the off track is 1.60:1, so the border is what identifies the control”). Then a geometry table: region, value at <code>md</code>, token.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Demo, numbered callout list, geometry table. Hidden parts are anatomy too — the hidden input, the live region, the described-by node.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§03</span><h3>Properties</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>The full public prop surface, and the props that deliberately do not exist.</p>
+    <div class="test"><span class="t">Must answer</span><p>Prop, type, default, and a note that carries the <em>rule</em> rather than the type again. Then, in prose, each significant refusal with its reason — this is the half of §03 that ages best.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Table including <code>style</code> and <code>…rest</code>; one paragraph per refused prop. Types must match the <code>.d.ts</code> exactly.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§04</span><h3>Variants</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>The distinct forms the component takes, or the explicit statement that it has none.</p>
+    <div class="test"><span class="t">Must answer</span><p>If there is a <code>variant</code> prop: what each one means semantically, not how it looks. If there is not: say so, name the placements or shapes that get mistaken for variants, and say why they are not (a form without handlers is not a variant of a form with them).</p></div>
+    <div class="test"><span class="t">Shape</span><p>Table plus a demo row per form. “No variant prop” is a complete and common answer.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§05</span><h3>Sizes</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>The size steps, what each is for, and how the component behaves under the three densities.</p>
+    <div class="test"><span class="t">Must answer</span><p>Every step with its real geometry; which steps deliberately do not exist and why; and a density table — what <code>compact</code>, <code>comfortable</code> and <code>expanded</code> change, and what they pointedly do not. Sizes come from <code>--control-h-*</code>, never from literal pixels.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Size table, demo row per step, density table. A component with one size still answers this — “no <code>size</code> prop; the row is sized by density”.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§06</span><h3>States</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Every visual state, with the tokens that paint it and the contrast it measures.</p>
+    <div class="test"><span class="t">Must answer</span><p>Rest, hover, active, focus-visible, selected, disabled, invalid, read-only, loading — whichever exist — each with its measured ratio where legibility is in question. Two cues for any state that matters, and a greyscale check where colour alone could be doing the work.</p></div>
+    <div class="test"><span class="t">Shape</span><p>State table, demo per state, and a warning callout for the state most often misused (a disabled control as a status light is the recurring one).</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§07</span><h3>Keyboard</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Every key the component responds to — and the keys it deliberately ignores.</p>
+    <div class="test"><span class="t">Must answer</span><p>Key, behaviour, and the reason where it is not obvious. Tab order and whether the component is one stop or several; roving tabindex or not, with the reason; what Escape, Enter, Space and the arrows do or do not do. “Arrow keys: nothing” is an answer, and it needs its sentence.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Table, then a short list of the keyboard rules a consumer could break (intercepting Space, removing a focus ring).</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§08</span><h3>Accessibility</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>The requirement, and how this component meets it — with the WCAG reference where one applies.</p>
+    <div class="test"><span class="t">Must answer</span><p>Role and accessible name; the label/description split; boundary and state contrast (1.4.11); focus (2.4.7); target size (2.5.8); announcements (4.1.3); change of context (3.2.2) where the control can cause one. Any past failure is stated with the ratio it measured and the ratio it measures now.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Two-column table — requirement, how it is met — plus a right/wrong demo pair where the failure is visual.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§09</span><h3>Motion</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>What animates, for how long, on which property — and what must never animate.</p>
+    <div class="test"><span class="t">Must answer</span><p>Change, duration token, easing, property. Only opacity, transform, colour and shadow are animated in this system; any exception (a determinate progress fill) is named as an exception and justified. Reduced-motion behaviour, and why no bespoke rule is needed if there is none.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Table with a “never” row, plus the reasoning for the one thing that does move.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§10</span><h3>Content rules</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>The words that go in each slot, in this product's voice.</p>
+    <div class="test"><span class="t">Must answer</span><p>Slot, its job, what to write, what not to write — with real strings from the plant, not lorem. Length limits, tense, capitalisation, and the phrasings that are always wrong (“Enable …” on a switch label, “Error” as an error).</p></div>
+    <div class="test"><span class="t">Shape</span><p>Write/Not table plus a rules list. Every example obeys the <a href="brand-voice.card.html">voice</a> card and the plant setting in <code>CLAUDE.md</code>.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§11</span><h3>Responsive</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>What changes at each breakpoint, and what must not change.</p>
+    <div class="test"><span class="t">Must answer</span><p>mobile / tablet / desktop / ultrawide, each with a behaviour — including the ultrawide answer, which is nearly always a measure cap rather than more width. Where reflow could reorder meaning, state that it may not.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Breakpoint table plus a narrow demo. “As authored” is a legitimate row; a missing row is not.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§12</span><h3>Anti-patterns</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>The do/don't pair, and the one failure this component invites.</p>
+    <div class="test"><span class="t">Must answer</span><p>Two panes of short imperatives, then a closing warning: the single most consequential misuse, what it looks like on screen, and what it costs the operator. Written as a scenario, in the plant, not as a rule.</p></div>
+    <div class="test"><span class="t">Shape</span><p>Do / Don't panes plus one warning paragraph. Six to eight items a side; a twenty-item list is a spec with no priorities.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§13</span><h3>Implementation notes</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>What actually ships, why it is built that way, and every defect closed so far.</p>
+    <div class="test"><span class="t">Must answer</span><p>The DOM shape and the reason for it; the decisions invisible from the API (why the description sits outside the label, why <code>transform</code> not <code>left</code>); which core components it composes rather than hand-rolls; every console warning it emits; and each past defect with its version, its measurement and its fix. Closes with the full <strong>tokens consumed</strong> list.</p></div>
+    <div class="test"><span class="t">Shape</span><p>List, then a mono token grid. New or retargeted tokens are called out with the version that changed them.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§14</span><h3>Developer notes</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>The integration contract, the tests, the lint rules, and the state of every open question.</p>
+    <div class="test"><span class="t">Must answer</span><p>A real code sample showing the intended pattern (not a prop dump); the integration rule the sample exists to teach; <strong>Testing</strong> — the queries and assertions that hold the contract; <strong>Lint</strong> — what static analysis should flag; and then every open item, each marked <code>Open</code> or <code>Closed as decided</code> with the reason. Ends with the freeze line: the date and the closed API surface, or an explicit “not frozen”.</p></div>
+    <div class="test"><span class="t">Shape</span><p><code>pre</code> sample plus a list. A closed item states the decision and why, so it cannot be reopened as a fresh question; an item that merely disappears reads as an oversight.</p></div>
+  </div>
+</div>
+
+<p class="sig">Applies to: Core Component specifications (<code>specs/core</code>, <code>forms</code>, <code>feedback</code>, <code>data</code>, <code>navigation</code>) · Composite Components keep <a href="composite-spec-standard.card.html">their own section set</a> · Navigation Systems keep <a href="navigation-spec-standard.card.html">theirs</a> · Interaction Patterns keep <a href="interaction-pattern-spec-standard.card.html">theirs</a> · Primitives are exempt, per the <a href="primitives-policy.card.html">primitives policy</a> · Sections are numbered §01–§14 and never renumbered · <a href="layout-template-spec-standard.card.html">Layout Templates</a> keep theirs</p>
+</div>
+</body></html>

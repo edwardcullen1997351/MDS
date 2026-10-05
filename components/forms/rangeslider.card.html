@@ -1,0 +1,42 @@
+<!-- @dsCard group="Components" viewport="820x780" name="RangeSlider — two thumbs, one range" subtitle="A sibling of Slider; thumbs meet but never cross" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>RangeSlider</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--background-page);padding:22px;font-family:var(--font-sans)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { RangeSlider, Slider, Card, Text } = window.MeridianDesignSystem_962c43;
+function Demo(){
+  const [price,setPrice] = React.useState([20,80]);
+  const [cycle,setCycle] = React.useState([4,18]);
+  const [tight,setTight] = React.useState([48,52]);
+  return (
+  <div style={{display:'flex',flexDirection:'column',gap:18}}>
+    <Card title="Range" headingLevel={2} padding="md">
+      <RangeSlider label="Price band" value={price} onChange={setPrice} unit="€" />
+    </Card>
+    <div className="grid">
+      <Card title="Stepped, with a minimum gap" headingLevel={2} padding="md">
+        <RangeSlider label="Cycle time" value={cycle} onChange={setCycle} min={0} max={60} step={0.5} unit="s" minDistance={2} />
+      </Card>
+      <Card title="Thumbs together" headingLevel={2} padding="md">
+        <RangeSlider label="Tolerance" value={tight} onChange={setTight} unit="%" />
+      </Card>
+    </div>
+    <div className="grid">
+      <Card title="sm" headingLevel={2} padding="md">
+        <RangeSlider label="Shift window" size="sm" defaultValue={[6,14]} min={0} max={24} format={(n)=>String(n).padStart(2,'0')+':00'} />
+      </Card>
+      <Card title="Disabled" headingLevel={2} padding="md">
+        <RangeSlider label="Locked band" defaultValue={[30,70]} disabled />
+      </Card>
+    </div>
+    <Card title="One value is still Slider" headingLevel={2} padding="md">
+      <Slider label="Scrap threshold" defaultValue={40} unit="%" />
+    </Card>
+    <Text size="xs" tone="tertiary">Each thumb is a real range input with its own name, so both are keyboard-operable and announce separately. Drag either thumb in “Thumbs together” — dragging is handled on the track, so the low thumb stays reachable when both sit on the same value.</Text>
+  </div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

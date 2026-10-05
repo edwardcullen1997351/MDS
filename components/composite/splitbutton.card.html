@@ -1,0 +1,48 @@
+<!-- @dsCard group="Components" viewport="820x460" name="SplitButton — default action, close alternatives" subtitle="Composite: one primary action, a disclosure that never invokes it, one aggregate disabled state" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>SplitButton</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--surface-card);padding:20px;font-family:var(--font-sans)}.col{display:flex;flex-direction:column;gap:18px;max-width:560px}.row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.lbl{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);margin-bottom:6px}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { SplitButton, Text } = window.MeridianDesignSystem_962c43;
+const SAVE = [
+  { id:'draft', label:'Save as draft', icon:'file-pen' },
+  { id:'copy', label:'Save as a copy', icon:'copy', shortcut:'⇧⌘S' },
+  'divider',
+  { id:'template', label:'Save as template', description:'Reusable for future documents' },
+];
+const EXPORT = [
+  { id:'xlsx', label:'Export as XLSX' },
+  { id:'pdf', label:'Export as PDF' },
+  { id:'json', label:'Export as JSON', disabled:true },
+];
+function Demo(){
+  if (!SplitButton) return <Text tone="secondary">The bundle has not been recompiled with <code>components/composite/SplitButton.jsx</code> yet — reload once it has.</Text>;
+  const [log,setLog] = React.useState('nothing run yet');
+  return (
+  <div className="col">
+    <div>
+      <div className="lbl">Primary action, close alternatives</div>
+      <SplitButton label="Save" onAction={()=>setLog('primary: Save')} actions={SAVE} onSelect={(a)=>setLog('alternative: '+a.id)} />
+      <Text size="xs" tone="tertiary">{log}</Text>
+    </div>
+    <div>
+      <div className="lbl">Variants · one height per size</div>
+      <div className="row">
+        <SplitButton label="Save" onAction={()=>{}} actions={SAVE} onSelect={()=>{}} />
+        <SplitButton variant="secondary" label="Publish" onAction={()=>{}} actions={[{id:'schedule',label:'Schedule for later',icon:'clock'},{id:'preview',label:'Publish to preview'}]} onSelect={()=>{}} />
+        <SplitButton variant="ghost" size="sm" label="Export" iconLeft="download" onAction={()=>{}} actions={EXPORT} onSelect={()=>{}} />
+        <SplitButton variant="danger" label="Delete" onAction={()=>{}} actions={[{id:'archive',label:'Delete and archive a copy',icon:'archive'},{id:'purge',label:'Delete permanently',description:'Cannot be undone',tone:'critical'}]} onSelect={()=>{}} />
+      </div>
+    </div>
+    <div>
+      <div className="lbl">Aggregate disabled — both halves at once</div>
+      <SplitButton label="Save" disabled onAction={()=>{}} actions={SAVE} onSelect={()=>{}} />
+    </div>
+    <Text size="xs" tone="tertiary">Opening the alternatives never runs the primary action. The two halves are separately reachable by <code>Tab</code> and separately named: "Save" and "More Save actions".</Text>
+  </div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

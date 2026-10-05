@@ -1,0 +1,40 @@
+{
+  "name": "@ds/react",
+  "version": "0.1.0",
+  "description": "React & Next.js component library for enterprise design system",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "scripts": {
+    "build": "tsc && node -e \"fs.cpSync('src', 'dist', { recursive: true, filter: (src) => src.endsWith('.css') || fs.statSync(src).isDirectory() })\"",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\""
+  },
+  "dependencies": {
+    "@ds/tokens": "*",
+    "@zag-js/dialog": "^0.82.2",
+    "@zag-js/react": "^0.82.2",
+    "@zag-js/select": "^0.82.2"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.3"
+  }
+}

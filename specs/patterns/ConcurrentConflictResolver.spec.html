@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ConcurrentConflictResolver Specification — Meridian Design System</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <style>
+    body { font-family: var(--ds-global-fontFamily-sans, system-ui); padding: 32px; color: var(--ds-semantic-color-text-primary, #0f172a); }
+    h1 { font-size: 24px; font-weight: 700; }
+    h2 { font-size: 18px; margin-top: 24px; }
+    code { font-family: var(--ds-global-fontFamily-mono, monospace); background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border: 1px solid #e2e8f0; padding: 8px 12px; text-align: left; }
+    th { background: #f8fafc; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h1>ConcurrentConflictResolver Specification (§01–§21)</h1>
+  <p><strong>Wave 3 — Interaction Pattern (Blocker)</strong>: Non-destructive multi-user concurrency conflict resolution for enterprise manufacturing and planning workspaces.</p>
+
+  <h2>§01 Problem & Behavioral Requirements</h2>
+  <ul>
+    <li><strong>Version Collision Handling</strong>: When a shop-floor allocation or work order update fails due to an HTTP 409 / ETag version mismatch, the UI MUST NOT clear the planner's form or throw an unhelpful toast.</li>
+    <li><strong>Side-by-Side Comparison</strong>: Opens a dedicated drawer displaying "Your Planned Change" alongside "Current System State".</li>
+    <li><strong>1-Click Resolution Pathways</strong>:
+      <ol>
+        <li><code>Accept Remote & Re-calculate</code>: Discards local change, pulls latest committed remote state, and updates inventory matrices.</li>
+        <li><code>Force Override (Admin)</code>: Overwrites the remote state with the user's planned allocation under administrative authorization.</li>
+        <li><code>Allocate Remaining Delta</code>: Computes available delta (e.g., 150 kg requested - 100 kg reserved = 50 kg delta) and allocates only the remainder.</li>
+      </ol>
+    </li>
+  </ul>
+
+  <h2>§02 Technical Contracts & Props</h2>
+  <table>
+    <thead>
+      <tr><th>Prop / Input</th><th>Type</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>isOpen</code></td><td>boolean</td><td>Controls visibility of the comparison drawer.</td></tr>
+      <tr><td><code>proposedQuantity</code></td><td>number</td><td>Local planned quantity attempted by user.</td></tr>
+      <tr><td><code>remoteQuantity</code></td><td>number</td><td>Current remote system reserved quantity.</td></tr>
+      <tr><td><code>deltaQuantity</code></td><td>number</td><td>Remaining unreserved delta available for 1-click allocation.</td></tr>
+      <tr><td><code>localEtag / remoteEtag</code></td><td>string</td><td>Entity tags identifying the conflicting versions.</td></tr>
+      <tr><td><code>onAcceptRemote</code></td><td>() =&gt; void</td><td>Callback to accept remote version and recalculate.</td></tr>
+      <tr><td><code>onForceOverride</code></td><td>() =&gt; void</td><td>Callback to force override remote state.</td></tr>
+      <tr><td><code>onAllocateDelta</code></td><td>() =&gt; void</td><td>Callback to allocate the remaining delta quantity.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>§03 Accessibility (WCAG 2.2 AA)</h2>
+  <ul>
+    <li>Implements <code>role="dialog"</code> and <code>aria-modal="true"</code>.</li>
+    <li>Supports <kbd>Escape</kbd> key dismissal and backdrop dismissal.</li>
+    <li>Focus is trapped within the active drawer container while open.</li>
+  </ul>
+</body>
+</html>

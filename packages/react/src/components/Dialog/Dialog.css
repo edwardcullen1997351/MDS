@@ -1,0 +1,152 @@
+.ds-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(2px);
+  z-index: 1300;
+  animation: ds-fade-in 150ms ease-out;
+}
+
+.ds-dialog-positioner {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1300;
+  padding: var(--spacing-4, 16px);
+  pointer-events: none;
+}
+
+.ds-dialog-content {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  background-color: var(--color-surface-card, #FFFFFF);
+  border-radius: var(--radius-lg, 8px);
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--color-neutral-200, #E5E7EB);
+  pointer-events: auto;
+  font-family: var(--font-family-sans, system-ui, sans-serif);
+  animation: ds-scale-in 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-dialog-content--sm {
+  max-width: 400px;
+}
+
+.ds-dialog-content--lg {
+  max-width: 720px;
+}
+
+.ds-dialog-header {
+  padding: var(--spacing-5, 20px) var(--spacing-6, 24px) var(--spacing-3, 12px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1, 4px);
+}
+
+.ds-dialog-title {
+  font-size: var(--font-size-xl, 20px);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-neutral-900, #111827);
+  margin: 0;
+}
+
+.ds-dialog-description {
+  font-size: var(--font-size-sm, 14px);
+  color: var(--color-neutral-500, #6B7280);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ds-dialog-body {
+  padding: var(--spacing-3, 12px) var(--spacing-6, 24px);
+  font-size: var(--font-size-base, 16px);
+  color: var(--color-neutral-900, #111827);
+  overflow-y: auto;
+  max-height: calc(85vh - 160px);
+}
+
+.ds-dialog-footer {
+  padding: var(--spacing-4, 16px) var(--spacing-6, 24px) var(--spacing-5, 20px);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-3, 12px);
+  border-top: 1px solid var(--color-neutral-200, #E5E7EB);
+  background-color: var(--color-neutral-50, #F9FAFB);
+  border-bottom-left-radius: var(--radius-lg, 8px);
+  border-bottom-right-radius: var(--radius-lg, 8px);
+}
+
+.ds-dialog-close-trigger {
+  position: absolute;
+  top: var(--spacing-4, 16px);
+  right: var(--spacing-4, 16px);
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--color-neutral-500, #6B7280);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm, 4px);
+  transition: color 150ms ease, background-color 150ms ease;
+}
+
+.ds-dialog-close-trigger:hover,
+.ds-dialog-close-trigger:focus-visible {
+  color: var(--color-neutral-900, #111827);
+  background-color: var(--color-neutral-100, #F3F4F6);
+  outline: 2px solid var(--color-brand-500, #3B82F6);
+  outline-offset: 1px;
+}
+
+/* --------------------------------------------------------------------------
+   CSS Container Queries (@container)
+   -------------------------------------------------------------------------- */
+@container (max-width: 480px) {
+  .ds-dialog-header {
+    padding: var(--spacing-4, 16px) var(--spacing-4, 16px) var(--spacing-2, 8px);
+  }
+
+  .ds-dialog-title {
+    font-size: var(--font-size-lg, 18px);
+    padding-right: 28px;
+  }
+
+  .ds-dialog-body {
+    padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+  }
+
+  .ds-dialog-footer {
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--spacing-3, 12px) var(--spacing-4, 16px) var(--spacing-4, 16px);
+    gap: var(--spacing-2, 8px);
+  }
+
+  .ds-dialog-footer > * {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@keyframes ds-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ds-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

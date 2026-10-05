@@ -1,0 +1,249 @@
+/* ── SEMANTIC LAYER ────────────────────────────────────────────────────
+   Twelve families. Product code touches ONLY this layer — never a base
+   ramp (--grey-200), never a hex. Every family answers a job, not a hue,
+   so a rebrand is a one-file change and dark mode is free.
+
+   One name per value: there are no aliases. The only word pairs in the
+   system are deliberate — "Critical" is the operator-facing severity word
+   and tone="danger" is the component prop, both carried by
+   --status-critical-*. */
+:root{
+
+/* ── 1. TEXT ───────────────────────────────────────────────────────────
+   Four levels of hierarchy. --text-tertiary is the lightest text
+   permitted on --surface-card and is never used for anything the
+   operator must read in order to act. */
+--text-primary:var(--grey-900);
+--text-secondary:var(--grey-600);
+--text-tertiary:var(--grey-500);
+--text-disabled:var(--grey-400);
+--text-inverse:var(--grey-0);
+--text-link:var(--blue-600);
+/* On an inverse surface the ramp runs the other way: emphasis BRIGHTENS.
+   Rest is the accent so interactivity still reads as blue; press lands on
+   pure white. Rest-vs-inverse-body-text is only 1.63:1, so an inverse link
+   is always underlined — see the Link spec, §08. */
+--text-link-inverse:var(--blue-200);
+--text-link-inverse-hover:var(--blue-100);
+--text-link-inverse-active:var(--grey-0);
+--text-accent:var(--blue-700);
+--text-success:var(--green-700);
+--text-warning:var(--orange-700);
+--text-critical:var(--red-700);
+--text-info:var(--teal-700);
+
+/* ── 2. BACKGROUND ─────────────────────────────────────────────────────
+   The app canvas — what a surface sits ON. Always flat; no gradients. */
+--background-page:var(--grey-50);
+--background-sunken:var(--grey-100);
+--background-inverse:var(--grey-900);
+--background-brand:var(--blue-600);
+
+/* ── 3. SURFACE ────────────────────────────────────────────────────────
+   Content planes that sit on the background, plus their states. A card
+   is --surface-card + a hairline; the border is the elevation. */
+--surface-card:var(--grey-0);
+--surface-raised:var(--grey-0);
+--surface-overlay:var(--grey-0);
+--surface-sunken:var(--background-sunken);
+--surface-inverse:var(--background-inverse);
+--surface-hover:var(--grey-100);
+--surface-active:var(--grey-200);
+--surface-disabled:var(--grey-100);
+--surface-track:var(--grey-300);
+--surface-knob:var(--grey-0);
+
+/* ── 4. BORDER ─────────────────────────────────────────────────────────
+   Hairlines carry the structure. Hover strengthens one step.
+   These are HAIRLINE values: tuned to sit quietly against a surface at 1px.
+   None of them is a fill. Used as a solid mark — a dot, a tick, a knob —
+   --border-strong measures 1.60:1 against a light surface and fails 1.4.11's
+   3:1 for a non-text indicator. Checkbox and Radio are retargeted to
+   --border-control (4.74:1) and Avatar's offline presence dot uses
+   --text-tertiary (~4.1:1) to guarantee strict WCAG 2.1 AA 1.4.11 compliance. */
+--border-subtle:var(--grey-100);
+--border-default:var(--grey-200);
+--border-strong:var(--grey-300);
+/* The boundary of an unfilled interactive control — the one border that is
+   load-bearing rather than structural, so it must clear WCAG 1.4.11 (3:1).
+   grey-500 measures 4.74:1 on a card, 4.46:1 on the page band; the three
+   structural borders above sit at 1.15-1.60:1 and are decorative by design.
+   Never use for dividers, cards or table rules. Added 1.1.0. */
+--border-control:var(--grey-500);
+/* One step stronger, for the hover of a control whose border is its boundary.
+   grey-600 measures 7.78:1 on a card. Added 1.2.0. */
+--border-control-hover:var(--grey-600);
+--border-inverse:var(--grey-700);
+--border-focus:var(--blue-600);
+--border-success:var(--green-200);
+--border-warning:var(--orange-200);
+--border-critical:var(--red-200);
+--border-info:var(--teal-200);
+
+/* ── 5. ACTION ─────────────────────────────────────────────────────────
+   One saturated hue means "you can do something here", and nothing else
+   in the system may use it. Solid steps 600 → 700 → 800 on hover/press. */
+--action-solid:var(--blue-600);
+--action-solid-hover:var(--blue-700);
+--action-solid-active:var(--blue-800);
+--action-soft:var(--blue-50);
+--action-soft-hover:var(--blue-100);
+--action-border:var(--blue-200);
+--action-on-solid:var(--grey-0);
+--action-text:var(--blue-700);
+
+/* ── 6. SUCCESS ────────────────────────────────────────────────────────*/
+--status-success-soft:var(--green-50);
+--status-success-solid:var(--green-600);
+--status-success-border:var(--green-100);
+--status-success-text:var(--green-700);
+
+/* ── 7. WARNING ────────────────────────────────────────────────────────
+   Orange, not yellow: yellow cannot hold 4.5:1 on a light surface. */
+--status-warning-soft:var(--orange-50);
+--status-warning-solid:var(--orange-600);
+--status-warning-border:var(--orange-100);
+--status-warning-text:var(--orange-700);
+
+/* ── 8. CRITICAL ───────────────────────────────────────────────────────
+   "Critical" is the operator-facing severity word; the prop value on
+   components is tone="danger". Same tokens, one meaning. */
+--status-critical-soft:var(--red-50);
+--status-critical-solid:var(--red-600);
+--status-critical-solid-hover:var(--red-700);
+--status-critical-solid-active:var(--red-800);
+--status-critical-border:var(--red-100);
+--status-critical-text:var(--red-700);
+
+/* ── 9. INFO ───────────────────────────────────────────────────────────
+   Teal, deliberately not blue: an informational surface must never read
+   as an action. */
+--status-info-soft:var(--teal-50);
+--status-info-solid:var(--teal-600);
+--status-info-border:var(--teal-100);
+--status-info-text:var(--teal-700);
+
+/* Neutral state — "no signal yet", Unknown, Draft, Archived */
+--status-neutral-soft:var(--grey-100);
+--status-neutral-solid:var(--grey-600);
+--status-neutral-border:var(--grey-200);
+--status-neutral-text:var(--grey-600);
+
+/* ── 10. FOCUS ─────────────────────────────────────────────────────────
+   Standardized Focus Ring Contract (WCAG 2.2 SC 2.4.13)
+   Dual-band offset indicator guarantees >= 3:1 contrast against both fill and canvas. */
+--focus-ring-width:2px;
+--focus-ring-offset:2px;
+--focus-ring-color:var(--blue-600);
+--focus-ring:var(--ring-focus); /* @kind shadow */
+--focus-ring-critical:var(--ring-danger); /* @kind shadow */
+--focus-ring-inverse:var(--ring-inverse); /* @kind shadow */
+--focus-border:var(--border-focus);
+--focus-offset:var(--focus-ring-offset);
+
+/* ── 11. OVERLAY ───────────────────────────────────────────────────────
+   Transparency and blur appear here and nowhere else: no frosted cards,
+   no translucent sidebars. */
+--overlay-scrim:var(--scrim);
+--overlay-blur:var(--blur-overlay); /* @kind other */
+--overlay-surface:var(--surface-overlay);
+--overlay-shadow:var(--elevation-5); /* @kind shadow */
+
+/* ── 12. SELECTION ─────────────────────────────────────────────────────
+   Three different selections. Text selection is browser-level; row and
+   nav selection are product state and pair with accent text, never with
+   colour alone. */
+--selection-text-background:var(--blue-100);
+--selection-text-foreground:var(--text-primary);
+--surface-selected:var(--blue-50);
+--selection-border:var(--action-border);
+--selection-text-accent:var(--action-text);
+}
+
+/* ── DARK SCOPE ────────────────────────────────────────────────────────
+   [data-theme="dark"] on any subtree. Surfaces climb as they rise,
+   borders lighten instead of darkening, the action colour steps up for
+   contrast, and hover fills become white at low alpha so they compose
+   over any raised surface. Only canonical names are overridden. */
+[data-theme="dark"]{
+--text-primary:var(--grey-50);
+--text-secondary:var(--grey-300);
+--text-tertiary:var(--grey-400);
+--text-disabled:var(--grey-600);
+--text-inverse:var(--grey-950);
+--text-link:var(--blue-300);
+--text-link-inverse:var(--blue-700);
+--text-link-inverse-hover:var(--blue-800);
+--text-link-inverse-active:var(--grey-950);
+--text-accent:var(--blue-200);
+--text-success:#5fd0a6;
+--text-warning:#eda45e;
+--text-critical:#f08a7e;
+--text-info:#63c6d8;
+
+--background-page:var(--grey-950);
+--background-sunken:#0f1318;
+--background-inverse:var(--grey-50);
+--background-brand:var(--blue-700);
+
+--surface-card:var(--grey-900);
+--surface-raised:var(--grey-800);
+--surface-overlay:var(--grey-800);
+--surface-hover:rgba(255,255,255,.05);
+--surface-active:rgba(255,255,255,.09);
+--surface-disabled:rgba(255,255,255,.04);
+--surface-track:rgba(255,255,255,.2);
+--surface-knob:var(--grey-100);
+
+--border-subtle:rgba(255,255,255,.07);
+--border-default:rgba(255,255,255,.12);
+--border-strong:rgba(255,255,255,.2);
+--border-control:var(--grey-400);
+--border-control-hover:var(--grey-300);
+--border-inverse:var(--grey-200);
+--border-focus:var(--blue-400);
+--border-success:rgba(18,160,110,.34);
+--border-warning:rgba(201,102,32,.36);
+--border-critical:rgba(220,68,54,.36);
+--border-info:rgba(14,139,160,.36);
+
+--action-solid:var(--blue-500);
+--action-solid-hover:var(--blue-600);
+--action-solid-active:var(--blue-300);
+--action-soft:rgba(46,82,245,.16);
+--action-soft-hover:rgba(46,82,245,.24);
+--action-border:rgba(92,123,255,.34);
+--action-on-solid:var(--grey-0);
+--action-text:var(--blue-200);
+
+--status-success-soft:rgba(18,160,110,.16);
+--status-success-border:rgba(18,160,110,.3);
+--status-success-text:#5fd0a6;
+--status-warning-soft:rgba(201,102,32,.18);
+--status-warning-border:rgba(201,102,32,.32);
+--status-warning-text:#eda45e;
+--status-critical-soft:rgba(220,68,54,.16);
+--status-critical-solid-hover:var(--red-500);
+--status-critical-solid-active:var(--red-400);
+--status-critical-border:rgba(220,68,54,.32);
+--status-critical-text:#f08a7e;
+--status-info-soft:rgba(14,139,160,.18);
+--status-info-border:rgba(14,139,160,.32);
+--status-info-text:#63c6d8;
+--status-neutral-soft:rgba(255,255,255,.07);
+--status-neutral-border:rgba(255,255,255,.14);
+--status-neutral-text:var(--grey-300);
+
+--shadow-xs:0 1px 2px rgba(0,0,0,.4);
+--shadow-sm:0 1px 3px rgba(0,0,0,.45);
+--shadow-md:0 4px 12px -2px rgba(0,0,0,.5);
+--shadow-lg:0 16px 32px -8px rgba(0,0,0,.6);
+--shadow-xl:0 32px 64px -16px rgba(0,0,0,.7);
+--focus-ring-color:var(--blue-400);
+--ring-focus:0 0 0 var(--focus-ring-offset) var(--surface-card), 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--focus-ring-color);
+--ring-danger:0 0 0 var(--focus-ring-offset) var(--surface-card), 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--status-critical-text);
+--scrim:rgba(0,0,0,.6);
+
+--selection-text-background:rgba(92,123,255,.34);
+--surface-selected:rgba(46,82,245,.18);
+}

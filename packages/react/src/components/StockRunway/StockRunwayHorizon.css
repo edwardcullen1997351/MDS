@@ -1,0 +1,200 @@
+/* ==========================================================================
+   StockRunwayHorizon (§01–§14)
+   24px high micro-horizontal SVG stock runway bar with quad-flip tooltip
+   Strict Design Tokens — Zero Raw Hex Colors
+   ========================================================================== */
+
+.ds-stock-runway {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--ds-global-space-1, 4px);
+  position: relative;
+  font-family: var(--ds-global-fontFamily-sans, system-ui, sans-serif);
+  vertical-align: middle;
+  min-width: 140px;
+}
+
+.ds-stock-runway__svg-container {
+  width: 100%;
+  height: 24px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ds-stock-runway__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+
+/* SVG Tracks and Segments */
+.ds-stock-runway__track {
+  fill: var(--ds-semantic-color-surface-subtle, #f1f5f9);
+  stroke: var(--ds-semantic-color-border-subtle, #e2e8f0);
+  stroke-width: 0.8;
+}
+
+.ds-stock-runway__segment-safe {
+  fill: var(--ds-global-color-success-500, #22c55e);
+  transition: width 0.3s ease;
+}
+
+.ds-stock-runway__segment-reorder {
+  fill: var(--ds-global-color-warning-500, #f59e0b);
+  transition: width 0.3s ease;
+}
+
+.ds-stock-runway__segment-deficit {
+  opacity: 0.85;
+}
+
+.ds-stock-runway__hatch-line {
+  stroke: var(--ds-global-color-danger-500, #ef4444);
+}
+
+/* Vertical Marker (Red): Zero-Stockout */
+.ds-stock-runway__marker-group {
+  transition: transform 0.3s ease;
+}
+
+.ds-stock-runway__marker-line {
+  stroke: var(--ds-global-color-danger-500, #ef4444);
+  stroke-linecap: round;
+}
+
+.ds-stock-runway__marker-diamond {
+  fill: var(--ds-global-color-danger-500, #ef4444);
+}
+
+/* Inline Glanceable Readout */
+.ds-stock-runway__info {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-global-space-1, 4px);
+  font-size: 10px;
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  font-variant-numeric: tabular-nums;
+  flex-wrap: wrap;
+}
+
+.ds-stock-runway__badge {
+  padding: 1px 4px;
+  border-radius: var(--ds-global-radius-sm, 3px);
+  white-space: nowrap;
+}
+
+.ds-stock-runway__badge--safe {
+  background: var(--ds-global-color-success-50, #f0fdf4);
+  color: var(--ds-global-color-success-700, #15803d);
+}
+
+.ds-stock-runway__badge--reorder {
+  background: var(--ds-global-color-warning-50, #fffbeb);
+  color: var(--ds-global-color-warning-700, #b45309);
+}
+
+.ds-stock-runway__badge--stockout {
+  background: var(--ds-global-color-danger-50, #fef2f2);
+  color: var(--ds-global-color-danger-700, #b91c1c);
+}
+
+/* Tooltip (Quad-flip Boundary Clamped) */
+.ds-stock-runway__tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: min(224px, calc(100vw - 16px));
+  box-sizing: border-box;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  border-radius: var(--ds-global-radius-md, 6px);
+  padding: var(--ds-global-space-2, 8px) var(--ds-global-space-3, 10px);
+  box-shadow: var(--ds-global-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-global-space-2, 6px);
+  pointer-events: none;
+  animation: ds-stock-tooltip-pop 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ds-stock-tooltip-pop {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.ds-stock-runway__tooltip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: var(--ds-global-fontSize-xs, 11px);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+}
+
+.ds-stock-runway__tooltip-tag {
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  font-size: 10px;
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+  color: var(--ds-global-color-warning-700, #b45309);
+  background: var(--ds-global-color-warning-50, #fffbeb);
+  padding: 1px 4px;
+  border-radius: var(--ds-global-radius-sm, 3px);
+}
+
+.ds-stock-runway__tooltip-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3px;
+  font-size: 10px;
+}
+
+.ds-stock-runway__tooltip-grid > div {
+  display: grid;
+  grid-template-columns: minmax(0, 74px) minmax(0, 1fr);
+  gap: 4px;
+}
+
+.ds-stock-runway__tooltip-label {
+  color: var(--ds-semantic-color-text-muted, #64748b);
+}
+
+.ds-stock-runway__tooltip-val {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  font-weight: var(--ds-global-fontWeight-semibold, 600);
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+}
+
+.ds-stock-runway__tooltip-val--warning {
+  color: var(--ds-global-color-warning-700, #b45309);
+}
+
+.ds-stock-runway__tooltip-val--danger {
+  color: var(--ds-global-color-danger-700, #b91c1c);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-stock-runway__segment-safe,
+  .ds-stock-runway__segment-reorder,
+  .ds-stock-runway__marker-group,
+  .ds-stock-runway__tooltip {
+    animation: none !important;
+    transition: none !important;
+  }
+}

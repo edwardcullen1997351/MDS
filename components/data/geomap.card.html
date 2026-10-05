@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Map / GeoMap Component Showcase · Meridian Design System</title>
+  <link rel="stylesheet" href="../../tokens/tokens.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+    }
+    body {
+      margin: 0;
+      padding: 32px 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .showcase-header {
+      max-width: 1120px;
+      margin: 0 auto 32px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: #e0e7ff;
+      color: #3730a3;
+      margin-bottom: 8px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin: 0;
+    }
+    .demo-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+    .demo-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .demo-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+    .demo-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 0 0 16px;
+    }
+  </style>
+
+  <!-- React & Babel for live Card preview -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+
+  <header class="showcase-header">
+    <div class="badge">Data Visualization · 12</div>
+    <h1>Map / GeoMap (Geographic & Spatial Topology)</h1>
+    <p class="subtitle">
+      Multi-layered geographic visualization for spatial metrics, logistics freight corridors, and state-level manufacturing capacity. Features Mercator / Equirectangular projection, curved bezier route links, layer visibility toggles, interactive zoom/pan, hub & corridor search filtering, WCAG 1.4.1 hatch patterns, and accessible keyboard spatial table modal (<kbd>Alt+F11</kbd>).
+    </p>
+  </header>
+
+  <main class="demo-grid">
+    <!-- Live Demo 1: Hybrid Supply Chain Logistics & Corridors -->
+    <section class="demo-card">
+      <div class="demo-title">1. Hybrid Supply Chain Logistics & Freight Corridors (Chakan PL-04)</div>
+      <div class="demo-desc">Complete multi-layer visualization showing state dispatch volumes (choropleth), supply chain nodes (proportional symbols), and multi-modal freight routes with transit metrics.</div>
+      <div id="demo-root-1"></div>
+    </section>
+
+    <!-- Live Demo 2: Regional Dispatch Volume & Scrap Rate Choropleth -->
+    <section class="demo-card">
+      <div class="demo-title">2. State-Level Automotive Manufacturing Quota & Scrap Rate Variance</div>
+      <div class="demo-desc">Choropleth variant emphasizing state production quotas, regional yields, and ISO quality variances across key Indian industrial belts.</div>
+      <div id="demo-root-2"></div>
+    </section>
+
+    <!-- Live Demo 3: Multi-Modal Freight Corridors & Port Logistics -->
+    <section class="demo-card">
+      <div class="demo-title">3. Inter-State Multi-Modal Freight Routes & Port Logistics</div>
+      <div class="demo-desc">Flow corridor variant focusing on road freight, dedicated freight rail, and maritime container export via Nhava Sheva (JNPT).</div>
+      <div id="demo-root-3"></div>
+    </section>
+  </main>
+
+  <script type="text/babel">
+    const { useState, useMemo, useRef, useEffect, useCallback } = React;
+
+    // --- Color Tokens & Semantic Palettes ---
+    const STATUS_COLORS = {
+      nominal: '#16a34a',
+      warning: '#d97706',
+      critical: '#dc2626',
+      info: '#2563eb'
+    };
+
+    const STATUS_BG = {
+      nominal: 'rgba(22, 163, 74, 0.12)',
+      warning: 'rgba(217, 119, 6, 0.12)',
+      critical: 'rgba(220, 38, 38, 0.12)',
+      info: 'rgba(37, 99, 235, 0.12)'
+    };
+
+    const HUB_ICONS = {
+      plant: '🏭',
+      vendor: '⛏️',
+      oem: '🚗',
+      port: '🚢',
+      warehouse: '📦',
+      station: '🚉'
+    };
+
+    // --- Built-in India & Key Industrial Regions Vector Paths ---
+    const BUILTIN_INDIA_REGIONS = [
+      {
+        id: 'MH',
+        name: 'Maharashtra (Western Auto Belt)',
+        code: 'MH',
+        d: 'M 350,300 L 400,290 L 440,320 L 460,370 L 430,420 L 380,440 L 340,410 L 330,360 L 340,320 Z',
+        value: 84200,
+        formattedValue: '84,200 MT',
+        status: 'nominal',
+        category: 'Tier-1 Hub'
+      },
+      {
+        id: 'GJ',
+        name: 'Gujarat (Sanand & Auto Hub)',
+        code: 'GJ',
+        d: 'M 290,260 L 340,250 L 360,290 L 340,320 L 310,330 L 270,300 L 270,270 Z',
+        value: 42100,
+        formattedValue: '42,100 MT',
+        status: 'nominal',
+        category: 'Tier-1 Cluster'
+      },
+      {
+        id: 'TN',
+        name: 'Tamil Nadu (Chennai Auto Cluster)',
+        code: 'TN',
+        d: 'M 380,470 L 430,460 L 440,520 L 410,560 L 370,540 L 370,490 Z',
+        value: 29800,
+        formattedValue: '29,800 MT',
+        status: 'warning',
+        category: 'OEM Customer Belt'
+      },
+      {
+        id: 'KA',
+        name: 'Karnataka (Vijayanagar Steel Belt)',
+        code: 'KA',
+        d: 'M 340,410 L 380,440 L 380,490 L 340,510 L 320,450 Z',
+        value: 36000,
+        formattedValue: '36,000 MT',
+        status: 'nominal',
+        category: 'Raw Materials'
+      },
+      {
+        id: 'HR',
+        name: 'Haryana & NCR (Manesar Hub)',
+        code: 'HR',
+        d: 'M 360,170 L 400,160 L 410,200 L 380,220 L 350,200 Z',
+        value: 18500,
+        formattedValue: '18,500 MT',
+        status: 'critical',
+        category: 'Powertrain OEM'
+      },
+      {
+        id: 'MP',
+        name: 'Madhya Pradesh (Central Transit)',
+        code: 'MP',
+        d: 'M 360,240 L 440,230 L 470,290 L 430,320 L 360,290 Z',
+        value: 12000,
+        formattedValue: '12,000 MT',
+        status: 'nominal',
+        category: 'Transit Corridor'
+      },
+      {
+        id: 'AP_TS',
+        name: 'Andhra Pradesh & Telangana',
+        code: 'AP',
+        d: 'M 400,380 L 470,360 L 460,450 L 410,460 L 390,410 Z',
+        value: 15400,
+        formattedValue: '15,400 MT',
+        status: 'nominal',
+        category: 'Component Supply'
+      }
+    ];
+
+    // --- Projection Helper (Mercator / Equirectangular) ---
+    function projectCoord(lon, lat, width = 760, height = 480, center = [78.0, 21.0], scale = 1100) {
+      const rad = Math.PI / 180;
+      const lambda = lon * rad;
+      const phi = lat * rad;
+      const lambda0 = center[0] * rad;
+      const phi0 = center[1] * rad;
+
+      // Mercator approximation focused on India
+      const x = (width / 2) + scale * (lambda - lambda0);
+      const y = (height / 2) - scale * (Math.log(Math.tan(Math.PI / 4 + phi / 2)) - Math.log(Math.tan(Math.PI / 4 + phi0 / 2)));
+
+      return [x, y];
+    }
+
+    function createCurvedRoute(x0, y0, x1, y1, curvature = 0.2) {
+      const dx = x1 - x0;
+      const dy = y1 - y0;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist === 0) return `M ${x0} ${y0} L ${x1} ${y1}`;
+
+      const mx = (x0 + x1) / 2;
+      const my = (y0 + y1) / 2;
+
+      const nx = -dy / dist;
+      const ny = dx / dist;
+
+      const cx = mx + nx * dist * curvature;
+      const cy = my + ny * dist * curvature;
+
+      return `M ${x0} ${y0} Q ${cx} ${cy} ${x1} ${y1}`;
+    }
+
+    // --- Main GeoMap Component ---
+    function GeoMap({
+      data = {},
+      variant = 'hybrid',
+      projection = 'mercator',
+      width = 760,
+      height = 480,
+      title = 'Geographic Supply Chain Map',
+      subtitle = 'Suryodaya Autocomp Ltd · Logistics & Freight Corridors',
+      showLayerControls = true,
+      showSearch = true,
+      showScaleBar = true,
+      interactive = true,
+      onRegionClick,
+      onHubClick,
+      onRouteClick
+    }) {
+      const [zoom, setZoom] = useState(1);
+      const [pan, setPan] = useState({ x: 0, y: 0 });
+      const [isDragging, setIsDragging] = useState(false);
+      const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+      // Layer Toggles
+      const [visibleLayers, setVisibleLayers] = useState({
+        regions: variant !== 'route',
+        hubs: true,
+        routes: variant !== 'choropleth'
+      });
+
+      // Filter / Search state
+      const [searchQuery, setSearchQuery] = useState('');
+      const [selectedEntity, setSelectedEntity] = useState(null);
+      const [hoveredEntity, setHoveredEntity] = useState(null);
+      const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+      const [isTableModalOpen, setIsTableModalOpen] = useState(false);
+
+      const svgRef = useRef(null);
+
+      // Extract datasets or fallback to defaults
+      const regions = useMemo(() => data.regions || BUILTIN_INDIA_REGIONS, [data.regions]);
+      const hubs = useMemo(() => data.hubs || [], [data.hubs]);
+      const routes = useMemo(() => data.routes || [], [data.routes]);
+
+      // Hub coordinate mapping to screen points
+      const hubPoints = useMemo(() => {
+        const map = {};
+        hubs.forEach(h => {
+          if (h.coordinates && h.coordinates.length === 2) {
+            const [x, y] = projectCoord(h.coordinates[0], h.coordinates[1], width, height);
+            map[h.id] = { ...h, x, y };
+          }
+        });
+        return map;
+      }, [hubs, width, height]);
+
+      // Search matching
+      const queryLower = searchQuery.toLowerCase().trim();
+      const filteredHubs = useMemo(() => {
+        if (!queryLower) return hubs;
+        return hubs.filter(h =>
+          h.name.toLowerCase().includes(queryLower) ||
+          (h.city && h.city.toLowerCase().includes(queryLower)) ||
+          h.type.toLowerCase().includes(queryLower)
+        );
+      }, [hubs, queryLower]);
+
+      const filteredRoutes = useMemo(() => {
+        if (!queryLower) return routes;
+        return routes.filter(r =>
+          r.id.toLowerCase().includes(queryLower) ||
+          r.source.toLowerCase().includes(queryLower) ||
+          r.target.toLowerCase().includes(queryLower) ||
+          r.mode.toLowerCase().includes(queryLower)
+        );
+      }, [routes, queryLower]);
+
+      // Zoom & Pan Handlers
+      const handleZoomIn = () => setZoom(z => Math.min(3.5, z * 1.25));
+      const handleZoomOut = () => setZoom(z => Math.max(0.6, z / 1.25));
+      const handleReset = () => {
+        setZoom(1);
+        setPan({ x: 0, y: 0 });
+        setSelectedEntity(null);
+        setSearchQuery('');
+      };
+
+      const handleMouseDown = (e) => {
+        if (e.target.tagName === 'svg' || e.target.tagName === 'path' && e.target.dataset.type === 'region') {
+          setIsDragging(true);
+          setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+        }
+      };
+
+      const handleMouseMove = (e) => {
+        if (isDragging) {
+          setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+        }
+      };
+
+      const handleMouseUp = () => setIsDragging(false);
+
+      // Keyboard Shortcut for Table Modal (Alt + F11)
+      useEffect(() => {
+        const handleKeyDown = (e) => {
+          if (e.altKey && (e.key === 'F11' || e.keyCode === 122)) {
+            e.preventDefault();
+            setIsTableModalOpen(prev => !prev);
+          }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+      }, []);
+
+      const toggleLayer = (layer) => {
+        setVisibleLayers(prev => ({ ...prev, [layer]: !prev[layer] }));
+      };
+
+      return (
+        <div style={{
+          position: 'relative',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: 8,
+          overflow: 'hidden',
+          fontFamily: 'system-ui, sans-serif'
+        }}>
+          {/* Header & Controls Toolbar */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '12px 16px',
+            borderBottom: '1px solid #f1f5f9',
+            background: '#fafafa',
+            flexWrap: 'wrap',
+            gap: 8
+          }}>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 14, color: '#0f172a' }}>{title}</div>
+              <div style={{ fontSize: 12, color: '#64748b' }}>{subtitle}</div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              {/* Search Bar */}
+              {showSearch && (
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    placeholder="Search plant, port, corridor..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{
+                      padding: '4px 10px',
+                      fontSize: 12,
+                      border: '1px solid #cbd5e1',
+                      borderRadius: 4,
+                      outline: 'none',
+                      width: 180
+                    }}
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      style={{
+                        position: 'absolute',
+                        right: 6,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        border: 'none',
+                        background: 'none',
+                        cursor: 'pointer',
+                        color: '#94a3b8',
+                        fontSize: 12
+                      }}
+                    >✕</button>
+                  )}
+                </div>
+              )}
+
+              {/* Layer Visibility Checkboxes */}
+              {showLayerControls && (
+                <div style={{ display: 'flex', gap: 8, fontSize: 11, color: '#334155' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 3, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={visibleLayers.regions}
+                      onChange={() => toggleLayer('regions')}
+                    /> Regions
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 3, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={visibleLayers.hubs}
+                      onChange={() => toggleLayer('hubs')}
+                    /> Hubs
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 3, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={visibleLayers.routes}
+                      onChange={() => toggleLayer('routes')}
+                    /> Routes
+                  </label>
+                </div>
+              )}
+
+              {/* Zoom & Table Controls */}
+              <div style={{ display: 'flex', gap: 4 }}>
+                <button
+                  onClick={handleZoomIn}
+                  title="Zoom In"
+                  style={{ padding: '4px 8px', fontSize: 12, border: '1px solid #cbd5e1', borderRadius: 4, background: '#fff', cursor: 'pointer' }}
+                >＋</button>
+                <button
+                  onClick={handleZoomOut}
+                  title="Zoom Out"
+                  style={{ padding: '4px 8px', fontSize: 12, border: '1px solid #cbd5e1', borderRadius: 4, background: '#fff', cursor: 'pointer' }}
+                >－</button>
+                <button
+                  onClick={handleReset}
+                  title="Reset View"
+                  style={{ padding: '4px 8px', fontSize: 12, border: '1px solid #cbd5e1', borderRadius: 4, background: '#fff', cursor: 'pointer' }}
+                >↺</button>
+                <button
+                  onClick={() => setIsTableModalOpen(true)}
+                  title="View Data Table (Alt+F11)"
+                  style={{ padding: '4px 8px', fontSize: 11, border: '1px solid #cbd5e1', borderRadius: 4, background: '#f8fafc', color: '#0284c7', cursor: 'pointer', fontWeight: 600 }}
+                >📊 Table</button>
+              </div>
+            </div>
+          </div>
+
+          {/* SVG Canvas */}
+          <div
+            style={{ position: 'relative', width: '100%', height, overflow: 'hidden', background: '#f8fafc', cursor: isDragging ? 'grabbing' : 'grab' }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+          >
+            <svg
+              ref={svgRef}
+              width="100%"
+              height="100%"
+              viewBox={`0 0 ${width} ${height}`}
+              style={{ display: 'block' }}
+            >
+              {/* Pattern Definitions for Accessibility (WCAG 1.4.1) */}
+              <defs>
+                <pattern id="hatch-warning" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                  <line x1="0" y1="0" x2="0" y2="8" stroke="#d97706" strokeWidth="2" opacity="0.4" />
+                </pattern>
+                <pattern id="hatch-critical" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+                  <line x1="0" y1="0" x2="0" y2="8" stroke="#dc2626" strokeWidth="2" opacity="0.5" />
+                </pattern>
+                <filter id="hub-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.18" />
+                </filter>
+                <marker id="route-arrow-nominal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#16a34a" />
+                </marker>
+                <marker id="route-arrow-warning" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706" />
+                </marker>
+                <marker id="route-arrow-critical" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626" />
+                </marker>
+              </defs>
+
+              <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
+                {/* 1. Regional Polygon Layer (Choropleth) */}
+                {visibleLayers.regions && (
+                  <g className="geo-regions-layer">
+                    {regions.map((reg) => {
+                      const isSelected = selectedEntity?.id === reg.id;
+                      const isHovered = hoveredEntity?.id === reg.id;
+                      const statusColor = STATUS_COLORS[reg.status || 'nominal'];
+                      const fillColor = reg.status === 'critical' ? 'url(#hatch-critical)' :
+                                        reg.status === 'warning' ? 'url(#hatch-warning)' :
+                                        '#e2e8f0';
+
+                      return (
+                        <g key={reg.id} className="geo-region-item">
+                          <path
+                            data-type="region"
+                            d={reg.d}
+                            fill={fillColor}
+                            stroke={isSelected ? '#0284c7' : '#cbd5e1'}
+                            strokeWidth={isSelected ? 2.5 : 1}
+                            style={{
+                              transition: 'all 0.15s ease',
+                              cursor: 'pointer'
+                            }}
+                            onMouseEnter={(e) => {
+                              setHoveredEntity({ type: 'region', data: reg });
+                              setTooltipPos({ x: e.clientX, y: e.clientY });
+                            }}
+                            onMouseLeave={() => setHoveredEntity(null)}
+                            onClick={(e) => {
+                              setSelectedEntity(reg);
+                              if (onRegionClick) onRegionClick(reg, e);
+                            }}
+                          />
+                          {/* Optional State Label */}
+                          <text
+                            x={reg.id === 'MH' ? 385 : reg.id === 'GJ' ? 305 : reg.id === 'TN' ? 405 : reg.id === 'KA' ? 355 : 380}
+                            y={reg.id === 'MH' ? 365 : reg.id === 'GJ' ? 295 : reg.id === 'TN' ? 515 : reg.id === 'KA' ? 465 : 190}
+                            fontSize="11"
+                            fontWeight="600"
+                            fill="#64748b"
+                            textAnchor="middle"
+                            pointerEvents="none"
+                            opacity={zoom > 0.8 ? 0.75 : 0}
+                          >
+                            {reg.code || reg.name.substring(0, 2)}
+                          </text>
+                        </g>
+                      );
+                    })}
+                  </g>
+                )}
+
+                {/* 2. Routes & Logistics Corridors Layer */}
+                {visibleLayers.routes && (
+                  <g className="geo-routes-layer">
+                    {filteredRoutes.map((r) => {
+                      const sourceHub = hubPoints[r.source];
+                      const targetHub = hubPoints[r.target];
+                      if (!sourceHub || !targetHub) return null;
+
+                      const isSelected = selectedEntity?.id === r.id;
+                      const isHovered = hoveredEntity?.data?.id === r.id;
+                      const statusColor = STATUS_COLORS[r.status || 'nominal'];
+                      const strokeWidth = Math.max(2, Math.min(6, (r.flow / 10000) * 2));
+                      const d = createCurvedRoute(sourceHub.x, sourceHub.y, targetHub.x, targetHub.y, r.curvature || 0.18);
+
+                      return (
+                        <g key={r.id} className="geo-route-item">
+                          {/* Route Halo */}
+                          <path
+                            d={d}
+                            fill="none"
+                            stroke={isSelected ? '#0284c7' : '#ffffff'}
+                            strokeWidth={strokeWidth + 3}
+                            opacity={0.8}
+                          />
+                          {/* Route Path */}
+                          <path
+                            d={d}
+                            fill="none"
+                            stroke={statusColor}
+                            strokeWidth={strokeWidth}
+                            strokeDasharray={r.mode === 'rail' ? '6,3' : r.status === 'warning' ? '4,4' : undefined}
+                            markerEnd={`url(#route-arrow-${r.status || 'nominal'})`}
+                            style={{ cursor: 'pointer', transition: 'stroke-width 0.2s ease' }}
+                            onMouseEnter={(e) => {
+                              setHoveredEntity({ type: 'route', data: r });
+                              setTooltipPos({ x: e.clientX, y: e.clientY });
+                            }}
+                            onMouseLeave={() => setHoveredEntity(null)}
+                            onClick={(e) => {
+                              setSelectedEntity(r);
+                              if (onRouteClick) onRouteClick(r, e);
+                            }}
+                          />
+                        </g>
+                      );
+                    })}
+                  </g>
+                )}
+
+                {/* 3. Hubs & Nodes Layer (Proportional Symbols) */}
+                {visibleLayers.hubs && (
+                  <g className="geo-hubs-layer">
+                    {filteredHubs.map((h) => {
+                      const pt = hubPoints[h.id];
+                      if (!pt) return null;
+
+                      const isSelected = selectedEntity?.id === h.id;
+                      const isHovered = hoveredEntity?.data?.id === h.id;
+                      const statusColor = STATUS_COLORS[h.status || 'nominal'];
+                      const radius = h.type === 'plant' ? 14 : h.type === 'port' ? 12 : 10;
+
+                      return (
+                        <g
+                          key={h.id}
+                          transform={`translate(${pt.x}, ${pt.y})`}
+                          style={{ cursor: 'pointer' }}
+                          onMouseEnter={(e) => {
+                            setHoveredEntity({ type: 'hub', data: h });
+                            setTooltipPos({ x: e.clientX, y: e.clientY });
+                          }}
+                          onMouseLeave={() => setHoveredEntity(null)}
+                          onClick={(e) => {
+                            setSelectedEntity(h);
+                            if (onHubClick) onHubClick(h, e);
+                          }}
+                        >
+                          {/* Selection Ripple Ring */}
+                          {isSelected && (
+                            <circle
+                              r={radius + 8}
+                              fill="none"
+                              stroke="#0284c7"
+                              strokeWidth="2"
+                              strokeDasharray="4,2"
+                              opacity="0.8"
+                            />
+                          )}
+
+                          {/* Outer Status Ring */}
+                          <circle
+                            r={radius + 2}
+                            fill="#ffffff"
+                            stroke={statusColor}
+                            strokeWidth="2.5"
+                            filter="url(#hub-glow)"
+                          />
+
+                          {/* Inner Hub Circle */}
+                          <circle
+                            r={radius}
+                            fill={h.type === 'plant' ? '#1e293b' : '#ffffff'}
+                          />
+
+                          {/* Hub Icon / Indicator */}
+                          <text
+                            textAnchor="middle"
+                            dominantBaseline="central"
+                            fontSize={radius > 12 ? '11' : '9'}
+                            fill={h.type === 'plant' ? '#ffffff' : '#334155'}
+                          >
+                            {HUB_ICONS[h.type] || '📍'}
+                          </text>
+
+                          {/* Hub Label */}
+                          <text
+                            y={radius + 13}
+                            textAnchor="middle"
+                            fontSize="10"
+                            fontWeight="600"
+                            fill="#0f172a"
+                            stroke="#ffffff"
+                            strokeWidth="3"
+                            paintOrder="stroke"
+                          >
+                            {h.name}
+                          </text>
+                        </g>
+                      );
+                    })}
+                  </g>
+                )}
+              </g>
+
+              {/* Static Map Scale & North Arrow */}
+              {showScaleBar && (
+                <g transform={`translate(20, ${height - 35})`}>
+                  <rect x="0" y="0" width="100" height="2" fill="#0f172a" />
+                  <rect x="0" y="-3" width="2" height="8" fill="#0f172a" />
+                  <rect x="50" y="-2" width="1.5" height="6" fill="#0f172a" />
+                  <rect x="100" y="-3" width="2" height="8" fill="#0f172a" />
+                  <text x="0" y="14" fontSize="9" fill="#64748b">0</text>
+                  <text x="50" y="14" fontSize="9" fill="#64748b" textAnchor="middle">150 km</text>
+                  <text x="100" y="14" fontSize="9" fill="#64748b" textAnchor="end">300 km</text>
+                </g>
+              )}
+            </svg>
+
+            {/* Float Tooltip */}
+            {hoveredEntity && (
+              <div style={{
+                position: 'fixed',
+                left: tooltipPos.x + 12,
+                top: tooltipPos.y + 12,
+                background: '#0f172a',
+                color: '#ffffff',
+                padding: '8px 12px',
+                borderRadius: 6,
+                fontSize: 12,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
+                pointerEvents: 'none',
+                zIndex: 100,
+                maxWidth: 240
+              }}>
+                {hoveredEntity.type === 'hub' && (
+                  <div>
+                    <div style={{ fontWeight: 700, marginBottom: 2 }}>{hoveredEntity.data.name}</div>
+                    <div style={{ color: '#94a3b8', fontSize: 11 }}>{hoveredEntity.data.city} · {hoveredEntity.data.type.toUpperCase()}</div>
+                    {hoveredEntity.data.value && (
+                      <div style={{ marginTop: 4, color: '#38bdf8' }}>
+                        Capacity: {hoveredEntity.data.value.toLocaleString('en-IN')} {hoveredEntity.data.unit || ''}
+                      </div>
+                    )}
+                    <div style={{ marginTop: 2, fontSize: 11, color: STATUS_COLORS[hoveredEntity.data.status] }}>
+                      ● Status: {hoveredEntity.data.status.toUpperCase()}
+                    </div>
+                  </div>
+                )}
+
+                {hoveredEntity.type === 'route' && (
+                  <div>
+                    <div style={{ fontWeight: 700, marginBottom: 2 }}>Corridor: {hoveredEntity.data.id}</div>
+                    <div style={{ color: '#94a3b8', fontSize: 11 }}>{hoveredEntity.data.source} &rarr; {hoveredEntity.data.target}</div>
+                    <div style={{ marginTop: 4, color: '#38bdf8' }}>
+                      Flow: {hoveredEntity.data.flow.toLocaleString('en-IN')} {hoveredEntity.data.unit || 'units'}
+                    </div>
+                    <div style={{ fontSize: 11, color: '#cbd5e1' }}>Mode: {hoveredEntity.data.mode.toUpperCase()} · {hoveredEntity.data.transitHours || 0} hrs</div>
+                  </div>
+                )}
+
+                {hoveredEntity.type === 'region' && (
+                  <div>
+                    <div style={{ fontWeight: 700, marginBottom: 2 }}>{hoveredEntity.data.name}</div>
+                    <div style={{ color: '#94a3b8', fontSize: 11 }}>Category: {hoveredEntity.data.category || 'Region'}</div>
+                    <div style={{ marginTop: 4, color: '#38bdf8' }}>
+                      Volume: {hoveredEntity.data.formattedValue || hoveredEntity.data.value}
+                    </div>
+                    <div style={{ marginTop: 2, fontSize: 11, color: STATUS_COLORS[hoveredEntity.data.status] }}>
+                      ● Status: {hoveredEntity.data.status.toUpperCase()}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Accessible Spatial Table Modal */}
+          {isTableModalOpen && (
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(15, 23, 42, 0.6)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 999
+            }}>
+              <div style={{
+                background: '#ffffff',
+                borderRadius: 8,
+                width: '90%',
+                maxWidth: 720,
+                maxHeight: '80vh',
+                display: 'flex',
+                flexDirection: 'column',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid #e2e8f0' }}>
+                  <h3 style={{ margin: 0, fontSize: 16, color: '#0f172a' }}>Accessible Geographic Data Table</h3>
+                  <button
+                    onClick={() => setIsTableModalOpen(false)}
+                    style={{ border: 'none', background: 'none', fontSize: 18, cursor: 'pointer', color: '#64748b' }}
+                  >✕</button>
+                </div>
+                <div style={{ padding: 20, overflowY: 'auto', flex: 1 }}>
+                  <h4 style={{ margin: '0 0 8px', fontSize: 13, color: '#334155' }}>Hub Nodes & Logistics Facilities</h4>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, marginBottom: 20 }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc', borderBottom: '1px solid #cbd5e1', textAlign: 'left' }}>
+                        <th style={{ padding: '6px 8px' }}>Facility Name</th>
+                        <th style={{ padding: '6px 8px' }}>Type</th>
+                        <th style={{ padding: '6px 8px' }}>Location</th>
+                        <th style={{ padding: '6px 8px' }}>Volume / Capacity</th>
+                        <th style={{ padding: '6px 8px' }}>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {hubs.map(h => (
+                        <tr key={h.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '6px 8px', fontWeight: 600 }}>{h.name}</td>
+                          <td style={{ padding: '6px 8px' }}>{h.type.toUpperCase()}</td>
+                          <td style={{ padding: '6px 8px' }}>{h.city || '—'}</td>
+                          <td style={{ padding: '6px 8px' }}>{h.value ? `${h.value.toLocaleString('en-IN')} ${h.unit || ''}` : '—'}</td>
+                          <td style={{ padding: '6px 8px', color: STATUS_COLORS[h.status] }}>{h.status.toUpperCase()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  <h4 style={{ margin: '0 0 8px', fontSize: 13, color: '#334155' }}>Logistics Freight Corridors</h4>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc', borderBottom: '1px solid #cbd5e1', textAlign: 'left' }}>
+                        <th style={{ padding: '6px 8px' }}>Corridor ID</th>
+                        <th style={{ padding: '6px 8px' }}>Source &rarr; Target</th>
+                        <th style={{ padding: '6px 8px' }}>Flow / Weight</th>
+                        <th style={{ padding: '6px 8px' }}>Mode</th>
+                        <th style={{ padding: '6px 8px' }}>Transit Time</th>
+                        <th style={{ padding: '6px 8px' }}>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {routes.map(r => (
+                        <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '6px 8px', fontWeight: 600 }}>{r.id}</td>
+                          <td style={{ padding: '6px 8px' }}>{r.source} &rarr; {r.target}</td>
+                          <td style={{ padding: '6px 8px' }}>{r.flow.toLocaleString('en-IN')} {r.unit || ''}</td>
+                          <td style={{ padding: '6px 8px' }}>{r.mode.toUpperCase()}</td>
+                          <td style={{ padding: '6px 8px' }}>{r.transitHours || 0} hrs</td>
+                          <td style={{ padding: '6px 8px', color: STATUS_COLORS[r.status] }}>{r.status.toUpperCase()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // --- Live Demo Datasets (Suryodaya Autocomp Scenario) ---
+    const hybridSupplyChainData = {
+      regions: BUILTIN_INDIA_REGIONS,
+      hubs: [
+        { id: 'CHAKAN', name: 'Chakan Plant (PL-04)', type: 'plant', coordinates: [73.85, 18.75], value: 45000, unit: 'units/mo', status: 'nominal', city: 'Pune' },
+        { id: 'JNPT', name: 'Nhava Sheva Port (JNPT)', type: 'port', coordinates: [72.95, 18.95], value: 14200, unit: 'TEU Export', status: 'nominal', city: 'Navi Mumbai' },
+        { id: 'SANAND', name: 'Sanand OEM Assembly', type: 'oem', coordinates: [72.38, 23.00], value: 18000, unit: 'chassis/mo', status: 'nominal', city: 'Sanand' },
+        { id: 'CHENNAI', name: 'Chennai Auto Cluster', type: 'oem', coordinates: [80.27, 13.08], value: 22000, unit: 'units/mo', status: 'warning', city: 'Chennai' },
+        { id: 'MANESAR', name: 'Manesar Powertrain', type: 'oem', coordinates: [76.93, 28.35], value: 12500, unit: 'engines/mo', status: 'critical', city: 'Gurugram' },
+        { id: 'BELLARY', name: 'Vijayanagar Steel Works', type: 'vendor', coordinates: [76.65, 15.15], value: 36000, unit: 'MT Coil', status: 'nominal', city: 'Bellary' }
+      ],
+      routes: [
+        { id: 'CORR-01', source: 'BELLARY', target: 'CHAKAN', flow: 36000, unit: 'MT Coil', status: 'nominal', mode: 'rail', transitHours: 18 },
+        { id: 'CORR-02', source: 'CHAKAN', target: 'JNPT', flow: 14200, unit: 'TEU Export', status: 'nominal', mode: 'road', transitHours: 4 },
+        { id: 'CORR-03', source: 'CHAKAN', target: 'SANAND', flow: 18000, unit: 'Assemblies', status: 'nominal', mode: 'road', transitHours: 14 },
+        { id: 'CORR-04', source: 'CHAKAN', target: 'CHENNAI', flow: 12000, unit: 'Axles', status: 'warning', mode: 'rail', transitHours: 28 },
+        { id: 'CORR-05', source: 'CHAKAN', target: 'MANESAR', flow: 8500, unit: 'Transmissions', status: 'critical', mode: 'road', transitHours: 36 }
+      ]
+    };
+
+    const regionalDispatchData = {
+      regions: [
+        { id: 'MH', name: 'Maharashtra', code: 'MH', d: BUILTIN_INDIA_REGIONS[0].d, value: 84200, formattedValue: '84,200 MT (Yield: 99.4%)', status: 'nominal' },
+        { id: 'GJ', name: 'Gujarat', code: 'GJ', d: BUILTIN_INDIA_REGIONS[1].d, value: 42100, formattedValue: '42,100 MT (Yield: 98.9%)', status: 'nominal' },
+        { id: 'TN', name: 'Tamil Nadu', code: 'TN', d: BUILTIN_INDIA_REGIONS[2].d, value: 29800, formattedValue: '29,800 MT (Yield: 94.2%)', status: 'warning' },
+        { id: 'HR', name: 'Haryana', code: 'HR', d: BUILTIN_INDIA_REGIONS[4].d, value: 18500, formattedValue: '18,500 MT (Yield: 91.0%)', status: 'critical' },
+        { id: 'KA', name: 'Karnataka', code: 'KA', d: BUILTIN_INDIA_REGIONS[3].d, value: 36000, formattedValue: '36,000 MT (Yield: 99.1%)', status: 'nominal' }
+      ]
+    };
+
+    const freightCorridorsData = {
+      hubs: hybridSupplyChainData.hubs,
+      routes: hybridSupplyChainData.routes
+    };
+
+    // Render Demos
+    ReactDOM.render(
+      <GeoMap
+        data={hybridSupplyChainData}
+        variant="hybrid"
+        title="Suryodaya Autocomp · National Supply Chain Logistics Network"
+        subtitle="Multi-modal freight corridors, Chakan PL-04 manufacturing node, and OEM customer hubs"
+        width={760}
+        height={460}
+      />,
+      document.getElementById('demo-root-1')
+    );
+
+    ReactDOM.render(
+      <GeoMap
+        data={regionalDispatchData}
+        variant="choropleth"
+        title="State-Level Production Quota & Scrap Rate Variance"
+        subtitle="State automotive belt density, ISO compliance yield, and regional scrap rate variance"
+        width={760}
+        height={440}
+      />,
+      document.getElementById('demo-root-2')
+    );
+
+    ReactDOM.render(
+      <GeoMap
+        data={freightCorridorsData}
+        variant="route"
+        title="Inter-State Dedicated Freight Corridors & Port Logistics"
+        subtitle="Rail and Road transport lanes linking raw steel mills to Chakan and Nhava Sheva (JNPT) container terminal"
+        width={760}
+        height={440}
+      />,
+      document.getElementById('demo-root-3')
+    );
+  </script>
+</body>
+</html>

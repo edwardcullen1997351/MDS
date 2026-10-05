@@ -1,0 +1,185 @@
+<!-- @dsCard group="Governance" viewport="980x1900" name="Composite spec standard" subtitle="The fourteen sections a Composite Component specification may contain — with the test for including or omitting each one" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Composite Component specification standard</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:32px}
+.wrap{max-width:1000px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0;max-width:76ch;color:var(--text-secondary);text-wrap:pretty}
+.rules{margin:24px 0 32px;padding:20px 22px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:10px}
+.rules h2{margin:0 0 2px;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+p{margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:80ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:30px 0 12px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding:20px 0;border-bottom:var(--border-hairline)}
+.sec:last-child{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:7px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.badge{align-self:flex-start;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);padding:2px 8px;border-radius:var(--radius-full);white-space:nowrap}
+.req{background:var(--status-success-soft);color:var(--text-success)}
+.cond{background:var(--surface-sunken);color:var(--text-secondary)}
+.body{display:flex;flex-direction:column;gap:10px;min-width:0}
+.test{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:baseline}
+.test .t{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+.test.omit .t{color:var(--text-tertiary)}
+.test p{color:var(--text-secondary)}
+.never{color:var(--text-tertiary)}
+.sig{margin-top:36px;padding-top:12px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:12px}.test{grid-template-columns:1fr;gap:2px}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Governance · Authoring standard</span>
+<h1>Composite Component specification standard</h1>
+<p class="lede">A Composite Component is a standardized assembly of existing Core Components that carries meaning the parts do not carry alone. Its specification documents only what the composition adds. This page fixes the sections such a specification may contain, their order and numbering, and the test for including or omitting each one — so that any two composite specs in this system can be read the same way.</p>
+
+<div class="rules">
+  <h2>How to apply it</h2>
+  <ul>
+    <li><strong>Two sections are unconditional; twelve are conditional.</strong> Purpose and Anatomy appear in every composite specification. The rest appear only when their include test is met.</li>
+    <li><strong>Numbers are stable identifiers, not positions.</strong> A section keeps its number from this list whether or not the sections before it are present, so a cross-reference such as <code>§07 Keyboard</code> means the same thing in every spec. Sections appear in ascending numeric order and are never renumbered.</li>
+    <li><strong>Omit rather than stub.</strong> An omitted section is absent — no heading, no "n/a", no restatement of a child component's contract. A section that only repeats what <code>Chip</code> or <code>Select</code> already documents is noise, and its presence implies the composite owns behaviour it does not own.</li>
+    <li><strong>Every included section states a contract the composite owns.</strong> The recurring test behind all twelve conditionals is the same one: does the composition create this, or does it inherit it? If the answer is inherit, the section is omitted and the reader goes to the child spec.</li>
+    <li><strong>Borderline calls are logged, not silently resolved.</strong> If it is genuinely unclear whether a behaviour is composite-owned, include the section and say so in it. A named open question is a decision the system can make later; an omission is invisible.</li>
+  </ul>
+</div>
+
+<div class="groupline"><h2>Required</h2><span>Present in every composite specification</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§01</span><h3>Purpose</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the semantic role of the Composite Component, the recurring UI problem it solves, and why that problem warrants a standardized component.</p>
+    <div class="test"><span class="t">Include</span><p>Always. Every Composite Component requires an explicit reason for existing.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p class="never">Never.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§02</span><h3>Anatomy</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the structural parts of the component, which parts are required or optional, and the relationships between them.</p>
+    <div class="test"><span class="t">Include</span><p>Always. A Composite Component must have a defined composition.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p class="never">Never.</p></div>
+  </div>
+</div>
+
+<div class="groupline"><h2>Conditional</h2><span>Included only when the composition creates the contract</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§03</span><h3>Properties</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines meaningful public configuration, content, behavioral, value, event, or integration inputs exposed by the composite.</p>
+    <div class="test"><span class="t">Include</span><p>The composite requires a stable public API beyond the APIs of its constituent components.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p>Configuration can be expressed entirely through existing child-component APIs without additional composite-level meaning.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§04</span><h3>Variants</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines a small set of semantically or behaviorally distinct standardized forms of the component.</p>
+    <div class="test"><span class="t">Include</span><p>Multiple recurring forms have meaningfully different contracts that belong to the same abstraction.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p>Differences are cosmetic, arbitrary, content-driven, or adequately represented through existing child-component properties.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§05</span><h3>Sizes</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines standardized component-level size options and the coordinated sizing rules they impose on constituent components.</p>
+    <div class="test"><span class="t">Include</span><p>The entire composite requires coordinated size behavior.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p>Child-component sizing is sufficient, or independent sizing is appropriate.</p></div>
+    <p><strong>Note, from practice.</strong> This is the section most often omitted by mistake. If a composite lays controls out in one row or one column, they share a height or width rhythm, and a single child left at its own default is visibly wrong — that is coordinated size behaviour, and only the composite can know all the pieces. Both composites built so far include §05 for exactly this reason. Omit it when the parts do not share an axis, or when their sizes are genuinely independent.</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§06</span><h3>States</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines states owned or coordinated by the composite rather than independently owned by its constituent components.</p>
+    <div class="test"><span class="t">Include</span><p>The composite introduces meaningful states such as an aggregate value state, invalid relationship, expanded state, or coordinated disabled state.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p>All relevant states belong entirely to existing child components.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§07</span><h3>Keyboard</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines keyboard interaction introduced by the composition, including focus movement, shortcut behavior, or coordinated keyboard operation.</p>
+    <div class="test"><span class="t">Include</span><p>Combining components creates keyboard behavior not already defined by the constituent Core Components.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p>Existing child-component keyboard contracts completely determine behavior.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§08</span><h3>Accessibility</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines semantic relationships, accessible naming, focus management, announcements, roles, reading order, and assistive-technology requirements created by the composition.</p>
+    <div class="test"><span class="t">Include</span><p>The composite creates accessibility relationships or requirements beyond those of its individual children.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p>Composition introduces no additional accessibility contract.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§09</span><h3>Motion</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines transitions or animation behavior owned by the composite.</p>
+    <div class="test"><span class="t">Include</span><p>Motion communicates or supports a composite-owned state transition.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p>Motion belongs entirely to constituent components, or is merely decorative.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§10</span><h3>Content rules</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines constraints governing content hierarchy, terminology, ordering, length, labels, truncation, or required supporting information.</p>
+    <div class="test"><span class="t">Include</span><p>Consistent content structure is necessary for the component to preserve its semantic identity or usability.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p>The component accepts unconstrained content without compromising its contract.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§11</span><h3>Responsive</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines standardized structural or behavioral changes triggered by available viewport or container space.</p>
+    <div class="test"><span class="t">Include</span><p>The composite must change composition or interaction behavior at constrained sizes.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p>Ordinary layout primitives adequately handle adaptation without changing the component contract.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§12</span><h3>Anti-patterns</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines recurring misuses that compromise semantics, usability, accessibility, or component boundaries.</p>
+    <div class="test"><span class="t">Include</span><p>The abstraction has plausible and consequential misuse cases worth explicitly preventing.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p>Existing component documentation already makes misuse sufficiently clear.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§13</span><h3>Implementation notes</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines internal structural, state-management, DOM, composition, or architectural requirements needed for consistent implementations.</p>
+    <div class="test"><span class="t">Include</span><p>Correct implementation depends on constraints not apparent from the public API.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p>The implementation follows directly from the anatomy and existing child-component contracts.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§14</span><h3>Developer notes</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines developer-specific integration guidance, event contracts, controlled/uncontrolled behavior, value representation, or other API considerations.</p>
+    <div class="test"><span class="t">Include</span><p>Consumers require technical guidance beyond the component's general properties and implementation requirements.</p></div>
+    <div class="test omit"><span class="t">Omit</span><p>Properties and implementation documentation adequately define the developer contract.</p></div>
+  </div>
+</div>
+
+<p class="sig">Applies to: Composite Component specifications · Core Component specs keep <a href="core-spec-standard.card.html">their own section set</a> (all fourteen, no include tests) · Navigation Systems keep <a href="navigation-spec-standard.card.html">theirs</a> · Sections are numbered §01–§14 and never renumbered · Written specs: <a href="../specs/composite/composite.card.html">composite index</a> · <a href="layout-template-spec-standard.card.html">Layout Templates</a> keep theirs</p>
+</div>
+</body></html>

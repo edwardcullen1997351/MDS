@@ -1,0 +1,81 @@
+<!-- @dsCard group="Components" viewport="1000x760" name="ScopePicker — a hierarchy as one value" subtitle="Covering set, provisional scope, filter that never changes the answer" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>ScopePicker</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--background-page);padding:20px;font-family:var(--font-sans)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { ScopePicker, Card, Field, Input, Button, Text, DescriptionList, Badge } = window.MeridianDesignSystem_962c43;
+
+const CC = [{ id:'CC-PL04', label:'Chakan plant (PL-04)', icon:'factory', children:[
+  { id:'CC-PRESS', label:'Press shop', icon:'layers', children:[
+    { id:'CC-PRESS-A', label:'CC-41120 · Press line A', icon:'circle', meta:'₹4,10,000' },
+    { id:'CC-PRESS-B', label:'CC-41121 · Press line B', icon:'circle', meta:'₹3,80,000' },
+    { id:'CC-PRESS-T', label:'CC-41125 · Tool room', icon:'circle', meta:'₹1,20,000' },
+  ]},
+  { id:'CC-WELD', label:'Weld shop', icon:'layers', hasChildren:true },
+  { id:'CC-ASSY', label:'Assembly', icon:'layers', children:[
+    { id:'CC-ASSY-1', label:'CC-41210 · Assembly 1', icon:'circle', meta:'₹5,60,000' },
+    { id:'CC-ASSY-2', label:'CC-41211 · Assembly 2', icon:'circle', meta:'₹2,90,000' },
+  ]},
+  { id:'CC-QA', label:'CC-41400 · Quality', icon:'circle', meta:'₹1,75,000' },
+]}];
+
+function Demo(){
+  const [scope, setScope] = React.useState(['CC-PRESS-A']);
+  const [loading, setLoading] = React.useState([]);
+  const [tight, setTight] = React.useState([]);
+  const onExpand = () => {};
+  return (
+  <div style={{display:'flex',flexDirection:'column',gap:16}}>
+    <div className="grid">
+      <Card title="NC-2207 · rework charge" headingLevel={2} padding="sm">
+        <div style={{display:'flex',flexDirection:'column',gap:14}}>
+          <Field label="Charge scope" hint="A parent charges every centre beneath it.">
+            <ScopePicker label="Charge scope" unit="cost centre" items={CC}
+              value={scope} onChange={setScope} required
+              requiredMessage="A rework charge must name at least one cost centre."
+              defaultExpandedIds={['CC-PL04','CC-PRESS']}
+              loadingIds={loading} onExpandedChange={onExpand} />
+          </Field>
+          <Text size="xs" tone="tertiary">Stored value: <code style={{fontFamily:'var(--font-mono)'}}>[{scope.map(s=>'"'+s+'"').join(', ')}]</code></Text>
+          <div style={{display:'flex',gap:8}}>
+            <Button variant="primary" size="sm" disabled={!scope.length}>Post charge</Button>
+            <Button variant="secondary" size="sm" onClick={()=>setScope([])}>Clear scope</Button>
+            <Button variant="secondary" size="sm" onClick={()=>{setScope(['CC-WELD']);setLoading(['CC-WELD']);}}>Charge weld shop</Button>
+          </div>
+          <Text size="xs" tone="tertiary">Tick all three press centres and the value rolls up to <code style={{fontFamily:'var(--font-mono)'}}>["CC-PRESS"]</code> — one scope, one encoding. "Charge weld shop" selects a branch whose children were never fetched: the scope goes provisional rather than pretending to be one centre.</Text>
+        </div>
+      </Card>
+      <Card title="Approval preview" headingLevel={2} padding="sm">
+        <DescriptionList items={[
+          {term:'Nonconformance',value:'NC-2207',mono:true},
+          {term:'Part',value:'BRK-4820-A',mono:true},
+          {term:'Raised',value:'2026-09-05 (IST) · Meera Nair'},
+          {term:'Scope',value: scope.length ? scope.join(', ') : '—', mono:true},
+          {term:'Approver',value: scope.length > 1 ? 'Plant head' : 'Quality manager'},
+        ]} />
+        <Text size="xs" tone="tertiary" style={{marginTop:12,display:'block'}}>Because the value is the covering set, the approval rule reads one array — it never has to work out what a parent stood for.</Text>
+      </Card>
+    </div>
+    <div className="grid">
+      <Card title="No filter, sm, not required" headingLevel={2} padding="sm">
+        <ScopePicker label="PM plan assets" unit="asset" size="sm" searchable={false}
+          items={[{id:'A',label:'Press shop',icon:'layers',children:[
+            {id:'A1',label:'PRS-4120',icon:'cpu',meta:'630 T'},
+            {id:'A2',label:'PRS-4121',icon:'cpu',meta:'400 T'},
+          ]}]} value={tight} onChange={setTight} defaultExpandedIds={['A']}
+          hint="Assets included in the quarterly plan." />
+      </Card>
+      <Card title="Empty and required" headingLevel={2} padding="sm">
+        <ScopePicker label="Charge scope" unit="cost centre" items={CC} value={[]} onChange={()=>{}}
+          required requiredMessage="A rework charge must name at least one cost centre."
+          defaultExpandedIds={['CC-PL04']} />
+      </Card>
+    </div>
+    <Text size="xs" tone="tertiary">Type in the filter: hits arrive with their ancestors and the path opens, the scope is untouched, and clearing the query gives the operator their own expansion back.</Text>
+  </div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

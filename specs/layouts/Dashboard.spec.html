@@ -1,0 +1,184 @@
+<!-- @dsCard group="Specs · Layouts" viewport="1080x760" name="Dashboard" subtitle="Full specification — many independently meaningful modules on one grid: the spans and orders the frame owns, what the first viewport must earn, and why not every page of cards is one" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Dashboard — layout template specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+.mock{padding:14px;display:grid;grid-template-columns:repeat(6,1fr);gap:7px;background:var(--background-page);min-height:150px;align-content:start}
+.m{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:7px;display:flex;flex-direction:column;gap:5px;min-width:0;min-height:38px}
+.m.bad{border-color:var(--status-critical-border)}
+.m span{font-size:9px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{height:6px;border-radius:3px;background:var(--surface-sunken);border:var(--border-hairline)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:96ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Layout template</span>
+  <h1>Dashboard</h1>
+  <p class="lede">At 07:15 five people stand at one screen for eleven minutes: the press-shop head, the quality manager, the maintenance head, the planner and the shift supervisors. None of them reads it top to bottom. Each scans for the module that is theirs, then for whatever is red, then leaves. This frame exists for that eleven minutes — several independently meaningful modules held simultaneously so that status can be scanned, compared and left behind, with a route into the depth when a number turns out to matter. It is a multi-module structure, not a two-column page that happens to contain cards, and the difference is that the frame owns how prominence is distributed.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/layout-template-spec-standard.card.html">Layout template spec standard §01–§14</a></span><span>Regions: 3 (all required)</span><span>Reference implementation: <a href="dashboard-reference.card.html">card</a> · <a href="../../templates/dashboard/Dashboard.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — shift-handover dashboard, PL-04, 07:15 (IST)</span><span>Sections included: 8 of 14</span><span style="color:var(--text-primary)">status: frozen 8 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <p>Provide a simultaneous overview of several independently meaningful information modules, prioritising rapid scanning, comparison, status awareness, and access to deeper information. The frame is right when a reader arrives without a task, leaves with an assessment, and the modules they scan are answerable in their own right — each one a fact about the plant that stands up alone.</p>
+    <p><strong>Two tests, both required.</strong> <em>Multiplicity:</em> there are several modules and no single one is the task surface — remove any one and the screen is still worth opening. <em>Independence:</em> each module means what it means without its neighbours; nothing is understood only because of what sits beside it. A screen that fails multiplicity is a single-purpose page with decoration; a screen that fails independence is one document broken into boxes.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>A shift-handover or morning-meeting screen: output against plan, OEE, open nonconformances, overnight breakdowns, material shortages, despatch adherence.</li><li>A role's standing overview — the maintenance head's assets, backlog, spares and MTTR — where each module belongs to a different system.</li><li>Any screen whose job is to tell several different readers, quickly, whether their area needs them today.</li></ul></div>
+      <div class="pane dont"><h3>Not this layout</h3><ul><li><strong>Sequential content that happens to be in cards.</strong> Use <a href="SingleColumn.spec.html">single column</a>: an ordered read is not a scan.</li><li><strong>One collection is plainly the task surface.</strong> Then the screen is a <a href="CollectionWorkspace.spec.html">collection workspace</a>, or <a href="MasterDetail.spec.html">master-detail</a> if a member is worked beside it — the summary tiles above a queue do not make the queue a dashboard.</li><li><strong>A stepwise task with a prescribed sequence.</strong> A grid asserts that order does not matter; a staged task asserts the opposite.</li><li><strong>Two substantial surfaces compared.</strong> That is <a href="SplitView.spec.html">split view</a>.</li></ul></div>
+    </div>
+    <p><strong>Applicable interaction patterns.</strong> <em>Primary:</em> none — the frame implies no sequencing or commit contract of its own; it hosts whatever its modules do. <em>Supported:</em> <a href="../patterns/SearchResults.spec.html">search results</a> and <a href="../patterns/CollectionRefinement.spec.html">collection refinement</a> where a module or the shared controls narrow what is shown, <a href="../patterns/AsynchronousAction.spec.html">asynchronous action</a> where a module starts work that outlives the glance, and <a href="../patterns/RecoverableFailure.spec.html">recoverable failure</a> because on a screen of eight independent reads, one of them failing is a normal Tuesday and must be survivable in place.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <table><thead><tr><th>#</th><th>Region</th><th>Requirement</th><th>What it owns</th></tr></thead><tbody>
+      <tr><td class="k">1</td><td class="k">Dashboard header</td><td>Required</td><td>The heading and the context that makes every figure below readable — which plant, which period, as of when. Optionally the shared controls (scope, period, area) whose reach is the whole grid. Owns the <code>h1</code>. Nothing that is really one module's business belongs here: a control in the header is read as governing everything, and that reading must be true (§03).</td></tr>
+      <tr><td class="k">2</td><td class="k">Module grid</td><td>Required</td><td>The column structure, each module's span, and the order the modules are authored in. It distributes prominence: which modules are in the first viewport, which are full-span, which sit three to a row. This is the frame's whole substance — a dashboard's design problem is composition, not decoration.</td></tr>
+      <tr><td class="k">3</td><td class="k">Module content</td><td>Required</td><td>Per module: a heading that names what the module is about, the information itself, and local actions where the module needs them. Each module is independently comprehensible — its own heading, its own scope stated when it differs from the header's, and no meaning borrowed from whatever happens to sit next to it. Its own loading, empty and failure treatments are the module's business, not the frame's.</td></tr>
+    </tbody></table>
+    <p><strong>Three regions, and no fourth.</strong> A dashboard has no place for a persistent lateral region, a detail pane or a footer band of actions: a lateral region beside a grid is <a href="Sidebar.spec.html">sidebar</a> plus a grid inside it, and a detail pane fed by clicking a module is <a href="MasterDetail.spec.html">master-detail</a>. Both are legitimate screens; neither is this frame, and conflating them produces a grid whose modules are secretly a collection.</p>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — spans that say what matters</div><div class="mock"><div class="m" style="grid-column:span 6"><span>output against plan · full span</span><div class="bar"></div><div class="bar" style="width:70%"></div></div><div class="m" style="grid-column:span 3"><span>OEE by line</span><div class="bar" style="width:60%"></div></div><div class="m" style="grid-column:span 3"><span>NCs open</span><div class="bar" style="width:50%"></div></div><div class="m" style="grid-column:span 2"><span>shortages</span></div><div class="m" style="grid-column:span 2"><span>breakdowns</span></div><div class="m" style="grid-column:span 2"><span>despatch</span></div></div><div class="why">Attainment against plan is the number the 07:15 meeting starts from, so it is full-span and first. The three constraint modules are equal peers three to a row. The grid states a hierarchy the plant recognises.</div></div>
+      <div class="no"><div class="cap">Don't — every module the same size</div><div class="mock"><div class="m bad" style="grid-column:span 2"><span>output</span></div><div class="m bad" style="grid-column:span 2"><span>OEE</span></div><div class="m bad" style="grid-column:span 2"><span>NCs</span></div><div class="m bad" style="grid-column:span 2"><span>shortages</span></div><div class="m bad" style="grid-column:span 2"><span>breakdowns</span></div><div class="m bad" style="grid-column:span 2"><span>despatch</span></div><div class="m bad" style="grid-column:span 2"><span>manpower</span></div><div class="m bad" style="grid-column:span 2"><span>spares</span></div></div><div class="why">Eight equal tiles tell the reader that eight things matter equally, which is never true at 07:15. Uniformity is not neutrality: it pushes the judgement the frame should have made onto five people with eleven minutes.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Properties</h2><span class="sec-note">Conditional — included: four choices are the frame's composition</span></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Values</th><th>Default</th><th>Effect</th></tr></thead><tbody>
+      <tr><td class="k">columnCount</td><td>The system grid (12 at desk width) · a reduced count</td><td>the system grid</td><td>Sets the vocabulary of spans available. A reduced count is legitimate for a dashboard of few, wide modules; it is not a way to make three modules look like a full screen.</td></tr>
+      <tr><td class="k">moduleSpan</td><td>per module, in columns</td><td>differentiated</td><td>The frame's main instrument of prominence. Full-span for a module that is read as a table or a row of lines; a half for a substantial module; a third for peers compared side by side. Equal spans throughout are permitted only where the modules genuinely are equal — and they rarely are (§02).</td></tr>
+      <tr><td class="k">moduleOrder</td><td>authored order</td><td>most consequential first</td><td>Order is a decision, not an accident of when a module was built. It is the same order in the DOM and on screen at every width (§08, §11) — never a visual re-placement — and it determines what the first viewport contains (§10).</td></tr>
+      <tr><td class="k">controlScope</td><td>shared in the header · local to each module</td><td>shared</td><td>Shared controls scope every module and must actually do so: a period selector in the header that half the modules ignore is a lie the reader cannot detect. Local controls are for a module whose useful period or scope genuinely differs, and the module then states its own scope. Mixing is allowed only when both are unambiguously labelled with what they govern.</td></tr>
+    </tbody></table>
+    <p>What a module <em>contains</em> — table, list, figures, meters — is composition, not a property of this frame. Nor is refresh: how often a module's data is re-read belongs to the module and its source system.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>Accessibility</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Every module carries a real heading, and the levels form one outline.</strong> The header owns the <code>h1</code>; each module's title is an <code>h2</code>, and anything inside a module starts at <code>h3</code>. A module titled only by a graphic, a figure or a colour is unreachable by heading navigation — which is how most people who cannot scan visually use a screen of eight modules.</li>
+      <li><strong>Modules are named regions.</strong> A titled module is a labelled <code>section</code>; an untitled box is not a region and must not pretend to be one.</li>
+      <li><strong>DOM order stays logical when the grid changes visual placement.</strong> Spans may change with available space; document order may not. Never use <code>order</code>, <code>grid-area</code> or auto-placement tricks to move a module visually without moving it in the document — a reading order that disagrees with the visual order is the defect this frame is most prone to, because grids make it so easy.</li>
+      <li><strong>Shared controls state their scope.</strong> A control in the header is labelled with what it governs ("Scope every module to an area"), and its current value is legible from the modules it has scoped — each module repeating the scope it is showing, so no figure is orphaned from the filter that produced it.</li>
+      <li><strong>Status is never colour alone.</strong> A module signalling a breach carries the figure and a word; the colour is reinforcement. This is the frame's business because scanning for "whatever is red" is exactly the behaviour it invites.</li>
+      <li><strong>A module updating in place does not steal focus or move the grid.</strong> Where a module re-reads, its region keeps its height and its position; an arrival worth announcing is announced politely, by a module that names itself.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Content rules</h2><span class="sec-note">Conditional — included: the frame only pays off if the first viewport earns its place</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>The first viewport carries the most consequential information.</strong> Prominence is assigned deliberately, not mechanically or alphabetically or by build order. If everything is equally prominent, nothing is — and the reader with eleven minutes does the prioritising the frame refused to do.</li>
+      <li><strong>Each module is independently comprehensible.</strong> Its heading says what it is about; its figures carry their units, their period and their scope. A module that means something only because of the module beside it has borrowed meaning from spatial proximity, and proximity does not survive §11.</li>
+      <li><strong>No label depends on adjacency.</strong> A figure whose unit sits in a neighbouring module, a legend shared across two modules, a heading that reads as a continuation of the one above it: all break the moment the grid reflows to one column.</li>
+      <li><strong>Say when the figures are from.</strong> Every module states its period or its as-of time, either its own or the header's. A dashboard whose numbers have no stated age gets trusted at 07:15 and blamed at 15:00.</li>
+      <li><strong>A module shows one thing well.</strong> If a module needs three headings and two tables, it is two modules — or a screen of its own, reached from here.</li>
+      <li><strong>Give depth a route, not a summary.</strong> Where a figure raises a question, the module links to the screen that answers it rather than growing until it becomes that screen.</li>
+    </ul>
+    <div class="two">
+      <div class="pane do"><h3>Do</h3><ul><li>"Nonconformances open — PL-04, shift C, internal PPM against a target of 1,500." Read alone, in one column, on a phone at the gate, it still says exactly what it is.</li></ul></div>
+      <div class="pane dont"><h3>Don't</h3><ul><li>"Open: 14 · 6 · 3" with the meaning of the three numbers in the module to its left. At desk width it looks efficient; in the single-column form it is unreadable, and it was always unreadable to anyone using headings to navigate.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§11</span><h2>Responsive</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Expanded.</strong> Multiple simultaneous columns with differentiated module spans, as declared in §03.</li>
+      <li><strong>Intermediate.</strong> Modules reduce their span while priority and logical sequence are preserved: a third becomes a half, a half becomes full. Which modules share a row changes; which module comes first does not.</li>
+      <li><strong>Constrained.</strong> The grid normally becomes a single ordered stream — one module per row, in the authored order. This is the form in which module ordering (§03) and the first-viewport rule (§10) do all the work, because nothing is beside anything.</li>
+      <li><strong>Visual reflow must never produce a reading order inconsistent with DOM order</strong> (§08). Reflow is span arithmetic on one document order; a module that appears to move because of <code>order</code> or an explicit grid area is a defect, not a responsive form.</li>
+      <li><strong>Modules keep their identity across the forms.</strong> Same heading, same scope statement, same content — a module does not shed its title or its units to fit a narrower column; if it cannot fit, it shows less data, not less label.</li>
+      <li><strong>A module may cap its own height and scroll internally, but the grid does not.</strong> Competing scroll containers across a grid of eight modules make the whole screen unnavigable.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — spans shrink, order holds</div><div class="mock" style="grid-template-columns:repeat(2,1fr)"><div class="m" style="grid-column:span 2"><span>1 · output against plan</span><div class="bar"></div></div><div class="m"><span>2 · OEE</span></div><div class="m"><span>3 · NCs</span></div><div class="m"><span>4 · shortages</span></div><div class="m"><span>5 · breakdowns</span></div></div><div class="why">On the tablet in the meeting room, the same five modules in the same five positions of the reading order — only the number sharing a row has changed. Nobody has to re-learn the screen.</div></div>
+      <div class="no"><div class="cap">Don't — reflow that reorders</div><div class="mock" style="grid-template-columns:repeat(2,1fr)"><div class="m bad"><span>4 · shortages</span></div><div class="m bad"><span>1 · output</span></div><div class="m bad"><span>5 · breakdowns</span></div><div class="m bad"><span>2 · OEE</span></div><div class="m bad" style="grid-column:span 2"><span>3 · NCs</span></div></div><div class="why">Auto-placement filled the gaps and the visual order is now 4, 1, 5, 2, 3 while the document still says 1–5. A screen reader and a sighted reader are looking at two different dashboards, and the most consequential module is no longer first.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Anti-patterns</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Calling any page that contains cards a dashboard.</strong> Cards are a grouping device; a dashboard is a claim about multiplicity and independence (§01). Most "dashboards" that fail review are one task surface with tiles above it.</li>
+      <li><strong>Using it for sequential content.</strong> A report meant to be read in order belongs in <a href="SingleColumn.spec.html">single column</a>; a grid tells the reader order does not matter.</li>
+      <li><strong>Using it where one collection is the primary task surface.</strong> The queue is the screen; give it a <a href="CollectionWorkspace.spec.html">collection workspace</a>, or <a href="MasterDetail.spec.html">master-detail</a> if members are worked beside it.</li>
+      <li><strong>Using a grid for a stepwise task.</strong> A prescribed sequence in a layout that denies sequence — the user finds step 3 before step 1 and the frame is why.</li>
+      <li><strong>Equal prominence for everything</strong>, whether by uniform tiles or by an alphabetical order nobody chose (§02, §10).</li>
+      <li><strong>Modules that only make sense together</strong> — a legend in one, its units in another, a heading continued from its neighbour. The first reflow destroys them.</li>
+      <li><strong>A whole-dashboard loading or error state</strong> because one module's source did not answer. Eight independent reads means eight independent failures; the failing module says so where it sits.</li>
+      <li><strong>Shared controls that do not govern everything below them</strong>, or a module control mounted in the header — the reader cannot tell which figures a filter touched.</li>
+      <li><strong>Modules that grow into screens.</strong> A module with tabs, its own toolbar and a paginated table is a page being smuggled into a grid; link to it instead.</li>
+      <li><strong>A module count that keeps rising.</strong> Every added module dilutes the first viewport; a dashboard nobody can scan in a minute is a report with worse typography.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§13</span><h2>Implementation notes</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>One grid, spans as data.</strong> Build region 2 with <code>Grid</code> and one <code>GridItem</code> per module, and derive each span from the declared column count so a change of count does not require re-authoring every module. Compose modules from <code>Card</code> or <code>Surface</code> with <code>Stack</code>, and place <code>Table</code>, <code>List</code>, <code>DescriptionList</code>, <code>Badge</code>, <code>Skeleton</code>, <code>Alert</code> and <code>EmptyState</code> inside them as the module needs.</li>
+      <li><strong>Author the modules once, in the reading order, and never re-place them.</strong> Responsive behaviour is span arithmetic; if a product needs a different order at a different width, that is a different order and it changes the document, not just the CSS (§08).</li>
+      <li><strong>Every module track needs <code>min-width: 0</code>.</strong> A wide table or a long unbroken part number will otherwise push its module past its span and silently take a neighbour's width.</li>
+      <li><strong>Modules stretch to their row, and their content does not have to.</strong> Align items to stretch so a row of modules reads as one band, and let each module's content sit at the top rather than distributing to fill — vertically centred figures in unequal modules look like a fault.</li>
+      <li><strong>One request boundary per module.</strong> Each module owns its own read, its own loading treatment and its own failure; nothing coordinates them, and no module may block another's render. A shared control changing scope re-reads every module independently.</li>
+      <li><strong>Reserve module height where the data arrives late.</strong> A grid that re-lays itself out three times as eight reads land is unusable in the first ten seconds, which is most of the eleven minutes.</li>
+      <li><strong>Levels report levels.</strong> An OEE bar, a utilisation figure or a capacity meter is something that is simply true — <code>role="meter"</code> or a chart, never <code>Progress</code>, which is for work in flight.</li>
+      <li><strong>Frame state is limited to the shared controls.</strong> The scope and period in the header live in the frame (and belong in the URL where the screen is shared or bookmarked); everything else lives in the module that owns it.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted">Omitted, with reasons — §04 Variants: one structural form; column count, spans and order are properties (§03) and the reduced-span and single-stream arrangements are §11 consequences rather than standing choices. · §05 Sizes: the frame names no size or density classes — the column count in §03 and the spacing and density tokens carry it, and each module's contents keep their own size scales. · §06 States: the frame holds no state of its own beyond the shared controls' current values; module loading, empty and failure states are owned entirely by the modules (§13), and aggregating them here would be exactly the child-state list the standard forbids. · §07 Keyboard: the frame creates no keyboard relationship between modules — tab order follows document order, there is no region collapse or focus transfer to own, and heading-level navigation is stated in §08 where it belongs. · §09 Motion: no region collapses, expands or is revealed; a module refreshing in place is a module concern and must not move the grid (§13). · §14 Developer notes: nothing technical remains once §13 is written — the per-module request boundary, the span derivation and the one piece of frame state are all stated there.</p>
+<p class="omitted">Applies to: this layout template · Section set and include/omit tests: <a href="../../guidelines/layout-template-spec-standard.card.html">layout template spec standard</a> · Register: <a href="layouts.card.html">layouts index</a></p>
+</div>
+</body></html>

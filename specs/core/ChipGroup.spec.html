@@ -1,0 +1,368 @@
+<!-- @dsCard group="Specs · Core" viewport="1080x760" name="ChipGroup" subtitle="Full specification — the labelled set: selection model, generated name, keyboard, the seven-option ceiling" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>ChipGroup — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:118px}
+.staterow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Chip, ChipGroup, Tag, TagList, Text, Select, Button } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const SHIFTS = [{value:'days',label:'Days'},{value:'swing',label:'Swing'},{value:'nights',label:'Nights'}];
+const AREAS = [{value:'assembly',label:'Assembly',count:42},{value:'paint',label:'Paint',count:8},{value:'packing',label:'Packing',count:17},{value:'shipping',label:'Shipping',count:3,disabled:true}];
+
+function Spec(){
+/* The compiled bundle lags a same-turn component by one compile; without this
+   an undefined export throws inside render and blanks the whole document. */
+if (!ChipGroup) return <div className="page"><div className="masthead"><span className="eyebrow">Core · Component specification</span><h1>ChipGroup</h1><p className="lede">The design-system bundle has not been recompiled with <code>components/core/ChipGroup.jsx</code> yet — reload once it has.</p></div></div>;
+const [shift,setShift] = React.useState('nights');
+const [areas,setAreas] = React.useState(['assembly']);
+const [range,setRange] = React.useState('7d');
+const [err,setErr] = React.useState('');
+const [rows,setRows] = React.useState({a:'days',b:'swing'});
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Core · Component specification</span>
+    <h1>ChipGroup</h1>
+    <p className="lede">The labelled set — this system's segmented control, and the component <code>Chip</code> exists to fill. It owns everything that makes a chip row a <em>control</em>: the question above it, the generated input name, the selection model, and the one message beneath. A chip is the paint; the group is the component. Split out of <code>Chip.jsx</code> in 1.17.0 because the system's only grouped core control had been shipping as a second export of the file it depends on, with its selection semantics documented as asides inside another component's spec.</p>
+    <div className="meta">
+      <span>components/core/ChipGroup.jsx</span><span>window.MeridianDesignSystem_962c43.ChipGroup</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items</span><span>since: 1.9.0 · own component 1.17.0</span><span>0 own tokens · reads --chip-* · --field-*</span><span>shell: core/Fieldset</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Ask a closed question with every answer on screen.">
+    <p>A chip set answers "which of these?" without hiding the choices. It is the right control when the options are few, short, parallel and worth comparing side by side — and the wrong one the moment they stop fitting. It closed the system's longest-standing gap in 1.9.0: a horizontal one-of-N in a toolbar, which products had been faking with selected <code>Tag</code>s.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Offer 2–7 short options, all visible','ChipGroup','This component.'],
+      ['Show which filters are currently applied','TagList','A tag is a value the user put there and can remove. Deselecting a chip leaves the option offered — see §12 for the pairing.'],
+      ['Ask a compared question in a form','RadioGroup','2–3 alternatives read down one edge, with descriptions. Chips are a row: no second lines.'],
+      ['Ask a many-of-N question in a form','CheckboxGroup','A vertical set with descriptions and a select-all. Chips are the toolbar form of the same question.'],
+      ['Offer 8+ options, or long ones','Select · Combobox','§11. Past about seven the row wraps into a block nobody scans.'],
+      ['Switch which view is on screen','Tabs','A tab changes the page immediately and carries aria-controls. A chip sets a value the page reads.'],
+      ['Run actions','ButtonGroup','It deliberately holds no selected state.'],
+      ['Ask one yes/no','Switch · Checkbox','One chip is not a set — the component warns.'],
+    ]}/>
+    <div className="demo col">
+      <ChipGroup label="Shift" value={shift} onChange={setShift} options={SHIFTS} />
+      <ChipGroup label="Areas" multiple value={areas} onChange={setAreas} options={AREAS} hint="Counts are the open work orders in each area." />
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Four parts, three of which are the Fieldset scaffold.">
+    <div className="demo">
+      <div style={{display:'flex',flexDirection:'column',gap:10,minWidth:320,flex:1}}>
+        {[['1','Legend — the question the chips answer, from core/Fieldset: --text-xs, --weight-medium, --field-label-text, plus the required mark. This is the part a hand-rolled chip row always omits.'],
+          ['2','Chip row — a wrapping flex row at --space-2. Never a horizontal scroller (§11).'],
+          ['3','Chips — one per option, rendered from `options` or passed as children. Each is a <label> around a hidden radio or checkbox.'],
+          ['4','Hint — the rule, one per set. It survives the error rather than being replaced by it (Fieldset 1.16.0).'],
+          ['5','Error region — always mounted, role="alert", belonging to the SET. No chip ever turns red: nothing is wrong with any individual option.'],
+          ['6','The generated name — invisible, and the part that makes two groups on one page two groups (§13).']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:12,alignItems:'flex-start',minWidth:260}}>
+        <ChipGroup label="Time range" required hint="Applies to every chart on the page." value={range} onChange={setRange} options={[{value:'24h',label:'24 hours'},{value:'7d',label:'7 days',icon:'calendar'},{value:'30d',label:'30 days',count:412}]} />
+      </div>
+    </div>
+    <p>The group renders one <code>&lt;fieldset&gt;</code> with one <code>&lt;legend&gt;</code> — never wrap it in another <code>Fieldset</code>, which produces a nested, unnamed group. The chips themselves are documented in the <code>Chip</code> spec; the only part of a chip this component controls is which of them is selected.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="The whole API of the pattern lives here.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['label','ReactNode','—','The question. Required; aria-label accepted when the question is already on screen (a column header, a toolbar caption).'],
+      ['options','ChipOption[]','—','{ value, label, icon?, count?, disabled? }. The normal route.'],
+      ['children','ReactNode','—','Chip children, as an alternative to options. Passing both warns — the children render outside the value model.'],
+      ['value','string | string[]','—','A string; an array when multiple. Controlled — always.'],
+      ['onChange','(next, e) => void','—','Emits the NEXT value: a string, or the next array in OPTION order. Not an event.'],
+      ['multiple','boolean','false','Checkboxes instead of radios. Changes the keyboard model (§07).'],
+      ['required','boolean','false','Marks the legend, and sets native required on the first enabled radio of a single-select set. No native equivalent for multiple (§13).'],
+      ['hint','ReactNode','—','The rule. Wired by aria-describedby, read before the error.'],
+      ['error','ReactNode','—','The failure. role="alert" on the group\u2019s always-mounted region.'],
+      ['disabled','boolean','false','Native <fieldset disabled>, so the platform owns focus and submission for the whole subtree.'],
+      ['size','\u2018sm\u2019 | \u2018md\u2019','md','Pushed to every chip. Do not mix sizes in one row.'],
+      ['name','string','generated','Generated per group. Pass one only when a real <form> POST needs the key — and never the same one twice (§13).'],
+      ['gap','number | string','var(--space-2)','The wrapping flex row\u2019s gap — a token, not a private 8.'],
+      ['style','CSSProperties','—','Layout only, merged onto the fieldset.'],
+    ]}/>
+    <p className="warn">There is no <code>columns</code>, no <code>orientation</code>, no <code>limit</code> and no <code>selectAll</code>. Chips are a row that wraps — a vertical set of options with descriptions is <code>RadioGroup</code> or <code>CheckboxGroup</code>, and a select-all above a wrapping row of four options is more chrome than choice.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Two, and the difference is semantic, not visual.">
+    <p>The variant is what the group <em>is</em>: single-select renders same-name <strong>radios</strong>, <code>multiple</code> renders <strong>checkboxes</strong>. Nothing looks different, because the difference is heard and felt through the keyboard rather than drawn — inventing a shape difference (pills for one, squares for the other) would be a convention the user has to learn instead of one the platform already announces.</p>
+    <T cols={['Variant','Element','Selection','Keyboard','onChange']} rows={[
+      ['Single (default)','radios, one shared name','Exactly one. Choosing another replaces it; a chosen chip cannot be un-chosen by clicking it again.','One tab stop; arrows move and select, wrapping.','the next string'],
+      ['Multiple','independent checkboxes','Any number, including none.','A tab stop per chip; Space toggles.','the next array, in option order'],
+    ]}/>
+    <div className="demo col">
+      <Row label="single"><ChipGroup aria-label="Shift" value={shift} onChange={setShift} options={SHIFTS} /></Row>
+      <Row label="multiple"><ChipGroup aria-label="Areas" multiple value={areas} onChange={setAreas} options={AREAS.slice(0,3)} /></Row>
+    </div>
+    <p>If a single-select group genuinely needs "none", add it as an option — "All shifts", "Any" — rather than making a chosen chip clickable-off. A radio set cannot be cleared, and faking it means the pointer and the keyboard disagree about what a second press does.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two, inherited by every chip in the row.">
+    <T cols={['Size','Comfortable','Compact','Expanded','Label','Use']} rows={[
+      ['sm','28px','24px','34px','--text-xs','Toolbars, table headers, card headers — beside sm controls.'],
+      ['md','34px','28px','44px','--text-sm','Default. Filter panels, forms, page-level questions.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="sm"><ChipGroup aria-label="Shift" size="sm" value={shift} onChange={setShift} options={SHIFTS} /></Row>
+      <Row label="md"><ChipGroup aria-label="Shift" value={shift} onChange={setShift} options={SHIFTS} /></Row>
+      <Row label="sm + Select"><div style={{display:'flex',gap:12,alignItems:'center'}}><ChipGroup aria-label="Shift" size="sm" value={shift} onChange={setShift} options={SHIFTS} /><Select size="sm" aria-label="Line" options={[{value:'1',label:'Line 1'},{value:'2',label:'Line 2'}]} /></div></Row>
+    </div>
+    <p>Size is a group decision, not a per-chip one: a row of mixed heights reads as mixed importance among options that are meant to be equals. The chips take <code>--control-h-sm</code> / <code>--control-h-md</code> directly, so the row lines up with the <code>Input</code>, <code>Select</code> and <code>Button</code> beside it at every density — that alignment is the reason the group has no geometry tokens of its own.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="The group has three. The other six belong to the chips.">
+    <T cols={['State','Treatment']} rows={[
+      ['Rest','Legend, row, optional hint. Nothing about the group itself is interactive — it is a container with a name.'],
+      ['Disabled','Native <fieldset disabled>: every chip is genuinely disabled, unfocusable and unsubmitted, not merely greyed. Use for a set the current data or role makes unanswerable.'],
+      ['Invalid','The error renders in the group\u2019s always-mounted role="alert" region, with the hint still above it. The chips do not change colour — the SET is what is unanswered, and reddening five equal options says nothing about which one to pick.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="rest"><ChipGroup aria-label="Shift" value={shift} onChange={setShift} options={SHIFTS} /></Row>
+      <Row label="disabled group"><ChipGroup aria-label="Shift" disabled value="days" options={SHIFTS} /></Row>
+      <Row label="one option out"><ChipGroup aria-label="Areas" multiple value={areas} onChange={setAreas} options={AREAS} /></Row>
+    </div>
+    <div className="demo col">
+      <ChipGroup label="Shift" required value={err} onChange={setErr} options={SHIFTS} hint="The shift this order runs on." error={!err ? 'Pick a shift before releasing the order.' : undefined} />
+      <Text size="xs" tone="tertiary">Invalid, with the hint surviving the error — pick a chip and the message clears.</Text>
+    </div>
+    <p>Per-chip rest, hover, selected, selected-hover, focus and disabled are the <code>Chip</code> spec's §06. This component's states are only the ones that apply to a whole question.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="All of it is the platform's. None of it is ours.">
+    <T cols={['Key','Where','Does']} rows={[
+      ['Tab','into a single-select group','Lands on the selected chip, or the first if none is. ONE stop for the whole set — seven chips must not be seven stops before the next control.'],
+      ['\u2190 \u2191 \u2192 \u2193','within a single-select group','Moves focus AND selection to the next chip, wrapping, skipping disabled ones. Native radio behaviour.'],
+      ['Tab','into a multiple group','A stop per chip — correct here, because each checkbox is an independent yes/no.'],
+      ['Space','a chip','Toggles it (multiple) or selects it (single).'],
+      ['Enter','a chip inside a form','Submits the form, as any input does. It does not toggle.'],
+      ['Tab','out of the group','Moves to the next control. The hint and error are announced through aria-describedby, not as stops.'],
+    ]}/>
+    <p>None of this is implemented in <code>ChipGroup.jsx</code>. There is no roving <code>tabIndex</code>, no key handler and no <code>aria-checked</code> bookkeeping, because same-name radios already give one tab stop with wrapping arrow selection and disabled-skipping, and checkboxes already give per-control stops. Wrapping and disabled-skipping are precisely the two details every hand-rolled segmented control gets wrong, and they are the reason this component is built on inputs rather than buttons.</p>
+    <div className="demo col">
+      <Text size="xs" tone="tertiary">Tab into the first row: one stop, then <kbd>←</kbd> <kbd>→</kbd> — note that <em>Shipping</em> is skipped in the second row and <kbd>Space</kbd> toggles.</Text>
+      <ChipGroup aria-label="Shift" value={shift} onChange={setShift} options={SHIFTS} />
+      <ChipGroup aria-label="Areas" multiple value={areas} onChange={setAreas} options={AREAS} />
+    </div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="A real fieldset, a real question, real inputs.">
+    <ul>
+      <li><strong>The set is a <code>&lt;fieldset&gt;</code> with a <code>&lt;legend&gt;</code></strong> — the one grouping every screen reader announces with no ARIA. It is what makes the announcement "Nights, radio button, 3 of 3 — Shift" instead of three unattached controls.</li>
+      <li><strong><code>label</code> is required and warns when missing.</strong> A chip row with no question is the most common accessibility defect in this pattern: "Days", "Swing", "Nights" do not say what is being asked. <code>aria-label</code> or <code>aria-labelledby</code> satisfies it when the question is already on screen — that escape is why <code>Fieldset</code> checks for both.</li>
+      <li><strong>Selection is the input's own <code>:checked</code> state,</strong> not <code>aria-pressed</code> and not a class, so the visual and the announcement cannot drift.</li>
+      <li><strong>There is no <code>aria-required</code> and no <code>aria-invalid</code> on the group.</strong> <code>role="group"</code> supports neither — ARIA defines no required or invalid state for a group — so both would be dead attributes. This was a real regression in the 1.9.1 scaffold extraction and was removed in 1.16.1; the requirement is instead stated in words in the <code>hint</code>, and the failure reaches assistive technology through <code>aria-describedby</code> plus the always-mounted <code>role="alert"</code> region.</li>
+      <li><strong>One message per group.</strong> A per-chip error is not a thing: the question is what is unanswered.</li>
+      <li><strong>The hint is read before the error,</strong> because the rule is what makes the failure actionable.</li>
+      <li><strong>A disabled option stays announced,</strong> not removed — dropping it silently changes the question between two users looking at the same screen.</li>
+      <li><strong>Hit area equals the chip</strong> at full control height, clearing 2.5.8 at every density; 44px at <code>expanded</code>.</li>
+      <li><strong>Order is meaning.</strong> Options are announced in DOM order, so put them in the order the operator thinks in (days → swing → nights), never alphabetically by accident.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="None at the group level, deliberately.">
+    <T cols={['Moment','Motion','Why']} rows={[
+      ['Selection moving between chips','None. No sliding indicator.','The row wraps, so the indicator would fly diagonally across a line break — and multiple has several selections at once, which no single travelling indicator can express.'],
+      ['A chip\u2019s own hover / selected / focus','--transition-control (colour, border, shadow), and an opacity-only check.','Chip §09. Nothing animates width, or the row re-flows under the pointer that just clicked.'],
+      ['The group appearing','None.','It arrives with its question. A set of options fading in is a set the user cannot commit to reading.'],
+      ['Error appearing','None — no height animation.','An in-flow message that animates its height pushes the rest of the form. The live region is already mounted; only its content changes.'],
+      ['Reduced motion','--duration-* collapse to 1ms.','Nothing here was moving anyway.'],
+    ]}/>
+    <p>One component, one behaviour at every width: the tempting segmented-control indicator is not absent for want of effort, it is absent because it cannot survive wrapping or multi-select, and a motion that only works at some widths is worse than none.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="The legend is a question; the chips are its answers.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>A noun-phrase legend:</strong> "Shift", "Areas", "Time range".</li>
+        <li><strong>One or two words per chip,</strong> parallel across the set — all nouns, or all durations.</li>
+        <li><strong>Sentence case,</strong> in the operator’s own vocabulary.</li>
+        <li><strong>An explicit "All" option</strong> when "none" is a legitimate answer to a single-select question.</li>
+        <li><strong>The rule in the hint</strong> — "Any number of areas", "Pick at least one" — since no ARIA channel can carry it.</li>
+        <li><strong>An error that names the question,</strong> not the control: "Pick a shift before releasing the order."</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>A legend that repeats the chips.</strong> Under "Shift", the chips say "Nights", not "Night shift".</li>
+        <li><strong>A question mark.</strong> The legend is a label, not a sentence — "Shift", not "Which shift?".</li>
+        <li><strong>Sentences, descriptions or second lines.</strong> That set is a <code>RadioGroup</code>.</li>
+        <li><strong>Verbs.</strong> "Export" is a button; "Exported" is a filter value.</li>
+        <li><strong>Data values.</strong> "PN-7749", "tilburg" — <code>Tag</code>.</li>
+        <li><strong>An open-ended set.</strong> If you cannot write the full list, this is not the control.</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="It wraps, and past seven it stops being the right control.">
+    <ul>
+      <li><strong>The row wraps; it never scrolls horizontally.</strong> A scrolling chip rail hides options off the right edge, and an option the user cannot see is an option they do not have. This is a stronger rule here than for <code>TagList</code>: a tag row shows what was applied, a chip row shows what is <em>available</em>.</li>
+      <li><strong>Seven is the ceiling, and the component warns above it.</strong> Past that the set wraps into a block nobody scans; use <code>Select</code> (known list) or <code>Combobox</code> (searchable). There is no <code>limit</code> or "+4 more", because hiding an offered option behind an overflow count is exactly the failure this control exists to avoid.</li>
+      <li><strong>Never truncate a chip.</strong> "Assem…" is not an option anyone can choose confidently. Shorten the word or change the control.</li>
+      <li><strong>The fieldset shrinks properly</strong> — <code>minInlineSize: 0</code> is set in the scaffold, without which a fieldset refuses to go below <code>min-content</code> inside a flex or grid parent, and the row overflows its column instead of wrapping.</li>
+      <li><strong>Heights ride density,</strong> so the row still matches its neighbours at 24 / 28 / 34px (<code>sm</code>) and 28 / 34 / 44px (<code>md</code>).</li>
+      <li><strong>Touch: <code>md</code>,</strong> and <code>expanded</code> where hands are gloved. <code>sm</code> at <code>compact</code> is 24px and pointer-only, as everywhere in the system.</li>
+      <li><strong>Under ~320px,</strong> three chips are fine and six are a five-line stack. Move to <code>Select</code> at that width rather than shrinking the chips.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{maxWidth:300,border:'var(--border-hairline)',borderRadius:'var(--radius-sm)',padding:12}}>
+        <ChipGroup label="Areas" multiple value={areas} onChange={setAreas} options={AREAS} />
+      </div>
+      <Text size="xs" tone="tertiary">300px: the row wraps, every option stays visible and full-size.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Two of these ship in real products constantly.">
+    <div className="two">
+      <div className="pane dont"><h3>Structural</h3><ul>
+        <li><strong>A chip row with no legend.</strong> §08. It is the defect this component exists to prevent.</li>
+        <li><strong>A Fieldset (or a Field) wrapped around it.</strong> It already <em>is</em> a fieldset; the wrapper produces a nested unnamed group, and a <code>Field</code>’s <code>&lt;label for&gt;</code> cannot name a set at all.</li>
+        <li><strong>One shared <code>name</code> across two groups.</strong> They become one radio set: choosing in row four clears row one, silently.</li>
+        <li><strong>A chip group per table row.</strong> A wrapping row makes rows different heights; per-record questions are <code>Select</code>.</li>
+        <li><strong>Twelve options.</strong> §11 — the most common misuse.</li>
+        <li><strong>Uncontrolled use.</strong> There is no internal selection state; the value belongs to the filter or form model that also drives the table.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Conceptual</h3><ul>
+        <li><strong>Chips as tabs.</strong> If pressing it swaps the page, it is <code>Tabs</code> — which carries <code>aria-controls</code> a checkbox cannot.</li>
+        <li><strong>Chips as buttons.</strong> A row that runs actions is a <code>ButtonGroup</code>.</li>
+        <li><strong>A removable chip.</strong> The × means the user put it there — that is a <code>Tag</code>.</li>
+        <li><strong>Tones on chips</strong> to categorise options. Selection is the only colour, or the row stops reading as a set of equals.</li>
+        <li><strong>A chip with a caret</strong> opening a menu. That needs <code>aria-expanded</code>; it is a <code>Select</code> or a <code>Popover</code> trigger.</li>
+        <li><strong>Counts that change as you select.</strong> Count from the data, or the number reads as feedback on your own click.</li>
+      </ul></div>
+    </div>
+    <p className="warn">The recurring request is one control that both offers the filters and displays them: press to apply, then show an × to clear. That is two components in one target, with the press meaning different things depending on where the pointer landed. Build it as a <code>ChipGroup</code> for choosing and a <code>TagList</code> for what is applied — which is also the only version that survives a saved view loading five filters at once.</p>
+    <div className="demo col">
+      <ChipGroup label="Areas" multiple value={areas} onChange={setAreas} options={AREAS} />
+      <div style={{display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
+        <Text size="xs" tone="tertiary">Applied</Text>
+        <TagList>{areas.map(a=><Tag key={a} label={AREAS.find(o=>o.value===a)?.label||a} onRemove={()=>setAreas(areas.filter(v=>v!==a))} />)}</TagList>
+      </div>
+      <Text size="xs" tone="tertiary">Choosing and displaying are two rows, two components, one value.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="What the split fixed, and what it deliberately did not change.">
+    <ul>
+      <li><strong>Split out of <code>Chip.jsx</code> in 1.17.0.</strong> The public API is unchanged — <code>window.…ChipGroup</code> resolves exactly as before — but the component now has its own <code>.d.ts</code>, prompt and spec. The reason is not tidiness: the group is where every decision in this pattern lives, and it had no spec of its own, so the selection model, the name collision and the seven-option ceiling were documented as asides inside <code>Chip</code>'s spec. <code>Chip</code> keeps and exports the context as <code>chipContext</code> — lowercase deliberately, since only capital-initial exports reach the window namespace, and the first draft of this split shipped it as <code>ChipContext</code> and put a React context on the public surface beside the components; the group imports the chip, not the reverse.</li>
+      <li><strong><code>required</code> now does something on single-select.</strong> It had set <code>requiredOnAll: false</code> and then handed that <code>false</code> to every input, so <em>no</em> radio carried <code>required</code> — the prop drew an asterisk and nothing else, and once <code>Fieldset</code> correctly dropped <code>aria-required</code> in 1.16.1 it was carrying no information at all. The group now marks the <strong>first enabled</strong> radio, which is what HTML asks for: the constraint belongs to the set, and one input is enough to block submission. Putting it on every input is the classic version of this bug — some browsers then report the set unsatisfied even after a sibling is checked.</li>
+      <li><strong><code>multiple</code> + <code>required</code> has no native path,</strong> and pretending otherwise was the temptation. "At least one of these" is not an HTML constraint and not an ARIA state, so the group marks the legend and the rule is stated in the <code>hint</code>. Validate on submit, in the form.</li>
+      <li><strong>Multi-select emits in option order — now for children too.</strong> The 1.9.0 implementation ordered the array by <code>options</code> and fell back to <em>click</em> order when the chips were passed as children, so the same three selections round-tripped as two different arrays depending on which API the caller used. The order list is now read from <code>options</code> or from the children's <code>value</code> props.</li>
+      <li><strong>The <code>name</code> is generated</strong> with <code>useId()</code>. A shared name across two rendered groups makes them one radio set — selecting in row four clears row one, silently and only sometimes. Same defect class as RadioGroup 1.2.0.</li>
+      <li><strong>Six warnings,</strong> three of them new: no accessible name; fewer than two options; <code>options</code> <em>and</em> children together (the children render outside the value model); an array <code>value</code> without <code>multiple</code>; more than seven options; and a <code>value</code> matching no option — a silent mismatch between the form model and the offered set, where the control simply shows nothing selected. Empty string, <code>null</code> and an empty array are exempt: an unanswered single-select group is the normal pre-submit state, and warning on it would fire on every required group in a product before the user touches it.</li>
+      <li><strong>No tokens of its own.</strong> The chips read <code>--chip-*</code> (21 tokens) and the scaffold reads <code>--field-*</code>. A group-level token would be a fourth name for a value two components already share.</li>
+      <li><strong>The scaffold is <code>core/Fieldset</code></strong> (1.9.1), shared with <code>RadioGroup</code> and <code>CheckboxGroup</code>, and it lives in <code>core/</code> rather than <code>forms/</code> so a core component can reach it without a core→forms inversion. It owns the legend, the required mark, the hint, the always-mounted alert region and the <code>aria-describedby</code> wiring; this component contributes the name, the value model and the chips.</li>
+      <li><strong>Layout is a plain wrapping flex row,</strong> not a grid. A grid would give equal-width columns, which makes "Days" as wide as "Maintenance" and turns a set of words into a set of buttons.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{display:'flex',gap:24,flexWrap:'wrap'}}>
+        <ChipGroup label="Shift · row A" value={rows.a} onChange={(v)=>setRows({...rows,a:v})} options={SHIFTS} />
+        <ChipGroup label="Shift · row B" value={rows.b} onChange={(v)=>setRows({...rows,b:v})} options={SHIFTS} />
+      </div>
+      <Text size="xs" tone="tertiary">Two groups, two generated names: choosing in one leaves the other alone. With a shared <code>name</code> these would be one radio set.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Wiring it into a product.">
+    <pre>{`import { ChipGroup } from '@meridian/core';
+
+// Single-select: onChange gives you the next VALUE, not an event.
+const [shift, setShift] = React.useState('nights');
+<ChipGroup label="Shift" value={shift} onChange={setShift}
+  options={[
+    { value: 'days',   label: 'Days' },
+    { value: 'swing',  label: 'Swing' },
+    { value: 'nights', label: 'Nights' },
+  ]} />
+
+// Multi-select: the next ARRAY, always in option order.
+const [areas, setAreas] = React.useState([]);
+<ChipGroup label="Areas" multiple value={areas} onChange={setAreas}
+  hint="Any number of areas."
+  options={api.areas.map(a => ({
+    value: a.id, label: a.name, count: a.openOrders,
+    disabled: !a.permitted,          // shown, not removed
+  }))} />
+
+// "None" is an option, never a second click on a chosen chip.
+<ChipGroup label="Time range" value={range} onChange={setRange}
+  options={[{ value: 'all', label: 'All time' }, ...RANGES]} />
+
+// Validation lives with the form; the message names the question.
+<ChipGroup label="Shift" required value={shift} onChange={setShift}
+  options={SHIFTS}
+  error={submitted && !shift ? 'Pick a shift before releasing the order.' : undefined} />
+
+// Filter toolbar: choose here, show what is applied as tags.
+<ChipGroup aria-label="Areas" size="sm" multiple value={areas} onChange={setAreas} options={AREAS} />
+<TagList>
+  {areas.map(a => <Tag key={a} label={labelOf(a)} onRemove={() => drop(a)} />)}
+</TagList>`}</pre>
+    <ul>
+      <li><strong>Always controlled.</strong> The component holds no selection state — it lives with the filter or form model, which is the only thing that can also drive the table.</li>
+      <li><strong>Do not pass <code>name</code></strong> unless a real <code>&lt;form&gt;</code> POST needs the key, and never reuse one.</li>
+      <li><strong>Disable, do not remove.</strong> A permission-gated option that disappears makes the question different for two people looking at the same screen.</li>
+      <li><strong>Debounce the query, not the control.</strong> Chips are cheap to click; if each change refetches, debounce downstream so the row never lags the pointer.</li>
+      <li><strong>Do not put a group in a table cell.</strong> Per-row questions are <code>Select</code>.</li>
+      <li><strong>Testing hooks:</strong> the group is <code>getByRole('group', {'{ name: \'Shift\' }'})</code>; chips are real inputs — <code>getByRole('radio', {'{ name: \'Nights\' }'})</code> or <code>getByRole('checkbox', …)</code>. Assert the input's <code>checked</code>, never the tint.</li>
+      <li><strong>Server-rendered forms work</strong> without JS for single-select: give the group a stable <code>name</code>, and the radios POST it. Multi-select posts repeated keys.</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

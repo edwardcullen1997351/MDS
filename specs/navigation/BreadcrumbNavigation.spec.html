@@ -1,0 +1,379 @@
+<!-- @dsCard group="Specs · Navigation" viewport="1120x760" name="Breadcrumb Navigation" subtitle="Ancestor Trail Navigation System — hierarchical lineage, parent traversal, and collapse contracts" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Breadcrumb Navigation — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:68ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:74ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:76ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-direction:column;gap:16px}
+.demo-row{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:120px;padding-top:6px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.badge-tier{display:inline-block;padding:2px 8px;font-family:var(--font-mono);font-size:var(--text-2xs);letter-spacing:var(--tracking-caps);text-transform:uppercase;border-radius:var(--radius-full);background:var(--status-info-soft);color:var(--status-info-solid)}
+
+/* Breadcrumb mock styling */
+.mock-trail{display:flex;align-items:center;gap:6px;font-size:var(--text-xs);color:var(--text-secondary);flex-wrap:wrap}
+.mock-crumb{color:var(--text-secondary);text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding:2px 4px;border-radius:var(--radius-xs);transition:color 0.12s ease}
+.mock-crumb:hover{color:var(--text-primary);text-decoration:underline}
+.mock-crumb.current{color:var(--text-primary);font-weight:var(--weight-semibold);text-decoration:none;cursor:default}
+.mock-sep{color:var(--text-tertiary);font-size:10px;user-select:none}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Breadcrumb, Button, IconButton, Badge, Text, Menu } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const PLANT_TRAIL = [
+  { label: 'Suryodaya PL-04', href: '#plant', icon: 'factory' },
+  { label: 'Press Shop', href: '#shop' },
+  { label: 'Tandem Line 03', href: '#line' },
+  { label: 'Station 04 (Deep Draw)', href: '#station' },
+  { label: 'Tooling Head T-402', href: '#tool' },
+  { label: 'NC-4810 (Flange Crack)' } // Current entity — plain text
+];
+
+function BreadcrumbSystemDemo(){
+  const [maxCrumbs, setMaxCrumbs] = React.useState(4);
+
+  return (
+    <div className="demo">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:10}}>
+        <Text size="xs" weight="medium">Interactive Demonstration — Deep Plant Ancestor Trail</Text>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          <span style={{fontSize:'var(--text-2xs)',color:'var(--text-tertiary)',fontFamily:'var(--font-mono)'}}>Max Visible:</span>
+          <Button size="xs" variant={maxCrumbs===0?'primary':'secondary'} onClick={()=>setMaxCrumbs(0)}>Full (6)</Button>
+          <Button size="xs" variant={maxCrumbs===4?'primary':'secondary'} onClick={()=>setMaxCrumbs(4)}>Collapse (4)</Button>
+          <Button size="xs" variant={maxCrumbs===3?'primary':'secondary'} onClick={()=>setMaxCrumbs(3)}>Compact (3)</Button>
+        </div>
+      </div>
+
+      <div style={{background:'var(--background-page)',padding:'16px 20px',borderRadius:'var(--radius-md)',border:'var(--border-hairline)'}}>
+        <Breadcrumb
+          items={PLANT_TRAIL}
+          maxItems={maxCrumbs}
+          label="Shop Floor Asset Hierarchy Trail"
+          onNavigate={(item)=>alert(`Navigating back up to ancestor: ${item.label}`)}
+        />
+        <div style={{marginTop:12,paddingTop:10,borderTop:'var(--border-subtle)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <h2 style={{margin:0,fontSize:'var(--text-lg)',fontWeight:varWeightMedium=>'var(--weight-semibold)'}}>NC-4810: Severe Flange Cracking on Rear Brake Backplate</h2>
+          <Badge tone="critical">P1 Critical</Badge>
+        </div>
+      </div>
+
+      <div style={{fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+        The breadcrumb navigation system communicates exact physical & operational containment (Plant $\to$ Shop $\to$ Line $\to$ Station $\to$ Tooling $\to$ Defect Record), giving the operator single-click egress to any ancestor tier.
+      </div>
+    </div>
+  );
+}
+
+function Spec(){
+  return (
+    <div className="page">
+      <div className="masthead">
+        <span className="eyebrow">Navigation System · System specification</span>
+        <h1>Breadcrumb Navigation</h1>
+        <p className="lede">Communicates the user's current position within a multi-level information architecture or physical asset hierarchy, providing direct, single-click navigation back to any ancestor destination. It enforces strict ancestry wayfinding rather than session history.</p>
+        <div className="meta">
+          <span>specs/navigation/BreadcrumbNavigation.spec.html</span>
+          <span className="badge-tier">Tier: Ancestor Trail Navigation</span>
+          <span style={{color:'var(--text-primary)'}}>status: frozen 8 Sep 2026 · 0 open items</span>
+          <span>setting: Suryodaya Autocomp Ltd (PL-04, Chakan)</span>
+        </div>
+      </div>
+
+      <Sec n="01" title="Purpose" note="Hierarchy lineage and ancestor back-tracking.">
+        <p>Breadcrumb Navigation provides immediate spatial orientation within deeply nested product, plant, or entity structures ($\ge 3$ levels deep). It displays the strict structural lineage from the root domain down to the current active entity, allowing operators to ascend directly to any parent tier without repeatedly clicking the browser Back button.</p>
+        <T cols={['You need to…','Use this system','Instead of…','Why']} rows={[
+          ['Navigate back up an ancestor tree (3+ levels)','Breadcrumb Navigation','Back button / History bar','Breadcrumbs reflect persistent structural containment, not transient session history.'],
+          ['Switch between sibling views of the same record','Tabs','Breadcrumb Navigation','Tabs switch views in-place; breadcrumbs represent parent-child depth.'],
+          ['Navigate between major operational modules','Global / Local Nav','Breadcrumb Navigation','Global and Local navigation provide peer domain wayfinding.'],
+          ['Step through a sequential multi-stage wizard','Process Stepper','Breadcrumb Navigation','Steppers communicate temporal sequence and validation gates; breadcrumbs communicate spatial depth.']
+        ]} />
+        <div className="two" style={{marginTop:8}}>
+          <div className="pane do">
+            <h3>Do</h3>
+            <ul>
+              <li>Use breadcrumbs for hierarchies that are at least 3 levels deep.</li>
+              <li>Always render the final current-page crumb as plain text with <code>aria-current="page"</code>.</li>
+              <li>Derive the ancestor trail deterministically from the object hierarchy, not browser history.</li>
+            </ul>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <ul>
+              <li>Don't use breadcrumbs in flat 1- or 2-level apps (use a simple Back link instead).</li>
+              <li>Don't make the last crumb an active clickable link (linking to the current page is a no-op).</li>
+              <li>Don't record temporal navigation history (e.g. Page A $\to$ Page B $\to$ Page A).</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="02" title="Anatomy" note="Structural trail elements, separators, and collapse slots.">
+        <p>The Breadcrumb Navigation system consists of an enclosing labelled landmark, ordered list container, ancestor link crumbs, directional separators, optional collapsed middle dropdown menu, and the terminal current-location crumb.</p>
+        <BreadcrumbSystemDemo />
+        <div style={{marginTop:12}}>
+          <T cols={['Structural Slot','Element','Role','Requirement']} rows={[
+            ['Trail Container','<nav> landmark','Encloses the breadcrumb region with aria-label="Breadcrumbs".','Mandatory'],
+            ['Ordered List','<ol>','Semantic ordered hierarchy of ancestor items.','Mandatory'],
+            ['Root Crumb','<li> > <a>','Anchors the trail at the highest structural origin (with optional icon).','Mandatory'],
+            ['Intermediate Ancestor Crumb','<li> > <a>','Clickable link navigating directly to an intermediate parent tier.','Mandatory'],
+            ['Separator Glyph','<span> (aria-hidden)','Visual divider between crumbs (chevron-right or slash).','Mandatory'],
+            ['Collapsed Middle Menu','<Menu> trigger (`…`)','Dropdown housing intermediate crumbs when trail exceeds maximum width.','Conditional'],
+            ['Current Destination Crumb','<li> > <span>','Non-interactive text node with aria-current="page" in weight-medium.','Mandatory']
+          ]} />
+        </div>
+      </Sec>
+
+      <Sec n="03" title="Properties" note="Public API, collapse thresholds, and configuration.">
+        <p>The Breadcrumb Navigation system is configured via an ordered items array, collapse thresholds, separator variants, and routing delegates:</p>
+        <pre>{`interface BreadcrumbItem {
+  label: string;                  // Destination name (1–3 words, max 24 chars)
+  href?: string;                  // Destination URL (required on all except last crumb)
+  icon?: string;                  // Lucide icon name (typically root crumb only)
+}
+
+interface BreadcrumbNavigationProps {
+  items: Array<string | BreadcrumbItem>; // Root first, current entity last
+  maxItems?: number;              // Collapse middle into '…' menu past N items (default: 4, 0 disables)
+  variant?: 'chevron' | 'slash';  // Separator glyph style
+  size?: 'sm' | 'md';             // Density sizing (sm: 11px trail, md: 12px default)
+  label?: string;                 // Accessible landmark label (default: "Breadcrumbs")
+  onNavigate?: (item: BreadcrumbItem) => void; // Router push delegate for SPA routing
+}`}</pre>
+        <div className="warn" style={{marginTop:8}}>
+          <p><strong>Refused Properties:</strong> No <code>interactiveCurrent</code> prop (current page must never be an active link); no arbitrary button or action injection into the trail (actions belong in page headers); no dynamic history-based trail generation.</p>
+        </div>
+      </Sec>
+
+      <Sec n="04" title="Variants" note="Separator styles and density sizing.">
+        <p>Breadcrumb Navigation supports two separator styles and two density sizes:</p>
+        <T cols={['Variant / Size','Description','Optimal Placement']} rows={[
+          ['Variant: Chevron (`chevron`)','Subtle right-pointing chevron divider (`›` / `chevron-right`).','Standard enterprise console default; clearly conveys spatial nesting.'],
+          ['Variant: Slash (`slash`)','Clean forward-slash divider (`/`).','Dense code, file path, or technical asset registry hierarchies.'],
+          ['Size: md (12px / 14px icon)','Standard readable trail above page headers.','Default enterprise record views and plant inspection dashboards.'],
+          ['Size: sm (11px / 12px icon)','Compact micro-trail for high-density sidebars or multi-pane headers.','Dense engineering schematics and telemetry monitor panels.']
+        ]} />
+      </Sec>
+
+      <Sec n="05" title="Sizes" note="Typography, icon geometry, and spacing tokens.">
+        <p>Geometry is calibrated for horizontal rhythm above page header typography:</p>
+        <T cols={['Metric','Size sm','Size md (Default)','Application']} rows={[
+          ['Font Size','11px (var(--text-2xs))','12px (var(--text-xs))','Text size for ancestor links and current crumb.'],
+          ['Icon Bounding Box','12px × 12px','14px × 14px','Root crumb entity icon and separator glyphs.'],
+          ['Separator Gap','5px (--space-1)','6px (--space-1.5)','Horizontal spacing around separator.'],
+          ['Max Crumb Width','180px','220px','Individual item label truncation threshold with ellipsis.']
+        ]} />
+      </Sec>
+
+      <Sec n="06" title="States" note="Link hover, focus rings, and non-interactive current state.">
+        <p>States maintain high contrast and strict non-link current-page semantics:</p>
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          <Row label="Ancestor Link: Rest">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>Secondary text color without underline; indicates navigability.</span>
+          </Row>
+          <Row label="Ancestor Link: Hover">
+            <span style={{fontSize:'var(--text-xs)',color:'var(--text-primary)',textDecoration:'underline'}}>Underline appears; text shifts to primary contrast.</span>
+          </Row>
+          <Row label="Ancestor Link: Focus">
+            <span style={{fontSize:'var(--text-xs)',outline:'2px solid var(--action-solid)',outlineOffset:1,padding:'1px 4px',borderRadius:'var(--radius-xs)'}}>High-visibility blue outline around link bounding box.</span>
+          </Row>
+          <Row label="Current Location Crumb">
+            <span style={{fontSize:'var(--text-xs)',fontWeight:'var(--weight-semibold)',color:'var(--text-primary)'}}>Plain text in weight-medium with aria-current="page"; non-interactive.</span>
+          </Row>
+          <Row label="Collapsed Trigger (`…`)">
+            <span style={{fontSize:'var(--text-xs)',background:'var(--surface-sunken)',padding:'2px 6px',borderRadius:'var(--radius-xs)',fontFamily:'var(--font-mono)'}}>Subtle button pill opening intermediate ancestor dropdown on click/Enter.</span>
+          </Row>
+        </div>
+      </Sec>
+
+      <Sec n="07" title="Keyboard" note="Tab navigation and dropdown keyboard control.">
+        <p>Breadcrumb trails are fully navigable via standard keyboard conventions:</p>
+        <T cols={['Key / Shortcut','Action','Behavior']} rows={[
+          ['Tab / Shift+Tab','Sequential Focus','Focuses sequentially across ancestor links and collapsed menu trigger.'],
+          ['Enter / Space','Activate Ancestor','Navigates directly to the selected parent tier; opens menu if on `…` trigger.'],
+          ['Arrow Up / Down (in menu)','Menu Traversal','Moves focus through collapsed intermediate ancestors inside the dropdown.'],
+          ['Escape (in menu)','Close Menu','Dismisses the collapsed dropdown and returns focus to the `…` trigger.']
+        ]} />
+      </Sec>
+
+      <Sec n="08" title="Accessibility" note="Landmark labeling, list semantics, and aria-current.">
+        <p>Accessibility requirements per W3C breadcrumb design patterns:</p>
+        <ul>
+          <li><strong>Landmark Label:</strong> Must use <code>&lt;nav aria-label="Breadcrumbs"&gt;</code> (or specific label such as <code>"Plant Hierarchy Trail"</code>).</li>
+          <li><strong>Ordered List Structure:</strong> Must wrap crumbs in an <code>&lt;ol&gt;</code> to communicate hierarchy order and total crumb count to screen readers.</li>
+          <li><strong>Current Entity Marker:</strong> The terminal crumb must carry <code>aria-current="page"</code>.</li>
+          <li><strong>Hidden Separators:</strong> Separator glyphs must carry <code>aria-hidden="true"</code> so screen readers do not announce "slash" or "greater than" between every item.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="09" title="Motion" note="Menu reveal and hover transitions.">
+        <p>Transitions are lightweight and instantaneous where motion would delay navigation:</p>
+        <T cols={['Transition','Property','Duration Token','Easing']} rows={[
+          ['Link Hover Color Fade','color','100ms (--duration-instant)','ease-out'],
+          ['Collapsed Dropdown Reveal','opacity, transform','120ms (--duration-quick)','cubic-bezier(0, 0, 0.2, 1)'],
+          ['Reduced Motion Override','all transitions','0ms (Instant)','prefers-reduced-motion: reduce']
+        ]} />
+      </Sec>
+
+      <Sec n="10" title="Content Rules" note="Label length, entity naming, and capitalisation.">
+        <p>Crumb labels must match official entity names exactly and remain concise:</p>
+        <T cols={['Correct Crumb Label','Incorrect Phrasing','Rationale']} rows={[
+          ['Tandem Line 03','View Line 03 Schematics','Crumbs are places/entities, never actions.'],
+          ['Station 04 (Deep Draw)','Station 04 Deep Draw Operation Workspace','Avoid repetitive filler words; keep breadcrumbs compact.'],
+          ['NC-4810','Nonconformance Defect Record #4810','Use standard technical identifiers for terminal entities.']
+        ]} />
+        <ul style={{marginTop:8}}>
+          <li><strong>Length Limit:</strong> 1–3 words, max 24 characters per crumb before truncation.</li>
+          <li><strong>Single Line Rule:</strong> Breadcrumb trails should never wrap onto multiple lines; use middle collapse (`maxItems`) instead.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="11" title="Responsive" note="Ellipsis collapse and viewport adaptation.">
+        <p>When horizontal viewport space is constrained, intermediate ancestors collapse into a dropdown:</p>
+        <T cols={['Viewport Width','Strategy','Behavior']} rows={[
+          ['Desktop (≥1024px)','Full Trail or maxItems={5}','Displays full ancestor lineage (Root $\to$ L1 $\to$ L2 $\to$ Parent $\to$ Current).'],
+          ['Tablet (768px–1023px)','maxItems={3}','Root, ellipsis dropdown (`…`), immediate parent, and current page.'],
+          ['Mobile (<768px)','Immediate Parent Back-Link','Collapses trail into a single "‹ [Parent Name]" back link above page title.']
+        ]} />
+      </Sec>
+
+      <Sec n="12" title="Anti-patterns" note="Common architectural misuses to avoid.">
+        <div className="two">
+          <div className="pane dont">
+            <h3>Anti-Patterns (Never Do)</h3>
+            <ul>
+              <li><strong>Session History Replay:</strong> Recording the user's sequential click history.</li>
+              <li><strong>Clickable Terminal Crumb:</strong> Making the current page a link that reloads itself.</li>
+              <li><strong>Multi-Line Trail Wrapping:</strong> Letting deep trails wrap across 3+ lines.</li>
+              <li><strong>Flat Hierarchy Clutter:</strong> Putting breadcrumbs on 2-level screens.</li>
+            </ul>
+          </div>
+          <div className="pane do">
+            <h3>Standard Corrections</h3>
+            <ul>
+              <li>Derive trails strictly from static IA entity containment.</li>
+              <li>Render the last item as plain text with <code>aria-current="page"</code>.</li>
+              <li>Collapse intermediate crumbs into a <code>…</code> dropdown menu.</li>
+              <li>Use a single back link for 2-level screens (e.g. "‹ Back to Work Orders").</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="13" title="Implementation Notes" note="DOM architecture, router delegation, and tokens.">
+        <p>Implementation rules for robust enterprise application integration:</p>
+        <ul>
+          <li><strong>Deterministic Lineage:</strong> Ancestor trails are built by traversing the entity parent graph, never reading <code>document.referrer</code>.</li>
+          <li><strong>Router Push Delegation:</strong> In Single Page Applications (SPAs), pass <code>onNavigate</code> so intermediate and dropdown link activations stay inside the client-side router without full page reloads.</li>
+        </ul>
+        <div style={{marginTop:8}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>Tokens Consumed</Text>
+          <div className="tokenlist" style={{marginTop:6}}>
+            <code>--text-primary</code>
+            <code>--text-secondary</code>
+            <code>--text-tertiary</code>
+            <code>--action-solid</code>
+            <code>--surface-sunken</code>
+            <code>--border-hairline</code>
+            <code>--font-sans</code>
+            <code>--text-xs</code>
+            <code>--text-2xs</code>
+            <code>--space-1</code>
+            <code>--space-1.5</code>
+            <code>--radius-xs</code>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="14" title="Developer Notes" note="Router integration, hook recipes, and test assertions.">
+        <p>Client router integration recipe and test assertions:</p>
+        <pre>{`// Example: React Router / Dynamic Ancestor Trail Integration
+import { Breadcrumb } from '@meridian/design-system';
+import { useNavigate } from 'react-router-dom';
+
+export function PlantEntityBreadcrumbs({ entity }) {
+  const navigate = useNavigate();
+
+  // Compute ancestor trail from entity hierarchy metadata
+  const trail = [
+    { label: 'Suryodaya PL-04', href: '/plant-04', icon: 'factory' },
+    { label: entity.shopFloor, href: \`/plant-04/shop/\${entity.shopId}\` },
+    { label: entity.lineName, href: \`/plant-04/line/\${entity.lineId}\` },
+    { label: entity.stationName, href: \`/plant-04/station/\${entity.stationId}\` },
+    { label: entity.title } // Terminal item: no href
+  ];
+
+  return (
+    <Breadcrumb
+      items={trail}
+      maxItems={4}
+      label="Asset Containment Trail"
+      onNavigate={(crumb) => navigate(crumb.href)}
+    />
+  );
+}`}</pre>
+        <div style={{marginTop:12}}>
+          <Text size="xs" weight="medium" style={{textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)'}}>Test Assertions</Text>
+          <ul>
+            <li>Assert that the terminal crumb has <code>aria-current="page"</code> and is NOT rendered inside an <code>&lt;a&gt;</code> tag.</li>
+            <li>Assert that separator icons carry <code>aria-hidden="true"</code>.</li>
+            <li>Assert that intermediate crumbs past <code>maxItems</code> collapse into an accessible menu trigger.</li>
+          </ul>
+        </div>
+      </Sec>
+
+      <div style={{marginTop:36,paddingTop:12,borderTop:'var(--border-hairline)',fontFamily:'var(--font-mono)',fontSize:'var(--text-2xs)',color:'var(--text-tertiary)'}}>
+        Applies to: Ancestor Trail Navigation System · Governance: <a href="../../guidelines/navigation-spec-standard.card.html">Navigation System specification standard</a> · Sections §01–§14 frozen · Sibling Systems: <a href="GlobalNavigation.spec.html">Global Navigation</a>, <a href="LocalNavigation.spec.html">Local Navigation</a>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

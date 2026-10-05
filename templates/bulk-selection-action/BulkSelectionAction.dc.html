@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Bulk selection and action" description="Interaction pattern reference implementation, set in a manufacturing ERP — posting gate-inward goods receipts: selection by stable identity across pages, a declared aggregate scope, a target snapshot taken at initiation, partial failure that names what remains unresolved, and retry that never repeats a posted line." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:1260px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/BulkSelectionAction.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+</div>
+<p style="margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note, the selection panel on the right, and the two tweaks under <span style="font-family:var(--font-mono)">Demo harness</span> — exists to make the contract visible. Posting is a timer standing in for the inventory call; the comment above it says what to replace. The four tweaks under <span style="font-family:var(--font-mono)">Pattern properties</span> are not harness: <span style="font-family:var(--font-mono)">aggregateScope</span>, <span style="font-family:var(--font-mono)">actionAvailability</span>, <span style="font-family:var(--font-mono)">confirmation</span> and <span style="font-family:var(--font-mono)">postActionSelection</span> are the §05 policies an adopting team must declare.</p>
+<p style="margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Tick the header box: it selects the six lines on this page and offers the whole register of 18 as an explicit second step — the scope is stated either way, never guessed. Select across two pages and watch the count follow the lines, not the rows on screen. Post a selection that includes a flagged line for a partial outcome: the posted lines leave the register, the unresolved ones stay selected with a reason each, and Retry runs on those only. Turn on <span style="font-family:var(--font-mono)">Stores posts two selected lines</span> to have membership change under a live selection, and again while a post is pending — the snapshot taken at initiation is what resolves.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Stores · gate inward register · Chakan plant (PL-04) · shift A, 2026-09-07 (IST)</span>
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">Pending goods receipts</h1>
+<p style="margin:0;max-width:78ch;color:var(--text-secondary);font-size:var(--text-sm);line-height:1.55">Material received at the gate and counted, not yet posted to inventory. Posting a line moves stock to the store and closes the receipt against its purchase order.</p>
+</div>
+
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:start">
+
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden;position:relative">
+
+<div style="display:flex;flex-direction:column;gap:12px;padding:16px 20px;border-bottom:var(--border-hairline)">
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+<span style="font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty">{{ selectionHeading }}</span>
+<sc-if value="{{ showActions }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Toolbar" label="Actions on the selected receipt lines" size="sm" hint-size="360px,30px">{{ actionButtons }}</x-import>
+</sc-if>
+</div>
+<sc-if value="{{ showExtend }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:9px 12px;border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-sunken)">
+<span style="font-size:var(--text-xs);color:var(--text-secondary)">{{ extendNote }}</span>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" type="button" onClick="{{ onExtend }}" hint-size="210px,28px">{{ extendLabel }}</x-import>
+</div>
+</sc-if>
+<div role="status" aria-live="polite" style="min-height:19px;font-size:var(--text-xs);line-height:1.55;color:var(--text-secondary);text-wrap:pretty">{{ announcement }}</div>
+<sc-if value="{{ pending }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Progress" variant="bar" size="sm" label="{{ progressLabel }}" delay="{{ 150 }}" hint-size="100%,20px"></x-import>
+</sc-if>
+</div>
+
+<sc-if value="{{ showOutcome }}" hint-placeholder-val="{{ false }}">
+<div style="padding:16px 20px;border-bottom:var(--border-hairline)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ outcomeTone }}" title="{{ outcomeTitle }}" live="on" size="sm" action="{{ outcomeAction }}" hint-size="100%,96px">{{ outcomeBody }}</x-import>
+</div>
+</sc-if>
+
+<div>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Table" caption="Pending goods receipt lines" columns="{{ columns }}" rows="{{ pageRows }}" rowKey="mrr" selectable="{{ true }}" selectedKeys="{{ selectedOnPage }}" onSelectionChange="{{ onSelect }}" rowLabel="{{ rowLabel }}" minWidth="900px" sort="{{ sort }}" onSortChange="{{ onSort }}" emptyMessage="{{ emptyMessage }}" hint-size="100%,360px"></x-import>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-top:var(--border-hairline);background:var(--surface-sunken)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ summary }}</span>
+<sc-if value="{{ showPagination }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Pagination" page="{{ page }}" totalItems="{{ totalItems }}" pageSize="{{ pageSize }}" onPageChange="{{ onPage }}" variant="numbered" size="sm" itemLabel="lines" showSummary="{{ false }}" label="Register pages" hint-size="240px,28px"></x-import>
+</sc-if>
+</div>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Dialog" open="{{ confirmOpen }}" title="{{ confirmTitle }}" description="{{ confirmDescription }}" tone="{{ confirmTone }}" width="sm" onClose="{{ onCancelConfirm }}" footer="{{ confirmFooter }}" hint-size="100%,0px">{{ confirmBody }}</x-import>
+</div>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:13px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:16px 18px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Selection &amp; action state · remove on copy</span>
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="7">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:96px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+<div style="border-top:var(--border-hairline);padding-top:11px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Selection — stable identities</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ selectionText }}</pre>
+</div>
+<div style="border-top:var(--border-hairline);padding-top:11px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Last operation</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ operationText }}</pre>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">Selection is a set of receipt numbers, never row positions — §20. The snapshot is taken when the operation begins, so what resolves is what was intended.</p>
+</div>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1320,&quot;height&quot;:940},&quot;aggregateScope&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;page&quot;,&quot;result-set&quot;],&quot;default&quot;:&quot;page&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Header checkbox selects&quot;},&quot;actionAvailability&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;disabled-with-reason&quot;,&quot;hidden&quot;],&quot;default&quot;:&quot;disabled-with-reason&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Actions with nothing selected&quot;},&quot;confirmation&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;destructive-only&quot;,&quot;always&quot;,&quot;threshold&quot;],&quot;default&quot;:&quot;destructive-only&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Confirmation required&quot;},&quot;confirmThreshold&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;min&quot;:2,&quot;max&quot;:18,&quot;default&quot;:8,&quot;unit&quot;:&quot;lines&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Threshold count (threshold policy)&quot;},&quot;postActionSelection&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;keep-unresolved&quot;,&quot;clear-all&quot;],&quot;default&quot;:&quot;keep-unresolved&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Selection after an action&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:200,&quot;max&quot;:2500,&quot;step&quot;:100,&quot;default&quot;:900,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Simulated posting time&quot;},&quot;storesPosts&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Stores posts two selected lines&quot;}}">
+// Gate inward register, PL-04, shift A 2026-09-07 (IST). `block` is the
+// reason inventory will refuse the line; three of eighteen carry one.
+const LINES = [
+  { mrr: 'MRR-2026-1841', po: 'PO-88214', part: 'BRK-4820-B', desc: 'Brake caliper bracket, RH, machined', vendor: 'Nashik Forge & Machine Works', qty: 240, uom: 'NOS', value: 98880, gate: '06:12', block: 'Received 240 against a PO balance of 200.' },
+  { mrr: 'MRR-2026-1842', po: 'PO-88216', part: 'BRG-1120', desc: 'Taper roller bearing 30205', vendor: 'Sahyadri Bearings Pvt Ltd', qty: 600, uom: 'NOS', value: 113400, gate: '06:20', block: null },
+  { mrr: 'MRR-2026-1843', po: 'PO-88216', part: 'BRG-1210', desc: 'Deep groove ball bearing 6204-2RS', vendor: 'Sahyadri Bearings Pvt Ltd', qty: 800, uom: 'NOS', value: 59200, gate: '06:24', block: null },
+  { mrr: 'MRR-2026-1844', po: 'PO-88221', part: 'FST-0208', desc: 'Hex bolt M8 x 30, 10.9, zinc flake', vendor: 'Deccan Machine Supply', qty: 12000, uom: 'NOS', value: 48000, gate: '06:31', block: null },
+  { mrr: 'MRR-2026-1845', po: 'PO-88221', part: 'FST-0308', desc: 'Flange nut M8, 10.9', vendor: 'Deccan Machine Supply', qty: 12000, uom: 'NOS', value: 36000, gate: '06:33', block: null },
+  { mrr: 'MRR-2026-1846', po: 'PO-88209', part: 'CAS-9004', desc: 'Cast iron hub carrier, raw', vendor: 'Nashik Forge & Machine Works', qty: 150, uom: 'NOS', value: 168000, gate: '06:41', block: 'PO-88209 is under amendment — revision 3 pending approval by Anjali Deshmukh.' },
+  { mrr: 'MRR-2026-1847', po: 'PO-88223', part: 'SEL-7702', desc: 'Oil seal 35 x 52 x 7, nitrile', vendor: 'Deccan Machine Supply', qty: 2000, uom: 'NOS', value: 62000, gate: '06:48', block: null },
+  { mrr: 'MRR-2026-1848', po: 'PO-88223', part: 'SEL-7705', desc: 'O-ring 28 x 3, viton', vendor: 'Deccan Machine Supply', qty: 4000, uom: 'NOS', value: 36000, gate: '06:52', block: null },
+  { mrr: 'MRR-2026-1849', po: 'PO-88218', part: 'BSH-3301', desc: 'Suspension bush, natural rubber', vendor: 'Deccan Machine Supply', qty: 900, uom: 'NOS', value: 42300, gate: '07:02', block: null },
+  { mrr: 'MRR-2026-1850', po: 'PO-88218', part: 'BSH-3302', desc: 'Suspension bush, polyurethane', vendor: 'Deccan Machine Supply', qty: 600, uom: 'NOS', value: 37800, gate: '07:05', block: null },
+  { mrr: 'MRR-2026-1851', po: 'PO-88230', part: 'PLT-6601', desc: 'Stamped mounting plate, 2.5 mm HR', vendor: 'Deccan Machine Supply', qty: 500, uom: 'NOS', value: 44000, gate: '07:11', block: null },
+  { mrr: 'MRR-2026-1852', po: 'PO-88231', part: 'GSK-8801', desc: 'Exhaust manifold gasket, graphite', vendor: 'Deccan Machine Supply', qty: 300, uom: 'NOS', value: 41400, gate: '07:16', block: null },
+  { mrr: 'MRR-2026-1853', po: 'PO-88233', part: 'SPR-5502', desc: 'Compression spring, clutch return', vendor: 'Nashik Forge & Machine Works', qty: 400, uom: 'NOS', value: 21600, gate: '07:24', block: null },
+  { mrr: 'MRR-2026-1854', po: 'PO-88235', part: 'LUB-0501', desc: 'Assembly lubricant, 20 L drum', vendor: 'Deccan Machine Supply', qty: 40, uom: 'LTR', value: 8560, gate: '07:29', block: null },
+  { mrr: 'MRR-2026-1855', po: 'PO-88237', part: 'WSH-0408', desc: 'Spring washer M8, phosphated', vendor: 'Deccan Machine Supply', qty: 20000, uom: 'NOS', value: 20000, gate: '07:33', block: null },
+  { mrr: 'MRR-2026-1856', po: 'PO-88240', part: 'TLG-3300', desc: 'Press tool insert, blank die, D2', vendor: 'Nashik Forge & Machine Works', qty: 2, uom: 'NOS', value: 97000, gate: '07:38', block: 'Tool room inspection outstanding — Priya Iyer has not released the insert.' },
+  { mrr: 'MRR-2026-1857', po: 'PO-88241', part: 'MCH-2201', desc: 'Machined hub carrier, PL-04 finish', vendor: 'Deccan Machine Supply', qty: 60, uom: 'NOS', value: 147000, gate: '07:44', block: null },
+  { mrr: 'MRR-2026-1858', po: 'PO-88242', part: 'PLT-6604', desc: 'Stamped heat shield, 0.8 mm SS', vendor: 'Deccan Machine Supply', qty: 200, uom: 'NOS', value: 35200, gate: '07:51', block: null }
+];
+const PAGE = 6;
+const rupee = n => '\u20B9' + n.toLocaleString('en-IN');
+const Btn = () => window.MeridianDesignSystem_962c43.Button;
+const ACTIONS = {
+  post: { label: 'Post', verb: 'posted', destructive: false, past: 'Posted to inventory' },
+  inspect: { label: 'Send to inspection', verb: 'sent to inspection', destructive: false, past: 'Sent to incoming inspection' },
+  reject: { label: 'Reject', verb: 'rejected', destructive: true, past: 'Rejected and returned to the supplier' }
+};
+
+class Component extends DCLogic {
+  state = {
+    register: LINES.map(l => l.mrr),   // membership, by identity
+    selected: [],                      // identities, never row positions
+    page: 1,
+    sort: { key: 'gate', direction: 'asc' },
+    pendingAction: null,               // { action, targets } while in flight
+    confirm: null,                     // { action, targets } awaiting confirmation
+    outcome: null,                     // { action, done, unresolved }
+    announcement: '',
+    lastScope: '\u2014',
+    operations: 0
+  };
+  seq = 0;
+
+  scope() { return this.props.aggregateScope || 'page'; }
+  rows() { return this.state.register.map(id => LINES.find(l => l.mrr === id)); }
+  sorted() {
+    const s = this.state.sort, dir = s.direction === 'desc' ? -1 : 1;
+    return this.rows().slice().sort((a, b) => {
+      const x = a[s.key], y = b[s.key];
+      if (typeof x === 'number') return (x - y) * dir;
+      return String(x).localeCompare(String(y)) * dir;
+    });
+  }
+  pageIds() { return this.sorted().slice((this.state.page - 1) * PAGE, this.state.page * PAGE).map(l => l.mrr); }
+
+  // Selection is reconciled against membership on every read: an identity
+  // that has left the register cannot be a target.
+  live(ids) { return ids.filter(id => this.state.register.includes(id)); }
+
+  say(extra) {
+    const sel = this.live(this.state.selected);
+    const onPage = this.pageIds().filter(id => sel.includes(id)).length;
+    const scopeNote = sel.length === this.state.register.length
+      ? ' \u2014 every line in the register'
+      : (onPage === sel.length ? ' \u2014 all on this page' : ' \u2014 across ' + Math.ceil(this.state.register.length / PAGE) + ' pages');
+    return (extra ? extra + ' ' : '') + (sel.length
+      ? sel.length + ' of ' + this.state.register.length + ' lines selected' + (sel.length > 1 ? scopeNote : '') + '.'
+      : 'No lines selected. Select lines to act on them.');
+  }
+
+  // Table reports the selection of the rows it is showing; identities on other
+  // pages are preserved here rather than in the table.
+  onSelectionChange = (keys) => {
+    const page = this.pageIds();
+    const before = this.state.selected.filter(id => page.includes(id));
+    const aggregate = keys.length === page.length && before.length < page.length;
+    let next = this.state.selected.filter(id => !page.includes(id)).concat(keys);
+    let scopeLabel = 'per line';
+    if (aggregate && this.scope() === 'result-set') { next = this.state.register.slice(); scopeLabel = 'aggregate \u2192 whole register'; }
+    else if (aggregate) scopeLabel = 'aggregate \u2192 this page';
+    else if (keys.length === 0 && before.length === page.length) scopeLabel = 'aggregate \u2192 cleared page';
+    this.setState({ selected: this.live(next), lastScope: scopeLabel, outcome: null }, () => this.setState({ announcement: this.say('') }));
+  };
+
+  extendToRegister = () => this.setState({ selected: this.state.register.slice(), lastScope: 'extended \u2192 whole register' }, () => this.setState({ announcement: this.say('Selection extended.') }));
+
+  clearSelection = () => this.setState({ selected: [], lastScope: 'cleared', outcome: null }, () => this.setState({ announcement: this.say('Selection cleared.') }));
+
+  changePage = (p) => this.setState({ page: p }, () => this.setState({ announcement: this.say('Page ' + p + '.') }));
+  changeSort = (sort) => this.setState({ sort });
+
+  needsConfirm(action) {
+    const policy = this.props.confirmation || 'destructive-only';
+    if (policy === 'always') return true;
+    if (policy === 'threshold') return ACTIONS[action].destructive || this.live(this.state.selected).length > (this.props.confirmThreshold ?? 8);
+    return ACTIONS[action].destructive;
+  }
+
+  start = (action) => {
+    // The snapshot is taken here, at initiation, and nothing after this reads
+    // the live selection: what resolves is what the clerk intended.
+    const targets = this.live(this.state.selected);
+    if (!targets.length) return;
+    if (this.needsConfirm(action)) { this.setState({ confirm: { action, targets } }); return; }
+    this.run(action, targets);
+  };
+
+  confirmNow = () => { const c = this.state.confirm; this.setState({ confirm: null }); if (c) this.run(c.action, c.targets); };
+  cancelConfirm = () => this.setState({ confirm: null, announcement: this.say('Nothing was posted.') });
+
+  run(action, targets) {
+    // The single-shot guard is a synchronous instance flag, not a state read:
+    // a second press arrives before setState has committed, and a frame-late
+    // check would let it through (§17).
+    if (this._running) return;
+    this._running = true;
+    const id = ++this.seq;
+    this.setState(s => ({ pendingAction: { action, targets }, outcome: null, operations: s.operations + 1, announcement: ACTIONS[action].label + ' running on ' + targets.length + ' lines\u2026' }));
+    // REPLACE: stands in for the inventory posting call —
+    //   POST /api/goods-receipts/post { receipts: targets }
+    // Resolve per line: the response must say which identities succeeded, or
+    // partial failure cannot be reported (§10).
+    setTimeout(() => {
+      if (id !== this.seq) { this._running = false; return; }
+      const unresolved = [];
+      const done = [];
+      targets.forEach(mrr => {
+        const line = LINES.find(l => l.mrr === mrr);
+        if (!this.state.register.includes(mrr)) { unresolved.push({ mrr, why: 'No longer in the register \u2014 posted by stores while this ran.' }); return; }
+        if (line.block && action !== 'reject') { unresolved.push({ mrr, why: line.block }); return; }
+        done.push(mrr);
+      });
+      const keep = (this.props.postActionSelection || 'keep-unresolved') === 'keep-unresolved';
+      const register = this.state.register.filter(mrr => !done.includes(mrr));
+      const selected = keep ? unresolved.map(u => u.mrr) : [];
+      const pageCount = Math.max(1, Math.ceil(register.length / PAGE));
+      this._running = false;
+      this.setState({
+        pendingAction: null, register, selected,
+        page: Math.min(this.state.page, pageCount),
+        outcome: { action, done, unresolved },
+        lastScope: keep ? 'unresolved retained' : 'cleared after action',
+        announcement: done.length + ' of ' + targets.length + ' lines ' + ACTIONS[action].verb + '.'
+          + (unresolved.length ? ' ' + unresolved.length + ' unresolved and still selected.' : '')
+      });
+    }, this.props.latency ?? 900);
+  }
+
+  // Retry runs on the unresolved identities only. A line that posted is out of
+  // the register and out of the snapshot, so it cannot be posted twice.
+  retry = () => { const o = this.state.outcome; if (o) this.run(o.action, o.unresolved.map(u => u.mrr).filter(m => this.state.register.includes(m))); };
+
+  // Harness: stores posts two of the selected lines from another terminal.
+  componentDidUpdate(prev) {
+    if (this.props.storesPosts && !prev.storesPosts) {
+      const victims = this.live(this.state.selected).slice(0, 2);
+      if (!victims.length) { this.setState({ announcement: 'Nothing selected \u2014 select lines first, then turn the tweak on.' }); return; }
+      const register = this.state.register.filter(m => !victims.includes(m));
+      this.setState({ register, selected: this.state.selected.filter(m => !victims.includes(m)) }, () =>
+        this.setState({ announcement: this.say(victims.join(' and ') + ' were posted by stores and have left the register. They are no longer selected.') }));
+    }
+  }
+
+  componentDidMount() { this.setState({ announcement: this.say('') }); }
+
+  renderVals() {
+    const s = this.state;
+    const sel = this.live(s.selected);
+    const page = this.pageIds();
+    const total = s.register.length;
+    const pageSel = page.filter(id => sel.includes(id));
+    const allInScope = this.scope() === 'result-set' ? sel.length === total && total > 0 : pageSel.length === page.length && page.length > 0;
+    const pending = !!s.pendingAction;
+    const availability = this.props.actionAvailability || 'disabled-with-reason';
+    const o = s.outcome;
+    const rows = this.sorted().slice((s.page - 1) * PAGE, s.page * PAGE);
+    const flagged = sel.filter(m => LINES.find(l => l.mrr === m).block).length;
+
+    const button = (key, variant) => React.createElement(Btn(), {
+      key, variant, size: 'sm', type: 'button',
+      disabled: pending || sel.length === 0,
+      onClick: () => this.start(key)
+    }, ACTIONS[key].label + (sel.length ? ' ' + sel.length + (sel.length === 1 ? ' line' : ' lines') : ''));
+
+    return {
+      columns: [
+        { key: 'mrr', header: 'Receipt', mono: true, width: '146px', sortable: true },
+        { key: 'part', header: 'Part', mono: true, width: '116px' },
+        { key: 'desc', header: 'Description', wrap: true },
+        { key: 'vendor', header: 'Supplier', width: '190px' },
+        { key: 'qty', header: 'Qty', align: 'right', mono: true, width: '92px' },
+        { key: 'value', header: 'Value', align: 'right', mono: true, width: '108px', sortable: true },
+        { key: 'gate', header: 'Gate in', mono: true, width: '84px', sortable: true },
+        { key: 'flag', header: 'Check', width: '132px' }
+      ],
+      pageRows: rows.map(l => ({ mrr: l.mrr, part: l.part, desc: l.desc + ' \u00b7 ' + l.po, vendor: l.vendor, qty: l.qty.toLocaleString('en-IN') + ' ' + l.uom, value: rupee(l.value), gate: l.gate, flag: l.block ? 'open discrepancy' : 'clear' })),
+      rowLabel: row => 'Receipt ' + row.mrr,
+      selectedOnPage: pageSel,
+      onSelect: this.onSelectionChange,
+      sort: s.sort, onSort: this.changeSort,
+      emptyMessage: 'Every line in the register has been posted. Nothing is pending.',
+
+      selectionHeading: sel.length
+        ? sel.length + ' of ' + total + ' lines selected' + (allInScope ? (this.scope() === 'result-set' ? ' \u00b7 every line in the register' : ' \u00b7 all six on this page') : '') + (flagged ? ' \u00b7 ' + flagged + ' with an open discrepancy' : '')
+        : 'No lines selected \u00b7 ' + total + ' pending in the register',
+      showActions: availability === 'disabled-with-reason' || sel.length > 0,
+      actionButtons: [
+        button('post', 'primary'),
+        button('inspect', 'secondary'),
+        button('reject', 'ghost'),
+        sel.length ? React.createElement(Btn(), { key: 'clear', variant: 'ghost', size: 'sm', type: 'button', onClick: this.clearSelection }, 'Clear selection') : null
+      ].filter(Boolean),
+
+      showExtend: this.scope() === 'page' && pageSel.length === page.length && page.length > 0 && sel.length < total,
+      extendNote: 'All ' + pageSel.length + ' lines on this page are selected.',
+      extendLabel: 'Select all ' + total + ' pending lines',
+      onExtend: this.extendToRegister,
+
+      announcement: s.announcement,
+      pending,
+      progressLabel: pending ? ACTIONS[s.pendingAction.action].label + ' \u2014 ' + s.pendingAction.targets.length + ' lines in the snapshot' : '',
+
+      showOutcome: !!o && !pending,
+      outcomeTone: o ? (o.unresolved.length ? (o.done.length ? 'warning' : 'danger') : 'success') : 'info',
+      outcomeTitle: o ? (o.unresolved.length
+        ? o.done.length + ' of ' + (o.done.length + o.unresolved.length) + ' lines ' + ACTIONS[o.action].verb + ' \u00b7 ' + o.unresolved.length + ' unresolved'
+        : o.done.length + ' lines ' + ACTIONS[o.action].verb) : '',
+      outcomeBody: o ? (o.unresolved.length
+        ? ACTIONS[o.action].past + ': ' + (o.done.length ? o.done.join(', ') : 'none') + '. Still pending, and still selected: ' + o.unresolved.map(u => u.mrr + ' \u2014 ' + u.why).join(' ') + ' Retry acts on the unresolved lines only; the ' + o.done.length + ' already ' + ACTIONS[o.action].verb + ' have left the register and cannot be repeated.'
+        : ACTIONS[o.action].past + ': ' + o.done.join(', ') + '. They have left the pending register.') : '',
+      outcomeAction: o && o.unresolved.length
+        ? React.createElement(Btn(), { variant: 'secondary', size: 'sm', type: 'button', onClick: this.retry }, 'Retry ' + o.unresolved.length + ' unresolved')
+        : null,
+
+      confirmOpen: !!s.confirm,
+      confirmTitle: s.confirm ? ACTIONS[s.confirm.action].label + ' \u2014 ' + s.confirm.targets.length + (s.confirm.targets.length === 1 ? ' receipt line' : ' receipt lines') + '?' : '',
+      confirmDescription: s.confirm
+        ? (s.confirm.action === 'reject'
+          ? 'Rejecting returns the material to the supplier and closes the receipt against the purchase order. It cannot be undone from this screen.'
+          : 'The operation applies to the ' + s.confirm.targets.length + ' lines selected when you pressed the button, not to whatever is selected afterwards.')        : '',
+      confirmTone: s.confirm && ACTIONS[s.confirm.action].destructive ? 'danger' : 'default',
+      confirmBody: s.confirm ? s.confirm.targets.join(', ') + ' \u00b7 ' + rupee(s.confirm.targets.reduce((t, m) => t + LINES.find(l => l.mrr === m).value, 0)) + ' in total.' : '',
+      confirmFooter: s.confirm ? [
+        React.createElement(Btn(), { key: 'no', variant: 'ghost', size: 'sm', type: 'button', onClick: this.cancelConfirm }, 'Cancel'),
+        React.createElement(Btn(), { key: 'yes', variant: ACTIONS[s.confirm.action].destructive ? 'danger' : 'primary', size: 'sm', type: 'button', onClick: this.confirmNow }, ACTIONS[s.confirm.action].label + ' ' + s.confirm.targets.length + (s.confirm.targets.length === 1 ? ' line' : ' lines'))
+      ] : null,
+      onCancelConfirm: this.cancelConfirm,
+
+      showPagination: total > PAGE,
+      page: s.page, totalItems: total, pageSize: PAGE, onPage: this.changePage,
+      summary: total + ' pending \u00b7 ' + sel.length + ' selected \u00b7 ' + rupee(sel.reduce((t, m) => t + LINES.find(l => l.mrr === m).value, 0)) + ' in the selection',
+
+      stateRows: [
+        { k: 'state', v: pending ? 'action pending' : (o ? (o.unresolved.length ? (o.done.length ? 'partially failed' : 'failed') : 'completed') : (sel.length === 0 ? 'none selected' : (allInScope ? 'all in scope' : 'partially selected'))) },
+        { k: 'scope', v: this.scope() === 'result-set' ? 'aggregate = whole register' : 'aggregate = this page' },
+        { k: 'selected', v: sel.length + ' of ' + total + ' \u00b7 ' + pageSel.length + ' on this page' },
+        { k: 'last input', v: s.lastScope },
+        { k: 'snapshot', v: pending ? s.pendingAction.targets.length + ' identities, frozen at initiation' : (o ? (o.done.length + o.unresolved.length) + ' identities' : '\u2014') },
+        { k: 'confirm', v: (this.props.confirmation || 'destructive-only') === 'always' ? 'every action' : ((this.props.confirmation || 'destructive-only') === 'threshold' ? 'destructive, or over ' + (this.props.confirmThreshold ?? 8) + ' lines' : 'destructive only') },
+        { k: 'after action', v: (this.props.postActionSelection || 'keep-unresolved') === 'keep-unresolved' ? 'unresolved stay selected' : 'selection cleared' },
+        { k: 'operations', v: String(s.operations) }
+      ],
+      selectionText: sel.length ? JSON.stringify(sel, null, 1) : '[]',
+      operationText: pending
+        ? JSON.stringify({ action: s.pendingAction.action, targets: s.pendingAction.targets }, null, 1)
+        : (o ? JSON.stringify({ action: o.action, posted: o.done, unresolved: o.unresolved }, null, 1) : '\u2014 none yet \u2014')
+    };
+  }
+}
+
+</script>
+</body>
+</html>

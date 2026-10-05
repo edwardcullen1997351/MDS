@@ -1,0 +1,40 @@
+<!-- @dsCard group="Components" viewport="700x300" name="SegmentedControl — the mode switch" subtitle="One value, 2–4 options, native radios behind a joined track" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>SegmentedControl</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--surface-card);padding:20px;font-family:var(--font-sans)}.row{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}.col{display:flex;flex-direction:column;gap:16px}.lbl{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold)}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { SegmentedControl, Text } = window.MeridianDesignSystem_962c43;
+function Demo(){
+  const [view,setView]=React.useState('board');
+  const [align,setAlign]=React.useState('center');
+  const [cycle,setCycle]=React.useState('annual');
+  const [span,setSpan]=React.useState('week');
+  const [unit,setUnit]=React.useState('c');
+  return (
+  <div className="col">
+    <div className="row">
+      <SegmentedControl label="View" labelVisible value={view} onChange={setView}
+        options={[{value:'list',label:'List',icon:'list'},{value:'board',label:'Board',icon:'columns-3'},{value:'calendar',label:'Calendar',icon:'calendar'}]} />
+      <SegmentedControl label="Billing cycle" labelVisible value={cycle} onChange={setCycle}
+        options={[{value:'monthly',label:'Monthly'},{value:'annual',label:'Annual'}]} />
+      <SegmentedControl label="Units" labelVisible size="sm" value={unit} onChange={setUnit}
+        options={[{value:'c',label:'°C'},{value:'f',label:'°F'},{value:'k',label:'K',disabled:true}]} />
+    </div>
+    <div className="row">
+      <SegmentedControl label="Alignment" iconOnly size="sm" value={align} onChange={setAlign}
+        options={[{value:'left',label:'Align left',icon:'align-left'},{value:'center',label:'Align centre',icon:'align-center'},{value:'right',label:'Align right',icon:'align-right'}]} />
+      <div style={{width:280}}>
+        <SegmentedControl label="Range" fullWidth value={span} onChange={setSpan}
+          options={[{value:'day',label:'Day'},{value:'week',label:'Week'},{value:'month',label:'Month'},{value:'quarter',label:'Quarter'}]} />
+      </div>
+      <SegmentedControl label="Disabled example" disabled defaultValue="grid"
+        options={[{value:'grid',label:'Grid'},{value:'rows',label:'Rows'}]} />
+    </div>
+    <Text size="xs" tone="tertiary">One tab stop; ← → move and wrap; selection follows focus. The label is the group's accessible name whether or not it is shown.</Text>
+  </div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

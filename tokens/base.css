@@ -1,0 +1,90 @@
+/* Minimal element defaults. Consumers get sane type and link colors
+   without any reset library. */
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--background-page);color:var(--text-primary);font-family:var(--font-sans);font-size:var(--text-base);line-height:var(--leading-normal);letter-spacing:var(--tracking-body);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3,h4,h5,h6{margin:0;font-weight:var(--weight-semibold);letter-spacing:var(--tracking-heading);line-height:var(--leading-tight);color:var(--text-primary)}
+h1{font-size:var(--text-4xl);letter-spacing:var(--tracking-display);line-height:var(--leading-display)}
+h2{font-size:var(--text-2xl)}
+h3{font-size:var(--text-xl)}
+h4{font-size:var(--text-lg)}
+h5{font-size:var(--text-base)}
+h6{font-size:var(--text-sm)}
+p{margin:0 0 var(--paragraph-gap);text-wrap:pretty;max-width:var(--measure-prose)}
+p:last-child{margin-bottom:0}
+small{font-size:var(--text-xs);color:var(--text-secondary)}
+code,kbd,pre,samp{font-family:var(--code-font);font-feature-settings:"liga" 0}
+code,samp{font-size:var(--code-size);background:var(--code-inline-background);padding:var(--code-inline-pad-y) var(--code-inline-pad-x);border-radius:var(--radius-xs);letter-spacing:var(--tracking-mono)}
+pre{margin:0 0 var(--paragraph-gap);padding:var(--code-block-pad);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-md);overflow-x:auto;tab-size:var(--code-tab-size);font-size:var(--code-size-block);line-height:var(--code-leading)}
+pre code{background:none;padding:0;font-size:inherit}
+/* Underlined AT REST, not on hover. --text-link is only 2.56:1 against body
+   text (2.18:1 in dark), below the 3:1 WCAG 1.4.1 requires for colour to be a
+   link's sole cue — so colour alone is not enough and the underline is the
+   non-colour cue. A standalone link outside a text block (a nav row, a
+   breadcrumb, a card title) may drop it: use <Link underline="hover">, which
+   carries the same exemption. */
+a{color:var(--text-link);text-decoration:underline;text-underline-offset:2px;transition:color var(--duration-fast) var(--ease-out)}
+a:hover{color:var(--action-solid-hover)}
+a:active{color:var(--action-solid-active)}
+a:focus-visible{outline:2px solid var(--focus-border);outline-offset:var(--focus-offset);border-radius:var(--radius-xs)}
+hr{border:0;border-top:var(--border-hairline);margin:var(--density-section) 0}
+/* Placeholders and autofill are the two things a component's inline styles
+   cannot reach. --input-placeholder exists for this rule; opacity:1 undoes
+   Firefox's default 54% fade, which would drop it under 4.5:1. */
+input::placeholder,textarea::placeholder{color:var(--input-placeholder);opacity:1}
+/* Chrome paints autofilled fields its own yellow, ignoring background-color.
+   An inset shadow the size of the field is the only override, so an autofilled
+   input keeps the card surface and the token text colour. */
+input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus{-webkit-box-shadow:0 0 0 40px var(--input-background) inset;-webkit-text-fill-color:var(--input-text);caret-color:var(--input-text)}
+::selection{background:var(--selection-text-background);color:var(--selection-text-foreground)}
+:focus-visible{outline:var(--focus-ring-width, 2px) solid var(--focus-ring-color, var(--blue-600));outline-offset:var(--focus-ring-offset, 2px)}
+:focus:not(:focus-visible){outline:none}
+/* Table rows. These need real selectors — hover, selection and focus cannot
+   be expressed inline, and an inline background would outrank all three — so
+   Table exposes [data-table-row] and the rules live here. Selection wins over
+   hover on purpose: a selected row the pointer happens to cross must not stop
+   looking selected. The tint is instant; a pointer crosses forty rows in a
+   second and anything slower smears behind the cursor. */
+tr[data-table-row]{background:transparent;transition:background-color var(--duration-instant) var(--ease-out)}
+tr[data-table-row]:hover{background:var(--table-row-background-hover)}
+tr[data-table-row]:focus-visible{background:var(--table-row-background-focus);outline:var(--table-focus-ring);outline-offset:-2px}
+tr[data-table-row="selected"],tr[data-table-row="selected"]:hover{background:var(--table-row-background-selected)}
+/* Remove redundant bottom rule on the last row so it never doubles against a Card footer or container border */
+tr[data-table-row]:last-child td{border-bottom:none}
+/* Frozen leading cells (Table freezeLeading). They carry an opaque fill so
+   scrolling cells cannot show through, which means the row tint has to be
+   layered ON TOP as a gradient rather than set as the background — the dark
+   scope's tints are translucent, and a translucent tint alone would let the
+   scrolling content through. Selection beats hover here too. */
+[data-table-frozen]{background-color:var(--table-frozen-background);box-shadow:var(--table-frozen-shadow)}
+tr[data-table-row]:hover [data-table-frozen]{background-image:linear-gradient(0deg,var(--table-row-background-hover),var(--table-row-background-hover))}
+tr[data-table-row]:focus-visible [data-table-frozen]{background-image:linear-gradient(0deg,var(--table-row-background-focus),var(--table-row-background-focus))}
+tr[data-table-row="selected"] [data-table-frozen],tr[data-table-row="selected"]:hover [data-table-frozen]{background-image:linear-gradient(0deg,var(--table-row-background-selected),var(--table-row-background-selected))}
+/* Cards. Same reason as table rows: hover and focus-visible need selectors,
+   and an inline background or border would outrank them. Only an
+   interactive card responds — a static card that lit up under the pointer
+   would be promising something it does not do. */
+[data-card]{background:var(--card-background);border:var(--border-width) solid var(--card-border);box-shadow:var(--card-shadow);transition:var(--transition-control)}
+[data-card][data-elevated]{box-shadow:var(--card-shadow-elevated)}
+[data-card="interactive"]{cursor:pointer}
+[data-card="interactive"]:hover{background:var(--card-background-hover);border-color:var(--card-border-hover)}
+/* Must outrank [data-card][data-elevated] — it does, on specificity. The
+   resting shadow lives here rather than inline precisely so this can win;
+   an inline box-shadow of any value would kill the ring. */
+[data-card="interactive"]:focus-visible{border-color:var(--card-border-hover);box-shadow:var(--card-focus-ring)}
+/* Forced colours (Windows High Contrast). Tint and border are replaced by the
+   system palette, so all five badge tones necessarily collapse to one
+   appearance — the label is what still distinguishes them, which is why every
+   badge has a word (Badge §08). Two things are fixed here rather than left to
+   the UA: the border is pinned to CanvasText so the badge stays an object,
+   and the dot is pinned to CanvasText because a forced background would erase
+   it. */
+@media (forced-colors:active){
+[data-badge]{border-color:CanvasText!important;forced-color-adjust:none;background:Canvas!important;color:CanvasText!important}
+[data-badge] [data-badge-dot]{background:CanvasText!important}
+/* Skeleton, same class of defect as the badge dot: the fill resolves to
+   Canvas and background-image is dropped, so an unstyled placeholder
+   disappears and a loading table reads as an empty one. Outlined instead of
+   filled — GrayText would be a solid block where the real content will be
+   text, and CanvasText at 1px keeps it furniture. */
+[data-skeleton]{forced-color-adjust:none;background:Canvas!important;background-image:none!important;border:1px solid CanvasText;box-sizing:border-box}
+}

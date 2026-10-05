@@ -1,0 +1,163 @@
+.ds-select-root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-global-space-1, 4px);
+  width: 100%;
+  font-family: var(--ds-global-fontFamily-sans, sans-serif);
+  position: relative;
+  box-sizing: border-box;
+}
+
+.ds-select-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-global-space-1, 4px);
+  font-size: var(--ds-global-fontSize-sm, 14px);
+  font-weight: var(--ds-global-fontWeight-medium, 500);
+  color: var(--ds-semantic-color-text-primary, #111827);
+  user-select: none;
+}
+
+.ds-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 var(--ds-global-space-3, 12px);
+  border-radius: var(--ds-global-radius-md, 6px);
+  background-color: var(--ds-semantic-color-surface-default, #FFFFFF);
+  border: 1px solid var(--ds-semantic-color-border-default, #D1D5DB);
+  font-family: inherit;
+  font-size: var(--ds-global-fontSize-base, 16px);
+  color: var(--ds-semantic-color-text-primary, #111827);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.ds-select-trigger:hover:not(:disabled) {
+  border-color: var(--ds-semantic-color-border-strong, #9CA3AF);
+}
+
+.ds-select-trigger:focus-visible,
+.ds-select-trigger--open {
+  border-color: var(--ds-semantic-color-border-focus, #3B82F6);
+  box-shadow: var(--ds-global-shadow-focusRing, 0 0 0 3px rgba(59, 130, 246, 0.5));
+}
+
+.ds-select-trigger:disabled {
+  background-color: var(--ds-semantic-color-surface-muted, #F3F4F6);
+  border-color: var(--ds-semantic-color-border-subtle, #E5E7EB);
+  color: var(--ds-semantic-color-text-muted, #9CA3AF);
+  cursor: not-allowed;
+}
+
+.ds-select-trigger--sm {
+  min-height: 32px;
+  font-size: var(--ds-global-fontSize-sm, 14px);
+  padding: 0 var(--ds-global-space-2, 8px);
+}
+
+.ds-select-trigger--lg {
+  min-height: 48px;
+  font-size: var(--ds-global-fontSize-lg, 18px);
+  padding: 0 var(--ds-global-space-4, 16px);
+}
+
+.ds-select-value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ds-select-indicator {
+  display: inline-flex;
+  align-items: center;
+  margin-left: var(--ds-global-space-2, 8px);
+  color: var(--ds-semantic-color-text-secondary, #4B5563);
+  font-size: 12px;
+  transition: transform 150ms ease;
+}
+
+.ds-select-trigger--open .ds-select-indicator {
+  transform: rotate(180deg);
+}
+
+.ds-select-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background-color: var(--ds-semantic-color-surface-default, #FFFFFF);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #E5E7EB);
+  border-radius: var(--ds-global-radius-md, 6px);
+  box-shadow: var(--ds-global-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  padding: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+  font-family: var(--ds-global-fontFamily-sans, sans-serif);
+  animation: ds-fade-in 100ms ease-out;
+  outline: none;
+  z-index: var(--ds-global-zIndex-dropdown, 1000);
+  list-style: none;
+}
+
+.ds-select-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  font-size: var(--ds-global-fontSize-sm, 14px);
+  color: var(--ds-semantic-color-text-primary, #111827);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  transition: background-color 100ms ease;
+}
+
+.ds-select-item:hover:not(.ds-select-item--disabled) {
+  background-color: var(--ds-global-color-brand-50, #EFF6FF);
+  color: var(--ds-semantic-color-text-interactive, #2563EB);
+}
+
+.ds-select-item--selected {
+  font-weight: var(--ds-global-fontWeight-semibold, 600);
+}
+
+.ds-select-item--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ds-select-item-indicator {
+  color: var(--ds-semantic-color-text-interactive, #2563EB);
+}
+
+.ds-select-trigger--invalid {
+  border-color: var(--ds-semantic-color-border-danger, #EF4444);
+}
+
+.ds-select-trigger--invalid:focus-visible {
+  border-color: var(--ds-semantic-color-border-danger, #EF4444);
+  box-shadow: 0 0 0 2px var(--ds-semantic-color-surface-default, #FFFFFF), 0 0 0 4px var(--ds-semantic-color-border-danger, #EF4444);
+}
+
+.ds-select-helper-text {
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  color: var(--ds-semantic-color-text-secondary, #6B7280);
+  margin: 4px 0 0 0;
+  line-height: 1.4;
+}
+
+.ds-select-error-message {
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  color: var(--ds-semantic-color-text-danger, #DC2626);
+  font-weight: var(--ds-global-fontWeight-medium, 500);
+  margin: 4px 0 0 0;
+  line-height: 1.4;
+}

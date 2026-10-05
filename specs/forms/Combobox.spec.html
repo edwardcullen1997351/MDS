@@ -1,0 +1,446 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="Combobox" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Combobox — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo.tall{min-height:340px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+td.num,th.num{text-align:right;font-family:var(--font-mono)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:7px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.rows{display:flex;flex-direction:column;gap:12px}
+.filterbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;background:var(--background-page);border:var(--border-hairline);border-radius:var(--radius-sm)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Combobox, Select, Field, Input, Button, Badge } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows,numCols=[]}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i} className={numCols.includes(i)?'num':''}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={(j===0?'k ':'')+(numCols.includes(j)?'num':'')}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const REGIONS = [
+  {value:'us-east-1', label:'us-east-1', description:'N. Virginia · US East'},
+  {value:'us-east-2', label:'us-east-2', description:'Ohio · US East'},
+  {value:'us-west-1', label:'us-west-1', description:'N. California · US West'},
+  {value:'us-west-2', label:'us-west-2', description:'Oregon · US West'},
+  {value:'eu-west-1', label:'eu-west-1', description:'Ireland · Europe'},
+  {value:'eu-west-2', label:'eu-west-2', description:'London · Europe'},
+  {value:'eu-central-1', label:'eu-central-1', description:'Frankfurt · Europe'},
+  {value:'eu-north-1', label:'eu-north-1', description:'Stockholm · Europe'},
+  {value:'ap-south-1', label:'ap-south-1', description:'Mumbai · Asia Pacific'},
+  {value:'ap-southeast-1', label:'ap-southeast-1', description:'Singapore · Asia Pacific'},
+  {value:'ap-southeast-2', label:'ap-southeast-2', description:'Sydney · Asia Pacific'},
+  {value:'ap-northeast-1', label:'ap-northeast-1', description:'Tokyo · Asia Pacific'},
+  {value:'sa-east-1', label:'sa-east-1', description:'São Paulo · South America'},
+  {value:'me-south-1', label:'me-south-1', description:'Bahrain · Middle East'},
+  {value:'af-south-1', label:'af-south-1', description:'Cape Town · Africa'},
+];
+const OWNERS = ['Platform','Payments','Growth','Identity','Data Platform','Search','Billing','Notifications','Infrastructure','Developer Experience'];
+
+function Live({size='md', ...props}){
+  const [v,setV] = React.useState(props.initial ?? '');
+  return <Combobox size={size} options={REGIONS} value={v} onChange={setV} placeholder="Search regions" {...props} />;
+}
+
+function Async(){
+  const [v,setV] = React.useState('');
+  const [q,setQ] = React.useState('');
+  const [pending,setPending] = React.useState(false);
+  const timer = React.useRef(null);
+  const results = React.useMemo(() => {
+    const s = q.trim().toLowerCase();
+    const base = OWNERS.map((o) => ({ value: o, label: o, description: 'team' }));
+    return s ? base.filter((o) => o.label.toLowerCase().includes(s)) : base;
+  }, [q]);
+  const search = (next) => {
+    setPending(true);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => { setQ(next); setPending(false); }, 320);
+  };
+  return (
+    <Field label="Owner" hint="Fetched as you type — the server does the matching.">
+      <Combobox options={results} value={v} onChange={setV} onSearch={search} filter={false}
+        loading={pending} placeholder="Search teams" emptyMessage="No teams match that name" />
+    </Field>
+  );
+}
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>Combobox</h1>
+    <p className="lede">A text field that filters a list, and commits one value from it. This is the component <code>Select</code> pointed at for lists it could not serve: past roughly fifteen options a native dropdown becomes a scroll with no search, and the only fix is to let the user type. Everything the browser gave <code>Select</code> for free — typeahead, the popup, the keyboard, the mobile picker — we now write by hand, which is why this is the largest control in the system and why its rules are the strictest. The invariant that holds it together: <strong>text the user typed is never a value.</strong></p>
+    <div className="meta">
+      <span>components/forms/Combobox.jsx</span><span>window.MeridianDesignSystem_962c43.Combobox</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 2 open items</span><span>since: 1.3.0</span><span>11 new tokens</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="One value, from a list too long to show.">
+    <p>Combobox exists for the range where the option set is known but too large to read: fifteen regions, four hundred customers, every user in the tenant. It trades <code>Select</code>'s free correctness for search, so it should be the second choice every time — reach for it when a user would otherwise be scrolling a list hunting for a row they already know the name of.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Pick one of 15+ known values','Combobox','This component.'],
+      ['Pick one of 4–15 values','Select','Native keyboard, popup and mobile picker for free. Always prefer it when it fits.'],
+      ['Pick one of 2–3 values','RadioGroup','No clicks, everything visible.'],
+      ['Pick several values','CheckboxGroup, or Tag input','Single-select only (§03). A multi Combobox is a separate component.'],
+      ['Enter a value that need not exist yet','Input','Combobox commits only options it was given — free text is never a value (§06).'],
+      ['Search a page, table or dataset','Input with iconLeft="search"','A search field returns results into the page; a Combobox returns a value into a form.'],
+      ['Run one of many commands','Command palette','Not in this system. A palette is navigation and actions, not a form value.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> for region, owner, customer, service, assignee, parent resource — long closed sets a person can name.</li>
+      <li><strong>Use</strong> when options need a second line: <code>description</code> renders the one thing a native <code>&lt;option&gt;</code> cannot (§02).</li>
+      <li><strong>Do not use</strong> for fewer than 15 options. A search field over eight rows is ceremony, and it costs the native mobile picker.</li>
+      <li><strong>Do not use</strong> as a search box. If pressing Enter should run a query rather than fill a field, that is an <code>Input</code>.</li>
+      <li><strong>Do not use</strong> when the user may need a value that is not in the list. There is no free-text mode, deliberately (§03).</li>
+    </ul>
+    <div className="demo tall">
+      <div style={{width:320}}>
+        <Field label="Region" hint="15 regions — more than a Select can show.">
+          <Live />
+        </Field>
+      </div>
+      <div style={{width:280}}>
+        <Field label="Environment" hint="Three options — this is a Select's job.">
+          <Select options={['Production','Staging','Development']} defaultValue="Production" />
+        </Field>
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Input's box, our list.">
+    <div className="demo tall"><div style={{width:340}}><Field label="Region"><Live initial="eu-central-1" /></Field></div></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Control box</strong> — <code>Input</code>'s chrome, from the same <code>--input-*</code> tokens: same height, radius, border and focus ring. A Combobox and an Input in one form must be indistinguishable at rest, so no <code>--combobox-*</code> token touches the box.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Text input</strong> — a real <code>&lt;input type="text"&gt;</code> carrying <code>role="combobox"</code>. It shows the selected label when closed and the query when open.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Chevron</strong> — toggles the list, and is <code>aria-hidden</code>: the input already announces its expanded state, so a second announcement is noise. Becomes a spinner while <code>loading</code>.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>List surface</strong> — <code>--combobox-list-*</code>: <code>--surface-overlay</code>, <code>--radius-md</code>, <code>--elevation-3</code> (the menu/popover level), 4 px below the box, at <code>--z-dropdown</code>. Positioned <code>fixed</code> in viewport coordinates, so no ancestor can clip it (§11).</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Option</strong> — label, optional <code>description</code> second line, and a check on the committed row. Two states: <em>active</em> (the keyboard/pointer cursor) and <em>selected</em> (the committed value). They are different things and are drawn differently (§06).</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>Matched run</strong> — the substring the query matched, in <code>--combobox-option-match-text</code> semibold. It answers “why is this row here?”, which matters most when the match was on the description rather than the label.</span></div>
+      <div className="callout"><span className="cnum">7</span><span><strong>Status row</strong> — <code>Searching…</code> or the <code>emptyMessage</code>, in <code>role="status"</code> so it is announced. Replaces the list rather than sitting above it.</span></div>
+      <div className="callout"><span className="cnum">8</span><span><strong>Scroll</strong> — the list caps at 264 px, about eight single-line rows, and scrolls. The active option is kept in view by arithmetic on <code>scrollTop</code>, never <code>scrollIntoView</code>, which would scroll the page too.</span></div>
+    </div>
+    <T cols={['Region','Value (md)','Token']} rows={[
+      ['Box height','34 px','--control-h-md'],
+      ['Box radius','4 px','--input-radius'],
+      ['List offset','4 px','literal'],
+      ['List radius','6 px','--combobox-list-radius'],
+      ['List shadow','elevation-3','--combobox-list-shadow'],
+      ['List max height','264 px, or the room available','literal'],
+      ['Option padding','7 px / 12 px','--control-px-md'],
+      ['Label','13 px','--text-sm'],
+      ['Description','11 px','--text-2xs'],
+      ['Layer','300','--z-dropdown'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Twelve props — and four deliberate absences.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['options',<span className="t">Array&lt;string | Option&gt;</span>,<span className="t">[]</span>,'Option is {value, label, description?}. Strings are used as both value and label.'],
+      ['value',<span className="t">string</span>,'—','The committed option\u2019s value. Must exist in options, or the control renders empty and warns.'],
+      ['onChange',<span className="t">(value: string) => void</span>,'—','Receives the VALUE, not an event — the choice came from a list, not a keystroke.'],
+      ['onSearch',<span className="t">(query: string) => void</span>,'—','Every keystroke, for server-side search. Debounce it yourself; requires filter={false}.'],
+      ['filter',<span className="t">false | (o, q) => boolean</span>,'substring','Matches label and description, case-insensitive. false hands matching to the server.'],
+      ['placeholder',<span className="t">string</span>,'—','An instruction, shown only while nothing is selected.'],
+      ['emptyMessage',<span className="t">string</span>,<span className="t">'No matches'</span>,'Replaces the list when nothing matches. Say what would help (§10).'],
+      ['loading',<span className="t">boolean</span>,<span className="t">false</span>,'Spinner in the chevron slot and a "Searching…" row. For async only.'],
+      ['size',<span className="t">'sm' | 'md' | 'lg'</span>,<span className="t">'md'</span>,'Matches Input. lg draws 16px type so iOS does not zoom (§05).'],
+      ['invalid',<span className="t">boolean</span>,<span className="t">false</span>,'Danger border and ring. Inherited from Field error.'],
+      ['disabled',<span className="t">boolean</span>,<span className="t">false</span>,'Inert and unfocusable. Never as a read-only display.'],
+      ['style',<span className="t">CSSProperties</span>,'—','Layout only, on the wrapper the list is anchored to.'],
+    ]}/>
+    <p><strong>No free text, and no <code>allowCustomValue</code>.</strong> The whole promise of this control is that the value came from the list. Once typed text can also be a value, every consumer must decide what a half-typed string means, validation splits in two, and the user cannot tell which of the two modes they are in. A field where anything is allowed is an <code>Input</code>; a field where the value must exist but the list is long is this component.</p>
+    <p><strong>No <code>multiple</code>.</strong> Multi-select needs chips inside the box, backspace-to-remove, an overflow rule and a different announcement contract — a bigger component, not a flag. Use <code>CheckboxGroup</code> for a known set.</p>
+    <p><strong>No <code>onCreate</code>, no "Add «query»" row.</strong> Creating a record from inside a picker hides a write behind a read, and the created thing usually needs fields this control has no room for. Put creation next to the field as a Button.</p>
+    <p><strong>No <code>groups</code>.</strong> Grouped results need sticky headers, skip-the-header arrow logic and a second announcement layer. If results need grouping, the <code>description</code> line is usually the honest answer.</p>
+    <p><strong><code>onChange</code> gives you the value, not an event</strong> — the divergence from <code>Select</code> and <code>Input</code> is deliberate. There is no meaningful <code>e.target</code> here: the commit came from a <code>div</code> in a listbox, and handing over a synthetic event would invite <code>e.target.value</code>, which would be the query rather than the choice.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="No variant prop. Three placements.">
+    <T cols={['Placement','Shape','Note']} rows={[
+      ['In a Field','md, full width, label + hint','The default. Field owns the name and the error.'],
+      ['Filter bar','size="sm", fixed width, aria-label','Same as Select, but for a long set. Pair with a Clear button — Escape does not clear (§07).'],
+      ['Async / server-backed','onSearch + filter={false} + loading','The list is whatever the server returned; the client must not filter it again (§13).'],
+      ['Table cell','size="sm", fixed width, aria-label naming the row','Valid since the list is viewport-anchored and not clipped (§11). Still prefer a row action for anything beyond a quick reassignment.']
+    ]}/>
+    <div className="demo col tall">
+      <Row label="in a field"><div style={{width:320}}><Field label="Region" hint="Where the cluster is created."><Live /></Field></div></Row>
+      <Row label="filter bar">
+        <div className="filterbar">
+          <Combobox size="sm" aria-label="Region" options={REGIONS} placeholder="All regions" style={{width:210}} />
+          <Combobox size="sm" aria-label="Owner" options={OWNERS} placeholder="All owners" style={{width:190}} />
+          <Button variant="ghost" size="sm">Clear</Button>
+        </div>
+      </Row>
+      <Row label="async"><div style={{width:320}}><Async /></div></Row>
+    </div>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Three, matched to Input.">
+    <T cols={['size','Box height','Padding-x','Type','Use']} rows={[
+      ['sm','28 px','8 px','12 px','Filter bars and toolbars.'],
+      ['md','34 px','12 px','13 px','Default. Forms and panels.'],
+      ['lg','40 px','16 px','16 px','Touch and single-question surfaces.'],
+    ]}/>
+    <div className="demo col tall">
+      <Row label="sm"><div style={{width:280}}><Live size="sm" aria-label="Region, small" /></div></Row>
+      <Row label="md"><div style={{width:280}}><Live size="md" aria-label="Region, medium" /></div></Row>
+      <Row label="lg"><div style={{width:280}}><Live size="lg" aria-label="Region, large" /></div></Row>
+    </div>
+    <p><strong>The list scales with the box</strong> — option type and padding follow <code>size</code>, so a <code>sm</code> Combobox in a toolbar does not open a <code>md</code> list. The 264 px cap does not scale: it is a viewport budget, not a type ramp, and a taller list is harder to scan at any size.</p>
+    <p><strong><code>lg</code> matters more here than on Input.</strong> This control focuses its input on every open, including a pointer open — at 13 px, iOS Safari would zoom the viewport each time the list appeared.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Two axes: the box, and each option.">
+    <T cols={['Box state','Chrome','Notes']} rows={[
+      ['Rest, empty','--input-border, placeholder text','The placeholder is an instruction; it is not a name (§08).'],
+      ['Rest, selected','--input-border, label in --input-text','The committed option\u2019s label, plain — never the query.'],
+      ['Hover','--input-border-hover','Border only.'],
+      ['Open','--input-border-focus + focus ring, aria-expanded','The ring is on the box while the list is open, whether opened by key or pointer.'],
+      ['Loading','spinner replaces the chevron + "Searching…" row','Only with async. Never for client filtering, which is instant.'],
+      ['Invalid','--input-border-invalid + danger ring, aria-invalid','Field renders the message and the control points at it.'],
+      ['Disabled','--input-background-disabled, not-allowed, unfocusable','Never as a read-only display — print the value as text.'],
+    ]}/>
+    <T cols={['Option state','Chrome','Notes']} rows={[
+      ['Active','--combobox-option-background-active (--surface-hover)','The cursor: where Enter would commit. Follows both arrow keys and the pointer.'],
+      ['Selected','--combobox-option-background-selected (--surface-selected) + check','The committed value. Persists while the list is open.'],
+      ['Active AND selected','active background wins, check remains','Active is the more urgent fact — it is where the next keystroke acts.'],
+      ['Matched run','--combobox-option-match-text, semibold','Only while the user has typed. Opening on an existing value highlights nothing.'],
+      ['Empty','emptyMessage in --combobox-status-text','Replaces the list. The box keeps its value — a failed search is not a deselection.'],
+    ]}/>
+    <div className="demo tall">
+      <div style={{width:300}}><Field label="Region" error="Pick a region before continuing."><Live /></Field></div>
+      <div style={{width:300}}><Field label="Region" hint="Fixed for the lifetime of this cluster."><Combobox options={REGIONS} value="eu-west-1" disabled /></Field></div>
+    </div>
+    <p className="warn"><strong>The invariant: typed text is never a value.</strong> On blur, Escape, or a Tab with nothing highlighted, the input reverts to the committed option's label. A Combobox that keeps “fran” in the box after the user walked away is claiming a value that does not exist — and if the form reads the input rather than the state, it will submit it. Active and selected must therefore stay visually distinct: the cursor is not a choice until it is committed.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="All of it is ours, and all of it is required.">
+    <T cols={['Key','Closed','Open']} rows={[
+      [<kbd>↓</kbd>,'Opens the list, cursor on the selected row.','Next option; wraps from the last to the first.'],
+      [<kbd>↑</kbd>,'Opens the list, cursor on the selected row.','Previous option; wraps from the first to the last.'],
+      ['Typing','Opens the list and filters.','Filters; the cursor resets so Enter cannot commit a row that scrolled away.'],
+      [<kbd>Enter</kbd>,'Submits the form, like any input.','Commits the active option. With no active row, closes and reverts.'],
+      [<kbd>Esc</kbd>,'Nothing — it never clears the value.','Closes and reverts the text. Does not close a Dialog behind it.'],
+      [<kbd>Tab</kbd>,'Moves on.','Commits the active option, then moves on — "typed fra, arrowed to Frankfurt, tabbed" means Frankfurt.'],
+      [<kbd>Home</kbd>,'—','First option.'],
+      [<kbd>End</kbd>,'—','Last option.'],
+    ]}/>
+    <ul>
+      <li><strong>One tab stop.</strong> The list is never in the tab order — that is the entire reason for <code>aria-activedescendant</code>: focus stays on the input while the cursor moves through options.</li>
+      <li><strong>Enter is only swallowed when there is a row to commit.</strong> Otherwise it reaches the form and submits, exactly as in a plain Input. A Combobox that eats every Enter breaks single-field forms.</li>
+      <li><strong>Escape never clears.</strong> Clearing on Escape looks tidy and destroys data — the user who pressed it wanted the list gone, not the value. Provide a Clear button where clearing matters.</li>
+      <li><strong>Typing resets the cursor.</strong> Keeping index 3 while the list re-filters means Enter commits whatever row happens to land there — the classic wrong-value bug in hand-rolled comboboxes.</li>
+      <li><strong>Arrow keys wrap</strong>, matching the ARIA authoring practice; they do not open-and-move in one press, which would let a single keystroke change the value invisibly.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="Hand-written ARIA — the reason to prefer Select.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Role & name','input[role="combobox"] with aria-expanded, aria-controls and aria-autocomplete="list"; the list is role="listbox", rows are role="option". Name from Field\u2019s label or aria-label; warns when unnamed.'],
+      ['Focus management (4.1.2)','Focus NEVER leaves the input. The cursor is published with aria-activedescendant, so the active option is announced without a focus move — moving DOM focus into the list would break typing.'],
+      ['Selected vs active','aria-selected marks the committed value only; the cursor is activedescendant. Conflating them makes a screen reader announce every arrow press as a selection.'],
+      ['Status (4.1.3)','"Searching…" and the empty message are in role="status", so the result of a query that returns nothing is announced rather than silently emptying the list.'],
+      ['A placeholder is not a name','Same rule as Select: it is replaced by the chosen value and stops being announced.'],
+      ['Control boundary (1.4.11)','Box border is --border-control (4.74:1 on a card); the list has --border-default plus elevation-3 against the page.'],
+      ['Option contrast (1.4.1)','Active is a background change; selected adds a CHECK, not just a tint — so selection does not rely on colour.'],
+      ['Focus (2.4.7)','3px ring on the box for the whole time the list is open.'],
+      ['Target size (2.5.8)','Options are 30px+ tall at md and grow with density; the box is 28/34/40px.'],
+      ['Escape (2.1.2)','Escape closes the list only; a Dialog behind it stays open, because the handler is scoped to the open list.'],
+      ['Mobile','No native picker — this is the real cost. The list is a normal element, the on-screen keyboard covers the lower half of the screen, and the list flips above the field when there is no room below (§11).'],
+      ['Reduced motion','Nothing animates on open (§09), so there is nothing to reduce.'],
+    ]}/>
+    <p className="warn"><strong>This is why <code>Select</code> is still the default.</strong> Everything in that table is code that can regress — the one control in this system where an upgrade can silently break a screen reader. Any change to the open/commit/announce path needs a manual pass with a real screen reader, not just the unit tests in §14.</p>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="140 ms on the box. The list does not animate.">
+    <T cols={['Change','Duration','Easing','Property']} rows={[
+      ['Border colour, focus ring','140 ms','--ease-out','border-color, box-shadow'],
+      ['List open / close','—','—','never'],
+      ['Option active background','—','—','instant'],
+      ['Chevron rotation','—','—','never'],
+      ['Loading spinner','800 ms','linear, infinite','--anim-spin (new in 1.3.0)'],
+    ]}/>
+    <ul>
+      <li><strong>The list appears instantly.</strong> A user typing three characters opens, re-filters and commits inside 400 ms; a 120 ms fade on each step turns that into visible lag. Menus in this system do not animate, and a combobox list is a menu.</li>
+      <li><strong>The active row must never animate.</strong> Holding <kbd>↓</kbd> moves the cursor faster than any transition can settle, and a trailing highlight makes it impossible to see where you are.</li>
+      <li><strong>The spinner is the only moving part</strong>, and only while <code>loading</code>. It is the second looping animation in the system — <code>--anim-spin</code>, added with this component under the rule <code>motion.css</code> already stated: nothing loops unless work is genuinely in flight.</li>
+      <li><strong>Under reduced motion the spinner stops dead</strong> — the global block forces <code>animation-iteration-count: 1</code>. That is why the <code>Searching…</code> row exists and is not decoration: motion may never be the only signal that work is happening.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="The empty message is the one that matters.">
+    <T cols={['Slot','Job','Write','Not']} rows={[
+      ['Field label','The noun being chosen','Region','Search region · Select a region'],
+      ['Placeholder','An instruction naming what is searchable','Search regions','Type to search… · Start typing'],
+      ['Placeholder (filter)','The unfiltered state','All regions','Any · Filter'],
+      ['Option label','The value as the user says it','eu-central-1','EU Central 1 Region (Frankfurt)'],
+      ['Description','What disambiguates two similar rows','Frankfurt · Europe','The eu-central-1 region'],
+      ['emptyMessage','What would help, not just the fact','No regions match “nrth”','No results · Nothing found · Empty'],
+      ['Loading','—','Searching…','Loading… · Please wait'],
+    ]}/>
+    <ul>
+      <li><strong>“No results” wastes the only line you get.</strong> The user can see the list is empty; what they need is the way out — “No teams match that name”, “No customers on this plan”, or a hint that search covers names only.</li>
+      <li><strong>Descriptions disambiguate; they do not decorate.</strong> If two rows are never confusable, the second line is noise on every row forever. Machine identifiers are the strongest case: the label is the id, the description is the human place.</li>
+      <li><strong>Never put a count in the placeholder.</strong> “Search 412 regions” goes stale and is a fact about your data, not the user's task.</li>
+      <li><strong>Sort by relevance, then by use.</strong> Exact prefix matches first — a user typing “eu-w” expects <code>eu-west-1</code> above <code>eu-west-2</code>, and neither below <code>ap-southeast-1</code>.</li>
+      <li><strong>Keep the selected option in the list</strong> even when it falls outside the current search, or the box shows a value whose row cannot be found. The component warns when <code>value</code> is not in <code>options</code>.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="The keyboard eats the bottom half of a phone.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','Full width, size="lg". The on-screen keyboard covers roughly the lower half of the viewport, so the list flips above the field whenever the room below is under ~264px AND there is more room above, and caps its height to the room actually available.'],
+      ['tablet ≥ 600','As authored. The list matches the box width, so a narrow field gets a narrow list — size the field to its longest option, not to the grid.'],
+      ['desktop ≥ 1024','Full width in a Field; fixed width in a filter bar.'],
+      ['ultrawide ≥ 1600','Keep the form inside --measure-narrow. A 900px-wide list of short values is unreadable.'],
+    ]}/>
+    <div className="demo col tall" style={{maxWidth:340}}>
+      <Field label="Region" hint="Touch size, full width."><Live size="lg" /></Field>
+    </div>
+    <Row label="clipped">
+      <div style={{width:300,height:96,overflow:'hidden',background:'var(--surface-card)',border:'var(--border-hairline)',borderRadius:'var(--radius-md)',padding:14}}>
+        <Combobox aria-label="Region, inside a clipped container" options={REGIONS} placeholder="Search regions" />
+      </div>
+      <span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)',maxWidth:'32ch'}}>A 96 px box with <code>overflow: hidden</code>. The list opens past the container edge — this is the case that used to be cut off.</span>
+    </Row>
+    <p><strong>The list is not clipped by its container.</strong> It is positioned <code>fixed</code> in viewport coordinates rather than <code>absolute</code> inside the field, because a <code>fixed</code> descendant is not clipped by an ancestor's <code>overflow: hidden</code> — so a Combobox works in a table cell, a scrolling panel or a clipped card without a portal. It re-measures continuously while open — scroll and resize events plus a per-frame rect check — so it follows its field through any kind of movement, and caps its height to the room actually available. <strong>One residual caveat:</strong> an ancestor with <code>transform</code>, <code>filter</code>, <code>perspective</code> or <code>contain</code> becomes the containing block for fixed descendants, and the list would be positioned against that element instead of the viewport. Animated or transformed panels are the case to avoid; ordinary clipped containers are fine.</p>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Prefer <code>Select</code> whenever it fits.</li>
+        <li>Wrap in <code>Field</code>, or pass <code>aria-label</code>.</li>
+        <li>Debounce <code>onSearch</code>, and pass <code>filter={'{false}'}</code>.</li>
+        <li>Write an <code>emptyMessage</code> that helps.</li>
+        <li>Keep the selected option in <code>options</code>.</li>
+        <li>Use <code>description</code> for ambiguous rows.</li>
+        <li>Test with a screen reader after any change.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>Use it for eight options.</li>
+        <li>Use it as a search box.</li>
+        <li>Let typed text become a value.</li>
+        <li>Clear the value on Escape.</li>
+        <li>Move focus into the list.</li>
+        <li>Animate the list or the active row.</li>
+        <li>Put one inside a transformed panel.</li>
+        <li>Filter server results twice.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this component invites.</strong> Reading the input's text instead of the committed value. It works in every manual test — you type, you click, the text matches — and then a user types “eu-w”, tabs away without choosing, and the form submits <code>eu-w</code> as a region. The component reverts its own display on blur, but a consumer that wires <code>onSearch</code> into form state has already captured the query. <code>onSearch</code> is for fetching; <code>onChange</code> is the only source of a value.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="What ships, and the decisions inside it.">
+    <ul>
+      <li><strong>Structure:</strong> a wrapper (the measurement anchor), <code>Input</code>'s box chrome, a real <code>&lt;input&gt;</code>, and a <code>position: fixed</code> list. No portal, no popper, no dependency — and no clipping, because <code>overflow: hidden</code> does not clip fixed descendants. The list stays inside the wrapper in the React tree, which is what keeps the outside-pointerdown and blur checks a simple <code>contains()</code>.</li>
+      <li><strong>The <code>dirty</code> flag is load-bearing.</strong> It separates “opened, showing the current value” from “typing a search”. Without it, opening a Combobox whose value is <code>eu-central-1</code> seeds the query with that label and filters the list down to the single row the user already has. On open we seed the text and leave <code>dirty</code> false, so the full list shows; the first keystroke sets it.</li>
+      <li><strong>Display value is derived, never stored:</strong> <code>open ? query : selected?.label ?? ''</code>. Reverting on close is therefore automatic rather than a handler that can be missed — the invariant in §06 holds by construction.</li>
+      <li><strong>Close on <code>pointerdown</code> outside, not <code>click</code>.</strong> A drag that starts on an option and ends outside fires no click, and the list would stay open with a stale cursor.</li>
+      <li><strong>Options commit on <code>onMouseDown</code> with <code>preventDefault()</code></strong>, so the input never blurs first. Committing on click meant blur closed the list before the click landed — the row moved out from under the pointer.</li>
+      <li><strong>Geometry moved out in 1.5.0.</strong> The fixed-position measurement described below was extracted into <code>anchor.js</code> and is now shared with <code>Autocomplete</code>, <code>Tooltip</code> and <code>Popover</code> — this component lost ~60 lines and behaves as before. Two things changed inside it: the engine writes <code>max-height</code> imperatively rather than through React state (a cached height can lag a render), and the 264px cap now lands on the list <em>surface</em>, which is also the scroll box, so the active-option arithmetic below measures against it.</li>
+      <li><strong>Scroll is arithmetic, not <code>scrollIntoView</code></strong>, which scrolls ancestor scroll containers as well as the list and can jump the whole page while a user holds <kbd>↓</kbd>.</li>
+      <li><strong>Flip-up is conditional</strong>: only when the room below is under 264 px <em>and</em> there is more room above. An unconditional flip hides the field behind the user's hand on a phone. Height is then capped to the available room, so a field near the bottom of a short viewport gets a scrolling list rather than one running off-screen.</li>
+      <li><strong>Geometry is re-measured by two overlapping mechanisms while open:</strong> <code>scroll</code> (capture phase, so a scrolling panel counts) and <code>resize</code> handle the common cases, and a rect check on animation frames handles what no event reports — layout shift, an animating ancestor, a container scrolled programmatically. A scroll listener only ever hears the container that scrolled; watching the anchor's own rect is what makes the list follow its field regardless of cause. This is the approach Floating UI's <code>autoUpdate</code> takes. One rect read per frame, only while the list is open, and it re-renders only when the rect actually changed.</li>
+      <li><strong>The side is decided once, at open, and held.</strong> Re-deciding it on every re-measure made the list jump from above the field to below it mid-scroll — measured at 161 px of travel against 90 px of scroll. It re-flips only when the chosen side drops under 96 px of room, which a clamped max-height cannot rescue.</li>
+      <li><strong>Four warnings:</strong> no accessible name; <code>invalid</code> without <code>aria-describedby</code>; <code>onSearch</code> without <code>filter={'{false}'}</code> (double filtering hides server matches on fields you do not render); and <code>value</code> not present in <code>options</code> — that last one tests <code>value &amp;&amp; !selected</code>, not <code>value != null</code>, because an empty string is the normal initial state of a controlled Combobox and nothing is missing when nothing is selected. Warning on it fired on every render and buried the other three.</li>
+      <li><strong>11 new tokens, all for the list.</strong> The box borrows <code>--input-*</code> wholesale so the two controls cannot drift. The list needed its own family because a component token may never reference another component's — sharing <code>--dialog-background</code> would have been a sideways reference and the linter rejects it.</li>
+      <li><strong>Fixed while building this: <code>--z-dropdown</code> was unused.</strong> <code>Dialog</code> hardcoded <code>zIndex: 60</code> and <code>Tooltip</code> <code>70</code>, while <code>layout.css</code> defines the ladder and says a component never invents a value. A Combobox correctly using <code>--z-dropdown</code> (300) would have floated above a dialog at 60. Both now read their tokens; relative order is unchanged (600 &lt; 800).</li>
+      <li><strong>Tokens consumed:</strong></li>
+    </ul>
+    <div className="tokenlist">
+      <span>--combobox-list-background</span><span>--combobox-list-border</span><span>--combobox-list-radius</span><span>--combobox-list-shadow</span><span>--combobox-option-text</span><span>--combobox-option-description-text</span><span>--combobox-option-match-text</span><span>--combobox-option-check</span><span>--combobox-option-background-active</span><span>--combobox-option-background-selected</span><span>--combobox-status-text</span><span>--input-* (the whole box)</span><span>--control-h-sm · md · lg</span><span>--control-px-sm · md · lg</span><span>--text-2xs · xs · sm · lg</span><span>--z-dropdown</span><span>--border-width</span><span>--transition-control</span>
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { Field, Combobox } from '@meridian/ds';
+
+// client-side: the whole list is in memory
+<Field label="Region" hint="Where the cluster is created.">
+  <Combobox options={regions} value={region} onChange={setRegion}
+    placeholder="Search regions" />
+</Field>
+
+// server-side: the server matches, so the client must NOT filter again
+const [q, setQ] = React.useState('');
+const { data, isFetching } = useQuery(['owners', q], () => fetchOwners(q));
+
+<Field label="Owner">
+  <Combobox
+    options={data ?? []}
+    value={owner}
+    onChange={setOwner}          // the ONLY source of a value
+    onSearch={debounce(setQ, 300)} // fetching only — never form state
+    filter={false}
+    loading={isFetching}
+    emptyMessage={q ? \`No owners match "\${q}"\` : 'Type to search owners'}
+  />
+</Field>`}</pre>
+    <ul>
+      <li><strong><code>onChange</code> is the only source of a value.</strong> Wiring <code>onSearch</code> into form state is the §12 failure: it captures the query, so an abandoned search submits as a value.</li>
+      <li><strong>Debounce <code>onSearch</code> yourself</strong> (250–350 ms). The component deliberately does not, because the right delay depends on your backend, and a built-in debounce cannot be turned off.</li>
+      <li><strong>Keep the selected option in <code>options</code></strong> across searches — merge it into the results if your endpoint would drop it, or the box shows a label with no matching row.</li>
+      <li><strong>Testing.</strong> <code>getByRole('combobox', {'{ name: /region/i }'})</code>; assert <code>aria-expanded</code> flips, that <code>aria-activedescendant</code> matches the active option's id after each <kbd>↓</kbd>, and that <code>aria-selected</code> is on the committed row only. The regression tests that matter: (1) type a partial query, blur, assert the input shows the committed label and <code>onChange</code> never fired; (2) type to re-filter and assert the cursor reset, so Enter cannot commit a row that scrolled away; (3) <kbd>Esc</kbd> leaves <code>value</code> untouched; (4) <kbd>Tab</kbd> with an active row commits it.</li>
+      <li><strong>Lint.</strong> Flag a <code>Combobox</code> with no <code>Field</code> ancestor and no <code>aria-label</code>; <code>onSearch</code> without <code>filter={'{false}'}</code>; a static <code>options</code> array under 15 entries (that is a <code>Select</code>); and <code>onSearch</code> handlers that call a state setter also used as the form value.</li>
+      <li><strong>Frozen 4 Sep 2026.</strong> API closed: <code>options</code>, <code>value</code>, <code>onChange</code>, <code>onSearch</code>, <code>filter</code>, <code>placeholder</code>, <code>emptyMessage</code>, <code>loading</code>, <code>size</code>, <code>invalid</code>, <code>disabled</code>, <code>style</code>. Everything in §08 is hand-written and can regress, so any change to the open/commit/announce path needs a manual screen-reader pass, not just the tests above.</li>
+      <li><strong>Closed — container clipping.</strong> Resolved before the freeze by anchoring the list in viewport coordinates (§11, §13) rather than waiting on a popover primitive. A Combobox is now valid in a table cell or a clipped panel; only transformed ancestors remain out of scope.</li>
+      <li><strong>Closed — the shared anchoring primitive.</strong> Done in 1.5.0: this component's fixed-position measurement is now <code>anchor.js</code> (<code>useAnchor</code>), consumed by <code>Autocomplete</code>, <code>Tooltip</code> and the new <code>Popover</code>. It was the reference implementation, as expected, and <code>Tooltip</code> gained the clip-immunity it lacked — plus flipping it never had. A future <code>Menu</code> needs no positioning code at all.</li>
+      <li><strong>Closed in 1.19.0 — <code>MultiCombobox</code> shipped.</strong> Genuinely wanted for tags and assignees, genuinely a different component: chips in the box, backspace-to-remove, an overflow rule, and a plural announcement contract. It should be <code>MultiCombobox</code> or a tag input, and it should not arrive as a <code>multiple</code> prop here (§03). Its own component, as this entry required: no <code>multiple</code> prop was added here.</li>
+      <li><strong>Open — grouped results and virtualisation.</strong> Both are needed past a few hundred rows; both need the popover primitive first. A list of 5,000 options renders 5,000 nodes today, so cap server results.</li>
+      <li><strong>Open — <code>Select</code>'s dark-mode popup is still the platform's.</strong> Worth noting the trade now runs both ways: Combobox's list themes correctly because we draw it, which is the one thing it gets for the price of all the ARIA above.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

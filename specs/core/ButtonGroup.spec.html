@@ -1,0 +1,349 @@
+<!-- @dsCard group="Specs · Core" viewport="1080x760" name="ButtonGroup" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>ButtonGroup — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+a{color:var(--text-accent);text-decoration:underline;text-underline-offset:2px}a:hover{color:var(--text-link)}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+td.num,th.num{text-align:right;font-family:var(--font-mono)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px}
+.staterow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.wrong{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { ButtonGroup, Button, IconButton, Tabs, Stack } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows,numCols=[]}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i} className={numCols.includes(i)?'num':''}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={(j===0?'k ':'')+(numCols.includes(j)?'num':'')}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Spec(){
+const [view,setView] = React.useState('grid');
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Core · Component specification</span>
+    <h1>ButtonGroup</h1>
+    <p className="lede">Joins related actions into one continuous control. Every button in the group still fires its own action — the joining says <em>these belong together</em>, not <em>pick one of these</em>. That distinction is the whole specification.</p>
+    <div className="meta">
+      <span>components/core/ButtonGroup.jsx</span><span>window.MeridianDesignSystem_962c43.ButtonGroup</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 0 open items</span><span>since: 1.1.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Three patterns look alike. Only one of them is this component.">
+    <p>ButtonGroup is a cluster of <strong>actions</strong> drawn as one unit: a toolbar of related commands, or a split button where a dropdown extends a primary action. Nothing in it holds a selected state.</p>
+    <T cols={['Pattern','Looks like','Component','Why']} rows={[
+      ['Action cluster',<span className="mono">[Refresh][Export][⌄]</span>,<strong style={{color:'var(--text-primary)'}}>ButtonGroup</strong>,'Each button fires and is done. Joined because the actions are related.'],
+      ['View switcher',<span className="mono">[Grid|List|Map]</span>,'Tabs','One option stays chosen. That is selection state, and it needs radio semantics and arrow keys.'],
+      ['Action row',<span className="mono">Cancel  [Save]</span>,'Stack direction="row" gap="8"','Buttons of different weight, spaced, ordered. Joining them would imply they are related — they are opposites.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> for 2–4 related commands on a Card header, a chart toolbar, or a table header.</li>
+      <li><strong>Use</strong> for a split button: one action plus a disclosure for its variations.</li>
+      <li><strong>Do not use</strong> for anything that stays highlighted after clicking. If the answer to "what does it look like afterwards?" is "chosen", it is <code>Tabs</code>.</li>
+      <li><strong>Do not use</strong> in a dialog footer. Cancel and Save must not touch.</li>
+      <li><strong>Do not use</strong> to hold more than four buttons — see §11.</li>
+    </ul>
+    <div className="demo col">
+      <Row label="this"><ButtonGroup label="Chart actions">
+        <Button iconLeft="refresh-cw">Refresh</Button>
+        <Button iconLeft="download">Export</Button>
+        <IconButton icon="ellipsis" label="More chart actions" />
+      </ButtonGroup></Row>
+      <Row label="not this"><Tabs value={view} onChange={setView} items={[{value:'grid',label:'Grid'},{value:'list',label:'List'},{value:'map',label:'Map'}]} /><span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>a view switcher is Tabs</span></Row>
+      <Row label="nor this"><Stack direction="row" gap="2"><Button variant="secondary">Cancel</Button><Button variant="primary">Save changes</Button></Stack><span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>an action row is spaced</span></Row>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="The seam is the whole design.">
+    <div className="demo" style={{gap:28}}>
+      <ButtonGroup label="Anatomy example" size="lg">
+        <Button iconLeft="play">Start run</Button>
+        <IconButton icon="chevron-down" label="Start options" />
+      </ButtonGroup>
+    </div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Container</strong> — an <code>inline-flex</code> <code>div</code> with <code>role="group"</code> and a required <code>aria-label</code>. It has no border, background or padding of its own; it is only a stacking context.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Outer corners</strong> — <code>--button-group-radius</code> on the leading edge of the first child and the trailing edge of the last. Every inner corner is square, which is what makes the cluster read as one control.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>The seam</strong> — each child keeps its own 1 px border and is pulled left by exactly 1 px, so neighbours share a single edge rather than stacking two. In a bordered group every child’s border is forced to <code>--button-group-border</code>, so the outline is one colour across all children and all states (§13).</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Ghost divider</strong> — ghost buttons have no visible border, so a ghost group draws <code>--button-group-divider</code> on the leading edge of every child but the first. Without it the cluster has no internal structure at all.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Raised child</strong> — the hovered or focused button is lifted one z-index step so its border, and its 3 px focus ring, draw <em>over</em> the neighbour instead of being clipped by it. §13.</span></div>
+    </div>
+    <T cols={['Region','Value','Token']} rows={[
+      ['Outer radius','4 px','--button-group-radius'],
+      ['Inner corners','0','—'],
+      ['Seam overlap','−1 px per child after the first','--border-width'],
+      ['Border (bordered groups)','1 px, border-default, on every child','--button-group-border'],
+      ['Ghost divider','1 px, border-default','--button-group-divider'],
+      ['Height','inherited from the children — the group has none','--control-h-sm|md|lg'],
+      ['Gap','none. A gap makes it an action row, not a group','—'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Four props. The group configures its children; it does not restyle them.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['label',<span className="t">string</span>,<span style={{color:'var(--text-critical)'}}>required</span>,'Accessible name for the group ("Chart actions"). Warns if omitted — role="group" with no name is announced as an unlabelled group.'],
+      ['variant',<span className="t">'primary' | 'secondary' | 'ghost' | 'danger'</span>,<span className="t">'secondary'</span>,'Pushed to every child that does not set its own. Translated for icon children (§13).'],
+      ['size',<span className="t">'sm' | 'md' | 'lg'</span>,<span className="t">'md'</span>,'Pushed to every child that does not set its own.'],
+      ['children',<span className="t">ReactNode</span>,<span style={{color:'var(--text-critical)'}}>required</span>,'Button and IconButton only, 2–4 of them. Anything else warns; a link child is rejected and renders as secondary (§13).'],
+      ['style',<span className="t">CSSProperties</span>,'—','Layout only, and applied to the container — never to the buttons.'],
+      ['…rest',<span className="t">HTMLAttributes</span>,'—','data-*, aria-describedby. Handlers belong on the children, not the group.'],
+    ]}/>
+    <p><strong>Set <code>variant</code> and <code>size</code> on the group, not the buttons.</strong> A group whose children disagree about size has children of different heights and a broken seam; setting it once makes that impossible.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="The group has no variants of its own — it propagates the buttons’.">
+    <T cols={['variant','Reads as','Use']} rows={[
+      ['secondary','A bordered cluster on a card or page surface.','Default, and correct almost always.'],
+      ['ghost','Borderless until hover, with hairline dividers between.','Dense toolbars — a Card header, a chart strip — where a bordered cluster would add a box inside a box.'],
+      ['primary','One filled action plus its disclosure.','A split button only: Save + ⌄. Never three filled buttons.'],
+      ['danger','A destructive action plus its disclosure.','Rare. Delete + ⌄ where the dropdown holds "Delete and purge".'],
+    ]}/>
+    <div className="demo col">
+      <Row label="secondary"><ButtonGroup label="Secondary example"><Button iconLeft="refresh-cw">Refresh</Button><Button iconLeft="download">Export</Button><IconButton icon="ellipsis" label="More" /></ButtonGroup></Row>
+      <Row label="ghost"><ButtonGroup label="Ghost example" variant="ghost"><Button iconLeft="zoom-in">Zoom</Button><Button iconLeft="move">Pan</Button><IconButton icon="maximize" label="Fullscreen" /></ButtonGroup></Row>
+      <Row label="primary"><ButtonGroup label="Save options" variant="primary"><Button>Save</Button><IconButton icon="chevron-down" label="Save options" /></ButtonGroup></Row>
+      <Row label="danger"><ButtonGroup label="Delete options" variant="danger"><Button iconLeft="trash-2">Delete</Button><IconButton icon="chevron-down" label="Delete options" /></ButtonGroup></Row>
+    </div>
+    <p><strong>One filled button per group, at most.</strong> Two solid fills side by side read as two competing primaries — the same rule as Button §04. The component warns when it sees more than one.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Three, inherited from Button. The group has no height of its own.">
+    <T cols={['size','Height','Where']} numCols={[1]} rows={[
+      ['sm','28 px','Card headers, table headers, chart strips — the common case in a console.'],
+      ['md','34 px','Default. Page headers, form toolbars.'],
+      ['lg','40 px','Touch surfaces and one-action pages. Rare for a group.'],
+    ]}/>
+    <div className="demo col">
+      {['sm','md','lg'].map(s => (
+        <Row key={s} label={s}><ButtonGroup label={'Size ' + s} size={s}><Button iconLeft="refresh-cw">Refresh</Button><Button iconLeft="download">Export</Button><IconButton icon="ellipsis" label="More" /></ButtonGroup></Row>
+      ))}
+    </div>
+    <ul>
+      <li><strong>Never mix sizes inside a group.</strong> Set it once on the group; a child that overrides it breaks the seam and the shared baseline.</li>
+      <li>An IconButton child is square at the same height, so it always aligns with its lettered neighbours.</li>
+      <li><code>[data-density]</code> rewrites the control heights underneath. The seam and the corners are unaffected.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="06" title="States" note="The group has none. Every state belongs to a child.">
+    <p>ButtonGroup renders no state of its own — no hover, no focus, no disabled. Each child owns its six Button states, and the group’s only contribution is deciding <em>which child draws on top</em> while it is hovered or focused.</p>
+    <T cols={['State','Where it lives','What the group does']} rows={[
+      ['Hover','The child button.','Raises that child one z-index step so its darker border is not clipped by its neighbour.'],
+      ['Focus visible','The child button.','Same — without it the 3 px ring would be half-covered by the next button’s fill.'],
+      ['Active / press','The child button.','Nothing.'],
+      ['Disabled','Per child, individually.','Nothing. A group is never disabled as a whole — disable the buttons that cannot run.'],
+      ['Loading','Per child.','Nothing. One button in flight does not block its neighbours.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="mixed"><ButtonGroup label="Mixed state example"><Button iconLeft="refresh-cw">Refresh</Button><Button iconLeft="download" disabled>Export</Button><IconButton icon="ellipsis" label="More" /></ButtonGroup></Row>
+      <Row label="loading"><ButtonGroup label="Loading example"><Button loading>Exporting…</Button><IconButton icon="x" label="Cancel export" /></ButtonGroup></Row>
+      <Row label="live"><span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>Tab through a group above: the focus ring should sit fully on top of both neighbours.</span></Row>
+    </div>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Plain Tab. This is what separates it from Tabs.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab / Shift-Tab','One stop per button, in DOM order. A three-button group is three tab stops.'],
+      ['Enter / Space','Activates the focused button, exactly as a lone Button would.'],
+      ['Arrow keys','Nothing — deliberately. Arrow navigation implies a single selected value, which this component does not have. If you want arrows, you want Tabs.'],
+      ['Escape','Not handled. A split button’s dropdown owns its own dismissal.'],
+    ]}/>
+    <ul>
+      <li><strong>Three buttons means three tab stops</strong>, which is correct for three independent actions and is exactly why a group is capped at four.</li>
+      <li>Never add <code>tabIndex="-1"</code> to children to make the group one stop. That is the roving-tabindex pattern for a single-value control, and it makes independent actions unreachable.</li>
+      <li>A disabled child is skipped, as any disabled button is.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="One requirement above all: the group must be named.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Role & name','role="group" plus a required label → aria-label. An unnamed group is announced as "group" with no indication of what it contains, so label warns when missing.'],
+      ['Not a radiogroup','No aria-pressed, no aria-checked, no roving tabindex — because nothing is selected. Announcing selection semantics for buttons that do not hold state is worse than plain buttons.'],
+      ['Per-button names','Each child keeps its own accessible name. An IconButton child still requires its label — "More chart actions", not "More".'],
+      ['Focus visibility','The raised z-index exists for accessibility, not polish: a focus ring clipped by a neighbouring fill fails 2.4.11 Focus Not Obscured.'],
+      ['Contrast','Inherited from the children — see Button §08. The group’s own border and divider are --border-default at 1.29:1. That is decorative structure, not a control boundary: inside a group each button is identified by its own label and the group name, never by its edge, so 1.4.11 does not bite. This is also why an icon child does NOT keep the 4.74:1 --border-control it uses when standalone — see §13.'],
+      ['Target size','Inherited. sm is 28 px; the group adds no spacing, so a run of sm buttons has no gaps between targets — acceptable under 2.5.8 at 28 px, but use md on touch.'],
+      ['Reduced motion','Nothing animates beyond the children’s own 140 ms tint.'],
+    ]}/>
+    <pre>{`// named group, named icon child
+<ButtonGroup label="Chart actions">
+  <Button iconLeft="refresh-cw">Refresh</Button>
+  <IconButton icon="ellipsis" label="More chart actions" />
+</ButtonGroup>
+
+// split button — the disclosure names what it opens
+<ButtonGroup label="Save options" variant="primary">
+  <Button type="submit">Save</Button>
+  <IconButton icon="chevron-down" label="Save options"
+              aria-expanded={open} aria-controls="save-menu" />
+</ButtonGroup>`}</pre>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="Nothing new. The group adds no motion of its own.">
+    <T cols={['Change','Duration','Property']} rows={[
+      ['Hover / press tint','140 ms, on the child','background-color, border-color, color'],
+      ['Focus ring','140 ms, on the child','box-shadow'],
+      ['z-index raise','0 ms — instant, deliberately','z-index'],
+      ['Group enter / leave','inherits its container','on the container, never the group'],
+    ]}/>
+    <ul>
+      <li><strong>The z-index raise is not animated.</strong> A transitioned stacking change would show the focus ring sliding out from under its neighbour.</li>
+      <li>Never animate the seam, the corners, or a child’s width. A label change that resizes one button re-flows the whole cluster.</li>
+      <li>No stagger on the children appearing. They are one control, not a list.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="Labels do double duty: each reads alone, and all read together.">
+    <T cols={['Context','Write','Not']} rows={[
+      ['Related commands','Refresh · Export · ⌄','Refresh data · Export to CSV · More options'],
+      ['Split button','Save + ⌄ labelled "Save options"','Save + ⌄ labelled "More"'],
+      ['Group name','"Chart actions"','"Buttons" / "Group" / "Actions"'],
+      ['Parallel verbs','Zoom · Pan','Zoom in · Panning mode'],
+    ]}/>
+    <ul>
+      <li><strong>Keep the labels parallel and short.</strong> Buttons sitting flush make uneven widths obvious — one long label in a group of short ones looks like a mistake.</li>
+      <li><strong>Same grammatical form for every child.</strong> All verbs, or all nouns; never a mix.</li>
+      <li><strong>The group name says what they act on</strong>, not what they are: "Chart actions", "Row actions".</li>
+      <li><strong>A disclosure child names its menu</strong> — "Save options", not "More". It is the only child whose label is not a command.</li>
+      <li>No punctuation, no Title Case, no counts in a label. Same as Button §10.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="A group does not wrap. It collapses.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','Labels drop away: the group becomes IconButton children, or collapses to a single overflow IconButton. It must never wrap to two lines — a wrapped group is two broken controls, because the corners are wrong on both.'],
+      ['tablet ≥ 600','The primary surface. Full labels, sm or md.'],
+      ['desktop ≥ 1024','Unchanged.'],
+      ['ultrawide ≥ 1600','Unchanged. A group never stretches — extra width is margin.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="desktop"><ButtonGroup label="Responsive example" size="sm"><Button iconLeft="zoom-in">Zoom</Button><Button iconLeft="move">Pan</Button><Button iconLeft="crosshair">Reset</Button></ButtonGroup></Row>
+      <Row label="mobile"><ButtonGroup label="Responsive example, compact" size="sm"><IconButton icon="zoom-in" label="Zoom" /><IconButton icon="move" label="Pan" /><IconButton icon="crosshair" label="Reset view" /></ButtonGroup></Row>
+    </div>
+    <ul>
+      <li><strong>Two to four children.</strong> Below two it is a Button; above four the tab stops and the width both become a problem — keep the first one or two and move the rest into an overflow menu.</li>
+      <li>There is no <code>fullWidth</code>, and no vertical orientation. A stacked group is a menu.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Name the group, and every icon child.</li>
+        <li>Set <code>variant</code> and <code>size</code> once, on the group.</li>
+        <li>Keep 2–4 children with parallel labels.</li>
+        <li>One filled button at most.</li>
+        <li>Reach for <code>Tabs</code> the moment something stays chosen.</li>
+        <li>Use <code>ghost</code> inside a Card header.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>Build a view switcher or a segmented control out of it.</li>
+        <li>Put Cancel and Save in one — opposites must not touch.</li>
+        <li>Give children different sizes, or set a gap.</li>
+        <li>Use two filled buttons, or <code>danger</code> beside <code>primary</code>.</li>
+        <li>Add <code>tabIndex="-1"</code> or arrow-key handling.</li>
+        <li>Let it wrap to two lines.</li>
+        <li>Disable the whole group instead of the buttons that cannot run.</li>
+        <li>Put a Tag, Badge, Input or plain text inside it.</li>
+      </ul></div>
+    </div>
+    <p className="wrong"><strong>The failure this component invites.</strong> A joined row of buttons <em>looks</em> like a segmented control, so it gets used as one — a click handler flips some state and the "active" button is tinted by hand. The result announces itself as three plain buttons with no selection, so a screen-reader user cannot tell which view they are in. If one child should look chosen after clicking, this is the wrong component.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="How the seam and the stacking work.">
+    <ul>
+      <li><strong>Children are cloned, not wrapped in styles.</strong> <code>React.cloneElement</code> injects the corner radii and the −1 px pull, and those structural styles are merged <em>after</em> the child’s own <code>style</code>, so a caller cannot accidentally break the seam.</li>
+      <li><strong>Each child sits in a <code>position: relative</code> span</strong> that tracks hover and focus (<code>onFocusCapture</code> / <code>onBlurCapture</code>) and raises <code>z-index</code> to 1. Focus rings are box-shadows, and a neighbour’s opaque fill would otherwise paint over them.</li>
+      <li><strong>The container is <code>isolation: isolate</code></strong>, so the raise cannot escape the group and interfere with a Dialog or a sticky header.</li>
+      <li><strong>Variants are translated for icon children.</strong> Button and IconButton do not share a vocabulary — Button has <code>secondary</code>, IconButton has <code>outline</code>. The group maps <code>primary → solid</code>, <code>secondary → outline</code>, <code>ghost → ghost</code>, <code>danger → solid</code>. Without this a <code>secondary</code> group would render a borderless icon child beside bordered lettered ones.</li>
+      <li><strong>One seam colour, forced.</strong> The translation alone is not enough: <code>Button secondary</code> borders at <code>--border-default</code> (1.29:1) while <code>IconButton outline</code> borders at <code>--border-control</code> (4.74:1), so a split button drew its icon cap 3.7× darker than its lettered half — a conspicuously dark edge on one end of a control that is meant to read as one unit. Bordered groups therefore override every child’s <code>borderColor</code> to <code>--button-group-border</code>. Two consequences, both deliberate: an icon child inside a group gives up the higher-contrast border it uses standalone (justified in §08 — inside a group it is not the only thing identifying the control), and <code>Button secondary</code> gives up its hover border-strengthening, so the cluster’s outline holds steady while one child is hovered. The hover tint still reads; a single continuous control should not have one segment of its outline flicker.</li>
+      <li><strong>A child’s own <code>variant</code> or <code>size</code> wins</strong> over the group’s, so a deliberate exception is possible — but §05 says do not take it.</li>
+      <li><strong>Four console warnings:</strong> a missing <code>label</code>; a child that is not a Button or IconButton; a child resolving to <code>variant="link"</code>; and more than one filled <em>lettered</em> child. The fill count deliberately excludes icon children — a split button is one filled action plus its own disclosure cap, not two competing actions, so <code>[Save][⌄]</code> is silent while <code>[Save][Publish]</code> warns.</li>
+      <li><strong>Children are resolved before any warning fires</strong>, so every check sees what will actually render — a <code>link</code> child is coerced first, then counted as the <code>secondary</code> it becomes.</li>
+      <li><strong><code>link</code> is coerced, not dropped.</strong> A link has no height, padding or border, so a single link child collapses the cluster’s geometry. It renders as <code>secondary</code> and warns; the action still appears rather than vanishing from the UI.</li>
+      <li><strong>Tokens consumed</strong> — two of its own; everything else comes from the children:</li>
+    </ul>
+    <div className="tokenlist">
+      <span>--button-group-radius</span><span>--button-group-border</span><span>--button-group-divider</span><span>--border-width</span>
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { ButtonGroup, Button, IconButton } from '@meridian/ds';
+
+// toolbar cluster on a card header
+<Card title="Output" actions={
+  <ButtonGroup label="Chart actions" variant="ghost" size="sm">
+    <Button iconLeft="refresh-cw">Refresh</Button>
+    <Button iconLeft="download">Export</Button>
+    <IconButton icon="ellipsis" label="More chart actions" />
+  </ButtonGroup>
+}>…</Card>
+
+// split button — the group owns layout, you own the menu
+<ButtonGroup label="Save options" variant="primary">
+  <Button type="submit" loading={saving}>Save</Button>
+  <IconButton icon="chevron-down" label="Save options"
+              aria-expanded={open} aria-controls="save-menu"
+              onClick={() => setOpen(!open)} />
+</ButtonGroup>`}</pre>
+    <ul>
+      <li><strong>Children must be Button or IconButton.</strong> Anything else is cloned with <code>variant</code> and <code>size</code> props it does not understand, and the corner injection will not land. The component does not police this yet — see open items.</li>
+      <li><strong>Handlers go on the children.</strong> The group is not a delegate; an <code>onClick</code> on it fires for every click inside and cannot tell you which button.</li>
+      <li><strong>Testing.</strong> <code>getByRole('group', {'{ name: /chart actions/i }'})</code>, then query buttons by name within it. Assert three tab stops, and assert no <code>aria-pressed</code> anywhere — that absence is the contract.</li>
+      <li><strong>Split-button menus.</strong> Not owned here. Pair the disclosure child with a Popover or Menu and manage <code>aria-expanded</code> yourself.</li>
+      <li><strong>Composition.</strong> A group inside <code>Card actions</code> or a toolbar sits in a <code>Stack</code> beside other controls. Never nest a group in a group.</li>
+      <li><strong>Server rendering.</strong> The hover/focus raise is client state; SSR output is the rest stack, so there is no hydration flash.</li>
+      <li><strong>Frozen 4 Sep 2026.</strong> The API is closed: <code>label</code>, <code>variant</code>, <code>size</code>, <code>children</code>, <code>style</code>. All three items open at the first draft are resolved — child types are validated, <code>link</code> children are rejected, and <strong>there is no vertical orientation, by decision</strong>: a stacked list of actions is a menu, and drawing one as a joined column would invite the same misuse §12 warns about. If a vertical case ever appears it is a new component, not a prop here.</li>
+      <li><strong>Worth knowing.</strong> The mismatched-seam defect (§13) came from the IconButton border fix two components earlier: raising <code>--icon-button-border</code> to meet 1.4.11 was right for a standalone icon button and silently wrong for one sitting in a group. Any future change to a shared border token should be checked against every composition the component appears in, not just its own card.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

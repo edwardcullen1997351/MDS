@@ -1,0 +1,267 @@
+<!-- @dsCard group="Specs · Composite" viewport="1080x760" name="ScopePicker" subtitle="Composite specification — the covering set, provisional completeness, and a filter that never changes the answer" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>ScopePicker — composite specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.demo.plain{background:transparent;border:none;box-shadow:none;padding:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.omitted{display:flex;flex-direction:column;gap:6px;font-size:var(--text-xs);color:var(--text-tertiary)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.grid2{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { ScopePicker, Card, Field, Button, Text, DescriptionList } = window.MeridianDesignSystem_962c43;
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+
+const CC = [{ id:'CC-PL04', label:'Chakan plant (PL-04)', icon:'factory', children:[
+  { id:'CC-PRESS', label:'Press shop', icon:'layers', children:[
+    { id:'CC-PRESS-A', label:'CC-41120 · Press line A', icon:'circle', meta:'₹4,10,000' },
+    { id:'CC-PRESS-B', label:'CC-41121 · Press line B', icon:'circle', meta:'₹3,80,000' },
+    { id:'CC-PRESS-T', label:'CC-41125 · Tool room', icon:'circle', meta:'₹1,20,000' },
+  ]},
+  { id:'CC-WELD', label:'Weld shop', icon:'layers', hasChildren:true },
+  { id:'CC-ASSY', label:'Assembly', icon:'layers', children:[
+    { id:'CC-ASSY-1', label:'CC-41210 · Assembly 1', icon:'circle', meta:'₹5,60,000' },
+    { id:'CC-ASSY-2', label:'CC-41211 · Assembly 2', icon:'circle', meta:'₹2,90,000' },
+  ]},
+  { id:'CC-QA', label:'CC-41400 · Quality', icon:'circle', meta:'₹1,75,000' },
+]}];
+
+const SAMPLE = "import { ScopePicker } from '@meridian/ds';\n\nconst [scope, setScope] = React.useState([]);        // the COVERING set\nconst [fetching, setFetching] = React.useState([]);\n\n<Field label=\"Charge scope\" hint=\"A parent charges every centre beneath it.\">\n  <ScopePicker\n    label=\"Charge scope\"\n    unit=\"cost centre\"\n    items={costCentres}\n    value={scope}\n    onChange={setScope}          // already normalised, both directions\n    loadingIds={fetching}        // a selected branch here ⇒ provisional\n    required\n    requiredMessage=\"A rework charge must name at least one cost centre.\"\n  />\n</Field>\n\n// The submit rule reads ONE array and never re-derives a parent's meaning.\nconst approver = scope.length > 1 ? 'plant-head' : 'quality-manager';\nsubmit({ nc: 'NC-2207', chargeScope: scope, approver });";
+
+function Spec(){
+  const [scope, setScope] = React.useState(['CC-PRESS-A','CC-PRESS-B','CC-PRESS-T']);
+  const [loading, setLoading] = React.useState(['CC-WELD']);
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Composite · Component specification</span>
+    <h1>ScopePicker</h1>
+    <p className="lede">Several hierarchy nodes as <strong>one scope value</strong> — the cost centres a rework charge posts against, the BOM lines a revision covers, the assets a PM plan includes. <code>Tree</code> reports which nodes are selected and <code>SearchField</code> reports a query; what neither can hold is what the selection <em>means</em>, whether it is complete, and that the filter has not quietly changed the answer.</p>
+    <div className="meta">
+      <span>components/composite/ScopePicker.jsx</span><span>window.MeridianDesignSystem_962c43.ScopePicker</span><span style={{color:'var(--text-primary)'}}>status: built 1.30.0 · 0 open items</span><span>composed of: Tree, SearchField, Text</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="The two promotion tests, answered in the product's terms.">
+    <p>Use a ScopePicker when a <em>form field's value</em> is a set of nodes drawn from a hierarchy, and a parent standing for its descendants is part of what the field means. The recurring surface is the nonconformance charge: quality manager Meera Nair raises NC-2207 against BRK-4820-A and must name the cost centres the rework charge posts to, out of the Chakan plant's centre hierarchy.</p>
+    <p><strong>Ownership test.</strong> Three contracts, none of which belongs to a part:</p>
+    <ul>
+      <li><strong>The value is a scope, not a selection.</strong> With cascade, <code>['CC-PL04','CC-PRESS','CC-PRESS-A']</code> and <code>['CC-PL04']</code> can denote the same set of centres. The composite normalises to the <em>covering set</em> — the shallowest nodes that imply the rest — in both directions: a redundant descendant is dropped, and a fully selected parent is rolled up. Tree cannot do this; it reports rows.</li>
+      <li><strong>Completeness.</strong> A scope drawn from a partly fetched hierarchy is <em>provisional</em>. "Weld shop" may stand for one centre or forty; <code>Tree</code> sees nodes, the form sees ids, and only the assembly can see that a selected branch has unloaded children.</li>
+      <li><strong>The query and the tree agree.</strong> Matches are shown with their ancestors, each hit's path is opened, the operator's own expansion is restored when the query clears, and the scope is never touched. A filter that narrows the value is the defect every hand-built version ships.</li>
+    </ul>
+    <p className="warn"><strong>Consequence test.</strong> Hand-built, the failure is not cosmetic: a ₹2,40,000 rework charge posts against "Press shop" read as a single centre because its four children were never fetched, and it surfaces at month close in the wrong cost pool. That is a failure worth preventing, which is what separates this from a pattern with a reference implementation.</p>
+    <div className="demo plain grid2">
+      <Card title="NC-2207 · rework charge" headingLevel={2} padding="sm">
+        <Field label="Charge scope" hint="A parent charges every centre beneath it.">
+          <ScopePicker label="Charge scope" unit="cost centre" items={CC} value={scope} onChange={setScope}
+            required requiredMessage="A rework charge must name at least one cost centre."
+            defaultExpandedIds={['CC-PL04','CC-PRESS']} loadingIds={loading} />
+        </Field>
+        <Text size="xs" tone="tertiary" style={{marginTop:12,display:'block'}}>Stored value: <code>[{scope.map(s=>'"'+s+'"').join(', ')}]</code> — three press centres arrived as one rolled-up id.</Text>
+      </Card>
+      <Card title="What the form submits" headingLevel={2} padding="sm">
+        <DescriptionList items={[
+          {term:'Nonconformance',value:'NC-2207',mono:true},
+          {term:'Part',value:'BRK-4820-A',mono:true},
+          {term:'Raised',value:'2026-09-05 (IST) · Meera Nair'},
+          {term:'Charge scope',value: scope.length ? scope.join(', ') : '—', mono:true},
+          {term:'Approver',value: scope.length > 1 ? 'Plant head' : 'Quality manager'},
+        ]} />
+      </Card>
+    </div>
+    <T cols={['You want to…','Reach for','Why']} rows={[
+      ['Turn a hierarchy into one field value','ScopePicker','This component.'],
+      ['Browse or drill a hierarchy','Tree','No value, no completeness, no form contract.'],
+      ['Pick exactly one node','Tree selection="single", or Combobox','A single node needs no covering set.'],
+      ['Pick from a flat set','MultiCombobox / CheckboxGroup','No parents, so nothing to roll up.'],
+      ['Drive a detail pane from a hierarchy','Tree + SelectionDrivenDetail','Selection is a subject there, not a value.'],
+      ['Filter a collection by facets','CollectionRefinement pattern','A filter is not a submitted value.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Four parts in one frame; the summary is derived, not entered.">
+    <div className="demo">
+      <ScopePicker label="Anatomy example" unit="cost centre" items={CC} value={['CC-ASSY']} onChange={()=>{}} defaultExpandedIds={['CC-PL04','CC-ASSY']} hint="One frame: filter, tree pane, summary band, message." />
+      <div style={{display:'flex',flexDirection:'column',gap:6,fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+        <span><strong style={{color:'var(--text-primary)'}}>Frame</strong> — one hairline box at <code>--scope-picker-radius</code>. Optional, and the reason the parts read as one control rather than three stacked ones. Goes <code>--scope-picker-border-invalid</code> when the scope is unacceptable.</span>
+        <span><strong style={{color:'var(--text-primary)'}}>Filter</strong> — a <code>SearchField</code>, separated by a hairline. Optional (<code>searchable={'{'}false{'}'}</code>). Named from the composite's <code>label</code>.</span>
+        <span><strong style={{color:'var(--text-primary)'}}>Tree pane</strong> — a <code>Tree</code> in <code>selection="multiple"</code>, height-capped at <code>--scope-picker-tree-max-height</code> and scrolling. Required.</span>
+        <span><strong style={{color:'var(--text-primary)'}}>Summary band</strong> — required and never optional: the resolved count, the number of selections it came from, "(rolled up)" when they differ, and the provisional warning. On <code>--surface-sunken</code>, because a derived readout must not look like another input.</span>
+        <span><strong style={{color:'var(--text-primary)'}}>Message</strong> — below the frame: <code>requiredMessage</code> when invalid, otherwise <code>hint</code>. Never both.</span>
+      </div>
+    </div>
+    <p>Nothing else is allowed inside the frame. In particular there is no action row: applying a scope is the surrounding form's Submit (the ExplicitSave pattern), and a picker that owns its own Apply button creates two commit points for one value.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Included: the composite needs an API beyond its children's — the value shape is its own.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['items','TreeNode[]','—','Tree\'s own node shape, unchanged. Not re-specified here.'],
+      ['label','string','required','Names the scope, the tree and the filter. Warns when absent: three unnamed controls in one frame.'],
+      ['value','string[]','[]','The COVERING set. What the product stores and submits.'],
+      ['onChange','(scope) => void','—','Emits the next covering set, already normalised both directions.'],
+      ['cascade','boolean','true','A parent stands for its descendants. On here, unlike Tree — that reading is what makes this a scope.'],
+      ['unit','string','"node"','What one leaf is, for the summary: "3 cost centres in scope". Pluralised with -s.'],
+      ['size','sm | md | lg','md','One coordinated size (§05).'],
+      ['searchable / searchPlaceholder','boolean / string','true / "Filter…"','The filter above the tree.'],
+      ['required','boolean','false','An empty scope is unacceptable: frame goes critical, requiredMessage shows.'],
+      ['invalid','boolean','—','Force invalid from the product\'s own rule (a scope crossing plants, a centre the user may not charge).'],
+      ['requiredMessage','ReactNode','"Select at least one node."','The failure in the product\'s words.'],
+      ['expandedIds / defaultExpandedIds / onExpandedChange','string[] / string[] / (ids) => void','—','Passed to Tree. onExpandedChange is NOT called while a filter is active (§06).'],
+      ['loadingIds','string[]','[]','Passed to Tree; a selected branch in this list makes the scope provisional.'],
+      ['hint','ReactNode','—','One line under the frame, replaced by requiredMessage when invalid.'],
+    ]}/>
+    <p>Not exposed, deliberately: a <code>maxHeight</code> (a form field with a caller-chosen height is a layout accident — retarget <code>--scope-picker-tree-max-height</code>), an <code>onSearch</code> hook (the filter is the composite's own view state; a product that must query the server owns the tree above this component), and <code>selection</code> (a single-node scope is <code>Tree selection="single"</code>, not this).</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Included: one row of controls sharing a rhythm — the section most often omitted by mistake.">
+    <T cols={['Size','Filter field','Tree rows','Use']} rows={[
+      ['sm','28px','28px','Inside a Drawer, or a form with many fields.'],
+      ['md','34px','34px','The default. A form field on a page.'],
+      ['lg','40px','34px','A prominent single-question step. The tree has no lg row (Tree §05), so it stays at md — one coordinated size does not mean one number.'],
+    ]}/>
+    <p>The summary band and the message follow at <code>--text-xs</code> in every size: they are a readout, and scaling them with the controls makes the derived line compete with the values it describes.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Included: three states are aggregates over the whole hierarchy, which no part can compute.">
+    <ul>
+      <li><strong>Empty</strong> — "Nothing in scope" in <code>--scope-picker-empty-text</code>. Stated, not blank: a blank band reads as a rendering failure, and this band is where the answer lives.</li>
+      <li><strong>Rolled up</strong> — the value covers more leaves than it has entries, so the band says "12 cost centres in scope · from 2 selections (rolled up)". Without it the operator sees two ticks and submits twelve centres.</li>
+      <li><strong>Provisional</strong> — a selected branch has unloaded children. The band says so in <code>--scope-picker-invalid-text</code>, and it is the state this component exists for. It is a <em>warning, not an error</em>: the scope may well be right, and blocking submission on it would stall a charge behind a fetch the operator cannot trigger.</li>
+      <li><strong>Invalid</strong> — <code>required</code> with an empty value, or <code>invalid</code> from the product. The frame border goes critical and the message replaces the hint. The tree inside stays fully operable; an invalid scope is corrected by choosing, so disabling the means of correction is never right.</li>
+      <li><strong>Filtering</strong> — a distinct state, and the one with the sharpest rule: while a query is active the composite owns expansion, so <code>onExpandedChange</code> is not called and the operator's browse position is preserved for when the query clears. No hits shows a line inside the pane ("No cost centre matches …. The scope is unchanged."), never a page-level <code>EmptyState</code> — the frame is a field, and a field does not get an empty page.</li>
+      <li><strong>Disabled</strong> is not offered. A scope the user may not change is a readout: render the resolved list as text, or a <code>DescriptionList</code> row. A greyed hierarchy invites a fight with a control that will not answer.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Included: the handoff between two children's contracts is new; neither owns it.">
+    <T cols={['Key','Does']} rows={[
+      ['Tab','Filter → tree (one stop, Tree §07) → out of the frame. Two stops for the whole control.'],
+      ['↓ from the filter','Moves focus into the tree at its current row, so a filtered hit can be ticked without reaching for the mouse.'],
+      ['Escape in the filter','Clears the query and restores the operator\'s expansion. Does not clear the scope — nothing in this component clears a value by accident.'],
+      ['Space / Enter in the tree','Tree\'s own contract, unchanged: toggles this node, with descendants under cascade.'],
+      ['Everything else','Tree\'s: ↑↓ walk, → expand/descend, ← collapse/climb, Home/End, *, typeahead.'],
+    ]}/>
+    <p>The two additions are the <code>↓</code> handoff and <code>Escape</code>; both exist because a filter and a tree in one frame read as one control, and a keyboard user who has to Tab back and forth between them is being told otherwise. Nothing else is re-specified — restating Tree's arrows here is exactly the duplication the composite standard's §07 omit test warns about.</p>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="Included: one name over three parts, and one announcement the parts cannot make.">
+    <ul>
+      <li><strong>One name, three uses.</strong> <code>label</code> names the tree (<code>aria-label</code>) and the filter ("Filter charge scope"). The frame itself is not a landmark and not a group: a <code>group</code> around one named tree and one named field announces the same words three times.</li>
+      <li><strong>The summary band is <code>aria-live="polite"</code></strong> — this is the composite's central accessibility contract. Ticking one parent can change the scope from 1 to 12 centres, and neither the treeitem's "selected" nor the field's value change says so. Polite, not assertive: it updates on every tick and every keystroke, and an assertive region there interrupts continuously.</li>
+      <li><strong>Provisional is announced, not only coloured</strong> — it rides in the same live region as words, because the colour carries no meaning to a screen reader and the state is the difference between one centre and forty.</li>
+      <li><strong>The invalid message</strong> is text below the frame in the live document order, so a <code>Field</code> wrapper associates it; the composite does not invent a second error channel.</li>
+      <li>Contrast: the summary band is <code>--text-secondary</code> on <code>--surface-sunken</code> and the provisional line is <code>--text-critical</code>, both above 4.5:1. The count is mono with tabular figures so it does not reflow as it changes.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="Included: the summary sentence is the composite's own copy, not a child's.">
+    <div className="two">
+      <div className="pane"><h3>Do</h3><ul>
+        <li><code>unit="cost centre"</code> → "12 cost centres in scope". Name the leaf, always singular in the prop.</li>
+        <li>"from 2 selections (rolled up)" — say where the number came from when the two differ.</li>
+        <li><code>requiredMessage="A rework charge must name at least one cost centre."</code> — the rule, in the plant's words, with a full stop.</li>
+        <li><code>hint="A parent charges every centre beneath it."</code> — state the cascade reading once, where it applies.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li>"12 items selected" — <em>items</em> names nothing, and <em>selected</em> describes rows rather than scope.</li>
+        <li>"Invalid selection" as the required message. Say what is required.</li>
+        <li>An exclamation, or "Oops". House voice: no exclamation marks anywhere.</li>
+        <li>Repeating the label inside the frame as a heading — the field label already said it.</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Included: the frame caps its own height, which is a composite decision.">
+    <p>The frame fills its column and never sets a width; the tree pane inside caps at <code>--scope-picker-tree-max-height</code> (280px, roughly eight <code>md</code> rows) and scrolls. That cap is the composite's, not the Tree's: a scope picker lives inside a form, and a hierarchy that grows the page pushes the Submit button out of reach — the reason products hand-rolled this control before it existed. Below roughly 380px the summary band's three phrases wrap onto two lines by design (<code>flex-wrap</code>), which is preferred to truncating a derived count. On a touch pointer use <code>md</code>: <code>[data-density="expanded"]</code> lifts both the filter and the tree rows to 44px together, which is the coordinated sizing §05 exists for.</p>
+  </Sec>
+
+  <Sec n="12" title="Anti patterns" note="Included: four, and all four are composite-level errors, not child-level ones.">
+    <div className="two">
+      <div className="pane dont"><h3>Never</h3><ul>
+        <li><strong>Submitting raw tree selection.</strong> Two encodings of one scope, and the row the user ticked is not the thing the charge posts to.</li>
+        <li><strong>Letting the filter change the value.</strong> Narrowing the view is not narrowing the answer — and a query that hides a selected node while keeping it in scope is a lie in both directions.</li>
+        <li><strong>Blocking submit on provisional.</strong> It is a warning; the operator cannot force a fetch, so the block is a dead end.</li>
+        <li><strong>An Apply button inside the frame.</strong> Two commit points for one value. The form's Submit is the commit (ExplicitSave).</li>
+      </ul></div>
+      <div className="pane"><h3>Instead</h3><ul>
+        <li>Store <code>value</code> verbatim; it is already the covering set.</li>
+        <li>Keep the scope untouched through filtering and restore expansion on clear — both are the component's job, and both are tested.</li>
+        <li>Show provisional in the summary and let the approver see it in the submitted record.</li>
+        <li>Put the commit in the surrounding form, next to everything else the operator is deciding.</li>
+      </ul></div>
+    </div>
+    <div className="omitted">
+      <span><strong>§04 Variants — omitted.</strong> The include test is "multiple recurring forms with meaningfully different contracts". The differences here are <code>searchable</code> and <code>required</code>, both single booleans over one contract; naming them variants would be cosmetic.</span>
+      <span><strong>§09 Motion — omitted.</strong> No composite-owned transition: the row tint belongs to <code>Tree</code>, and expansion is deliberately not animated (Tree §09). The summary band updates in place, and a transition on a number that changes on every tick would only smear it.</span>
+    </div>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="Composed of Tree, SearchField and Text; it adds one translation layer and nothing else.">
+    <pre>{SAMPLE}</pre>
+    <p>The translation runs in both directions and never leaks: <code>value</code> (covering set) is expanded to every descendant id before it reaches <code>Tree</code>, so a rolled-up parent still draws its children ticked, and <code>Tree</code>'s raw selection is normalised back to a covering set before <code>onChange</code>. Filtering prunes <code>items</code> to matches plus their ancestors and derives the expansion set from the pruned tree; <code>onExpandedChange</code> is suppressed while a query is active so the operator's own expansion survives.</p>
+    <div className="tokenlist">
+      <span>--scope-picker-gap</span><span>--scope-picker-radius</span><span>--scope-picker-border</span><span>--scope-picker-border-invalid</span>
+      <span>--scope-picker-background</span><span>--scope-picker-tree-padding</span><span>--scope-picker-tree-max-height</span><span>--scope-picker-summary-background</span>
+      <span>--scope-picker-summary-border</span><span>--scope-picker-summary-padding</span><span>--scope-picker-summary-text</span><span>--scope-picker-summary-count-text</span>
+      <span>--scope-picker-empty-text</span><span>--scope-picker-invalid-text</span>
+    </div>
+    <p>Fourteen tokens, all frame-and-band geometry. Nothing here restyles a child: the tree reads <code>--tree-*</code> and the filter reads <code>--input-*</code> exactly as they do standing alone, which is what keeps a retheme of either from stopping at this frame's edge.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="No open items — both questions are closed as decided, with the reason each cannot return as a fresh one.">
+    <ul>
+      <li><strong>Built at 1.30.0; not frozen, and the reason is not an open item.</strong> Per the <a href="../../guidelines/promotion-policy.card.html">promotion policy</a> a freeze follows a consumer <em>outside</em> the design system. The contract here is complete and closed to renames; what is missing is a product that has used it, which no amount of specification supplies.</li>
+      <li><strong>Closed as decided — cross-branch validity belongs to the product, permanently.</strong> A scope spanning two plants is wrong for a charge and right for a spend report, so the rule is not a property of the control: the composite exposes <code>invalid</code> and <code>requiredMessage</code> and the product states its own rule through them. This is not deferred pending evidence — two surfaces writing the same cross-branch rule would be two products sharing a policy, which belongs in their shared validation layer, not in a picker.</li>
+      <li><strong>Closed as decided — the composite never fetches.</strong> The filter matches loaded labels, and a hit inside an unfetched branch is not findable here. That is the same boundary <code>FileDropzone</code> and <code>FileUpload</code> hold when they refuse to own transport: a component that quietly issued queries would own retry, cancel, debounce, an error surface and a race between the query and the scope. A hierarchy too large to hold is answered by the product narrowing <code>items</code> above this component — and the state that makes the resulting scope unreliable is already reported, as <em>provisional</em> (§06), which is the part only the assembly could see.</li>
+      <li><strong>Borderline call, logged per the standard.</strong> Whether <em>provisional</em> is a composite state or a Tree state was genuinely unclear. It is here because it is an aggregate over the value: Tree knows a row is loading, but only this component knows that a <em>selected</em> branch's unloaded children make the submitted answer unreliable. If Tree ever gains a value of its own, revisit.</li>
+      <li>Considered and declined: <code>maxHeight</code>, <code>onSearch</code>, <code>selection</code> (all §03), an in-frame Apply (§12), and a <code>disabled</code> state (§06).</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

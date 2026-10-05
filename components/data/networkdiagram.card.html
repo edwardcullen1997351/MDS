@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Network Diagram Component Showcase · Meridian Design System</title>
+  <link rel="stylesheet" href="../../tokens/tokens.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+    }
+    body {
+      margin: 0;
+      padding: 32px 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .showcase-header {
+      max-width: 1120px;
+      margin: 0 auto 32px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: #e0e7ff;
+      color: #3730a3;
+      margin-bottom: 8px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin: 0;
+    }
+    .demo-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+    .demo-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .demo-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+    .demo-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 0 0 16px;
+    }
+  </style>
+
+  <!-- React & Babel for live Card preview -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+
+  <header class="showcase-header">
+    <div class="badge">Data Visualization · 11</div>
+    <h1>Network Diagram (Relational Graph & Topology)</h1>
+    <p class="subtitle">
+      Arbitrary relational graph and community topology visualization. Features interactive node dragging/stretching, dynamic spread expansion slider, deterministic force-directed physics, circular clustering, 1-hop/2-hop neighborhood isolation, node search filtering, directional arrowheads, and accessible relationship tables.
+    </p>
+  </header>
+
+  <main class="demo-grid">
+    <!-- Live Demo 1: Shop-Floor Industrial IoT & PLC Communication Mesh -->
+    <section class="demo-card">
+      <div class="demo-title">1. Industrial IoT Sensor & PLC Communication Mesh (Chakan Plant PL-04)</div>
+      <div class="demo-desc"><strong>Interactive Node Stretching:</strong> Click and drag any node to untangle dense clusters. Use the <em>Stretch slider</em> to expand global edge spacing.</div>
+      <div id="demo-root-1"></div>
+    </section>
+
+    <!-- Live Demo 2: Automotive Tier-1 Supplier Traceability Network -->
+    <section class="demo-card">
+      <div class="demo-title">2. Automotive Multi-Echelon Supplier Traceability Network</div>
+      <div class="demo-desc">OEM vehicle assembly customers &harr; Suryodaya Chakan Plant &harr; Tier-2 raw material, hydraulic, and electronics suppliers.</div>
+      <div id="demo-root-2"></div>
+    </section>
+
+    <!-- Live Demo 3: Cross-Functional Maintenance & Quality Escalation Matrix -->
+    <section class="demo-card">
+      <div class="demo-title">3. Cross-Functional Escalation Dependency Matrix (Circular Graph)</div>
+      <div class="demo-desc">Circular graph layout showing operational interactions between shop operators, tooling specialists, robotics tech, and QA metallurgy.</div>
+      <div id="demo-root-3"></div>
+    </section>
+  </main>
+
+  <script type="text/babel">
+    const { useState, useMemo, useRef, useCallback, useEffect } = React;
+
+    const VIZ_COLORS = [
+      '#2563eb', '#0d9488', '#d97706', '#7c3aed', '#db2777', '#4b5563', '#0284c7', '#16a34a'
+    ];
+
+    const POINT_SYMBOLS = ['circle', 'square', 'diamond', 'triangle'];
+
+    function computeNetworkLayout({ nodes: rawNodes = [], links: rawLinks = [], width = 760, height = 480, layout = 'force', iterations = 120, linkDistance = 90, repulsion = 1800, gravity = 0.06 } = {}) {
+      if (!rawNodes || rawNodes.length === 0) return { nodes: [], links: [], adjacencyMap: new Map() };
+      const cx = width / 2, cy = height / 2;
+      const nodeMap = new Map(), adjacencyMap = new Map();
+
+      const nodes = rawNodes.map((n, idx) => {
+        const id = n.id !== undefined ? String(n.id) : 'node-' + idx;
+        const r = Math.max(8, Math.min(26, n.size || n.radius || 14));
+        const angle = idx * 2.3999632;
+        const dist = Math.min(cx, cy) * 0.4 * Math.sqrt((idx + 1) / rawNodes.length);
+        const nodeObj = { ...n, id, label: n.label || id, category: n.category || 'default', radius: r, degree: 0, x: cx + dist * Math.cos(angle), y: cy + dist * Math.sin(angle), vx: 0, vy: 0 };
+        nodeMap.set(id, nodeObj);
+        adjacencyMap.set(id, new Set());
+        return nodeObj;
+      });
+
+      const links = [];
+      rawLinks.forEach((l, idx) => {
+        const sId = String(typeof l.source === 'object' ? l.source.id : l.source);
+        const tId = String(typeof l.target === 'object' ? l.target.id : l.target);
+        const sNode = nodeMap.get(sId);
+        const tNode = nodeMap.get(tId);
+        const weight = Math.max(1, Number(l.weight || 1));
+        if (sNode && tNode) {
+          const linkObj = { id: l.id || 'edge-' + sId + '-' + tId + '-' + idx, source: sNode, target: tNode, weight, directed: l.directed !== false, label: l.label || '' };
+          sNode.degree++;
+          tNode.degree++;
+          adjacencyMap.get(sId).add(tId);
+          adjacencyMap.get(tId).add(sId);
+          links.push(linkObj);
+        }
+      });
+
+      if (layout === 'circular') {
+        const radius = Math.min(cx, cy) - 50;
+        nodes.forEach((node, i) => {
+          const theta = (2 * Math.PI * i) / nodes.length - Math.PI / 2;
+          node.x = cx + radius * Math.cos(theta);
+          node.y = cy + radius * Math.sin(theta);
+        });
+      } else {
+        let temp = Math.min(width, height) * 0.15;
+        for (let iter = 0; iter < iterations; iter++) {
+          for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+              const dx = nodes[j].x - nodes[i].x || 0.1;
+              const dy = nodes[j].y - nodes[i].y || 0.1;
+              const distSq = dx * dx + dy * dy;
+              const dist = Math.sqrt(distSq) || 1;
+              const f = repulsion / Math.max(100, distSq);
+              const fx = (dx / dist) * f, fy = (dy / dist) * f;
+              nodes[i].vx -= fx; nodes[i].vy -= fy;
+              nodes[j].vx += fx; nodes[j].vy += fy;
+            }
+          }
+          links.forEach(l => {
+            const dx = l.target.x - l.source.x || 0.1;
+            const dy = l.target.y - l.source.y || 0.1;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            const disp = dist - linkDistance;
+            const f = disp * 0.05 * Math.sqrt(l.weight);
+            const fx = (dx / dist) * f, fy = (dy / dist) * f;
+            l.source.vx += fx; l.source.vy += fy;
+            l.target.vx -= fx; l.target.vy -= fy;
+          });
+          nodes.forEach(n => {
+            n.vx += (cx - n.x) * gravity;
+            n.vy += (cy - n.y) * gravity;
+            const vel = Math.sqrt(n.vx * n.vx + n.vy * n.vy) || 1;
+            const step = Math.min(vel, temp);
+            n.x += (n.vx / vel) * step;
+            n.y += (n.vy / vel) * step;
+            n.vx = 0; n.vy = 0;
+            const pad = n.radius + 15;
+            n.x = Math.max(pad, Math.min(width - pad, n.x));
+            n.y = Math.max(pad, Math.min(height - pad, n.y));
+          });
+          temp *= 0.96;
+        }
+      }
+      return { nodes, links, adjacencyMap };
+    }
+
+    function NetworkDiagram({ nodes: rawNodes, links: rawLinks, width = 760, height = 440, layout = 'force', directed = true, title = '', subtitle = '' }) {
+      const [selectedId, setSelectedId] = useState(null);
+      const [hoveredItem, setHoveredItem] = useState(null);
+      const [searchQuery, setSearchQuery] = useState('');
+      const [spreadMultiplier, setSpreadMultiplier] = useState(1.0);
+      const [zoom, setZoom] = useState(1);
+      const [pan, setPan] = useState({ x: 0, y: 0 });
+      const [isPanning, setIsPanning] = useState(false);
+      const [startPan, setStartPan] = useState({ x: 0, y: 0 });
+      const [showModal, setShowModal] = useState(false);
+
+      // Dragging state
+      const [draggingNodeId, setDraggingNodeId] = useState(null);
+      const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+      const [nodePositions, setNodePositions] = useState(new Map());
+
+      const svgRef = useRef(null);
+
+      const { nodes: baseNodes, links: baseLinks, adjacencyMap } = useMemo(() => {
+        return computeNetworkLayout({
+          nodes: rawNodes,
+          links: rawLinks,
+          width,
+          height,
+          layout,
+          linkDistance: 90 * spreadMultiplier,
+          repulsion: 1800 * (spreadMultiplier * spreadMultiplier)
+        });
+      }, [rawNodes, rawLinks, width, height, layout, spreadMultiplier]);
+
+      const nodes = useMemo(() => {
+        return baseNodes.map(n => {
+          const dragged = nodePositions.get(n.id);
+          if (dragged) return { ...n, x: dragged.x, y: dragged.y };
+          return n;
+        });
+      }, [baseNodes, nodePositions]);
+
+      const links = useMemo(() => {
+        const nodeMap = new Map(nodes.map(n => [n.id, n]));
+        return baseLinks.map(l => ({
+          ...l,
+          source: nodeMap.get(l.source.id) || l.source,
+          target: nodeMap.get(l.target.id) || l.target
+        }));
+      }, [baseLinks, nodes]);
+
+      const categoryStyleMap = useMemo(() => {
+        const map = new Map();
+        nodes.forEach(n => {
+          const cat = n.category || 'default';
+          if (!map.has(cat)) {
+            map.set(cat, { color: VIZ_COLORS[map.size % VIZ_COLORS.length], symbol: POINT_SYMBOLS[map.size % POINT_SYMBOLS.length] });
+          }
+        });
+        return map;
+      }, [nodes]);
+
+      const searchMatchIds = useMemo(() => {
+        if (!searchQuery.trim()) return new Set();
+        const q = searchQuery.toLowerCase();
+        const set = new Set();
+        nodes.forEach(n => {
+          if (n.label.toLowerCase().includes(q) || n.id.toLowerCase().includes(q)) set.add(n.id);
+        });
+        return set;
+      }, [searchQuery, nodes]);
+
+      const activeNeighborhood = useMemo(() => {
+        const activeNodeIds = new Set();
+        const activeLinkIds = new Set();
+        if (searchMatchIds.size > 0) {
+          searchMatchIds.forEach(id => activeNodeIds.add(id));
+          links.forEach(l => {
+            if (searchMatchIds.has(l.source.id) && searchMatchIds.has(l.target.id)) activeLinkIds.add(l.id);
+          });
+          return { nodeIds: activeNodeIds, linkIds: activeLinkIds, isActive: true };
+        }
+        const activeId = hoveredItem?.id || selectedId;
+        if (!activeId) return { nodeIds: activeNodeIds, linkIds: activeLinkIds, isActive: false };
+
+        const targetNode = nodes.find(n => n.id === activeId);
+        if (targetNode) {
+          activeNodeIds.add(targetNode.id);
+          (adjacencyMap.get(targetNode.id) || new Set()).forEach(nId => activeNodeIds.add(nId));
+          links.forEach(l => {
+            if (l.source.id === targetNode.id || l.target.id === targetNode.id) activeLinkIds.add(l.id);
+          });
+        }
+        return { nodeIds: activeNodeIds, linkIds: activeLinkIds, isActive: true };
+      }, [hoveredItem, selectedId, searchMatchIds, nodes, links, adjacencyMap]);
+
+      const getTransformedCoordinates = (clientX, clientY) => {
+        if (!svgRef.current) return { x: clientX, y: clientY };
+        const rect = svgRef.current.getBoundingClientRect();
+        return {
+          x: (clientX - rect.left - pan.x) / zoom,
+          y: (clientY - rect.top - pan.y) / zoom
+        };
+      };
+
+      const handleNodeMouseDown = (node, e) => {
+        e.stopPropagation();
+        setDraggingNodeId(node.id);
+        const coords = getTransformedCoordinates(e.clientX, e.clientY);
+        setDragOffset({ x: coords.x - node.x, y: coords.y - node.y });
+      };
+
+      const handleMouseMove = (e) => {
+        if (draggingNodeId) {
+          const coords = getTransformedCoordinates(e.clientX, e.clientY);
+          setNodePositions(prev => {
+            const next = new Map(prev);
+            next.set(draggingNodeId, { x: coords.x - dragOffset.x, y: coords.y - dragOffset.y });
+            return next;
+          });
+        } else if (isPanning) {
+          setPan({ x: e.clientX - startPan.x, y: e.clientY - startPan.y });
+        }
+      };
+
+      const handleMouseUp = () => {
+        setDraggingNodeId(null);
+        setIsPanning(false);
+      };
+
+      return (
+        <div style={{ position: 'relative', width, fontFamily: 'system-ui, sans-serif' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: 600, color: '#0f172a' }}>{title}</div>
+              <div style={{ fontSize: '12px', color: '#64748b' }}>{subtitle}</div>
+            </div>
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px' }}>
+                <span style={{ fontWeight: 600, color: '#475569' }}>Stretch:</span>
+                <input
+                  type="range"
+                  min="0.6"
+                  max="2.2"
+                  step="0.1"
+                  value={spreadMultiplier}
+                  onChange={e => setSpreadMultiplier(parseFloat(e.target.value))}
+                  style={{ width: '60px' }}
+                />
+                <span style={{ fontSize: '10px' }}>{spreadMultiplier.toFixed(1)}x</span>
+              </div>
+              <input
+                type="text"
+                placeholder="Search node..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                style={{ fontSize: '11px', padding: '3px 6px', border: '1px solid #cbd5e1', borderRadius: '4px', width: '90px' }}
+              />
+              <div style={{ display: 'inline-flex', border: '1px solid #cbd5e1', borderRadius: '4px', overflow: 'hidden' }}>
+                <button onClick={() => setZoom(z => Math.min(2.5, z + 0.2))} style={{ padding: '3px 8px', border: 'none', background: '#fff', cursor: 'pointer' }}>+</button>
+                <button onClick={() => setZoom(z => Math.max(0.4, z - 0.2))} style={{ padding: '3px 8px', border: 'none', background: '#fff', borderLeft: '1px solid #cbd5e1', cursor: 'pointer' }}>−</button>
+                <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); setNodePositions(new Map()); setSpreadMultiplier(1.0); }} style={{ padding: '3px 8px', border: 'none', background: '#fff', borderLeft: '1px solid #cbd5e1', fontSize: '11px', cursor: 'pointer' }}>Reset</button>
+              </div>
+              <button onClick={() => setShowModal(true)} style={{ fontSize: '11px', padding: '4px 8px', border: '1px solid #cbd5e1', background: '#fff', borderRadius: '4px', cursor: 'pointer' }}>Table (Alt+F11)</button>
+            </div>
+          </div>
+
+          <svg
+            ref={svgRef}
+            width={width}
+            height={height}
+            onMouseDown={e => { setIsPanning(true); setStartPan({ x: e.clientX - pan.x, y: e.clientY - pan.y }); }}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            style={{ display: 'block', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '6px', cursor: draggingNodeId ? 'grabbing' : (isPanning ? 'grabbing' : 'grab') }}
+          >
+            <defs>
+              {directed && (
+                <marker id="arrow" viewBox="0 0 10 10" refX="20" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
+                </marker>
+              )}
+              {directed && (
+                <marker id="arrow-act" viewBox="0 0 10 10" refX="20" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
+                </marker>
+              )}
+            </defs>
+
+            <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
+              {links.map(link => {
+                const isPathActive = activeNeighborhood.linkIds.has(link.id);
+                const isDimmed = activeNeighborhood.isActive && !isPathActive;
+                return (
+                  <line
+                    key={link.id}
+                    x1={link.source.x}
+                    y1={link.source.y}
+                    x2={link.target.x}
+                    y2={link.target.y}
+                    stroke={isPathActive ? '#2563eb' : '#cbd5e1'}
+                    strokeWidth={isPathActive ? 2.5 : Math.max(1, Math.min(4, Math.sqrt(link.weight)))}
+                    strokeOpacity={isDimmed ? 0.1 : (isPathActive ? 0.9 : 0.5)}
+                    markerEnd={directed ? (isPathActive ? 'url(#arrow-act)' : 'url(#arrow)') : undefined}
+                  />
+                );
+              })}
+
+              {nodes.map(node => {
+                const isSelected = node.id === selectedId;
+                const isNeighborActive = activeNeighborhood.nodeIds.has(node.id);
+                const isDimmed = activeNeighborhood.isActive && !isNeighborActive;
+                const style = categoryStyleMap.get(node.category) || { color: '#2563eb' };
+
+                return (
+                  <g
+                    key={node.id}
+                    transform={`translate(${node.x}, ${node.y})`}
+                    onMouseDown={e => handleNodeMouseDown(node, e)}
+                    onClick={e => { e.stopPropagation(); setSelectedId(node.id === selectedId ? null : node.id); }}
+                    onMouseEnter={e => {
+                      const rect = containerRef.current?.getBoundingClientRect();
+                      setHoveredItem({ type: 'node', id: node.id, item: node, clientX: e.clientX - (rect?.left || 0), clientY: e.clientY - (rect?.top || 0) });
+                    }}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    style={{ cursor: draggingNodeId === node.id ? 'grabbing' : 'grab' }}
+                  >
+                    <circle cx={0} cy={0} r={node.radius} fill={style.color} stroke="#ffffff" strokeWidth={isSelected ? 3 : 2} opacity={isDimmed ? 0.15 : 1.0} />
+                    <text
+                      x={0}
+                      y={node.radius + 12}
+                      textAnchor="middle"
+                      fontSize="10px"
+                      fontWeight="600"
+                      fill="#0f172a"
+                      opacity={isDimmed ? 0.2 : 1.0}
+                      style={{ pointerEvents: 'none', paintOrder: 'stroke', stroke: 'rgba(255,255,255,0.9)', strokeWidth: 3 }}
+                    >
+                      {node.label}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          </svg>
+
+          {hoveredItem && !draggingNodeId && (
+            <div style={{ position: 'absolute', left: Math.min(hoveredItem.clientX + 14, width - 200), top: Math.max(10, Math.min(hoveredItem.clientY - 20, height - 80)), background: '#0f172a', color: '#ffffff', padding: '8px 12px', borderRadius: '6px', fontSize: '11px', pointerEvents: 'none', zIndex: 60, boxShadow: '0 10px 15px -3px rgba(0,0,0,0.3)' }}>
+              <div style={{ fontWeight: 600, fontSize: '12px' }}>{hoveredItem.item.label}</div>
+              <div style={{ color: '#94a3b8', fontSize: '10px' }}>Category: {hoveredItem.item.category}</div>
+              <div style={{ marginTop: '4px' }}>Degree: <strong style={{ color: '#38bdf8' }}>{hoveredItem.item.degree} links</strong></div>
+              <div style={{ color: '#64748b', fontSize: '9px', marginTop: '2px', fontStyle: 'italic' }}>(Drag node to stretch / reposition)</div>
+            </div>
+          )}
+
+          {showModal && (
+            <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(15, 23, 42, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '16px' }} onClick={() => setShowModal(false)}>
+              <div style={{ backgroundColor: '#ffffff', borderRadius: '8px', maxWidth: '640px', width: '100%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+                <div style={{ padding: '12px 16px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600 }}>Adjacency Table: {title}</h3>
+                  <button onClick={() => setShowModal(false)} style={{ border: 'none', background: 'transparent', fontSize: '18px', cursor: 'pointer' }}>&times;</button>
+                </div>
+                <div style={{ overflowY: 'auto', padding: '16px' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc', borderBottom: '2px solid #cbd5e1' }}>
+                        <th style={{ padding: '6px 8px', textAlign: 'left' }}>Node</th>
+                        <th style={{ padding: '6px 8px', textAlign: 'left' }}>Category</th>
+                        <th style={{ padding: '6px 8px', textAlign: 'center' }}>Degree</th>
+                        <th style={{ padding: '6px 8px', textAlign: 'left' }}>Connected Neighbors</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {nodes.map(n => (
+                        <tr key={n.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '6px 8px', fontWeight: 600 }}>{n.label}</td>
+                          <td style={{ padding: '6px 8px', color: '#64748b' }}>{n.category}</td>
+                          <td style={{ padding: '6px 8px', textAlign: 'center' }}>{n.degree}</td>
+                          <td style={{ padding: '6px 8px', color: '#64748b', fontSize: '11px' }}>
+                            {Array.from(adjacencyMap.get(n.id) || []).map(id => nodes.find(x => x.id === id)?.label || id).join(', ')}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const iotSensorMesh = {
+      nodes: [
+        { id: 'gw-mes', label: 'MES Gateway', category: 'Gateway', size: 22 },
+        { id: 'scada-hub', label: 'SCADA Host', category: 'Gateway', size: 20 },
+        { id: 'plc-press1', label: 'PLC Press Line 1', category: 'PLC Controller', size: 16 },
+        { id: 'plc-press2', label: 'PLC Press Line 2', category: 'PLC Controller', size: 16 },
+        { id: 'plc-weld', label: 'PLC Welding Cell', category: 'PLC Controller', size: 16 },
+        { id: 'plc-paint', label: 'PLC Paint Oven', category: 'PLC Controller', size: 16 },
+        { id: 'sens-vib1', label: 'Vib Sensor 800T', category: 'Sensor', size: 10 },
+        { id: 'sens-hydr1', label: 'Pressure Valve 01', category: 'Sensor', size: 10 },
+        { id: 'sens-temp-weld', label: 'Temp Pyrometer', category: 'Sensor', size: 10 },
+        { id: 'sens-cam-qa', label: 'Vision Inspection QA', category: 'Sensor', size: 12 }
+      ],
+      links: [
+        { source: 'gw-mes', target: 'scada-hub', weight: 8 },
+        { source: 'scada-hub', target: 'plc-press1', weight: 5 },
+        { source: 'scada-hub', target: 'plc-press2', weight: 4 },
+        { source: 'scada-hub', target: 'plc-weld', weight: 6 },
+        { source: 'scada-hub', target: 'plc-paint', weight: 4 },
+        { source: 'plc-press1', target: 'sens-vib1', weight: 3 },
+        { source: 'plc-press1', target: 'sens-hydr1', weight: 3 },
+        { source: 'plc-weld', target: 'sens-temp-weld', weight: 3 },
+        { source: 'plc-weld', target: 'sens-cam-qa', weight: 4 },
+        { source: 'gw-mes', target: 'sens-cam-qa', weight: 5 }
+      ]
+    };
+
+    const supplierNetwork = {
+      nodes: [
+        { id: 'oem-tata', label: 'Tata Motors EV Plant', category: 'OEM Customer', size: 22 },
+        { id: 'oem-m&m', label: 'Mahindra Auto Chakan', category: 'OEM Customer', size: 20 },
+        { id: 'suryodaya', label: 'Suryodaya Autocomp (PL-04)', category: 'Tier-1 Plant', size: 26 },
+        { id: 'jsw-steel', label: 'JSW Steel (Coil Mill)', category: 'Raw Material', size: 16 },
+        { id: 'hindalco', label: 'Hindalco (Aluminum Billets)', category: 'Raw Material', size: 14 },
+        { id: 'skf-bearings', label: 'SKF India Bearings', category: 'Component Sub-Tier', size: 12 },
+        { id: 'bosch-rexroth', label: 'Bosch Rexroth Hydraulics', category: 'Component Sub-Tier', size: 14 },
+        { id: 'siemens-motion', label: 'Siemens Motion Drives', category: 'Component Sub-Tier', size: 12 }
+      ],
+      links: [
+        { source: 'suryodaya', target: 'oem-tata', weight: 8 },
+        { source: 'suryodaya', target: 'oem-m&m', weight: 7 },
+        { source: 'jsw-steel', target: 'suryodaya', weight: 9 },
+        { source: 'hindalco', target: 'suryodaya', weight: 6 },
+        { source: 'skf-bearings', target: 'suryodaya', weight: 4 },
+        { source: 'bosch-rexroth', target: 'suryodaya', weight: 5 },
+        { source: 'siemens-motion', target: 'suryodaya', weight: 4 }
+      ]
+    };
+
+    const escalationMatrix = {
+      nodes: [
+        { id: 'op-press', label: 'Press Operator', category: 'Operations', size: 14 },
+        { id: 'tooling-eng', label: 'Die Tooling Eng', category: 'Engineering', size: 16 },
+        { id: 'maint-tech', label: 'Robotics Tech', category: 'Maintenance', size: 14 },
+        { id: 'qa-metallurgy', label: 'Metallurgy QA', category: 'Quality', size: 16 },
+        { id: 'safety-officer', label: 'EHS Safety Lead', category: 'Compliance', size: 14 },
+        { id: 'plant-gm', label: 'Plant Operations GM', category: 'Management', size: 20 }
+      ],
+      links: [
+        { source: 'op-press', target: 'tooling-eng', weight: 5 },
+        { source: 'op-press', target: 'maint-tech', weight: 4 },
+        { source: 'tooling-eng', target: 'qa-metallurgy', weight: 6 },
+        { source: 'maint-tech', target: 'safety-officer', weight: 3 },
+        { source: 'qa-metallurgy', target: 'plant-gm', weight: 5 },
+        { source: 'safety-officer', target: 'plant-gm', weight: 4 },
+        { source: 'tooling-eng', target: 'plant-gm', weight: 4 }
+      ]
+    };
+
+    ReactDOM.render(
+      <NetworkDiagram
+        nodes={iotSensorMesh.nodes}
+        links={iotSensorMesh.links}
+        title="Suryodaya Autocomp · Shop-Floor IoT & PLC Communication Mesh"
+        subtitle="Drag nodes to stretch / untangle clusters; use Stretch slider to expand link distance"
+        layout="force"
+        directed={true}
+        width={760}
+        height={420}
+      />,
+      document.getElementById('demo-root-1')
+    );
+
+    ReactDOM.render(
+      <NetworkDiagram
+        nodes={supplierNetwork.nodes}
+        links={supplierNetwork.links}
+        title="Tier-1 Multi-Echelon Supplier & Traceability Network"
+        subtitle="Upstream raw material suppliers, Chakan manufacturing, and OEM vehicle assembly plants"
+        layout="force"
+        directed={true}
+        width={760}
+        height={380}
+      />,
+      document.getElementById('demo-root-2')
+    );
+
+    ReactDOM.render(
+      <NetworkDiagram
+        nodes={escalationMatrix.nodes}
+        links={escalationMatrix.links}
+        title="Cross-Functional Escalation Dependency Matrix"
+        subtitle="Circular graph layout showing operational interactions between shop operators, tooling, QA, and GM"
+        layout="circular"
+        directed={false}
+        width={760}
+        height={380}
+      />,
+      document.getElementById('demo-root-3')
+    );
+  </script>
+</body>
+</html>

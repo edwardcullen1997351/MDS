@@ -1,0 +1,365 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="Input" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Input — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+td.num,th.num{text-align:right;font-family:var(--font-mono)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px}
+.staterow{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.grey{filter:grayscale(1)}
+.w220{width:220px}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Input, Field, Button, Icon, Textarea, Select } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows,numCols=[]}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i} className={numCols.includes(i)?'num':''}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={(j===0?'k ':'')+(numCols.includes(j)?'num':'')}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>Input</h1>
+    <p className="lede">One line of typed text. The control itself is four boxes in a row; almost everything that goes wrong with it happens outside the box — the missing label, the placeholder standing in for one, the error that is only a red border, the border that is not visible enough to say “a field is here”.</p>
+    <div className="meta">
+      <span>components/forms/Input.jsx</span><span>window.MeridianDesignSystem_962c43.Input</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 1 open item</span><span>since: 1.0.0 · revised 1.2.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="A single line of user-authored text, and nothing else.">
+    <p>Input is the free-text control: a name, a query, an ID, a quantity, a key. It renders one <code>&lt;input&gt;</code> inside a bordered box that owns the height, the fill and the boundary. It never owns the label, the hint or the error — <code>Field</code> does, and an Input outside a Field is an unlabelled control.</p>
+    <T cols={['You want to…','Component','Notes']} rows={[
+      ['Take one line of text','Input','This component.'],
+      ['Take several lines / a note','Textarea','Same tokens, same states, no height prop.'],
+      ['Choose one of a known, short list','Select','Never a text field with a “valid values” hint.'],
+      ['Choose one of 2–3 visible options','Radio · Switch','A field the user must type into is the most expensive control in a form.'],
+      ['Search a large set with suggestions','Not in 1.2.0','Combobox is unbuilt. Do not fake one with Input + a floating list — the ARIA is the hard part.'],
+      ['Show a value the operator cannot change','Input readOnly, or plain text','readOnly if they need to copy it; text if they do not.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> for identifiers, names, search, quantities with a unit, credentials, and machine values that must be copied.</li>
+      <li><strong>Do not use</strong> <code>type="number"</code> — the component warns. The mouse wheel silently changes the value of a focused number field, spinners eat 20 px of the box, and a pasted “1,200” is discarded without a message. Use <code>type="text" inputMode="numeric"</code> and validate.</li>
+      <li><strong>Do not use</strong> for a value with exactly two states, or for a date without a date control. A free-text date is a parsing problem you inherit forever.</li>
+    </ul>
+    <div className="demo">
+      <Field label="Work order" hint="WO- prefix optional" style={{width:220}}><Input placeholder="WO-4471" mono /></Field>
+      <Field label="Cycle time" style={{width:160}}><Input defaultValue="42.6" suffix="s" mono inputMode="numeric" /></Field>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Four parts in one 34 px row. The border is one of them.">
+    <div className="demo">
+      <Input aria-label="Anatomy example" iconLeft="search" placeholder="Search resources" suffix="⌘K" style={{width:280}} />
+    </div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Box</strong> — a fixed height from <code>--control-h-*</code>, <code>--input-background</code> fill, 4 px radius, and a 1 px <code>--input-border</code>. The whole box is the click target, not the text run: pressing the padding, the icon or the suffix focuses the field (§13).</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Border</strong> — the only thing that says “a field is here”. An empty Input has no other boundary, so this is a load-bearing control edge under WCAG 1.4.11 and takes <code>--border-control</code> at 4.74:1, not a structural hairline (§08).</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Leading icon</strong> — optional, 14 px, <code>--input-icon</code>. Decorative and never the label: an icon-only field is unlabelled to everyone who cannot see it.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Value / placeholder</strong> — 13 px at md, in the sans face or in mono with <code>mono</code>. The placeholder colour comes from <code>--input-placeholder</code> via <code>base.css</code>, because a component's inline styles cannot reach <code>::placeholder</code> (§13).</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Suffix</strong> — optional, mono, 11 px, tertiary. A unit or a shortcut hint. Not a button, not a clear affordance, and never interactive — it sits inside the field's click target, so a control there would be unreachable by touch.</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>Label, hint, error — not here.</strong> They belong to <code>Field</code>, which also supplies the <code>id</code> and the message the control points at.</span></div>
+    </div>
+    <T cols={['Region','Value (md, comfortable)','Token']} rows={[
+      ['Height','34 px','--control-h-md'],
+      ['Horizontal padding','12 px','--control-px-md'],
+      ['Gap icon → value → suffix','6 px','—'],
+      ['Radius','4 px','--input-radius (--radius-sm)'],
+      ['Border','1 px solid, 4.74:1 on a card','--border-width · --input-border'],
+      ['Value type','13 px sans, or mono','--text-sm · --font-mono'],
+      ['Focus','3 px ring + action border','--input-focus-ring · --input-border-focus'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Seven props. Everything about labelling lives on Field.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['size',<span className="t">'sm' | 'md' | 'lg'</span>,<span className="t">'md'</span>,'28 / 34 / 40 px at comfortable density. §05.'],
+      ['iconLeft',<span className="t">string</span>,'—','Lucide name. Decorative; drawn at 14 px (16 px at lg).'],
+      ['suffix',<span className="t">ReactNode</span>,'—','Mono unit or shortcut. Static text only.'],
+      ['invalid',<span className="t">boolean</span>,<span className="t">false</span>,'Danger border, danger focus ring, aria-invalid. Inherited from Field error — set it directly only outside a Field.'],
+      ['mono',<span className="t">boolean</span>,<span className="t">false</span>,'IBM Plex Mono + --tracking-mono. For IDs, keys, hashes, queries, numbers.'],
+      ['disabled',<span className="t">boolean</span>,<span className="t">false</span>,'Native disabled: removed from the tab order and unreadable to a screen reader walking the form. §06.'],
+      ['readOnly',<span className="t">boolean</span>,<span className="t">false</span>,'Focusable, selectable, copyable; sunken fill, full-contrast text. Use for machine values.'],
+      ['style',<span className="t">CSSProperties</span>,'—','Width and layout only. Applies to the box, not the inner input.'],
+      ['…rest',<span className="t">InputHTMLAttributes</span>,'—','value / defaultValue, onChange, placeholder, inputMode, autoComplete, maxLength, name, aria-*.'],
+    ]}/>
+    <p><strong>There is no <code>width</code> prop and no <code>label</code> prop.</strong> Width is layout — the box is <code>display:flex</code> and takes the width its container or <code>style</code> gives it (§11). Labelling is <code>Field</code>'s job, and splitting it across two components is what produced the unlabelled fields this revision fixes.</p>
+    <p><strong>Nothing is inherited silently except through Field.</strong> Inside a <code>Field</code>, Input reads four things from context — <code>id</code>, <code>aria-describedby</code>, <code>invalid</code>, <code>required</code>. An explicit prop always wins.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="No variant prop. Three flags that change what the field means.">
+    <T cols={['Flag','Reads as','Use']} rows={[
+      ['— (default)','An empty, editable field','Everything a human types.'],
+      ['mono','A machine value','IDs, keys, hashes, SQL, cron, quantities. Digits align, 0/O and 1/l separate.'],
+      ['readOnly','A value you may copy, not change','Generated keys, computed IDs, endpoints. Sunken fill; text stays at full contrast because it must be read.'],
+      ['invalid','A value the system rejected','Only with a message (§08). Border and ring only — the text colour never changes.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="default"><Input aria-label="Default" placeholder="Operator name" style={{width:220}} /></Row>
+      <Row label="mono"><Input aria-label="Mono" mono defaultValue="ak_live_9f2c4a1e" suffix="key" style={{width:220}} /></Row>
+      <Row label="readOnly"><Input aria-label="Read only" mono readOnly defaultValue="wo-4471-8823" suffix="id" style={{width:220}} /></Row>
+      <Row label="invalid"><Field error="No line named “mixer 3”." style={{width:220}}><Input defaultValue="mixer 3" /></Field></Row>
+    </div>
+    <p><strong><code>mono</code> is not decoration.</strong> A proportional face makes <code>ak_live_9f2c4a1e</code> unreadable back to a colleague on the phone. Any value generated by a machine goes in mono; any value written by a person does not.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Three, and density moves all of them.">
+    <T cols={['size','Height (comfortable)','Padding','Type','Icon','Use']} rows={[
+      ['sm','28 px','8 px','12 px','14 px','Table filter rows, toolbars, inline edits. Never in a form column.'],
+      ['md','34 px','12 px','13 px','14 px','Default. Every form, every panel.'],
+      ['lg','40 px','16 px','16 px','16 px','Touch surfaces, sign-in, one-field pages. 16 px type (--text-lg) is the largest iOS Safari will not zoom to on focus.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="sm"><Input aria-label="Small" size="sm" iconLeft="search" placeholder="Filter rows" style={{width:220}} /></Row>
+      <Row label="md"><Input aria-label="Medium" size="md" iconLeft="search" placeholder="Filter rows" style={{width:220}} /></Row>
+      <Row label="lg"><Input aria-label="Large" size="lg" iconLeft="search" placeholder="Filter rows" style={{width:220}} /></Row>
+    </div>
+    <T cols={['Density','sm','md','lg','Note']} numCols={[1,2,3]} rows={[
+      ['compact','24','28','34','Dense tables. md is below the 24 px target minimum only for sm — see §08.'],
+      ['comfortable','28','34','40','Default.'],
+      ['expanded','34','44','52','Touch and gloved use. md clears 44 px, so lg is rarely needed.'],
+    ]}/>
+    <p>The size names must match the Button beside them: a <code>sm</code> Input and a <code>sm</code> Button are both 28 px and sit on one baseline. A mismatched pair is the most visible defect in a filter bar.</p>
+    <div className="demo"><Input aria-label="Paired" size="sm" placeholder="Serial number" mono style={{width:200}} /><Button variant="secondary" size="sm">Look up</Button></div>
+  </Sec>
+
+  <Sec n="06" title="States" note="Six. The border carries five of them; the fill carries two.">
+    <T cols={['State','Border','Fill / ring','Notes']} rows={[
+      ['Rest','--input-border · --border-control, 4.74:1','card fill','The boundary is the affordance.'],
+      ['Hover','--input-border-hover · --border-control-hover, 7.78:1','card fill','One step stronger, never a fill change — a tinting field looks pressed.'],
+      ['Focus','--input-border-focus (action blue)','3 px --input-focus-ring','Ring drawn as box-shadow, so no layout shift and no clipping in an overflow row.'],
+      ['Invalid','--input-border-invalid (critical solid)','—','Border only.'],
+      ['Invalid + focus','critical border','3 px --input-focus-ring-invalid','The ring goes red too, so focus does not overwrite the error signal.'],
+      ['Read-only','resting border','--surface-sunken fill','Text at full contrast. Focusable — the value exists to be copied.'],
+      ['Disabled','resting border','--surface-disabled fill, --input-text-disabled','2.27:1 text. Legal (1.4.3 exempts disabled) and deliberately hard to read.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="rest / hover"><Input aria-label="Rest" placeholder="Hover me, then Tab in" style={{width:240}} /></Row>
+      <Row label="invalid"><Field error="Serial not recognised." style={{width:240}}><Input defaultValue="XX-0000" mono /></Field></Row>
+      <Row label="readOnly"><Input aria-label="Read only state" readOnly mono defaultValue="10.4.22.109" style={{width:240}} /></Row>
+      <Row label="disabled"><Input aria-label="Disabled state" disabled placeholder="Locked by schedule" style={{width:240}} /></Row>
+    </div>
+    <p className="warn"><strong><code>disabled</code> is almost always the wrong answer.</strong> A disabled input is not focusable, so a keyboard user cannot reach it and a screen reader walking the form skips it — the operator is told nothing about why the field is dead. Prefer <code>readOnly</code> plus a <code>Field</code> hint that says why, and reserve <code>disabled</code> for a field that is genuinely irrelevant to the current state.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Native text field. Do not add to it.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab / Shift-Tab','Focuses / leaves. readOnly is in the tab order; disabled is not.'],
+      ['Type / paste','Edits. Never intercept keystrokes to reformat mid-typing — the caret jumps and the user loses their place.'],
+      ['⌘/Ctrl-A · C · V · Z','Select all, copy, paste, undo — native, and undo only survives if you do not rewrite the value on every keystroke.'],
+      ['← → ↑ ↓ · Home / End','Caret movement. Nothing in this component may claim an arrow key.'],
+      ['Enter','Submits the containing form. Provide a real <form onSubmit>; an operator will press Enter in a one-field form.'],
+      ['Escape','Nothing by default. In a filter field, clearing on Escape is acceptable — but only if the field is the filter itself.'],
+    ]}/>
+    <ul>
+      <li><strong>The wheel must never change a value.</strong> This is the whole argument against <code>type="number"</code>: a scroll over a focused field silently edits it, and in a console the operator scrolls constantly.</li>
+      <li><strong>Format on blur, not on keystroke.</strong> Trim, uppercase and pad when focus leaves; doing it per keystroke fights the caret and breaks undo.</li>
+      <li><strong>Do not trap Enter</strong> to run a search while also submitting the form. Pick one.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="Two hard requirements: it must have a name, and its edge must be visible.">
+    <p className="warn"><strong>A placeholder is not a label.</strong> It disappears on the first keystroke, is not reliably announced, and sits at <code>--input-placeholder</code> (4.73:1 — fine for text, useless once gone). An Input with no <code>Field</code>, no <code>aria-label</code> and no <code>aria-labelledby</code> now warns in the console (§13), because “the placeholder says it” is the single most common defect in this component class.</p>
+    <div className="demo col">
+      <Row label="wrong"><Input aria-label="Placeholder as label, wrong" placeholder="Operator name" style={{width:240}} /></Row>
+      <Row label="right"><Field label="Operator name" style={{width:240}}><Input placeholder="e.g. J. Vermeer" /></Field></Row>
+    </div>
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Role & name','Native <input>. The name comes from Field’s <label for>, wired through context with React.useId — no hand-passed ids, so no silently broken association.'],
+      ['Instructions & errors (1.3.1 · 3.3.1)','Field renders hint or error with an id; Input points aria-describedby at it and sets aria-invalid. An error span carries role="alert", so a message that appears after submit is announced without stealing focus.'],
+      ['Colour independence (1.4.1)','The invalid border is red, so it cannot be the only signal — the message is mandatory. Input warns when invalid has no aria-describedby.'],
+      ['Control boundary (1.4.11)','Resolved in 1.2.0. --input-border was --border-default at 1.29:1 — short of 3:1 as the only boundary. It now points at --border-control: 4.74:1 on a card, 4.46:1 on the page band, 6.96:1 in dark. Hover is --border-control-hover at 7.78:1 (11.4:1 dark).'],
+      ['Value contrast','--input-text on --input-background is the primary/card pair, far above 4.5:1. Placeholder 4.73:1. Disabled 2.27:1 on the disabled fill — exempt, and never where the value matters.'],
+      ['Focus (2.4.7 · 2.4.11)','3 px ring plus an action-coloured border, both ≥ 3:1 against fill and surrounding surface. box-shadow, so a sticky toolbar with overflow cannot clip it and nothing shifts.'],
+      ['Target size (2.5.8)','md 34 px and lg 40 px pass outright. sm is 28 px comfortable and 24 px compact — at the 24 px minimum with nothing to spare, so sm is for pointer-first table furniture, never a touch form.'],
+      ['Autofill','base.css overrides Chrome’s yellow autofill fill, which otherwise replaces --input-background and can drop the value under 4.5:1.'],
+      ['Zoom on focus (iOS)','lg carries 16 px type (--text-lg — note --text-base is 14 px here). Below 16 px, iOS Safari zooms the viewport on focus and does not zoom back — see §11.'],
+      ['Reduced motion','Only 140 ms colour and shadow transitions; nothing to reduce.'],
+    ]}/>
+    <p><strong>Still open elsewhere.</strong> <code>--checkbox-border</code> and <code>--radio-border</code> are still <code>--border-strong</code> (1.60:1) — the same 1.4.11 failure this section fixes for text fields. They are not retargeted here because their specs are unwritten and the tick geometry changes with the border; logged in the readme.</p>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="Colour and shadow, 140 ms. Nothing moves.">
+    <T cols={['Change','Duration','Easing','Property']} rows={[
+      ['Hover border','140 ms','--ease-out','border-color'],
+      ['Focus ring','140 ms','--ease-out','box-shadow · border-color'],
+      ['Invalid border appearing','140 ms','--ease-out','border-color'],
+      ['Fill (readOnly / disabled)','140 ms','--ease-out','background-color'],
+    ]}/>
+    <ul>
+      <li><strong>The box never changes size.</strong> No growing border, no floating label that resizes the row, no shake on error — a field that moves as you type is unusable in a dense form.</li>
+      <li><strong>No animated placeholder</strong> and no typewriter hints. The placeholder is text, not a demo.</li>
+      <li>All of it comes from <code>--transition-control</code>, the same token Button and Select use, so a mixed row settles together.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="Label, placeholder and hint each have one job.">
+    <T cols={['Slot','Job','Write','Not']} rows={[
+      ['Field label','Name the value','Work order','WO number field · Enter work order'],
+      ['Placeholder','Show the FORMAT, or nothing','WO-4471','Enter a work order · Type here · Required'],
+      ['Field hint','State a constraint before the error','8 digits, no spaces','Please enter a valid value'],
+      ['Field error','Say what is wrong and what to do','No line named “mixer 3”. Pick from the plant list.','Invalid input · Error'],
+      ['suffix','A unit or a shortcut','s · ms · /mo · ⌘K','Clear · Search'],
+    ]}/>
+    <ul>
+      <li><strong>The placeholder must never repeat the label</strong> — it doubles the words and says nothing new. If there is no format to show, leave it empty.</li>
+      <li><strong>Never put required-ness in the placeholder.</strong> <code>Field required</code> draws the mark; the asterisk is <code>aria-hidden</code>, so state the requirement in the hint if it needs saying.</li>
+      <li><strong>Sentence case, no trailing colon</strong> on labels. Errors are full sentences and end in a full stop.</li>
+      <li><strong>Units go in <code>suffix</code>, not in the label.</strong> “Cycle time” + <code>s</code>, never “Cycle time (s)”.</li>
+      <li><strong>Set <code>autoComplete</code> on anything about a person</strong> — name, email, tel, one-time codes. Omitting it is a real accessibility cost (1.3.5), not a nicety.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Width is layout. Two things bite.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','Fields go full width and stack; labels stay above, never beside. Use size="lg" — 16 px type stops iOS Safari zooming the viewport on focus, which it never undoes. The box is flex, so it fills its column with no width prop.'],
+      ['tablet ≥ 600','Two columns of fields at most. A field never sits beside a field it is not related to.'],
+      ['desktop ≥ 1024','md everywhere. Size the box to the CONTENT — a 6-digit code gets a 96 px field, not a 480 px one; the width is a hint about the answer.'],
+      ['ultrawide ≥ 1600','Form columns stay inside --measure-narrow (46ch); the column does not grow. A 900 px text field is harder to scan, not more generous.'],
+    ]}/>
+    <div className="demo col" style={{maxWidth:320}}>
+      <Field label="Plant" hint="Fills its column"><Input placeholder="Tilburg" /></Field>
+      <div style={{display:'flex',gap:12}}>
+        <Field label="Code" style={{width:96}}><Input mono placeholder="4471" inputMode="numeric" /></Field>
+        <Field label="Operator" style={{flex:1}}><Input placeholder="J. Vermeer" /></Field>
+      </div>
+    </div>
+    <ul>
+      <li><strong>Never truncate the value with an ellipsis.</strong> A field is editable; the caret must be able to reach the end of what is in it.</li>
+      <li><strong>The suffix does not shrink.</strong> It is <code>flex: 0 0 auto</code>, so a very narrow box squeezes the value, not the unit — keep suffixes to three characters.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Wrap every Input in a <code>Field</code> with a label.</li>
+        <li>Show format in the placeholder, constraints in the hint.</li>
+        <li>Pass the error through <code>Field error</code>, not <code>invalid</code> alone.</li>
+        <li><code>mono</code> for anything machine-generated.</li>
+        <li><code>type="text" inputMode="numeric"</code> for numbers.</li>
+        <li><code>readOnly</code> + a hint instead of <code>disabled</code>.</li>
+        <li>Size the box to the answer.</li>
+        <li>Format on blur.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>A placeholder as the label.</li>
+        <li><code>type="number"</code>, ever.</li>
+        <li><code>invalid</code> with no message.</li>
+        <li>A button or clear × inside the box.</li>
+        <li>A floating label that resizes the row.</li>
+        <li>Validate on every keystroke and turn the field red as the user types.</li>
+        <li>A free-text field where a Select would do.</li>
+        <li>An <code>&lt;input&gt;</code> hand-styled next to these — it will miss the border, the ring and the placeholder colour.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this component invites.</strong> <code>&lt;Input placeholder="Email" /&gt;</code> — it looks finished, it demos well, and it is an unlabelled control whose only instruction vanishes on the first keystroke. Screen-reader users hear “edit text, blank”; everyone else loses the label the moment they start typing and cannot check what they were asked for. The fix is one wrapper, and the component now warns until it is there.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="What the shipped component does, and what changed in 1.2.0.">
+    <ul>
+      <li><strong>Two elements:</strong> a flex box that owns geometry, fill, border and ring, and a transparent borderless <code>&lt;input&gt;</code> that owns the text. The inner input has <code>outline: none</code> because the ring is on the box.</li>
+      <li><strong>Field wires the control through context.</strong> <code>Field</code> generates an id with <code>React.useId()</code> (or takes <code>htmlFor</code>), renders the hint or error under that id + <code>-msg</code>, and publishes <code>{'{ id, describedBy, invalid, required }'}</code>. Input, Textarea and Select all consume it, so <code>aria-describedby</code>, <code>aria-invalid</code> and <code>aria-required</code> are correct by construction. Explicit props win.</li>
+      <li><strong>The whole box focuses the field.</strong> <code>onMouseDown</code> on the wrapper: if the press did not land on the input, it is prevented and focus is moved. Previously the 12 px of padding, the icon and the suffix were dead pixels.</li>
+      <li><strong>Placeholder and autofill are stylesheet rules,</strong> in <code>base.css</code> — inline styles cannot reach <code>::placeholder</code> or <code>:-webkit-autofill</code>. <code>--input-placeholder</code> was declared since 1.0.0 and consumed by nothing until now; Firefox's 54% placeholder fade is cancelled with <code>opacity: 1</code>.</li>
+      <li><strong>Handlers merge instead of clobbering.</strong> <code>onFocus</code>/<code>onBlur</code> from props are called after the internal state update — before 1.2.0 <code>{'{...rest}'}</code> was spread after them, so any consumer <code>onFocus</code> silently disabled the focus ring.</li>
+      <li><strong>lg is a real size now:</strong> <code>--control-px-lg</code> padding, <code>--text-lg</code> (16 px) type, 16 px icon. It previously drew md padding and 13 px text in a 40 px box, which read as a stretched md and re-introduced the iOS zoom.</li>
+      <li><strong>Icons are on the scale.</strong> <code>'xs'</code> (14) at sm/md, <code>'sm'</code> (16) at lg — the off-scale 13 px is gone.</li>
+      <li><strong>Three console warnings:</strong> no accessible name; <code>invalid</code> with no <code>aria-describedby</code>; <code>type="number"</code>. None of them alter rendering — an unlabelled field still renders, because a blank space would be a worse failure.</li>
+      <li><strong>Tokens consumed:</strong></li>
+    </ul>
+    <div className="tokenlist">
+      <span>--input-radius</span><span>--input-background</span><span>--input-background-disabled</span><span>--input-border</span><span>--input-border-hover</span><span>--input-border-focus</span><span>--input-border-invalid</span><span>--input-text</span><span>--input-text-disabled</span><span>--input-placeholder (via base.css)</span><span>--input-icon</span><span>--input-focus-ring</span><span>--input-focus-ring-invalid</span><span>--control-h-sm · md · lg</span><span>--control-px-sm · md · lg</span><span>--surface-sunken (readOnly)</span><span>--text-sm · --text-xs · --text-lg</span><span>--font-mono · --tracking-mono</span><span>--transition-control</span>
+    </div>
+    <p><code>--surface-sunken</code> is the one borrowed semantic: there is no <code>--input-background-readonly</code>, and adding one for a single state would be a component token that only ever holds the sunken value.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { Field, Input } from '@meridian/ds';
+
+// the only correct default: Field supplies label, id and aria-describedby
+<Field label="Work order" hint="WO- prefix optional">
+  <Input placeholder="WO-4471" mono />
+</Field>
+
+// error state — one prop, and the control is wired to the message
+<Field label="Line" error="No line named “mixer 3”. Pick from the plant list.">
+  <Input value={line} onChange={(e) => setLine(e.target.value)} />
+</Field>
+
+// numbers: never type="number"
+<Field label="Cycle time">
+  <Input inputMode="numeric" suffix="s" mono value={t} onChange={onT} />
+</Field>
+
+// a machine value to copy, not edit
+<Field label="API key"><Input readOnly mono value={key} suffix="key" /></Field>
+
+// outside a Field (a toolbar filter) you own the name
+<Input size="sm" iconLeft="search" aria-label="Filter rows" placeholder="Serial or WO" />`}</pre>
+    <ul>
+      <li><strong>Controlled or uncontrolled</strong> — both work; the component holds no value state, only hover and focus. Pass <code>value</code> with <code>onChange</code>, or <code>defaultValue</code> alone.</li>
+      <li><strong>Validate on blur and on submit</strong>, never on keystroke. Turning a field red while the user is still typing the third character of a valid entry is the most disliked behaviour in any form.</li>
+      <li><strong>Testing.</strong> <code>getByLabelText('Work order')</code> — if that fails, the component is mislabelled and no other assertion matters. For the error path assert <code>aria-invalid="true"</code> and that <code>aria-describedby</code> resolves to the message text. Assert the resting <code>border-color</code> against <code>--border-control</code>; that ratio is the 1.4.11 contract.</li>
+      <li><strong>Lint.</strong> Adherence rules should flag a bare <code>&lt;input&gt;</code> where Input is available, <code>type="number"</code>, an Input with a <code>placeholder</code> but no <code>Field</code>/<code>aria-label</code> ancestor, and the error strings in §10's “not” column.</li>
+      <li><strong>Frozen 4 Sep 2026.</strong> API closed: <code>size</code>, <code>iconLeft</code>, <code>suffix</code>, <code>invalid</code>, <code>mono</code>, <code>disabled</code>, <code>readOnly</code>, <code>style</code>, plus native input attributes.</li>
+      <li><strong>Amended 6 Sep 2026 — ref forwarding.</strong> <code>Input</code> now forwards its ref to the underlying <code>&lt;input&gt;</code>, merged with the internal ref the box uses for click-to-focus. Additive and inside the freeze: no new prop, no visual change, no behaviour change for any existing call site. It was taken because <code>SearchField</code> needs the node to restore focus after clearing, and the alternative — a composite reaching into the DOM for <code>querySelector('input')</code> — makes every composite depend on this component's internal markup. <code>Button</code> and <code>IconButton</code> already forward; this closes the inconsistency.</li>
+      <li><strong>Breaking-ish, visual:</strong> every text field, textarea and select in every consuming app gains a darker edge (1.29:1 → 4.74:1) and a hover step. This is the retarget the readme deferred from the IconButton freeze; it ships as a fix because the previous value was a 1.4.11 failure, not a decision. Pull <code>styles.css</code> and <code>_ds_bundle.js</code> together.</li>
+      <li><strong>Field is now a provider.</strong> Existing call sites that pass <code>htmlFor</code> and a matching <code>id</code> keep working unchanged; call sites that passed neither are silently fixed. <code>Field</code> exports <code>FieldContext</code> for a consumer building its own control — that is the supported extension point.</li>
+      <li><strong>Closed — <code>Combobox</code> shipped in 1.3.0</strong>, and the warning below was the right one: it is a real component with hand-written <code>combobox</code>/<code>listbox</code> ARIA, not an Input with a list under it. Use it above ~15 options. Original note: <strong>no Combobox.</strong> Search-with-suggestions is the most requested unbuilt control, and the temptation is to assemble it from Input plus a floating list. Do not: <code>aria-expanded</code>, <code>aria-controls</code>, <code>aria-activedescendant</code> and the arrow-key contract are the component. Specced next.</li>
+      <li><strong>Open — Checkbox and Radio borders.</strong> Still <code>--border-strong</code> (1.60:1); the same failure fixed here. Take it with their specs, since the tick and dot geometry are drawn against that border.</li>
+      <li><strong>Closed — <code>tokens.json</code> regeneration.</strong> <code>--border-control-hover</code> was added to <code>tokens/semantic.css</code> and mirrored into <code>tokens.json</code> by hand; the file has since been rebuilt by the generator at 1.2.0 and came back byte-identical, so the hand-mirror was correct and is no longer load-bearing. <code>npm run tokens:check</code> passes.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

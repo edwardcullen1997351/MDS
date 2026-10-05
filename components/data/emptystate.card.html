@@ -1,0 +1,45 @@
+<!-- @dsCard group="Components" viewport="920x620" name="EmptyState — four kinds of empty" subtitle="first-run · no-results · cleared · restricted; no surface of its own" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>EmptyState</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--background-page);padding:20px;font-family:var(--font-sans)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { EmptyState, Card, Button, Text } = window.MeridianDesignSystem_962c43;
+function Demo(){
+  return (
+  <div style={{display:'flex',flexDirection:'column',gap:16}}>
+    <div className="grid">
+      <Card title="Work orders" headingLevel={2} padding="none">
+        <EmptyState variant="first-run" title="No work orders yet"
+          actions={<Button variant="primary" iconLeft="plus">New work order</Button>}
+          hint="Or import a schedule from the planner.">
+          Orders scheduled for this line will appear here as soon as planning releases them.
+        </EmptyState>
+      </Card>
+      <Card title="Work orders" headingLevel={2} padding="none">
+        <EmptyState variant="no-results" title="No work orders match this filter" live="polite"
+          actions={<Button variant="secondary" iconLeft="x">Clear filters</Button>}>
+          Nothing on line 3 between 06:00 and 14:00. Try widening the range.
+        </EmptyState>
+      </Card>
+    </div>
+    <div className="grid">
+      <Card title="Alarms" headingLevel={2} padding="none">
+        <EmptyState variant="cleared" size="sm" title="No open alarms">
+          Everything acknowledged in the last shift.
+        </EmptyState>
+      </Card>
+      <Card title="Audit log" headingLevel={2} padding="none">
+        <EmptyState variant="restricted" size="sm" align="start" title="You cannot view the audit log"
+          actions={<Button variant="link">Request access</Button>}>
+          It needs the Compliance role.
+        </EmptyState>
+      </Card>
+    </div>
+    <Text size="xs" tone="tertiary">No surface and no border of its own — each of these is sitting in a Card body. The glyph is capped at 22px; there is no illustration slot.</Text>
+  </div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

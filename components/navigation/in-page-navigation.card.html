@@ -1,0 +1,90 @@
+<!-- @dsCard group="Components" viewport="780x420" name="Navigation — in-page" subtitle="In-page table of contents: anchor navigation, scrollspy active tracking, and heading indentation" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>In-Page Navigation</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--surface-card);padding:20px;font-family:var(--font-sans)}
+.row{display:grid;grid-template-columns:220px 1fr;gap:20px;background:var(--background-page);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;height:340px}
+.toc{padding:14px;background:var(--surface-card);border-right:var(--border-hairline);display:flex;flex-direction:column;gap:8px}
+.toc-lbl{font-size:var(--text-2xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold)}
+.toc-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:3px}
+.toc-item a{display:block;padding:5px 8px;font-size:var(--text-xs);color:var(--text-secondary);text-decoration:none;border-radius:var(--radius-xs);border-left:2px solid transparent;cursor:pointer}
+.toc-item a:hover{background:var(--surface-sunken);color:var(--text-primary)}
+.toc-item a.active{border-left-color:var(--action-solid);background:var(--surface-sunken);color:var(--action-solid);font-weight:var(--weight-semibold)}
+.toc-item.l3 a{padding-left:16px;font-size:11px}
+.content-pane{padding:16px 20px;overflow-y:scroll;display:flex;flex-direction:column;gap:20px;scroll-behavior:smooth}
+.art-sec h4{margin:0 0 4px 0;font-size:var(--text-sm);font-weight:var(--weight-semibold)}
+.art-sec p{margin:0;font-size:var(--text-xs);color:var(--text-secondary);line-height:1.5}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const SECTIONS = [
+  { id: 'sec-spec', title: '1. Machine Model', level: 2 },
+  { id: 'sec-loto', title: '2. Safety & LOTO', level: 2 },
+  { id: 'sec-shift', title: '2.1 Shift Checklist', level: 3 },
+  { id: 'sec-tool', title: '3. Tooling Offsets', level: 2 },
+  { id: 'sec-vibe', title: '4. Vibration FFT', level: 2 },
+  { id: 'sec-rca', title: '5. Emergency Stop', level: 2 }
+];
+
+function Demo(){
+  const [active, setActive] = React.useState('sec-spec');
+
+  const scrollTo = (id) => {
+    setActive(id);
+    const el = document.getElementById(id);
+    if(el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  return (
+    <div className="row">
+      <nav aria-label="On this page" className="toc">
+        <div className="toc-lbl">On This Page</div>
+        <ul className="toc-list">
+          {SECTIONS.map(s => (
+            <li key={s.id} className={`toc-item ${s.level===3?'l3':''}`}>
+              <a
+                className={active === s.id ? 'active' : ''}
+                onClick={(e)=>{ e.preventDefault(); scrollTo(s.id); }}
+                href={`#${s.id}`}
+              >
+                {s.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div className="content-pane">
+        <div className="art-sec" id="sec-spec">
+          <h4>1. Machine Model & Specifications</h4>
+          <p>Chakan PL-04 CNC Lathe Line 2. Dual 4500 RPM spindles with Fanuc 31i-B5 CNC controller for high-precision pinions.</p>
+        </div>
+        <div className="art-sec" id="sec-loto">
+          <h4>2. Safety & Lockout-Tagout (LOTO)</h4>
+          <p>Mandatory padlocks and key tags on breaker CB-04 prior to entering enclosure. Verify zero pneumatic line pressure.</p>
+        </div>
+        <div className="art-sec" id="sec-shift">
+          <h4>2.1 Shift Pre-flight Checklist</h4>
+          <p>Check way-lube reservoir level and hydraulic pressure (280 bar). Verify emergency e-stop circuit continuity.</p>
+        </div>
+        <div className="art-sec" id="sec-tool">
+          <h4>3. Tooling Offsets & Chuck Setup</h4>
+          <p>Touch-probe optical eye calibration for X and Z axes. Radial concentricity tolerance within ±0.003 mm.</p>
+        </div>
+        <div className="art-sec" id="sec-vibe">
+          <h4>4. Vibration FFT Spectrum</h4>
+          <p>Online piezoelectric sensor stream. Peak spectral velocity limit set at 1.8 mm/s RMS before automated alert.</p>
+        </div>
+        <div className="art-sec" id="sec-rca">
+          <h4>5. Emergency Stop & Incident RCA</h4>
+          <p>Trip e-stop button, lock spindle, export fault trace log to ERP portal, and report to Shift Lead Sandeep Kulkarni.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

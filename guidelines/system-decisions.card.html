@@ -1,0 +1,50 @@
+<!-- @dsCard group="Governance" viewport="900x1180" name="Two system decisions" subtitle="Container queries: adopted. Virtualisation: refused, with the reasoning." -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Two system decisions</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:28px}
+h1{margin:0 0 6px;font-size:var(--text-3xl);font-weight:var(--weight-light);letter-spacing:-0.02em}
+p.lede{margin:0 0 22px;max-width:76ch;color:var(--text-secondary);text-wrap:pretty}
+h2{margin:0 0 4px;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.verdict{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);padding:2px 8px;border-radius:var(--radius-full);white-space:nowrap}
+.yes{background:var(--status-success-soft);color:var(--text-success)}
+.no{background:var(--status-critical-soft);color:var(--text-critical)}
+section{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:20px 22px;margin-bottom:16px}
+.head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+p{margin:0 0 10px;max-width:78ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0 0 10px;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:78ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.sig{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);border-top:var(--border-hairline);padding-top:10px;margin-top:14px}
+.cost{border-left:2px solid var(--status-warning-solid);padding-left:12px;margin:12px 0}
+</style></head><body>
+<h1>Two system decisions</h1>
+<p class="lede">Both of these were logged three times, independently, by three different component specs. One sighting is a component gap; three is the system declining to decide something. Each is answered here once, and the component entries point at this page rather than repeating it.</p>
+
+<section>
+  <div class="head"><h2>Container queries</h2><span class="verdict yes">Adopted · 1.23.0</span></div>
+  <p>Logged by <code>EmptyState</code> §14, <code>List</code> §11 and <code>DescriptionList</code> §14 — each wanting to adapt to the width of the panel it sits in rather than the viewport, and each noting that no component in the system used a container query yet.</p>
+  <ul>
+    <li><strong>Support is not the obstacle it was when the first entry was written.</strong> Chrome and Edge 105+, Safari 16+, Firefox 110+ — all shipped by early 2023, all inside this system's stated floor.</li>
+    <li><strong>No fallback is written, deliberately.</strong> In an unsupporting browser the <code>@container</code> block is skipped and the component keeps its authored layout — which is exactly what products get today. The failure mode of the new feature is the current behaviour.</li>
+    <li><strong>Opt-in via <code>responsive</code>, never automatic.</strong> All three components are frozen. A default that changed underneath a shipped product is not a responsive improvement; it is a regression nobody asked for.</li>
+  </ul>
+  <div class="cost">
+    <p><strong>The real cost, stated plainly: this is the system's first component stylesheet.</strong> Every component here styles inline, on purpose, and <code>@container</code> has no inline equivalent — it is an at-rule or it is nothing. So <code>tokens/container-queries.css</code> exists, and its rules carry <code>!important</code>, because an inline style outranks a class selector and the component's own authored value is precisely what is being overridden.</p>
+    <p>That is a genuine erosion of a rule this system has kept everywhere else, which is why the file is kept to three components, a handful of properties, and only properties the specs already document as responsive. It restyles nothing generally. If it grows past that, the decision should be revisited rather than the file extended.</p>
+  </div>
+  <p><strong>What each component does:</strong> <code>DescriptionList</code> collapses to stacked pairs below 360px — a 180px term column against a 120px value column is two truncated columns rather than an alignment. <code>List</code> tightens to the <code>sm</code> rhythm below 380px; its structure never changes, because §11 already fixes what shrinks and what does not. <code>EmptyState</code> drops the illustration below 380px, since the glyph is decoration and the title and action are the content.</p>
+  <p class="sig">Closes: EmptyState §14 · List §11 · DescriptionList §14</p>
+</section>
+
+<section>
+  <div class="head"><h2>Virtualisation</h2><span class="verdict no">Refused · not this system's job</span></div>
+  <p>Logged by <code>Combobox</code>, <code>MultiCombobox</code> and <code>List</code>: five thousand options or rows render five thousand nodes. The request each time is windowing — render the visible slice, and a spacer for the rest.</p>
+  <ul>
+    <li><strong>Windowing needs a fixed row height, and two of the three deliberately do not have one.</strong> <code>List</code> §05 states it outright: a list row is as tall as its content because nothing aligns across rows, and a <code>min-height</code> would put empty space under single-line rows in a run that also holds three-line ones. A windowing engine would either impose that height — undoing the reason the component exists — or measure every row, which is the work it was meant to avoid.</li>
+    <li><strong>It moves a data problem into the view layer.</strong> Five thousand options in a Combobox is not a rendering problem; it is a filter that has not been applied. The honest fix is server-side paging or a capped result set, and it makes the interaction better rather than merely faster: nobody scrolls five thousand rows to find one.</li>
+    <li><strong>Half a windowing implementation is worse than none.</strong> It breaks find-in-page, anchor links, screen-reader row counts (<code>aria-setsize</code> has to be maintained by hand), keyboard <kbd>Home</kbd>/<kbd>End</kbd>, and printing. Each is fixable; together they are a library, and a design system that ships one is maintaining a library it did not set out to write.</li>
+  </ul>
+  <p><strong>So the guidance is: cap or page on the server, and the components stay simple.</strong> A product that genuinely needs windowing should wrap the component with a windowing library of its choosing — the components take arrays and render what they are given, which is exactly what makes that possible. This is a refusal with a route, not a refusal with a shrug.</p>
+  <p class="sig">Answers: Combobox · MultiCombobox · List §14 — the entries stay open as known limits, not as work</p>
+</section>
+</body></html>

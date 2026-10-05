@@ -1,0 +1,67 @@
+/* Container queries — the system's FIRST component stylesheet.
+
+   Three specs logged the same gap independently (EmptyState §14, List §11,
+   DescriptionList §14): a component that should adapt to the width of the
+   panel it sits in, not the viewport. Three sightings is what turned it from a
+   component gap into a system decision, and the decision has two parts.
+
+   ONE — adopt container queries. Support is universal in the browsers this
+   system already targets (Chrome/Edge 105+, Safari 16+, Firefox 110+, all
+   shipped by early 2023), and no fallback is written: in an unsupporting
+   browser the @container block is skipped and the component keeps its
+   authored layout, which is exactly the behaviour products have today.
+
+   TWO — accept a stylesheet. Every component in this system styles inline,
+   deliberately, and container queries cannot: @container is a CSS at-rule with
+   no inline equivalent. So these rules carry !important, because inline styles
+   outrank a class selector and the component's own authored value is the thing
+   being overridden. That is the real cost of the decision, and it is why the
+   rules below are kept few, narrow, and specific to properties the component
+   documents as responsive. Nothing here restyles a component generally.
+
+   Opt-in, never automatic: a component adapts only when the caller passes
+   `responsive`, which is what puts the container on the wrapper. A frozen
+   default cannot change underneath a product that has already shipped. */
+
+[data-ds-container] { container-type: inline-size; }
+
+/* DescriptionList — below 360px a 180px term column against a ~120px value
+   column is two truncated columns rather than an alignment, and the alignment
+   is the whole component (§11). Collapse to stacked pairs. */
+@container (max-width: 360px) {
+  [data-ds-cq="description-list"] { grid-template-columns: minmax(0, 1fr) !important; }
+  [data-ds-cq="description-list"] > div > dd { grid-column-start: auto !important; }
+}
+
+/* List — the row keeps its structure at every width (§11: the gutter and the
+   actions never shrink, the content column does). What a narrow panel does
+   want is the sm rhythm, so the row stops wasting vertical space it needs for
+   the title. */
+@container (max-width: 380px) {
+  [data-ds-cq="list-row"] { padding-top: var(--list-row-padding-y-sm) !important; padding-bottom: var(--list-row-padding-y-sm) !important; }
+}
+
+/* EmptyState — at narrow widths the illustration is the first thing to go: it
+   is decoration, and the title and action are the content (§14). */
+@container (max-width: 380px) {
+  [data-ds-cq="empty-state-figure"] { display: none !important; }
+  [data-ds-cq="empty-state"] { padding-top: var(--space-6) !important; padding-bottom: var(--space-6) !important; }
+}
+
+/* Card — in narrow columns (<340px), adapt padding from md/lg to sm so narrow panels
+   preserve content column budget while maintaining visual grouping. */
+@container (max-width: 340px) {
+  [data-ds-cq="card"][data-card-padding="md"],
+  [data-ds-cq="card"][data-card-padding="lg"] {
+    padding: var(--space-4) !important;
+  }
+}
+
+/* Toolbar — when container is squeezed (<420px), compress gap and allow wrap so
+   search and action buttons stack cleanly without horizontal overflow. */
+@container (max-width: 420px) {
+  [data-ds-cq="toolbar"] {
+    flex-wrap: wrap !important;
+    gap: var(--space-2) !important;
+  }
+}

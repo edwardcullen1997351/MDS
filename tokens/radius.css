@@ -1,0 +1,25 @@
+:root{
+/* ── RADIUS SCALE ──────────────────────────────────────────────────────
+   Even-numbered primitives. Radius is a scale of intent, not of size: a
+   card and a full-page panel share the same corner. */
+--radius-0:0px;
+--radius-2:2px;
+--radius-4:4px;
+--radius-6:6px;
+--radius-8:8px;
+--radius-12:12px;
+--radius-16:16px;
+--radius-24:24px;
+--radius-full:999px;
+
+/* Named roles — this is the layer product code uses. */
+--radius-none:var(--radius-0);
+--radius-xs:var(--radius-2);   /* chips, checkbox, swatches, focus ring on links */
+--radius-sm:var(--radius-4);   /* THE HOUSE CORNER — buttons, inputs, selects, tags */
+--radius-md:var(--radius-6);   /* cards, table containers, panels */
+--radius-lg:var(--radius-8);   /* dialogs, drawers, popovers */
+--radius-xl:var(--radius-12);  /* full-bleed marketing panels */
+--radius-2xl:var(--radius-16); /* reserved */
+--radius-3xl:var(--radius-24); /* reserved */
+--radius-pill:var(--radius-full); /* switches, radios, status dots — nothing else */
+}

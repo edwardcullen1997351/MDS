@@ -1,0 +1,90 @@
+.ds-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ds-global-space-3, 12px);
+  padding: var(--ds-global-space-3, 12px) var(--ds-global-space-4, 16px);
+  border-radius: var(--ds-global-radius-md, 6px);
+  border: 1px solid transparent;
+  font-family: var(--ds-global-fontFamily-sans, sans-serif);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.ds-banner--info {
+  background-color: var(--ds-global-color-info-50, #F0F9FF);
+  border-color: var(--ds-global-color-info-200, #BAE6FD);
+  color: var(--ds-global-color-info-900, #0C4A6E);
+}
+
+.ds-banner--success {
+  background-color: var(--ds-global-color-success-50, #F0FDF4);
+  border-color: var(--ds-global-color-success-200, #BBF7D0);
+  color: var(--ds-global-color-success-900, #14532D);
+}
+
+.ds-banner--warning {
+  background-color: var(--ds-global-color-warning-50, #FFFBEB);
+  border-color: var(--ds-global-color-warning-200, #FDE68A);
+  color: var(--ds-global-color-warning-900, #78350F);
+}
+
+.ds-banner--error {
+  background-color: var(--ds-global-color-danger-50, #FEF2F2);
+  border-color: var(--ds-global-color-danger-200, #FECACA);
+  color: var(--ds-global-color-danger-900, #7F1D1D);
+}
+
+.ds-banner__icon {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.ds-banner__content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ds-banner__title {
+  display: block;
+  font-size: var(--ds-global-fontSize-sm, 14px);
+  font-weight: var(--ds-global-fontWeight-semibold, 600);
+  margin: 0;
+  color: inherit;
+}
+
+.ds-banner__description {
+  font-size: var(--ds-global-fontSize-sm, 14px);
+  margin: 0;
+  line-height: 1.4;
+  color: inherit;
+}
+
+.ds-banner__action {
+  margin-top: 8px;
+}
+
+.ds-banner__close {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.85;
+  padding: 2px 6px;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  transition: opacity 150ms ease, background-color 150ms ease;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.ds-banner__close:hover,
+.ds-banner__close:focus-visible {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.08);
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
+}

@@ -1,0 +1,425 @@
+<!-- @dsCard group="Specs · Core" viewport="1080x760" name="Card" subtitle="Full specification — the grouping device: semantics, heading level, footer composition, a11y" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Card — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section.sec{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section.sec:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:16px}
+.demo.page{background:var(--background-page)}
+.st{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+.st th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+.st td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+.st tr:last-child td{border-bottom:none}
+.st td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);display:block}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+@media (max-width:860px){section.sec{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Card, Table, Pagination, Button, IconButton, Badge, Text, Alert, Link, Tag } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section className="sec">
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table className="st"><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+
+const ROWS = [
+  {wo:'WO-88431',line:'Frame weld',qty:1240},
+  {wo:'WO-88432',line:'Paint',qty:860},
+  {wo:'WO-88433',line:'Trim',qty:412},
+];
+const COLS = [
+  {key:'wo',header:'WO',mono:true,width:'130px'},
+  {key:'line',header:'Line'},
+  {key:'qty',header:'Qty',align:'right',width:'90px'},
+];
+
+function Spec(){
+  const [page,setPage] = React.useState(2);
+  const [picked,setPicked] = React.useState(null);
+  const [theme,setTheme] = React.useState('light');
+  const [density,setDensity] = React.useState('comfortable');
+
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-density', density);
+  }, [density]);
+
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Core · Component specification</span>
+    <h1>Card</h1>
+    <p className="lede">The default grouping device, and the surface most other components sit inside — a table, a chart, a form, a list of records. Because it is a container rather than a control, nearly every defect it can have is <strong>semantic</strong>: the wrong element, the wrong heading level, or a promise of interactivity it cannot keep. None of those show in a screenshot, which is how four of them survived to 1.15.</p>
+    <div className="meta" style={{alignItems:'center',justifyContent:'space-between'}}>
+      <div style={{display:'flex',flexWrap:'wrap',gap:'8px 20px',alignItems:'center'}}>
+        <span>components/core/Card.jsx</span><span>window.MeridianDesignSystem_962c43.Card</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items</span><span>since: 1.0.0</span><span>tokens listed in §13</span>
+      </div>
+      <div style={{display:'flex',gap:12,alignItems:'center',paddingTop:4}}>
+        <div style={{display:'flex',gap:4}}>
+          {['light','dark'].map(t => (
+            <Button key={t} size="sm" variant={theme===t?'primary':'ghost'} onClick={()=>setTheme(t)}>
+              {t==='light'?'☀ Light':'🌙 Dark'}
+            </Button>
+          ))}
+        </div>
+        <div style={{display:'flex',gap:4}}>
+          {['compact','comfortable','expanded'].map(d => (
+            <Button key={d} size="sm" variant={density===d?'secondary':'ghost'} onClick={()=>setDensity(d)}>
+              {d}
+            </Button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="A boundary around content that belongs together.">
+    <p>Use a card when a group of content is <strong>one thing</strong> and the page contains other things beside it. The border is the whole point: it says "these belong together and that does not". If a page holds exactly one region, that region does not need a card — the page is already the boundary.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Group related content on a page with other groups','Card','This component.'],
+      ['Frame a table or chart','Card padding="none"','The content meets the card edge; the header names it and the footer holds the paginator (§04).'],
+      ['State a condition','Alert','A tinted block in the flow, not a bordered container.'],
+      ['Make one record clickable in a list','Card interactive + onClick','Legitimate — but only if the card holds no other controls (§07).'],
+      ['Show a plane with no grouping meaning','Surface','The primitive. A card without a title, a footer or a boundary that means something is a Surface.'],
+      ['Take a decision','Dialog','A card cannot block, and must not pretend to.'],
+      ['Lay out a page','Grid','Cards are content, not columns.'],
+    ]}/>
+    <ul>
+      <li><strong>Do not nest cards.</strong> Two borders one inside the other say the same thing twice, and the inner one always looks like a mistake. Use a hairline, a heading, or a <code>Surface tone="sunken"</code> well.</li>
+      <li><strong>A card is not a section heading.</strong> If every block on a page is a card, nothing is grouped — the borders have become the background.</li>
+      <li><strong>Match the boundary to the meaning.</strong> A card around three unrelated stats is three cards, or none.</li>
+      <li><strong>Cards are the system's most-composed surface</strong>: Table, Pagination, Alert, forms and charts all sit inside one, which is why §04 is mostly about composition rather than looks.</li>
+    </ul>
+    <div className="demo page">
+      <div className="grid3">
+        <Card title="Throughput" subtitle="Last 4 hours">
+          <Text size="2xl" weight="light" numeric>1,240</Text>
+          <Text size="xs" tone="tertiary" block>units · 91.6% OEE</Text>
+        </Card>
+        <Card title="Open alarms" subtitle="Assembly">
+          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}><Badge tone="danger" dot>1 critical</Badge><Badge tone="warning" dot>2 warning</Badge></div>
+        </Card>
+        <Card title="Shift" subtitle="Days · 06:00–14:00">
+          <Text size="sm" tone="secondary">14 of 16 stations staffed.</Text>
+        </Card>
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Header, body, footer — each optional, each a band.">
+    <div className="demo col">
+      <Card title="Work orders" subtitle="Days shift · Assembly" headingLevel={2}
+        actions={<><Button variant="ghost" size="sm">Export</Button><IconButton icon="ellipsis" label="Card actions" size="sm" /></>}
+        footer={<><Button variant="ghost" size="sm">Cancel</Button><Button variant="primary" size="sm">Release</Button></>}>
+        <Text size="sm" tone="secondary">Body content. Padded by <code>padding</code>, which also sets the header and footer inline padding so all three bands align down the same edge.</Text>
+      </Card>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        {[['1','Container — --card-background, a --card-border hairline, --card-radius (6px), --card-shadow (elevation-1). The border is the elevation; the shadow is almost nothing.'],
+          ['2','Element — a <section> when the card has a title, a <div> when it does not. An unnamed <section> is not a region, so it would buy nothing (§08).'],
+          ['3','Header — title, optional subtitle, optional right-aligned actions, over a --card-header-border hairline. The title is the card\u2019s accessible name.'],
+          ['4','Title — --text-md semibold. The heading LEVEL is a prop, because a card does not know how deep in the document it sits (§03).'],
+          ['5','Subtitle — --text-xs in --card-subtitle-text. Qualifies the title: a scope, a time range, a count.'],
+          ['6','Body — padded by --card-padding. padding="none" for content that must meet the card edge.'],
+          ['7','Footer — a band on --card-footer-background above a hairline, matching Dialog\u2019s footer so an action row reads the same everywhere. Alignment is a prop (§04).']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+    </div>
+    <p>The header and footer are <strong>bands, not floating rows</strong>: both are separated by a hairline and the footer takes <code>--card-footer-background</code>, one step darker than the card. That is what lets a reader recognise "this names the group" and "these are the things I can do" without reading either.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Presentational, except for the two that carry semantics.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['title','ReactNode','—','Names the card, and becomes its accessible name via aria-labelledby (§08).'],
+      ['headingLevel','number','3','1–6. The card cannot know its own depth; the page does.'],
+      ['subtitle','ReactNode','—','One clause qualifying the title.'],
+      ['actions','ReactNode','—','Right-aligned header controls — IconButtons or a ghost Button.'],
+      ['footer','ReactNode','—','The footer band.'],
+      ['footerAlign','\u2018end\u2019 | \u2018start\u2019 | \u2018between\u2019','end','end for an action row. between for ONE full-width child that distributes itself — Pagination (§04).'],
+      ['padding','\u2018none\u2019 | \u2018sm\u2019 | \u2018md\u2019 | \u2018lg\u2019','md','0 / 16 / 24 / 32px. Also sets the header and footer inline padding.'],
+      ['elevated','boolean','false','--card-shadow-elevated (elevation-3). For a card that genuinely floats.'],
+      ['interactive','boolean','false','Makes the whole card a control. Requires onClick — warns without it (§07).'],
+      ['onClick','(e) => void','—','With interactive: click, Enter/Space, focus and a focus ring.'],
+      ['as','element','section | div','Override the element when the default is wrong for the document.'],
+    ]}/>
+    <p><strong><code>headingLevel</code> is the prop this component was missing.</strong> The title rendered a hard-coded <code>&lt;h3&gt;</code> at every depth, so a card inside a section already headed by an <code>h3</code> produced an invalid outline with no way to correct it — and a screen-reader user navigating by heading got a flat, wrong structure. Accordion has taken <code>headingLevel</code> since 1.0; Card did not, which is the kind of inconsistency only a spec finds.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Padding and footer alignment. Composition is the real variation.">
+    <T cols={['Composition','How','Why']} rows={[
+      ['Content card','padding="md"','The default. Text, stats, a form, a chart with its own margins.'],
+      ['Table card','padding="none"','The table\u2019s own cell padding takes over and its row rules meet the card edge. Padding here would inset the rules and produce a stripe of background down both sides.'],
+      ['Table + paginator','padding="none" + footer + footerAlign="between"','The system\u2019s most-recommended composition, and it was broken until 1.15.0 (below).'],
+      ['Action card','footer with two Buttons, footerAlign="end"','Cancel first, confirm last — the same order as Dialog.'],
+      ['Interactive card','interactive + onClick, and NO controls inside','A whole-card target. Only legal when the card holds nothing else clickable (§07).'],
+      ['Elevated card','elevated','Rare. A card that floats above sibling cards; not a substitute for hierarchy.'],
+    ]}/>
+    <div className="demo col">
+      <span className="lbl">padding="none" + footerAlign="between" — table and paginator</span>
+      <Card title="Work orders" subtitle="Days shift" headingLevel={2} padding="none"
+        footerAlign="between"
+        footer={<Pagination page={page} totalItems={68} pageSize={3} onPageChange={setPage} itemLabel="work orders" size="sm" />}>
+        <Table caption="Work orders" rowKey="wo" columns={COLS} rows={ROWS} />
+      </Card>
+      <Text size="xs" tone="tertiary">The summary sits left, the controls right. With the default <code>footerAlign="end"</code> the paginator collapses to its content and the two jam together on the right — that was the shipped behaviour until 1.15.0 (§13).</Text>
+    </div>
+    <div className="demo col">
+      <span className="lbl">interactive + onClick — a whole-card target with nothing else inside it</span>
+      <div className="grid3">
+        {['Assembly 3','Assembly 4','Weld 1'].map(n=>(
+          <Card key={n} padding="sm" interactive onClick={()=>setPicked(n)}
+            style={picked===n?{borderColor:'var(--border-focus)'}:undefined}>
+            <Text size="sm" weight="medium" block>{n}</Text>
+            <Text size="xs" tone="tertiary">Tap, or Tab and press Enter</Text>
+          </Card>
+        ))}
+      </div>
+      <Text size="xs" tone="tertiary">{picked ? `Opened ${picked}.` : 'Nothing opened yet.'} Each card is a real control: focusable, Enter/Space, and a focus ring — not a pointer cursor over a div.</Text>
+    </div>
+    <ul>
+      <li><strong>No tone variants.</strong> A card is a boundary, not a message. A tinted card is an <code>Alert</code>, and a coloured left border is banned system-wide.</li>
+      <li><strong>No collapsible card.</strong> That is an <code>Accordion</code>, which has the heading, the button and the region already.</li>
+      <li><strong>No "media card" with a top image.</strong> Nothing in a plant console needs one, and the pattern brings an aspect-ratio and cropping contract with it.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Padding is the only size, and it sets all three bands.">
+    <T cols={['padding','Body','Header / footer inline','Use']} rows={[
+      ['none','0','space-4 fallback','Tables, charts and anything that must meet the card edge.'],
+      ['sm','16px','16px','Dense list items, compact stat cards, cards inside a sidebar.'],
+      ['md','24px','24px','The default.'],
+      ['lg','32px','32px','A single-purpose card on a page of its own — an empty state, a settings panel.'],
+    ]}/>
+    <p>Padding sets the <strong>inline</strong> padding of the header and footer as well as the body, so all three bands align down one edge. Their <strong>block</strong> padding does not scale: a header is <code>space-4</code> and a footer <code>space-3</code> at every setting, because a band's height is set by the controls in it, and a 32px-tall gap above a title makes a card look empty rather than generous.</p>
+    <div className="demo col">
+      <div className="grid3">
+        {['sm','md','lg'].map(p=>(
+          <Card key={p} title={`padding="${p}"`} padding={p} footer={<Button variant="ghost" size="sm">Action</Button>}>
+            <Text size="xs" tone="secondary">Body.</Text>
+          </Card>
+        ))}
+      </div>
+      <Text size="xs" tone="tertiary">Note the header and footer band heights hold steady while the inline padding steps — that is what keeps a row of differently-padded cards looking like one family.</Text>
+    </div>
+    <p><strong>There is no width prop.</strong> A card fills its grid or flex track, always. Width is the page's decision, and a card that sets its own is a card that will not sit in a row with its siblings.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Two, and only one of them is visible.">
+    <T cols={['State','Treatment']} rows={[
+      ['Resting','--card-border hairline, --card-shadow. No hover, no tint. A static card does not respond to the pointer, because it does nothing.'],
+      ['Hover (interactive only)','--card-background-hover and --card-border-hover, over --transition-control (140ms).'],
+      ['Focus-visible (interactive only)','--card-border-hover plus --card-focus-ring. Added in 1.15.0 — the component had no focus ring at all, which was a 2.4.7 failure the moment interactive existed.'],
+      ['Elevated','--card-shadow-elevated. A property, not a state.'],
+      ['Loading','Not a state of the card. The content owns it — Table loading, or Skeleton in the body. A card that greys out takes its own title away.'],
+      ['Empty','Not a state of the card. An empty state goes IN the body, with its own words.'],
+      ['Disabled','There is no disabled card. Disable the controls inside it.'],
+    ]}/>
+    <p><strong>A static card is deliberately inert.</strong> Hover and focus styling are gated on <code>interactive</code> rather than on the presence of any handler — the same rule Tag follows — because a card that lights up under the cursor and then does nothing when clicked teaches people to distrust every other hover in the product.</p>
+    <div className="demo page">
+      <div className="grid3">
+        <Card padding="sm"><Text size="xs" tone="secondary">Static — no hover</Text></Card>
+        <Card padding="sm" interactive onClick={()=>{}}><Text size="xs" tone="secondary">Interactive — hover and Tab to it</Text></Card>
+        <Card padding="sm" elevated><Text size="xs" tone="secondary">Elevated</Text></Card>
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Nothing, unless the card is a control. Then everything.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['(static card)','Not focusable, no role, no keys. It is a container, and its contents keep their own tab order in document order.'],
+      ['Tab','Reaches an interactive card, and reaches the controls inside any card, in DOM order — header actions, body controls, then footer.'],
+      ['Enter · Space','Activates an interactive card. Handled on the card itself and ignored when the event bubbled from a control inside it.'],
+      ['Escape','Nothing. A card is not a layer.'],
+    ]}/>
+    <p className="warn"><strong><code>interactive</code> was a lie until 1.15.0.</strong> It set <code>cursor: pointer</code> and strengthened the border on a <code>&lt;section&gt;</code> that was not focusable, carried no role and handled no keys — and the component had no <code>onClick</code> prop at all, so products passed one through the spread and got a card that worked with a mouse and was invisible to a keyboard. The system's own console kit had exactly one such card, with no handler anywhere: a pointer cursor promising nothing. It is the same defect class as Table's <code>&lt;tr onClick&gt;</code> and Dialog's <code>&lt;th onClick&gt;</code>, and it is now three for three.</p>
+    <p><strong>An interactive card must not contain other controls.</strong> A <code>role="button"</code> holding a button is invalid, the inner control's activation cannot be distinguished from the card's by assistive technology, and a screen reader flattens the whole card into one announcement. That is why the console kit's alarm cards had <code>interactive</code> removed rather than an <code>onClick</code> added — they hold a runbook IconButton and an acknowledge Button, so <strong>the card can never be the control</strong>. When a record needs both a whole-row target and its own actions, make the primary text a <code>Link</code> and leave the card inert.</p>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="The element follows the content.">
+    <ul>
+      <li><strong>A titled card is a <code>&lt;section&gt;</code> with <code>aria-labelledby</code></strong> pointing at its real heading, which makes it a named region a screen-reader user can jump to and skip. That is the entire argument for the element.</li>
+      <li><strong>An untitled card is a <code>&lt;div&gt;</code>.</strong> An unnamed <code>&lt;section&gt;</code> is <em>not</em> exposed as a region, so it bought nothing — and some screen readers announce it as an unnamed region, which is worse than a plain div because the user is told a landmark exists and not what it holds. The component previously rendered <code>&lt;section&gt;</code> unconditionally with no name at all.</li>
+      <li><strong><code>headingLevel</code> matches the document outline</strong> (§03). A hard-coded <code>h3</code> is the most common accessibility defect in card-heavy pages, because heading navigation is how many users read a dense screen.</li>
+      <li><strong>Interactive cards are real controls</strong> — <code>tabIndex</code>, <code>role="button"</code>, Enter/Space and a focus ring (§07) — and must hold no other controls.</li>
+      <li><strong>Header actions carry their own names.</strong> An IconButton in a card header is often the only control there, and "Card actions" is not a name — say what it acts on ("Work order actions").</li>
+      <li><strong>The footer is not a landmark.</strong> It is a <code>&lt;footer&gt;</code> inside a section, which is a generic element there rather than <code>contentinfo</code> — correct, since a card's action row is not the page's footer.</li>
+      <li><strong>Contrast:</strong> title <code>--text-primary</code>, subtitle <code>--card-subtitle-text</code> (tertiary — legitimate, because a subtitle qualifies and is never the only place information lives). The border is structural and exempt from text contrast.</li>
+      <li><strong>Do not rely on the border alone to group.</strong> A card without a title groups visually and not semantically; give any group that matters a heading.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="One transition, and only on cards that respond.">
+    <T cols={['Moment','Motion','Why']} rows={[
+      ['Hover / focus (interactive)','--transition-control, 140ms, background and border only','The same 140ms as Button and Input, so a page of controls settles as one object.'],
+      ['Static card','None at all — no transition is declared.','Nothing changes, so there is nothing to transition. Declaring one anyway is how a card ends up animating a border it should not have.'],
+      ['Appearing','None. Cards arrive with their page.','A staggered fade-in of six cards is six things moving before the operator can read any of them.'],
+      ['Content changing','None on the card. The content owns its own motion.','—'],
+      ['Elevation','Never animated.','A card that lifts on hover is a marketing pattern; here it would suggest the card is draggable.'],
+      ['Reduced motion','The transition collapses to 1ms.','—'],
+    ]}/>
+    <p>Cards are the most numerous element on a console page — a dozen on a dashboard is normal. That multiplicity is the whole argument for restraint: any motion a card has, it has twelve times at once, and the page becomes a field of things reacting to a cursor passing over them on its way somewhere else.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="A title that names the group; a subtitle that scopes it.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Title is a short noun phrase:</strong> "Work orders", "Open alarms", "API keys".</li>
+        <li><strong>Subtitle scopes it:</strong> "Days shift · Assembly", "Last 4 hours", "3 of 12".</li>
+        <li><strong>Name header actions after their object:</strong> "Work order actions", not "Card actions".</li>
+        <li><strong>Footer: cancel first, confirm last</strong>, with a verb on the confirm — the same order as Dialog.</li>
+        <li><strong>Let the body speak in its own voice</strong> — a table's headers, a chart's axes. The card names the group and stops.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>Sentence titles</strong> or a title that repeats the page's own heading.</li>
+        <li><strong>A subtitle that explains the obvious:</strong> "A list of work orders" under "Work orders".</li>
+        <li><strong>Instructions in the header.</strong> Help belongs beside the control it helps, or in a Popover.</li>
+        <li><strong>Three or more footer buttons.</strong> Two, plus at most a link.</li>
+        <li><strong>A title on a card whose content already names itself</strong> — a single big number with its own label does not need a header band too.</li>
+        <li><strong>Emoji or icons in the title.</strong> The header has an actions slot; the title is words.</li>
+      </ul></div>
+    </div>
+    <p>The test for a title is whether it would still make sense as an item in a "skip to" list — because with <code>aria-labelledby</code> wired, that is literally what it is (§08). "Work orders" passes. "Overview" does not.</p>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="It fills its track and reflows its bands.">
+    <ul>
+      <li><strong>A card has no width of its own</strong> — it fills its grid or flex track, so responsiveness is the page's grid, not the card's business (§05).</li>
+      <li><strong>Header actions wrap under the title</strong> when the title is long: the header is a flex row with a <code>gap</code>, and the actions block is <code>flex: 0 0 auto</code>, so the title truncates its own line rather than crushing the buttons.</li>
+      <li><strong>The footer wraps</strong> (<code>flex-wrap</code>), keeping the confirm last in reading order.</li>
+      <li><strong>Step <code>padding</code> down one level below the tablet breakpoint</strong> when a card is edge-to-edge: <code>lg</code> → <code>md</code>, <code>md</code> → <code>sm</code>. 32px of padding on a 360px screen leaves 296px of content.</li>
+      <li><strong><code>padding="none"</code> is what makes a table card work on a phone</strong> — the table's own scroll region reaches the card edge, so no horizontal padding is wasted on either side of a surface that already scrolls.</li>
+      <li><strong>Never set a fixed height.</strong> A row of cards should equalise through the grid (<code>align-items: stretch</code>), which the card supports by being a full-height flex column.</li>
+      <li><strong>Consider dropping the card entirely on narrow screens.</strong> At 360px a card border is 2px of a 360px width doing the job a heading would do better — the content is already the only thing on screen.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{maxWidth:340}}>
+        <Card title="A rather long card title that will not crush its actions" subtitle="Days shift" padding="sm"
+          actions={<IconButton icon="ellipsis" label="Work order actions" size="sm" />}
+          footerAlign="between"
+          footer={<Pagination page={1} totalItems={12} pageSize={3} onPageChange={()=>{}} variant="compact" size="sm" />}>
+          <Text size="xs" tone="secondary">Narrow track, sm padding, compact paginator.</Text>
+        </Card>
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Six, and two of them are why card-heavy pages read badly.">
+    <div className="two">
+      <div className="pane dont"><h3>The two that matter</h3><ul>
+        <li><strong>Everything is a card.</strong> When every block on a page has a border, nothing is grouped — the borders have become the background, and the operator has to read all of it to find the one thing that matters. Cards are a contrast device and they only work while some content is not in one.</li>
+        <li><strong>A card that looks clickable and is not</strong> — or is clickable only with a mouse. Both teach the same lesson: appearances in this product cannot be trusted. If it responds to the pointer it must respond to <kbd>Enter</kbd>, and if it does neither it must not have a hover state.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Also don't</h3><ul>
+        <li><strong>Nest cards.</strong> Two borders saying the same thing; the inner one always looks like a bug.</li>
+        <li><strong>An interactive card containing buttons.</strong> A control inside a control — invalid, and unusable by assistive technology (§07).</li>
+        <li><strong>A hard-coded heading level.</strong> Set <code>headingLevel</code> to match the outline; a page of <code>h3</code>s under an <code>h3</code> is a broken document.</li>
+        <li><strong>Padding around a table.</strong> The row rules stop short of the card edge and leave a stripe down both sides — <code>padding="none"</code>.</li>
+        <li><strong>A tinted or accent-bordered card</strong> to signal severity. That is an <code>Alert</code>.</li>
+        <li><strong><code>elevated</code> for emphasis.</strong> Shadow is depth, not importance — importance is position, size and words.</li>
+      </ul></div>
+    </div>
+    <p className="warn">The review test: <strong>cover the borders and read the page.</strong> If it still makes sense, the cards were doing nothing and should come off. If it becomes a wall of undifferentiated content, they were earning their place.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="What was hardened on 5 Sep 2026, and why.">
+    <ul>
+      <li><strong>The element is now conditional.</strong> <code>&lt;section&gt;</code> when titled — with <code>aria-labelledby</code> pointing at the heading, making it a real named region — and <code>&lt;div&gt;</code> when not. It was previously <code>&lt;section&gt;</code> unconditionally with <em>no accessible name</em>, which is not exposed as a region at all: the element was doing nothing, and announcing an unnamed region where it was announced.</li>
+      <li><strong><code>headingLevel</code> added.</strong> The title was a hard-coded <code>h3</code> at every depth. Accordion has had this prop since 1.0, so the inconsistency was in Card alone.</li>
+      <li><strong><code>interactive</code> is now real, and now honest.</strong> It takes <code>onClick</code>, adds <code>tabIndex</code>, <code>role="button"</code>, Enter/Space and a focus ring, and <strong>warns when it is set without a handler</strong> — the state the console kit was actually shipping. A <code>--card-focus-ring</code> token was added; the component had none, which was a 2.4.7 failure from the moment <code>interactive</code> existed.</li>
+      <li><strong><code>footerAlign</code> added, fixing the composition this system recommends most.</strong> The footer was hard-wired to <code>justify-content: flex-end</code>, and <code>Pagination</code> is a <code>space-between</code> flex row with no width — so as a flex item in a <code>flex-end</code> footer it collapsed to its content and its summary jammed against its controls. Both the Pagination and Table specs told developers to put a paginator in a card footer, and it had never laid out correctly. <code>footerAlign="between"</code> also <em>stretches</em> its child, because a <code>space-between</code> parent cannot help an item that has already collapsed.</li>
+      <li><strong>Hover, focus, the resting border <em>and the resting shadow</em> moved out of React into <code>base.css</code>,</strong> keyed on <code>[data-card]</code> — the same hook pattern as <code>[data-table-row]</code>. Hover was a <code>useState</code>, so every pointer entry re-rendered the card and its whole subtree, and <code>:focus-visible</code> could not be expressed inline at all. Only <code>[data-card="interactive"]</code> gets the hover and focus rules, so a static card stays inert by construction rather than by remembering to check a flag.</li>
+      <li><strong>The shadow had to move too, and forgetting that killed the focus ring on the first attempt.</strong> The background and border were correctly moved to the stylesheet while <code>boxShadow</code> was left inline — and the focus ring <em>is</em> a box-shadow, so an inline box-shadow of any value outranked it and an interactive card was focusable with no visible indicator: the 2.4.7 failure the change was meant to fix, still shipping. <code>elevated</code> is now the <code>[data-elevated]</code> attribute and both shadows live in <code>base.css</code>, where <code>:focus-visible</code> outranks them on specificity. The general rule this makes concrete: <strong>if a state rule sets a property, no inline style may set that property</strong> — moving "the background and the border" is not enough, you have to move every property any state touches.</li>
+      <li><strong>Padding moved to a lookup</strong> from a chained ternary, and <code>padding</code> is validated by falling back to <code>md</code> rather than rendering <code>undefined</code>.</li>
+      <li><strong>The footer's block padding does not scale with <code>padding</code></strong> (§05) — a deliberate asymmetry, recorded because it looks like an oversight in the code.</li>
+      <li><strong>Two consumers fixed:</strong> the console template and the console UI kit both had <code>&lt;Card interactive&gt;</code> with no handler on their alarm rows. They were not given an <code>onClick</code> — the cards hold a runbook IconButton and an acknowledge Button, so <strong>the card can never be the control</strong> (§07). <code>interactive</code> was removed instead.</li>
+      <li><strong>Not added, on purpose:</strong> tones, a collapsible variant (that is Accordion), a media/image header, a width or height prop, a loading state (the content owns it), and a <code>disabled</code> state (disable the controls inside).</li>
+    </ul>
+    <div className="tokenlist">
+      {['--card-background','--card-background-hover','--card-border','--card-border-hover','--card-radius','--card-shadow','--card-shadow-elevated','--card-focus-ring','--card-title-text','--card-subtitle-text','--card-header-border','--card-footer-background','--card-footer-border'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Composing into it.">
+    <pre>{`import { Card } from '@meridian/core';
+
+// The canonical table card. Three props carry the whole composition:
+// padding="none" so the row rules meet the edge, footerAlign="between"
+// so the paginator can distribute itself, headingLevel to fit the outline.
+<Card
+  title="Work orders"
+  subtitle={\`\${total} open · Days shift\`}
+  headingLevel={2}
+  padding="none"
+  actions={<IconButton icon="ellipsis" label="Work order actions" size="sm" />}
+  footerAlign="between"
+  footer={
+    <Pagination page={page} totalItems={total} pageSize={25}
+                onPageChange={setPage} itemLabel="work orders" />
+  }
+>
+  <Table caption="Work orders" rowKey="wo" columns={columns} rows={rows}
+         minWidth="820px" freezeLeading loading={pending} />
+</Card>
+
+// An interactive card: a whole-record target with NOTHING else clickable
+// inside it. If it needs its own actions, keep the card inert and make the
+// primary text a Link instead.
+<Card interactive onClick={() => open(line)} padding="sm">
+  <Text size="sm" weight="medium" block>{line.name}</Text>
+  <Text size="xs" tone="tertiary">{line.state}</Text>
+</Card>`}</pre>
+    <ul>
+      <li><strong>Set <code>headingLevel</code> every time.</strong> The default of 3 is right often enough to be dangerous — it will silently produce a broken outline on any page whose sections are already <code>h3</code>.</li>
+      <li><strong><code>padding="none"</code> for tables and charts</strong>, always. Anything that draws to its own edges.</li>
+      <li><strong><code>footerAlign="between"</code> whenever the footer holds one child that distributes itself</strong> — a paginator, a summary-plus-action row. <code>end</code> is for a row of buttons.</li>
+      <li><strong>Never make a card interactive if it contains a control</strong> (§07). This is the rule most likely to be broken by a later change: a card that was a safe whole-card target acquires an overflow menu six months on, and nobody removes <code>interactive</code>.</li>
+      <li><strong>Let the grid equalise heights</strong> — the card is a full-height flex column, so <code>align-items: stretch</code> on the grid is all it needs. Do not set heights.</li>
+      <li><strong>Loading and empty states go in the body</strong>, with their own words. Never grey out the card.</li>
+      <li><strong>Testing hooks:</strong> the container is <code>[data-card="static"]</code> or <code>[data-card="interactive"]</code>. Worth asserting, since none of it appears in a screenshot: a titled card is a <code>section</code> whose <code>aria-labelledby</code> resolves to its visible heading; an untitled one is <em>not</em> a <code>section</code>; the heading tag matches <code>headingLevel</code>; an interactive card is reachable by <kbd>Tab</kbd> and fires on <kbd>Enter</kbd>; and a static card has no <code>tabindex</code> and no hover rule.</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

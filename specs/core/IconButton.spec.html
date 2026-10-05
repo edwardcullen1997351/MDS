@@ -1,0 +1,363 @@
+<!-- @dsCard group="Specs · Core" viewport="1080x760" name="IconButton" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>IconButton — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+a{color:var(--text-accent);text-decoration:underline;text-underline-offset:2px}a:hover{color:var(--text-link)}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px;position:relative}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo.plain{background:var(--background-page);box-shadow:none}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+td.num,th.num{text-align:right;font-family:var(--font-mono)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:104px}
+.staterow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.bar{display:flex;align-items:center;gap:4px;padding:6px 8px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md)}
+.bar .sep{width:1px;height:18px;background:var(--border-subtle);margin:0 4px}
+.bar .grow{flex:1}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { IconButton, Button, Tooltip } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows,numCols=[]}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i} className={numCols.includes(i)?'num':''}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={(j===0?'k ':'')+(numCols.includes(j)?'num':'')}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Spec(){
+const [sel,setSel] = React.useState('panel-left');
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Core · Component specification</span>
+    <h1>IconButton</h1>
+    <p className="lede">The square, label-less action. It exists so that dense surfaces — toolbars, table rows, panel headers — can carry commands without a wall of text, and it makes the accessible name mandatory so that saving space never costs a screen-reader user the meaning.</p>
+    <div className="meta">
+      <span>components/core/IconButton.jsx</span><span>window.MeridianDesignSystem_962c43.IconButton</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 0 open items</span><span>since: 1.0</span><span>spec 1.1.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="What it is for, and what it is not for.">
+    <p>IconButton is Button with the label removed and the accessible name moved into a required prop. Use it only where the icon alone is unambiguous — either because the glyph is conventional (close, search, more) or because context makes it obvious (a trash icon on a table row).</p>
+    <ul>
+      <li><strong>Use</strong> in toolbars, table row actions, card and panel headers, and as the close affordance on Dialog, Drawer and Toast.</li>
+      <li><strong>Use <code>selected</code></strong> for a persistent on/off command — a sidebar toggle, a view switch — where the state is visible in the layout it controls.</li>
+      <li><strong>Do not use</strong> for the primary action of a page, a form or a dialog footer. That action gets a verb; use <code>Button</code>.</li>
+      <li><strong>Do not use</strong> for an unconventional or abstract glyph. If a new user would have to hover to learn what it does, it needs a label.</li>
+      <li><strong>Do not use</strong> as a status indicator or a decorative glyph — that is <code>Icon</code>, which is not focusable.</li>
+      <li><strong>Do not use</strong> for filter state — that is <code>Tag</code>.</li>
+    </ul>
+    <div className="demo">
+      <div className="bar">
+        <IconButton icon="panel-left" label="Toggle sidebar" selected />
+        <span className="sep"></span>
+        <IconButton icon="refresh-cw" label="Refresh" />
+        <IconButton icon="download" label="Export" />
+        <IconButton icon="settings" label="Settings" />
+        <span className="sep"></span>
+        <IconButton icon="ellipsis" label="More actions" />
+      </div>
+      <IconButton icon="plus" label="Add row" variant="solid" />
+      <IconButton icon="search" label="Search" variant="outline" />
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Two parts, one invariant: the box is square.">
+    <div className="demo" style={{gap:28}}>
+      <IconButton icon="x" label="Close" size="lg" variant="outline" />
+      <IconButton icon="check" label="Accept" size="lg" variant="solid" />
+      <IconButton icon="ellipsis-vertical" label="More" size="lg" />
+    </div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Box</strong> — equal width and height from the control scale, zero padding, <code>--icon-button-radius</code> (<code>--radius-sm</code>). The square is the rule: never let a layout stretch it.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Icon</strong> — optically centred, 14/16/18 px by size, inheriting <code>currentColor</code> so one foreground token drives every state.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Border</strong> — 1 px on every variant, transparent on <code>ghost</code> and <code>solid</code>, so swapping variants never moves a pixel.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Accessible name</strong> — <code>label</code>, rendered as both <code>aria-label</code> and the native <code>title</code>. Not visible, never optional.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>No label slot, no chevron, no badge.</strong> A count or dot belongs on the surface beside it, not inside the box.</span></div>
+    </div>
+    <T cols={['Region','Value','Token']} rows={[
+      ['Box (w = h)','28 / 34 / 40 px','--control-h-sm|md|lg'],
+      ['Icon','14 / 16 / 18 px','set by size, not a token'],
+      ['Radius','4 px (--radius-sm — identical to Button)','--icon-button-radius'],
+      ['Border','1 px solid — outline uses --border-control (4.74:1), not a structural hairline','--border-width · --icon-button-border'],
+      ['Resting shadow','shadow-xs on solid only','--button-primary-shadow'],
+      ['Padding','0 — the box is sized, not padded','—'],
+    ]}/>
+    <p><strong>Icon steps differ from Button.</strong> Button holds the icon at 16 px for both <code>md</code> and <code>lg</code> because the label carries the size; here the icon <em>is</em> the content, so <code>lg</code> steps up to 18 px.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Contract in IconButton.d.ts. Anything else spreads onto the <button>.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['icon',<span className="t">string</span>,<span style={{color:'var(--text-critical)'}}>required</span>,'Lucide name, rendered at the size’s icon step.'],
+      ['label',<span className="t">string</span>,<span style={{color:'var(--text-critical)'}}>required</span>,'Accessible name and native tooltip. Verb phrase — see §10.'],
+      ['variant',<span className="t">'ghost' | 'outline' | 'solid' | 'danger'</span>,<span className="t">'ghost'</span>,'ghost is the default because most instances sit in a toolbar.'],
+      ['size',<span className="t">'sm' | 'md' | 'lg'</span>,<span className="t">'md'</span>,'28 / 34 / 40 px square at comfortable density, read from --control-h-*.'],
+      ['selected',<span className="t">boolean</span>,<span className="t">false</span>,'Persistent on state; also sets aria-pressed. Ignored by solid.'],
+      ['disabled',<span className="t">boolean</span>,<span className="t">false</span>,'Disabled palette plus the native attribute.'],
+      ['style',<span className="t">CSSProperties</span>,'—','Layout only — merged last. See §14.'],
+      ['…rest',<span className="t">ButtonHTMLAttributes</span>,'—','onClick, aria-*, data-*, aria-expanded, aria-controls.'],
+    ]}/>
+    <p><strong>No <code>loading</code> prop.</strong> There is nowhere to put a spinner without losing the icon’s meaning. For an async icon-only command, disable it while the request is in flight and report the outcome in a Toast.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Four. The variant states how much the button needs to be found — and whether it destroys something.">
+    <T cols={['Variant','Chrome','Use','Notes']} rows={[
+      ['ghost','none until hover','Toolbars, table rows, panel and card headers — anywhere several sit together.','Default. Borderless keeps dense rows quiet.'],
+      ['outline','1 px --border-control edge, transparent fill','A single icon action standing alone on a page or card surface, with no toolbar to belong to.','The border is what makes it findable in isolation, so it is drawn at control strength (4.74:1) — deliberately firmer than a card or table hairline.'],
+      ['solid','action fill, white glyph, shadow-xs','One accent icon action per surface — the add affordance on a table header, the send action on a composer.','Carries primary weight; never more than one in view.'],
+      ['danger','critical fill, white glyph, shadow-xs','A destructive icon action that must be unmistakable — and the disclosure cap of a destructive SplitButton.','Added 1.27.x, additive: the composite tier needed a critical cap, and drawing one in action blue beside a red primary read as two controls. Same ramp as Button danger; never a row of them.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="ghost"><div className="bar"><IconButton icon="pencil" label="Edit" /><IconButton icon="copy" label="Duplicate" /><IconButton icon="trash-2" label="Delete" /></div></Row>
+      <Row label="outline"><IconButton icon="search" label="Search" variant="outline" /><IconButton icon="filter" label="Filter" variant="outline" /></Row>
+      <Row label="solid"><IconButton icon="plus" label="Add row" variant="solid" /><IconButton icon="send" label="Send" variant="solid" /></Row>
+      <Row label="danger"><IconButton icon="trash-2" label="Delete permanently" variant="danger" /><IconButton icon="circle-stop" label="Stop the run" variant="danger" /></Row>
+      <Row label="selected"><div className="bar">
+        {['panel-left','layout-grid','list'].map(n => <IconButton key={n} icon={n} label={n} selected={sel===n} onClick={()=>setSel(n)} />)}
+      </div></Row>
+    </div>
+    <p><strong><code>selected</code> is a state, not a variant</strong>, and it only reads on <code>ghost</code> and <code>outline</code> — <code>solid</code> already owns the accent, so a selected solid button is indistinguishable from a resting one. A group of mutually exclusive selected IconButtons is a segmented control: give it <code>role="group"</code> and an <code>aria-label</code>.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Same 28/34/40 scale as Button, so mixed rows align.">
+    <T cols={['Size','Box','Icon','Where']} numCols={[1,2]} rows={[
+      ['sm','28 px','14 px','Table row actions, filter bars, inside Toast and Tag-dense rows.'],
+      ['md','34 px','16 px','Default. Toolbars, panel headers, dialog close.'],
+      ['lg','40 px','18 px','Touch surfaces, empty states, a lone floating action.'],
+    ]}/>
+    <div className="demo">
+      <IconButton icon="settings" label="Settings 28" size="sm" variant="outline" />
+      <IconButton icon="settings" label="Settings 34" size="md" variant="outline" />
+      <IconButton icon="settings" label="Settings 40" size="lg" variant="outline" />
+    </div>
+    <ul>
+      <li>An IconButton next to a Button in the same row takes the same size — the heights match exactly, so the row stays on one baseline.</li>
+      <li>Never mix sizes within one toolbar or row group.</li>
+      <li><code>[data-density]</code> rewrites the control heights underneath (compact 28, expanded 44) and the box follows, because it reads <code>--control-h-*</code> rather than a literal — the pixel numbers above are comfortable density. The icon step does not follow, by design — the glyph stays legible at every density.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="06" title="States" note="Seven, including selected. Colour only — the box never moves.">
+    <T cols={['State','Fill','Glyph','Border / shadow']} rows={[
+      ['Rest (ghost)','transparent','--icon-button-foreground (text-secondary)','transparent border, no shadow'],
+      ['Hover','--surface-hover','steps up to text-primary','unchanged'],
+      ['Active / press','--surface-active','text-primary','unchanged — no scale, no lift'],
+      ['Focus visible','unchanged','unchanged','3 px --button-focus-ring as box-shadow, replacing any resting shadow'],
+      ['Selected','--surface-selected','--action-text','unchanged; aria-pressed="true"'],
+      ['Rest (solid)','--action-solid','white','shadow-xs; hover and press step the fill one and two ramp steps darker'],
+      ['Rest (danger)','--status-critical-solid','white','shadow-xs; same two-step ramp on hover and press'],
+      ['Disabled','transparent','--text-disabled','outline keeps a --border-subtle border; no shadow'],
+    ]}/>
+    <div className="demo col">
+      <Row label="rest"><IconButton icon="refresh-cw" label="Refresh" /><IconButton icon="refresh-cw" label="Refresh" variant="outline" /><IconButton icon="refresh-cw" label="Refresh" variant="solid" /></Row>
+      <Row label="selected"><IconButton icon="pin" label="Pinned" selected /><IconButton icon="pin" label="Pinned" variant="outline" selected /></Row>
+      <Row label="disabled"><IconButton icon="trash-2" label="Delete" disabled /><IconButton icon="trash-2" label="Delete" variant="outline" disabled /><IconButton icon="trash-2" label="Delete" variant="solid" disabled /></Row>
+      <Row label="live"><span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)'}}>Hover, press and tab through the rows above for hover, active and focus.</span></Row>
+    </div>
+    <p><strong>The resting glyph is <code>text-secondary</code>, not <code>text-primary</code></strong> — a toolbar of six full-strength glyphs competes with the content it acts on. Hover promotes the one under the cursor. This is the single most important thing to preserve if you re-theme the component.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Native <button>. Nothing custom.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab / Shift-Tab','One stop per button, in DOM order. A toolbar of six is six stops — acceptable at this density; beyond about eight, collapse the tail into an overflow menu.'],
+      ['Enter','Activates.'],
+      ['Space','Activates on key-up. For a selected toggle this flips aria-pressed.'],
+      ['Escape','Not handled here. The owning Dialog, Drawer, Popover or Menu maps it to dismissal — including when this button is the close affordance.'],
+      ['Arrow keys','Not handled. A segmented group that needs single-stop arrow navigation is Tabs, not a row of IconButtons.'],
+    ]}/>
+    <ul>
+      <li>The native <code>title</code> appears on hover only — never on focus, and never on touch. Keyboard and screen-reader users get the name from <code>aria-label</code>; sighted keyboard users get nothing, which is why §01 restricts this component to unambiguous glyphs.</li>
+      <li>When the button opens a menu or panel, add <code>aria-expanded</code> and <code>aria-controls</code> through <code>…rest</code>.</li>
+      <li>Disabled buttons are not focusable. If the reason needs explaining, keep it enabled and reject on click.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="WCAG 2.2 AA. This component’s risk is the missing label — so the label is required.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Role & name','Native <button> with a required label prop → aria-label. There is no code path that renders an unnamed button.'],
+      ['Glyph contrast','Icons are non-text content under 1.4.11 and need 3:1. Measured: resting text-secondary 7.32:1 on the page band and 7.78:1 on a card; hover text-primary on --surface-hover 15.48:1; selected action-text on --surface-selected 8.43:1; solid white-on-action 6.98:1. All pass with margin.'],
+      ['Disabled contrast','text-disabled measures 2.46:1 on the page band, 2.61:1 on a card — below 3:1. Legal (1.4.11 exempts disabled controls) but genuinely hard to see, so never rely on a disabled IconButton to communicate anything; say it in text nearby.'],
+      ['Control boundary','Resolved on the freeze. The outline border was --border-default (1.29:1) — as a control’s only boundary that is short of 1.4.11’s 3:1. It now points at --border-control, a semantic token added for exactly this job: 4.74:1 on a card and 4.46:1 on the page band in light, 6.83:1 / 7.41:1 in dark. The three structural border tokens (subtle 1.15:1, default 1.29:1, strong 1.60:1) stay decorative and are not used to bound a control.'],
+      ['Focus','3 px --button-focus-ring plus an action-coloured edge, ≥ 3:1 against both fill and surrounding surface. Drawn as box-shadow so an overflow: hidden toolbar cannot clip it.'],
+      ['Target size (2.5.8)','md is 34 px and passes the 24 px minimum outright. sm at 28 px also passes 24 px, but leave 24 px of clear space around a run of them. Touch surfaces use lg — see §11.'],
+      ['Toggle state','selected sets aria-pressed, so the on/off state is announced, not just tinted. A group of them needs role="group" and an aria-label naming the choice.'],
+      ['Colour independence','Selected is a tint plus aria-pressed, never colour alone. Destructive intent lives in the label ("Delete row"), not in the glyph colour.'],
+      ['Tooltip','A Tooltip wrapper is additive; it never replaces label. Do not put different text in the two — a screen reader reads one and a sighted user reads the other.'],
+      ['Reduced motion','Transitions collapse to 0 ms under prefers-reduced-motion; the state change still renders.'],
+    ]}/>
+    <pre>{`// correct — name is mandatory and matches the tooltip
+<IconButton icon="trash-2" label="Delete row" onClick={confirmDelete} />
+
+// toggle — aria-pressed comes from selected
+<IconButton icon="panel-left" label="Toggle sidebar"
+            selected={open} aria-expanded={open} aria-controls="nav"
+            onClick={() => setOpen(!open)} />
+
+// segmented group
+<div role="group" aria-label="Layout">
+  <IconButton icon="layout-grid" label="Grid view"  selected={v==='grid'} />
+  <IconButton icon="list"        label="List view"  selected={v==='list'} />
+</div>`}</pre>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="140 ms, ease-out, colour only — same contract as Button.">
+    <T cols={['Change','Duration','Easing','Property']} rows={[
+      ['Hover / press tint','140 ms','--ease-out','background-color, color, border-color'],
+      ['Focus ring','140 ms','--ease-out','box-shadow'],
+      ['Selected on/off','140 ms','--ease-out','background-color, color — the tint fades, nothing slides'],
+      ['Enter / leave','inherits the toolbar or panel: 200 ms','--ease-out','on the container, never on the button'],
+    ]}/>
+    <ul>
+      <li><strong>No rotation on the glyph</strong> — not even on <code>refresh-cw</code>. A spinning refresh icon reads as a loading state the component does not have.</li>
+      <li>No <code>transform: scale</code> on press, no ripple, no bounce. The press signal is the darker fill.</li>
+      <li>Never animate the box size. A 34 → 40 px hover growth shifts every sibling in the toolbar.</li>
+      <li>Icon swaps on state change (<code>play</code> → <code>pause</code>, <code>eye</code> → <code>eye-off</code>) are instant cuts. Cross-fading two glyphs reads as a rendering bug.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="The label is invisible but it is still copy — and it is the only copy.">
+    <T cols={['Context','Write','Not']} rows={[
+      ['Row action','Delete row','Trash / trash-2 / Delete?'],
+      ['Toggle','Toggle sidebar','Sidebar / panel-left'],
+      ['Overflow','More actions','… / Menu / Options'],
+      ['Dismiss','Close','X / Dismiss dialog window'],
+      ['Refresh','Refresh readings','Reload the data now'],
+      ['Add','Add row','Plus'],
+    ]}/>
+    <ul>
+      <li><strong>Verb first</strong>, 1–3 words, sentence case, no full stop — the same rules as a Button label, because that is what it is.</li>
+      <li><strong>Never the icon name.</strong> <code>label="chevron-down"</code> is the most common defect in this component; a screen reader will read it aloud verbatim.</li>
+      <li><strong>Name the object when siblings repeat.</strong> Ten rows of "Delete" are ambiguous; <code>label={`Delete ${'{'}row.id{'}'}`}</code> is not.</li>
+      <li><strong>Toggles keep one stable name.</strong> "Toggle sidebar" in both states — <code>aria-pressed</code> carries on/off. Do not swap the label to "Hide sidebar" and back.</li>
+      <li><strong>No IDs, counts or punctuation</strong> in the label; no emoji anywhere.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="The box is fixed. The row that holds it is what adapts.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','Minimum size is lg (40 px) for any primary touch action; 34 px is the floor for secondary ones. Long toolbars collapse to a single ellipsis overflow menu. Table row actions move into a row-level menu rather than staying inline.'],
+      ['tablet ≥ 600','The primary surface. Toolbars are inline at md; sm returns inside table rows.'],
+      ['desktop ≥ 1024','Unchanged. Toolbars group with 1 px --border-subtle separators, 4 px between buttons, 8 px across a separator.'],
+      ['ultrawide ≥ 1600','Unchanged — extra width becomes margin. Never spread a toolbar across the full width.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="desktop"><div className="bar" style={{maxWidth:420}}>
+        <IconButton icon="panel-left" label="Toggle sidebar" selected /><span className="sep"></span>
+        <IconButton icon="pencil" label="Edit" /><IconButton icon="copy" label="Duplicate" /><IconButton icon="share-2" label="Share" /><IconButton icon="trash-2" label="Delete" />
+        <span className="grow"></span><IconButton icon="settings" label="Settings" />
+      </div></Row>
+      <Row label="mobile"><div className="bar" style={{maxWidth:240}}>
+        <IconButton icon="panel-left" label="Toggle sidebar" size="lg" selected /><span className="grow"></span>
+        <IconButton icon="pencil" label="Edit" size="lg" /><IconButton icon="ellipsis" label="More actions" size="lg" />
+      </div></Row>
+    </div>
+    <p>There is no <code>fullWidth</code> equivalent. A square that stretches is no longer this component — if a full-width icon action is needed, it is a <code>Button</code> with an icon and a label.</p>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Write <code>label</code> as a verb phrase, always.</li>
+        <li><code>ghost</code> in toolbars; <code>outline</code> only when it stands alone.</li>
+        <li>One <code>solid</code> per surface, at most.</li>
+        <li>Reserve it for conventional glyphs: close, search, more, trash, plus.</li>
+        <li>Collapse more than about eight into an overflow menu.</li>
+        <li>Use <code>Button</code> the moment the action needs explaining.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>Pass the icon name, a noun, or an empty string as <code>label</code>.</li>
+        <li>Use it for a page, form or dialog primary action.</li>
+        <li>Give it an abstract glyph and rely on the native tooltip to explain it.</li>
+        <li>Stretch, squash or pad the box, or override the radius.</li>
+        <li>Nest a count badge, a chevron or text inside the box.</li>
+        <li>Spin, scale, ripple or cross-fade anything.</li>
+        <li>Build a segmented control from <code>selected</code> without <code>role="group"</code> — or where Tabs is the right component.</li>
+        <li>Use <code>Icon</code> with an <code>onClick</code> as a cheaper substitute — it has no role, no focus and no name.</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="How the shipped component behaves.">
+    <ul>
+      <li><strong>Hover, press and focus are React state</strong>, resolved into one palette per state — the same approach as Button, which is what keeps the two aligned as the tokens move.</li>
+      <li><strong><code>label</code> renders twice</strong>: as <code>aria-label</code> and as the native <code>title</code>. The <code>title</code> is a convenience for mouse users, not an accessibility feature — see §07.</li>
+      <li><strong><code>aria-pressed</code> is emitted only when <code>selected</code> is true</strong> (<code>selected || undefined</code>), so a plain command button is not announced as an untoggled toggle.</li>
+      <li><strong>Precedence is solid → selected → press → hover, then disabled last</strong>, so a disabled selected button reads as disabled. <code>solid</code> ignores <code>selected</code> entirely.</li>
+      <li><strong><code>type="button"</code> is hard-coded</strong> — an IconButton inside a form can never accidentally submit it. If you need a submit action, use <code>Button</code>.</li>
+      <li><strong>Focus ring replaces the resting shadow</strong> rather than stacking, so the box never appears to lift.</li>
+      <li><strong>Only <code>outline</code> keeps a visible border when disabled</strong>; ghost and solid go fully transparent, leaving the glyph alone to signal the state.</li>
+      <li><strong>Tokens consumed</strong> — component tier, plus two borrowed from Button:</li>
+    </ul>
+    <div className="tokenlist">
+      <span>--icon-button-critical-background</span><span>--icon-button-critical-background-hover</span><span>--icon-button-critical-background-active</span><span>--icon-button-critical-foreground</span><span>--control-h-sm / -md / -lg</span><span>--icon-button-radius</span><span>--icon-button-foreground</span><span>--icon-button-foreground-hover</span><span>--icon-button-foreground-selected</span><span>--icon-button-foreground-disabled</span><span>--icon-button-background-hover</span><span>--icon-button-background-active</span><span>--icon-button-background-selected</span><span>--icon-button-border → --border-control</span><span>--icon-button-border-disabled</span><span>--icon-button-solid-background</span><span>--icon-button-solid-background-hover</span><span>--icon-button-solid-background-active</span><span>--icon-button-solid-foreground</span><span>--button-focus-ring (borrowed)</span><span>--button-primary-shadow (borrowed)</span><span>--border-width</span><span>--transition-control</span>
+    </div>
+    <p>The two borrowed tokens are deliberate: the focus ring and the resting shadow must be identical to Button’s, or a mixed action row shows two different rings. <code>--icon-button-border</code> is the system’s first consumer of <code>--border-control</code> (added in 1.1.0) — the accessible alternative to the structural hairlines.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, migration.">
+    <pre>{`import { IconButton } from '@meridian/ds';   // or window.MeridianDesignSystem_962c43
+
+// async command — no loading prop; disable and report in a Toast
+<IconButton icon="refresh-cw" label="Refresh readings"
+            disabled={pending} onClick={refresh} />
+
+// row action, disambiguated per row
+<IconButton icon="trash-2" size="sm"
+            label={'Delete line ' + line.id}
+            onClick={() => confirmDelete(line.id)} />`}</pre>
+    <ul>
+      <li><strong>Styling.</strong> <code>style</code> merges last and is for layout only (<code>marginLeft</code>, <code>alignSelf</code>, <code>gridArea</code>). Overriding width, height, radius, colour or shadow is a lint failure — and overriding width breaks the square.</li>
+      <li><strong>Composition.</strong> Toolbars are a flex row with <code>gap: 4px</code> and <code>--border-subtle</code> separators; never margins on the buttons. Inside a Card header, align to the title’s optical baseline, not its box.</li>
+      <li><strong>Testing.</strong> Query by role and name — <code>getByRole('button', {'{ name: /delete row/i }'})</code> — which is exactly why <code>label</code> is required. For toggles assert <code>aria-pressed</code>, not the background colour.</li>
+      <li><strong>Lint.</strong> Adherence rules flag a missing or empty <code>label</code>, a <code>label</code> that matches a known Lucide icon name, and an <code>Icon</code> with an <code>onClick</code> handler.</li>
+      <li><strong>Menus and popovers.</strong> The component does not own the panel. Pair it with Popover or Menu and pass <code>aria-expanded</code> / <code>aria-controls</code> yourself.</li>
+      <li><strong>Analytics.</strong> Pass <code>data-action</code> through <code>…rest</code>; do not wrap in a click-capturing div.</li>
+      <li><strong>Server rendering.</strong> Hover and press are client state; SSR output is the rest palette — no hydration flash.</li>
+      <li><strong>Frozen 4 Sep 2026.</strong> The API is closed: <code>icon</code>, <code>label</code>, <code>variant</code>, <code>size</code>, <code>selected</code>, <code>disabled</code>, <code>style</code>. Adding a prop is a minor version; renaming or removing one is breaking. Two requests were considered and declined at the freeze — a <code>loading</code> prop and a badge slot — because both need space the square does not have (§03, §12). An async command disables and reports in a Toast; a count sits on the surface beside the button.</li>
+      <li><strong>Migration to 1.1.0.</strong> One visual change: the <code>outline</code> border is darker (grey-200 → grey-500) to meet 1.4.11. <code>ghost</code> and <code>solid</code> are untouched, and no prop or token was renamed, so the upgrade is additive — but pull <code>styles.css</code> and <code>_ds_bundle.js</code> together, as always.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

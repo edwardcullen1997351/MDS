@@ -1,0 +1,295 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Explicit save" subtitle="Full specification — a draft boundary the user opens and closes on purpose, with commit, cancel and dismissal all given defined semantics · manufacturing ERP reference" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Explicit save — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.mn{font-size:10px;color:var(--text-secondary);line-height:1.5}
+.mb{align-self:flex-start;height:26px;padding:0 10px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:10px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.mb.q{background:var(--surface-sunken);color:var(--text-primary);border:var(--border-hairline)}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-warning-soft);color:var(--text-warning)}
+.ma.bad{background:var(--status-critical-soft);color:var(--text-critical)}
+.ma.ok{background:var(--status-success-soft);color:var(--text-success)}
+.split{display:grid;grid-template-columns:118px minmax(0,1fr);gap:8px}
+.rows{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-card)}
+.rows div{display:flex;align-items:center;gap:7px;padding:5px 7px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);border-bottom:var(--border-subtle)}
+.rows div:last-child{border-bottom:none}
+.rows div.on{background:var(--surface-sunken);color:var(--text-primary)}
+.dot{width:9px;height:9px;border:1px solid var(--border-strong);border-radius:50%;flex:none}
+.dot.on{border:3px solid var(--action-solid)}
+.panel{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:8px 9px;display:flex;flex-direction:column;gap:5px}
+.panel .t{font-family:var(--font-mono);font-size:10px;color:var(--text-primary)}
+.panel .f{display:flex;justify-content:space-between;gap:8px;font-size:9.5px;color:var(--text-secondary);font-family:var(--font-mono)}
+.sk{height:7px;border-radius:3px;background:var(--surface-sunken)}
+.mcount{font-size:10px;font-family:var(--font-mono);color:var(--text-tertiary)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Explicit save</h1>
+  <p class="lede">Editing that stays provisional until the user says otherwise — a draft the pattern opens from committed state, a commit that promotes it in one piece, a cancel that restores by discarding it, and a dismissal whose meaning is declared in advance rather than decided by which control the user happened to reach.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: at least one editable control, ButtonGroup or several Buttons</span><span>Reference implementation: <a href="explicit-save-reference.card.html">card</a> · <a href="../../templates/explicit-save/ExplicitSave.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — parameters of a routing operation</span><span>Sections included: 13 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>A manufacturing engineer opens operation OP-40 of routing RTG-7310-B to re-time it: setup up from 60 to 75 minutes, the check frequency tightened, a note saying the coolant nozzle changed. Every figure she types would, if it took effect on the keystroke, be a live instruction to the shop floor — so none of them may, until she says so. The pattern owns the boundary around that work: what the routing reads while the form is open, what the commit promotes, what the cancel restores, and what Escape means at the moment there are unsaved changes.</p>
+    <p><strong>Use it when</strong> a set of changes should be provisional until accepted or discarded, and the acceptance is a decision the user makes deliberately.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>Settings, parameters and configuration that take effect together and are worth reviewing before they do.</li><li>An editing context — a drawer, a dialog, a panel — over a record whose live value other people are reading.</li><li>Any edit where abandoning the work must be as available, and as unambiguous, as accepting it.</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>Immediate-effect controls.</strong> A switch that applies on toggle has no draft and no cancel; it needs an optimistic update and its own failure handling.</li><li><strong>Creating or completing a record.</strong> A form whose whole purpose is one submission is <a href="ValidatedSubmission.spec.html">validated submission</a> — its defining feature is the validated commit, not a draft boundary. Across ordered steps it is <a href="StagedInput.spec.html">staged input</a>.</li><li><strong>Editing inside a collection, row by row.</strong> A draft per item in the list's own context is <a href="CollectionEditing.spec.html">collection editing</a>; this pattern is one draft over one subject in an editing context of its own.</li><li><strong>A decision with no editing.</strong> "Cancel this work order?" holds no draft — that is <a href="ConfirmedAction.spec.html">confirmed action</a>. A confirmation dialog appearing <em>inside</em> this pattern, to resolve a dirty dismissal, is a use of that pattern, not a merger of the two.</li><li><strong>Autosave with undo.</strong> If changes commit continuously and the safety net is a reversal, the contract is undo, not a draft; do not name a Save button that does nothing.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">Draft editors</td><td><code>Field</code> + <code>Input</code>, <code>Textarea</code>, <code>Select</code>, <code>Switch</code>, <code>Checkbox</code>, <code>Combobox</code>, <code>DatePicker</code>, <code>TimeField</code></td><td>Required, at least one. Every editor writes draft state only. <code>Field</code> owns the label, the error wiring and <code>aria-invalid</code>; a control that is really a set of choices is grouped by <code>Fieldset</code>.</td></tr>
+      <tr><td class="k">Commit and cancel</td><td><code>ButtonGroup</code>, or two <code>Button</code>s in an action row</td><td>Required, both, always visible together and never collapsed into one control. The commit is <code>primary</code>; the cancel is <code>ghost</code> or <code>secondary</code> and is not a destructive-red control — discarding a draft is the ordinary way out, not a hazard.</td></tr>
+      <tr><td class="k">Editing context</td><td><code>Drawer</code>, <code>Dialog</code>, <code>Popover</code>, or a panel in the page</td><td>Optional, and it does not define the pattern. What it contributes is a dismissal affordance — Escape, a scrim, a close control — which is exactly what §04 has to give a meaning. A pattern instance with no dismissible container has one fewer rule to declare, not a different contract.</td></tr>
+      <tr><td class="k">Dirty-dismissal decision</td><td><code>Dialog</code></td><td>Required under the <code>guard</code> dismissal policy: a two-choice decision, "Keep editing" and "Discard <em>n</em> changes", labelled by outcome. This is <a href="ConfirmedAction.spec.html">confirmed action</a> doing its own job inside this one.</td></tr>
+      <tr><td class="k">Committing</td><td><code>Progress</code></td><td>Required where the commit is asynchronous and slow enough to notice, named after the subject, with the editors inert and the draft still on screen.</td></tr>
+      <tr><td class="k">Failure</td><td><code>Alert</code></td><td>Required. Persistent, and never a timed <code>Toast</code>: a toast that expires takes the only statement that nothing was committed with it. <code>Toast</code> or <code>Snackbar</code> is legitimate for a <em>successful</em> commit only.</td></tr>
+      <tr><td class="k">Draft state</td><td><code>Badge</code></td><td>Optional; advisable where the subject is also visible outside the editing context, so the list behind can say "unsaved draft" rather than silently showing committed figures.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>Enter editing.</strong> A draft is created from the committed state and stamped with the revision it was opened against. Nothing else happens: opening the editor is not a write.</li>
+      <li><strong>Modify the draft.</strong> Committed state is untouched, and anything reading it — the table behind, another user's screen, the MES — still reads the old values.</li>
+      <li><strong>Decide.</strong> Commit, cancel, or attempt dismissal.</li>
+      <li><strong>Commit</strong> validates the draft first (§09) and refuses without closing or clearing anything. A valid draft is promoted in one piece; the disposition afterwards follows <code>postCommitDisposition</code>.</li>
+      <li><strong>Cancel</strong> discards the draft, which restores committed state because committed state was never written to. Under <code>cancelWhenDirty: confirm</code> it asks first; a clean draft never asks.</li>
+      <li><strong>Attempted dismissal</strong> — Escape, the scrim, the close control — resolves through the single rule <code>dismissalPolicy</code> declares. A clean draft closes silently under every policy.</li>
+      <li><strong>Resolution.</strong> On success committed state is replaced and the change is announced. On failure the draft stands exactly as typed, committed state does not move, and the message says both things.</li>
+    </ol>
+    <p>Steps 3 to 6 are one decision with three doors, and the pattern exists because two of those doors are easy to get wrong: cancel must be reachable while the draft is invalid, and dismissal must not silently pick one of the other two.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Committed state and draft state are separate.</strong> The draft is a copy; editing writes only to the copy. No component, and nothing downstream, reads the draft as though it were committed.</li>
+      <li><strong>Entering editing initialises the draft from committed state,</strong> every time — never from a previous draft, never from whatever the controls last held.</li>
+      <li><strong>The commit promotes one coherent draft.</strong> All of it, at one moment, or none of it. A commit that lands field by field is not this pattern and cannot be cancelled.</li>
+      <li><strong>Cancel restores committed state by discarding the draft,</strong> and is available in every state the draft can be in, including invalid and failed. There is no undo to compute.</li>
+      <li><strong>Dismissal has one declared meaning.</strong> Escape, the scrim and the close control all route to the same rule, and that rule is the same every time: guard, discard, or refuse. Dismissal must never alternate between committing and discarding.</li>
+      <li><strong>Dismissal never commits.</strong> Under no policy does closing the editing context save. A user who wanted to save can always find the button that says so.</li>
+      <li><strong>A clean draft is not guarded.</strong> Asking "discard your changes?" of a user who made none teaches them to click through the question they will later need to read.</li>
+      <li><strong>Dirty is derived, not remembered.</strong> It is the comparison of committed values with draft values, so returning a field to its committed value makes the draft clean again and dismissal stops asking (§20).</li>
+      <li><strong>A commit is single-shot until it resolves,</strong> guarded at the state transition rather than by the button's disabled attribute, and a superseded or orphaned response writes nothing.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><span class="mn">Escape, with 4 unsaved changes:</span><div class="ma">Discard the changes to OP-40?<br><span class="mh">setup time, inspection frequency, scrap allowance, change note</span></div><div style="display:flex;gap:6px"><div class="mb q">Keep editing</div><div class="mb">Discard 4 changes</div></div></div><p class="why">One declared rule for every dismissal route, named by outcome — and it asks only because the draft is genuinely dirty.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><span class="mn">Escape closes and saves.</span><span class="mn">The scrim closes and discards.</span><span class="mn">The X asks.</span><div class="ma bad">Routing revision 7 committed</div></div><p class="why">Three exits, three meanings, one of them a silent commit to a live routing. The engineer cannot learn what closing does, so she stops trusting the form.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Options</th><th>What it decides</th></tr></thead><tbody>
+      <tr><td class="k">surface</td><td><code>drawer</code> · <code>dialog</code> · <code>inline</code></td><td>Where the draft is edited. <code>drawer</code> keeps the subject's context readable beside the work and suits several parameters; <code>dialog</code> is right where the edit is short and must be finished before anything else; <code>inline</code> has no dismissal affordance at all, so <code>dismissalPolicy</code> becomes inapplicable and commit and cancel are the only exits. The choice changes what has to be declared, which is why it is a pattern property and not styling. It also decides <em>modality</em>, and with it which rules can be exercised: a modal surface makes a second entry unreachable and hides the subject's committed values behind a scrim, while a non-modal drawer or an inline panel keeps them readable beside the draft — which is the point of editing beside a collection at all. Prefer a non-modal drawer where the committed state is worth seeing; keep the dialog modal, because a dialog is a decision.</td></tr>
+      <tr><td class="k">dismissalPolicy</td><td><code>guard</code> · <code>discard</code> · <code>block</code></td><td>What Escape, the scrim and the close control do while the draft is dirty. <code>guard</code> asks, and is the default wherever the draft represents real work. <code>discard</code> is defensible only where the draft is trivial to retype, and must still be stated in the context so the consequence is not a surprise (§14). <code>block</code> makes the dismissal affordances inert and requires the close control to be removed rather than left dead — a visible control that does nothing is worse than none. No option commits.</td></tr>
+      <tr><td class="k">cancelWhenDirty</td><td><code>immediate</code> · <code>confirm</code></td><td>Whether the explicit cancel asks a second question. <code>immediate</code> is the default: the user aimed at a button labelled "Discard changes", and re-asking makes the label a lie. <code>confirm</code> is for a draft that is expensive to reproduce — a long note, a re-timed operation — where a mis-click costs minutes.</td></tr>
+      <tr><td class="k">postCommitDisposition</td><td><code>close</code> · <code>stay</code></td><td>What happens after a successful commit. <code>close</code> ends the editing context and returns focus to the control that opened it. <code>stay</code> keeps it open with the draft re-based on the newly committed state — clean, so the next dismissal does not ask — for a user making several passes at the same subject.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <table><thead><tr><th>State</th><th>What is true</th><th>What is displayed</th></tr></thead><tbody>
+      <tr><td class="k">clean</td><td>A draft exists and equals committed state.</td><td>Editors seeded from committed values, cancel available, and a commit that has nothing to do — inert, with a sentence saying why. Dismissal does not ask.</td></tr>
+      <tr><td class="k">dirty</td><td>At least one draft value differs from committed state, or a commit-only field such as a change note has content.</td><td>What differs and what committed state still holds, an active commit, and a cancel named as a discard. Dismissal follows <code>dismissalPolicy</code>.</td></tr>
+      <tr><td class="k">invalid draft</td><td>The draft is dirty and breaks a rule. Fully editable.</td><td>The problem on the offending control, the rule beside it, a commit that refuses without discarding, and a cancel that is not blocked by the errors.</td></tr>
+      <tr><td class="k">commit pending</td><td>A valid draft is being committed.</td><td>Progress naming the subject, editors inert with the draft still visible, and no claim that anything has been saved.</td></tr>
+      <tr><td class="k">commit failed</td><td>The commit failed. The draft is intact; committed state is unchanged.</td><td>The cause, an explicit statement that nothing was committed, and a retry. The draft is still dirty and still the user's.</td></tr>
+      <tr><td class="k">committed</td><td>Committed state has been replaced by the draft.</td><td>The new values wherever they are read, one announcement, and the disposition <code>postCommitDisposition</code> declares.</td></tr>
+      <tr><td class="k">cancelled</td><td>The draft is gone; committed state was never written.</td><td>The committed values, and a statement of what was discarded — never a claim that anything was restored, because nothing changed.</td></tr>
+    </tbody></table>
+    <p class="warn"><strong>"Dirty" is a comparison, not a memory of activity.</strong> A form that goes dirty on the first keypress and stays there will guard a dismissal after the engineer types 75, thinks again, and types 60 back — asking her to discard changes she has already undone by hand, and training her to answer the guard without reading it.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§09</span><h2>Validation</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Validation gates the commit, not the typing.</strong> Errors may appear as the user works, but no keystroke is rejected, no control is locked, and the draft is never coerced.</li>
+      <li><strong>The whole draft is validated in one pass, against one snapshot,</strong> so cross-field rules read consistent values: the check frequency rule depends on the scrap allowance in the same draft, and the work centre's capability depends on whether first-piece approval is on.</li>
+      <li><strong>Cancellation does not require validity.</strong> The way out of an invalid draft is never "fix it first". This is the rule most often broken by disabling every control but the commit.</li>
+      <li><strong>An invalid draft stays whole and stays editable.</strong> A refused commit clears nothing, closes nothing, and moves nothing but focus, which goes to the first offending control.</li>
+      <li><strong>Each problem is attached to the control it belongs to</strong> through <code>Field</code>'s <code>error</code>, and a cross-field rule is reported on the control the user can change to satisfy it, stating the values it used.</li>
+      <li><strong>Fields that exist only for the commit are required only when there is something to commit.</strong> A mandatory change note is demanded of a dirty draft, not of a form the user merely opened.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><span class="ml">Inspection frequency</span><div class="rows"><div><span>100 pcs</span><span style="color:var(--text-critical)">3% scrap needs a check every 50 or fewer</span></div></div><span class="mh">Correct the marked fields to save. Discarding does not require them to be valid.</span></div><p class="why">One snapshot, the rule named with the values it used, and an exit that does not depend on satisfying it.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma bad">Fix the errors before closing this form.</div><div style="display:flex;gap:6px"><div class="mb">Save changes</div><div class="mb q" style="opacity:.45">Discard changes</div></div></div><p class="why">Cancel disabled by the draft's own errors — the engineer is now trapped in a form she wanted to abandon, and her only way out is to make bad data valid.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Error handling</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>A failed commit preserves the draft, exactly as typed.</strong> Every field, including the long ones. The work is the user's and the failure was not theirs.</li>
+      <li><strong>A failed commit states that nothing was committed, in the subject's own terms</strong> — "routing RTG-7310-B still reads revision 6" — before it explains the cause.</li>
+      <li><strong>The editing context stays open on failure.</strong> Closing it to show the error puts the message and the draft in different places, and the user cannot act on either.</li>
+      <li><strong>Retry sends the draft as it is at the moment of retry,</strong> never the values that failed; the user may have corrected them in between.</li>
+      <li><strong>A stale draft is reported, not overwritten.</strong> If committed state moved after the draft was opened, the commit says so, names the revision, keeps the draft, and offers the choice between committing over it and reloading from it. Silent last-write-wins destroys someone else's change.</li>
+      <li><strong>A subject withdrawn mid-edit ends the edit and keeps the explanation,</strong> including what the uncommitted values were. The draft cannot be committed because its subject is gone.</li>
+      <li><strong>Failure never leaves the draft looking committed.</strong> Anything outside the editing context that shows the subject keeps showing committed values.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma bad">OP-40 was not saved<br><span class="mh">The routing service refused the commit — RTG-7310-B is checked out to Priya Iyer. Nothing was committed: the routing still reads revision 6, and every figure you typed is still in the form.</span></div><div class="mb">Retry saving OP-40</div></div><p class="why">Cause, consequence, and the draft still on screen — so the engineer knows what the routing holds, what she typed, and what retry will send.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><span class="mn">Form closed.</span><div class="ma bad">Something went wrong. Please try again.</div><span class="mh">setup 75 · note · gone</span></div><p class="why">The context closed, the draft went with it, and the engineer has to re-time the operation from memory to find out whether the failure was hers.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Commit and cancel have distinct accessible names that carry the subject</strong> — "Save the changes to OP-40 as routing revision 7", "Discard the changes to OP-40 and keep revision 6". Two buttons called "OK" and "Cancel" in a routing editor are two unlabelled risks.</li>
+      <li><strong>Entering editing moves focus into the first editor,</strong> not onto the container, so the keyboard is where the work is.</li>
+      <li><strong>Focus lands predictably when the editing context closes:</strong> on the control that opened it, after a commit under <code>close</code>, after a cancel, and after a dismissal. Never on the document body, and never lost inside a removed subtree.</li>
+      <li><strong>The dirty-dismissal decision opens with focus on the non-destructive choice</strong> and returns focus to the editor the user was in when they choose to keep editing.</li>
+      <li><strong>Errors that prevent the commit are communicated before the user is asked to retry</strong> — announced on refusal, with focus moved to the first problem, so the second press is informed.</li>
+      <li><strong>Draft state is stated in text, not only in appearance.</strong> That there are unsaved changes, how many fields differ, and that the subject is unchanged, are all readable — a screen-reader user cannot see that a field looks modified.</li>
+      <li><strong>Under <code>block</code>, the close control is removed rather than disabled,</strong> so nothing announces as an available exit that is not one.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The two actions name their outcomes, not their mechanics.</strong> "Save changes" and "Discard changes" — never "OK", "Done" and "Close", where nothing on screen says which one keeps the work.</li>
+      <li><strong>Where the consequence is countable, count it.</strong> "Discard 4 changes" beats "Discard"; "Save writes revision 7" beats "Save".</li>
+      <li><strong>While the draft is dirty, say what the subject still holds.</strong> "The routing still holds revision 6 until you save" is the sentence that makes the draft boundary visible.</li>
+      <li><strong>If dismissal discards, the context says so before it happens</strong> — in the editing surface, not only in the guard dialog. Under <code>discard</code> there is no dialog to carry the warning.</li>
+      <li><strong>A clean draft's inert commit explains itself.</strong> "Nothing to save yet — change a parameter first", never a dead button with no reason.</li>
+      <li><strong>Cancel copy names what is kept, not only what is lost.</strong> The committed state is the thing the user is returning to.</li>
+      <li><strong>Never label a discard as a cancellation of the operation itself.</strong> "Cancel" beside a work-order form reads as cancelling the work order; name the object of the verb.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><span class="mn">2 changed fields — the routing still holds revision 6.</span><div style="display:flex;gap:6px"><div class="mb q">Discard changes</div><div class="mb">Save changes</div></div><span class="mh">Save writes revision 7 with your change note.</span></div><p class="why">Both outcomes named, the committed state visible the whole time, and the count where the consequence is countable.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><span class="mn">Unsaved</span><div style="display:flex;gap:6px"><div class="mb">Done</div><div class="mb q">Cancel</div></div></div><p class="why">"Done" and "Cancel" on a routing operation: one writes a new revision to a live process, the other throws the work away, and "Cancel" also reads as cancelling the operation itself.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§17</span><h2>Performance</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Typing is never gated on validation or on the network.</strong> Draft edits are local and immediate; validation is cheap and runs on the draft in memory.</li>
+      <li><strong>The commit is guarded at the state transition,</strong> not by disabling the button — a second press arrives before the disabled attribute lands, and two commits mean two revisions of the same change.</li>
+      <li><strong>Each commit carries a request identity,</strong> and only the current one may promote a draft or clear it. A response that arrives after a cancel, a newer commit, or the subject's withdrawal writes nothing.</li>
+      <li><strong>A commit slow enough to notice is reported where the draft is,</strong> with progress naming the subject, and with the draft still legible — not behind a page-level overlay.</li>
+      <li><strong>Nothing about the draft is persisted on a timer unless the product says it is.</strong> A background autosave silently converts this pattern into autosave-with-undo and voids the cancel guarantee.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+      <tr><td class="k">No changes were made</td><td>The commit is inert and says why; dismissal and cancel close without asking. Committing nothing must not write a revision or announce a change.</td></tr>
+      <tr><td class="k">Draft returned by hand to committed values</td><td>The draft is clean again — derived, not remembered — so the guard stops asking and the commit goes inert.</td></tr>
+      <tr><td class="k">Dismissal while dirty</td><td>Resolved by <code>dismissalPolicy</code>, identically for Escape, the scrim and the close control. Never a commit.</td></tr>
+      <tr><td class="k">Commit fails after valid input</td><td>Draft preserved as typed, committed state unchanged and said to be unchanged, context open, retry available against the current draft.</td></tr>
+      <tr><td class="k">Committed state moved while the draft was open</td><td>Reported at commit against the revision the draft was opened on; the draft is kept and the user chooses. Never patched into the draft as the user types.</td></tr>
+      <tr><td class="k">Subject withdrawn while editing</td><td>Editing ends, the draft cannot be committed, and the pattern states which subject left, why, and what the uncommitted values were.</td></tr>
+      <tr><td class="k">Repeated commit activation</td><td>The second activation is refused while the first is in flight. No queue, no second revision.</td></tr>
+      <tr><td class="k">Invalid draft plus an attempted dismissal</td><td>Dismissal is resolved on dirtiness alone; validity is irrelevant to leaving.</td></tr>
+      <tr><td class="k">Navigating or closing the window with a dirty draft</td><td>Out of the pattern's power to prevent, in its obligation to warn: the unsaved draft is announced as unsaved, and the product decides whether to guard the exit as well.</td></tr>
+      <tr><td class="k">Opening a second editing context while one is dirty</td><td>Refused, with the open subject named and focus returned to it — one draft boundary at a time, or two commits race the same screen. Under a modal surface the case cannot arise, because the scrim already prevents it; the rule is still required, because the same screen may be given a non-modal or inline surface (§05) and because programmatic entry points do not meet the scrim.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Hold committed state and draft state as two values,</strong> and let the editors write only the second. Every guarantee in this specification follows from that one arrangement; each alternative reconstructs them badly.</li>
+      <li><strong>Derive dirty by comparing the two, field by field.</strong> Never a touched flag, never a change-event counter, never the controls' own visual state — those all report activity, and activity is not difference. Count commit-only fields (a change note) as dirty when they have content, and say so in the spec of the screen.</li>
+      <li><strong>Normalise before comparing.</strong> Draft values arriving from text controls are strings; comparing <code>"60"</code> with <code>60</code> makes every draft dirty forever, which is the usual cause of a guard nobody can escape.</li>
+      <li><strong>Route Escape, the scrim and the close control through one handler,</strong> and put the policy in that handler. Three call sites are three chances for the three exits to diverge.</li>
+      <li><strong>Stamp the draft with the revision it was opened against,</strong> and compare at commit. Without it a stale draft is undetectable and the §10 rule is unimplementable.</li>
+      <li><strong>Derive the draft's state, do not store it.</strong> Clean, dirty, invalid, pending, failed and committed are all computable from the two values, the validation result and the in-flight request. A stored <code>isDirty</code> is what survives the change that cleared it.</li>
+      <li><strong>Validate a copy of the whole draft in one function</strong> returning problems per field; per-control validators closing over stale siblings produce cross-field errors that contradict the screen.</li>
+      <li><strong>Copy values out of the committed object when seeding the draft.</strong> A draft holding a reference into committed state is a mutation waiting for a re-render — and it silently deletes the cancel guarantee.</li>
+      <li><strong>Keep focus management with the transitions</strong> — entry to the first editor, refusal to the first problem, exit to the control that opened the context — rather than inside the editors, which then fight each other on mount.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted"><strong>Omitted sections and why.</strong>
+§06 Variants — a drawer, a dialog and an inline panel are the same contract in different containers; the behavioural choice between them is a declared property (§05), and an editing context with its own record and its own submit is <a href="ValidatedSubmission.spec.html">validated submission</a>, not a variant of this.
+§07 Sizes — no coordinated sizing exists at the pattern level; the container's and the controls' own sizes are sufficient.
+§11 Input &amp; interaction modalities — the editors and the container own their pointer, touch and keyboard behaviour, including Escape; the pattern's cross-component obligations are the focus rules in §12 and the single dismissal route in §20.
+§13 Motion — the editing context may animate open and closed, but no motion carries pattern-owned meaning and none may delay a refusal, a failure or the dirty-dismissal decision.
+§15 Responsive — a drawer becoming a bottom sheet, or a dialog becoming a full screen, changes the container and not one rule here; the draft boundary, the commit, the cancel and the dismissal policy are identical at every width.
+§16 Internationalization — the pattern is direction-agnostic; locale-sensitive parsing and formatting of the values being edited belong to the input components and the product's locale rules, which is also where the normalisation in §20 has to happen.
+§19 Anti-patterns — the refusals in §01, the dismissal rules in §04 and the failure rules in §10 cover the recurring misuses; autosave dressed as a Save button is named in §01 and §17.
+§21 Developer notes — the contract in §04, §05, §08, §10 and §20 is the whole contract; its two requirements of an API — a revision on the subject and a commit response attributable to the request that asked for it — are stated in §20.</p>
+</div></body></html>

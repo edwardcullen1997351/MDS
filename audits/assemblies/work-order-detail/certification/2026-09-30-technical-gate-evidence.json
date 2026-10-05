@@ -1,0 +1,162 @@
+{
+  "assembly": "ra-work-order-detail",
+  "version": "0.1.0",
+  "executedAt": "2026-10-02T12:25:54.513Z",
+  "storybookBaseUrl": "http://127.0.0.1:6006",
+  "sourceChecks": "pass",
+  "viewports": [
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1200,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 30,
+        "incompleteCount": 0
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nWork orders\nPress Shop\nWO-561204\nReleased\nRev D\nBRK-4820-A · Caliper bracket LH · WO-561204\nChakan plant PL-04 · Press line P-2 · Shift A · Due 30 Sep 2026 (IST)\nDuplicate\nSave work order\nOperational status: Work order WO-561204 synchronized with plant MES. Production routing Rev D active.\nPolicy POL-AUD-12 compliant\nProduction Specifications & Routing Attributes\n\nReleased quantities, stamping work centers, and commercial batch valuation.\n\nPART IDENTITY\nBRK-4820-A · Caliper bracket LH\nBATCH PLANNED QUANTITY\n1,200 pcs\nASSIGNED WORK CENTER\nPress Line P-2 · Stamping Cell 04\nCOMMERCIAL VALUATION\n₹2,10,000\nAudit Traceability (4)\nRouting Operations (4)\nQuality & Compliance (4)\nTimestamp (IST)\tActor\tAction\tPrevious\tUpdated\n2026-09-24 14:30:10\tAnjali Deshmukh\tReleased to production\tStatus: Planned\t\nReleased\n\n2026-09-24 11:15:00\tVikram Bhosale\tRouting verification approved\tRouting: Rev C\t\nVerified\n\n2026-09-22 16:45:20\tMeera Nair\tQuality inspection plan sign-off\tQuality: Draft\t\nApproved\n\n2026-09-01 09:15:00\tPL-04 Planning Engine\tWork order instantiated\t—\t\nCreated\nLifecycle & Control State\nSupervisory MES operational parameters\nReleased\nOperational state\nReleased\nAssigned planner\nAnjali Deshmukh\nRouting revision\nRev D\nTarget takt\n138 s / pc\nExecution shift\nShift A · Cell 04\nPlace work order on hold\nLinked Operational Evidence\nGoverned attachments & line telemetry\n3 records\nTraveller & CAD Drawings\n4 Sheets\n\nBlueprint sheet DWG-4820-A rev 4 · Stamping die layout\n\nMaterial Reservations\nAllocated\n\nCoil batch #CR4-8842 allocated in warehouse Bay 2\n\nLine Sensor Telemetry\nLive Stream\n\nPress Line P-2 real-time hydraulic stroke telemetry",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 1425,
+        "clientWidth": 1440,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "tabs": 3,
+        "metrics": 4,
+        "tabInsetLeft": 21,
+        "minStatusRowHeight": 37,
+        "minEvidenceItemHeight": 89,
+        "minMetricPadding": 12,
+        "sidebarWidth": 360,
+        "actionButtons": [
+          "Set string",
+          "Set string",
+          "Set string",
+          "Ready▼",
+          "Active Released (Ready)▼",
+          "Save succeeds (Rev E)▼",
+          "Hold confirmed▼",
+          "Duplicate",
+          "Save work order",
+          "",
+          "Audit Traceability (4)",
+          "Routing Operations (4)",
+          "Quality & Compliance (4)",
+          "Place work order on hold"
+        ]
+      }
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 30,
+        "incompleteCount": 0
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nWork orders\nPress Shop\nWO-561204\nReleased\nRev D\nBRK-4820-A · Caliper bracket LH · WO-561204\nChakan plant PL-04 · Press line P-2 · Shift A · Due 30 Sep 2026 (IST)\nDuplicate\nSave work order\nOperational status: Work order WO-561204 synchronized with plant MES. Production routing Rev D active.\nPolicy POL-AUD-12 compliant\nProduction Specifications & Routing Attributes\n\nReleased quantities, stamping work centers, and commercial batch valuation.\n\nPART IDENTITY\nBRK-4820-A · Caliper bracket LH\nBATCH PLANNED QUANTITY\n1,200 pcs\nASSIGNED WORK CENTER\nPress Line P-2 · Stamping Cell 04\nCOMMERCIAL VALUATION\n₹2,10,000\nAudit Traceability (4)\nRouting Operations (4)\nQuality & Compliance (4)\nTimestamp (IST)\tActor\tAction\tPrevious\tUpdated\n2026-09-24 14:30:10\tAnjali Deshmukh\tReleased to production\tStatus: Planned\t\nReleased\n\n2026-09-24 11:15:00\tVikram Bhosale\tRouting verification approved\tRouting: Rev C\t\nVerified\n\n2026-09-22 16:45:20\tMeera Nair\tQuality inspection plan sign-off\tQuality: Draft\t\nApproved\n\n2026-09-01 09:15:00\tPL-04 Planning Engine\tWork order instantiated\t—\t\nCreated\nLifecycle & Control State\nSupervisory MES operational parameters\nReleased\nOperational state\nReleased\nAssigned planner\nAnjali Deshmukh\nRouting revision\nRev D\nTarget takt\n138 s / pc\nExecution shift\nShift A · Cell 04\nPlace work order on hold\nLinked Operational Evidence\nGoverned attachments & line telemetry\n3 records\nTraveller & CAD Drawings\n4 Sheets\n\nBlueprint sheet DWG-4820-A rev 4 · Stamping die layout\n\nMaterial Reservations\nAllocated\n\nCoil batch #CR4-8842 allocated in warehouse Bay 2\n\nLine Sensor Telemetry\nLive Stream\n\nPress Line P-2 real-time hydraulic stroke telemetry",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 753,
+        "clientWidth": 768,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "tabs": 3,
+        "metrics": 4,
+        "tabInsetLeft": 21,
+        "minStatusRowHeight": 37,
+        "minEvidenceItemHeight": 71,
+        "minMetricPadding": 12,
+        "sidebarWidth": 703,
+        "actionButtons": [
+          "Set string",
+          "Set string",
+          "Set string",
+          "Ready▼",
+          "Active Released (Ready)▼",
+          "Save succeeds (Rev E)▼",
+          "Hold confirmed▼",
+          "Duplicate",
+          "Save work order",
+          "",
+          "Audit Traceability (4)",
+          "Routing Operations (4)",
+          "Quality & Compliance (4)",
+          "Place work order on hold"
+        ]
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "axe": {
+        "violationCount": 0,
+        "violations": [],
+        "passCount": 31,
+        "incompleteCount": 1
+      },
+      "layout": {
+        "text": "Inspection controls - current state: ready\nWork orders\nPress Shop\nWO-561204\nReleased\nRev D\nBRK-4820-A · Caliper bracket LH · WO-561204\nChakan plant PL-04 · Press line P-2 · Shift A · Due 30 Sep 2026 (IST)\nDuplicate\nSave work order\nOperational status: Work order WO-561204 synchronized with plant MES. Production routing Rev D active.\nPolicy POL-AUD-12 compliant\nProduction Specifications & Routing Attributes\n\nReleased quantities, stamping work centers, and commercial batch valuation.\n\nPART IDENTITY\nBRK-4820-A · Caliper bracket LH\nBATCH PLANNED QUANTITY\n1,200 pcs\nASSIGNED WORK CENTER\nPress Line P-2 · Stamping Cell 04\nCOMMERCIAL VALUATION\n₹2,10,000\nAudit Traceability (4)\nRouting Operations (4)\nQuality & Compliance (4)\nTimestamp (IST)\tActor\tAction\tPrevious\tUpdated\n2026-09-24 14:30:10\tAnjali Deshmukh\tReleased to production\tStatus: Planned\t\nReleased\n\n2026-09-24 11:15:00\tVikram Bhosale\tRouting verification approved\tRouting: Rev C\t\nVerified\n\n2026-09-22 16:45:20\tMeera Nair\tQuality inspection plan sign-off\tQuality: Draft\t\nApproved\n\n2026-09-01 09:15:00\tPL-04 Planning Engine\tWork order instantiated\t—\t\nCreated\nLifecycle & Control State\nSupervisory MES operational parameters\nReleased\nOperational state\nReleased\nAssigned planner\nAnjali Deshmukh\nRouting revision\nRev D\nTarget takt\n138 s / pc\nExecution shift\nShift A · Cell 04\nPlace work order on hold\nLinked Operational Evidence\nGoverned attachments & line telemetry\n3 records\nTraveller & CAD Drawings\n4 Sheets\n\nBlueprint sheet DWG-4820-A rev 4 · Stamping die layout\n\nMaterial Reservations\nAllocated\n\nCoil batch #CR4-8842 allocated in warehouse Bay 2\n\nLine Sensor Telemetry\nLive Stream\n\nPress Line P-2 real-time hydraulic stroke telemetry",
+        "hasHorizontalScroll": false,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overlappingControls": 0,
+        "overlapPairs": [],
+        "statusRegions": 2,
+        "tabs": 3,
+        "metrics": 4,
+        "tabInsetLeft": 21,
+        "minStatusRowHeight": 37,
+        "minEvidenceItemHeight": 89,
+        "minMetricPadding": 12,
+        "sidebarWidth": 340,
+        "actionButtons": [
+          "Set string",
+          "Set string",
+          "Set string",
+          "Ready▼",
+          "Active Released (Ready)▼",
+          "Save succeeds (Rev E)▼",
+          "Hold confirmed▼",
+          "Duplicate",
+          "Save work order",
+          "",
+          "Audit Traceability (4)",
+          "Routing Operations (4)",
+          "Quality & Compliance (4)",
+          "Place work order on hold"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "action": "save-work-order-success",
+      "found": true,
+      "pendingMs": 30,
+      "outcomeMs": 713,
+      "textSample": "Inspection controls - current state: ready\nWork orders\nPress Shop\nWO-561204\nReleased\nRev E\nBRK-4820-A · Caliper bracket LH · WO-561204\nChakan plant PL-04 · Press line P-2 · Shift A · Due 30 Sep 2026 (IST)\nDuplicate\nSave work order\nOperational status: Work order WO-561204 saved successfully. Routing revision Rev E active and logged to PL-04 MES ledger.\nPolicy POL-AUD-12 compliant\nProduction Specifications & Routing Attributes\n\nReleased quantities, stamping work centers, and commercial batch valua"
+    },
+    {
+      "action": "save-failure-retained",
+      "found": true,
+      "pendingMs": 22,
+      "outcomeMs": 590,
+      "textSample": "Inspection controls - current state: ready\nWork orders\nPress Shop\nWO-561204\nReleased\nRev D\nUnsaved modifications\nBRK-4820-A · Caliper bracket LH · WO-561204\nChakan plant PL-04 · Press line P-2 · Shift A · Due 30 Sep 2026 (IST)\nDuplicate\nSave work order\nOperational status: Save failed for WO-561204. Manufacturing Execution System was unreachable. Unsaved entries are retained on screen.\nPolicy POL-AUD-12 compliant\nProduction Specifications & Routing Attributes\n\nReleased quantities, stamping work c"
+    },
+    {
+      "action": "line-hold-workflow",
+      "found": true,
+      "confirmFound": true,
+      "pendingMs": 97,
+      "outcomeMs": 623,
+      "textSample": "Inspection controls - current state: ready\nWork orders\nPress Shop\nWO-561204\nOn Hold\nRev D\nBRK-4820-A · Caliper bracket LH · WO-561204\nChakan plant PL-04 · Press line P-2 · Shift A · Due 30 Sep 2026 (IST)\nDuplicate\nSave work order\nOperational status: Work order WO-561204 placed on Line Hold. Tooling containment active.\nPolicy POL-AUD-12 compliant\nProduction Specifications & Routing Attributes\n\nReleased quantities, stamping work centers, and commercial batch valuation.\n\nPART IDENTITY\nBRK-4820-A · Caliper bracket LH\nBATCH PLANNED QUANTITY\n1,200 pcs\nASSIGNED WORK CENTER\nPress Line P-2 · Stamping C"
+    }
+  ]
+}

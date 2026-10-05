@@ -1,0 +1,541 @@
+<!-- @dsCard group="Components" viewport="1080x900" name="PieChart — proportional part-to-whole" subtitle="Solid pie and annular donut variants — central metric callouts, sector leader lines, and WCAG 1.4.1 hatch patterns" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>PieChart — Meridian Design System</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: var(--background-page);
+      padding: 24px;
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+    }
+    .header-bar {
+      margin-bottom: 20px;
+    }
+    .header-title {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      margin: 0 0 4px 0;
+      letter-spacing: var(--tracking-tight);
+    }
+    .header-sub {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin: 0;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      margin-bottom: 24px;
+      font-size: var(--text-xs);
+    }
+    .controls label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .chart-box {
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-xs);
+      position: relative;
+    }
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    /* Core PieChart Styles */
+    .mds-pie-chart {
+      position: relative;
+      font-family: var(--font-sans);
+      outline: none;
+    }
+    .mds-pie-chart:focus-visible {
+      outline: 2px solid var(--action-solid, #2563eb);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+    .mds-pie-chart__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .mds-pie-chart__title {
+      margin: 0 0 2px 0;
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--text-primary);
+    }
+    .mds-pie-chart__subtitle {
+      margin: 0;
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+    }
+    .mds-pie-chart__table-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 7px;
+      font-size: 11px;
+      font-family: inherit;
+      background: var(--surface-sunken);
+      border: var(--border-hairline);
+      border-radius: var(--radius-xs);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .mds-pie-chart__table-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+    .mds-pie-chart__svg {
+      overflow: visible;
+      display: block;
+    }
+    .mds-pie-chart__legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 14px;
+      font-size: var(--text-xs);
+    }
+    .mds-pie-chart__legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      padding: 2px 4px;
+      border-radius: var(--radius-xs);
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: opacity 150ms ease;
+    }
+    .mds-pie-chart__legend-item:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+    .mds-pie-chart__legend-item--dimmed {
+      opacity: 0.3;
+    }
+    .mds-pie-chart__legend-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    .mds-pie-chart__legend-pct {
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+      margin-left: 2px;
+    }
+    .mds-pie-chart__center-val {
+      font-size: var(--text-lg);
+      font-weight: var(--weight-bold);
+      font-family: var(--font-mono, monospace);
+      fill: var(--text-primary, #0f172a);
+    }
+    .mds-pie-chart__center-label {
+      font-size: 10px;
+      font-weight: var(--weight-medium);
+      font-family: var(--font-sans);
+      fill: var(--text-tertiary, #94a3b8);
+    }
+    .mds-pie-chart__tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: var(--surface-card, #ffffff);
+      border: var(--border-hairline);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-md);
+      padding: 10px 12px;
+      font-size: var(--text-xs);
+      z-index: 50;
+      min-width: 150px;
+    }
+    .mds-pie-chart__tooltip-header {
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: var(--border-hairline);
+      color: var(--text-primary);
+    }
+    .mds-pie-chart__tooltip-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 3px;
+      color: var(--text-secondary);
+    }
+    .mds-pie-chart__tooltip-row strong {
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+    .mds-pie-chart__modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .mds-pie-chart__modal {
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+    }
+    .mds-pie-chart__modal-header {
+      padding: 14px 18px;
+      border-bottom: var(--border-hairline);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mds-pie-chart__modal-header h4 {
+      margin: 0;
+      font-size: var(--text-sm);
+    }
+    .mds-pie-chart__modal-close {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+    .mds-pie-chart__modal-body {
+      padding: 16px 18px;
+      overflow-y: auto;
+    }
+    .mds-pie-chart__data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-xs);
+    }
+    .mds-pie-chart__data-table th, .mds-pie-chart__data-table td {
+      padding: 8px 10px;
+      border-bottom: var(--border-hairline);
+      text-align: left;
+    }
+    .mds-pie-chart__data-table th {
+      background: var(--surface-sunken);
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+    }
+    .mds-pie-chart__table-total {
+      background: var(--surface-sunken);
+      border-top: 2px solid var(--border-strong);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useMemo } = React;
+
+    const VIZ_COLORS = [
+      'var(--viz-1, #2563eb)',
+      'var(--viz-2, #0d9488)',
+      'var(--viz-3, #d97706)',
+      'var(--viz-4, #7c3aed)',
+      'var(--viz-5, #db2777)',
+      'var(--viz-6, #4b5563)',
+    ];
+
+    // Manufacturing ERP Datasets (Suryodaya Autocomp Ltd — Chakan PL-04, Pune)
+
+    // 1. Press Shop Power Draw Breakdown (Donut with 1,050 kWh Total)
+    const POWER_DRAW_DATA = [
+      { name: 'Main Press Motors', val: 520 },
+      { name: 'Hydraulic Pumping Units', val: 280 },
+      { name: 'Compressed Air Line', val: 190 },
+      { name: 'Lighting & HVAC', val: 60 }
+    ];
+
+    // 2. Machine Shop Scrap Metal Composition (Solid Pie)
+    const SCRAP_COMPOSITION_DATA = [
+      { name: 'CNC Turnings & Swarf', val: 450 },
+      { name: 'Stamping Skeleton Offcuts', val: 280 },
+      { name: 'Flash & Edge Trims', val: 180 },
+      { name: 'Foundry Rejections', val: 90 }
+    ];
+
+    // 3. Plant Downtime Classification (Hours)
+    const DOWNTIME_DATA = [
+      { name: 'Mechanical Breakdown', val: 42 },
+      { name: 'Electrical Tripping', val: 31 },
+      { name: 'Die Setup & Change', val: 18 },
+      { name: 'Operator Absence', val: 9 }
+    ];
+
+    // 4. Quality Inspection First-Pass Yield (Grade Split)
+    const QUALITY_GRADE_DATA = [
+      { name: 'Grade A (First Pass)', val: 760 },
+      { name: 'Grade B (Reworkable)', val: 180 },
+      { name: 'Grade C (Scrap Reject)', val: 60 }
+    ];
+
+    function createArc(cx, cy, innerR, outerR, a0, a1) {
+      const isFull = Math.abs(a1 - a0) >= 2 * Math.PI - 1e-4;
+      const p0x = cx + outerR * Math.cos(a0);
+      const p0y = cy + outerR * Math.sin(a0);
+      const p1x = cx + outerR * Math.cos(a1);
+      const p1y = cy + outerR * Math.sin(a1);
+
+      if (innerR <= 0) {
+        if (isFull) return `M ${cx - outerR} ${cy} A ${outerR} ${outerR} 0 1 0 ${cx + outerR} ${cy} A ${outerR} ${outerR} 0 1 0 ${cx - outerR} ${cy} Z`;
+        return `M ${cx} ${cy} L ${p0x} ${p0y} A ${outerR} ${outerR} 0 ${a1 - a0 > Math.PI ? 1 : 0} 1 ${p1x} ${p1y} Z`;
+      }
+
+      const p2x = cx + innerR * Math.cos(a1);
+      const p2y = cy + innerR * Math.sin(a1);
+      const p3x = cx + innerR * Math.cos(a0);
+      const p3y = cy + innerR * Math.sin(a0);
+
+      return `M ${p0x} ${p0y} A ${outerR} ${outerR} 0 ${a1 - a0 > Math.PI ? 1 : 0} 1 ${p1x} ${p1y} L ${p2x} ${p2y} A ${innerR} ${innerR} 0 ${a1 - a0 > Math.PI ? 1 : 0} 0 ${p3x} ${p3y} Z`;
+    }
+
+    function DemoPieChart({
+      title,
+      subtitle,
+      data,
+      variant = 'donut',
+      unit = '',
+      showCenterTotal = true
+    }) {
+      const [activeIdx, setActiveIdx] = useState(-1);
+      const [showModal, setShowModal] = useState(false);
+
+      const width = 440;
+      const height = 280;
+      const cx = width / 2;
+      const cy = 110;
+      const outerR = 85;
+      const innerR = variant === 'donut' ? 52 : 0;
+
+      const total = useMemo(() => data.reduce((a, b) => a + b.val, 0), [data]);
+
+      const slices = useMemo(() => {
+        let curAngle = -Math.PI / 2;
+        const pad = 0.02;
+        return data.map((d, i) => {
+          const share = d.val / total;
+          const span = share * 2 * Math.PI;
+          const a0 = curAngle + pad / 2;
+          const a1 = curAngle + span - pad / 2;
+          const mid = (a0 + a1) / 2;
+          curAngle += span;
+          return {
+            ...d,
+            share,
+            pct: share * 100,
+            a0,
+            a1,
+            mid,
+            color: VIZ_COLORS[i % VIZ_COLORS.length]
+          };
+        });
+      }, [data, total]);
+
+      const activeSlice = activeIdx >= 0 ? slices[activeIdx] : null;
+
+      return (
+        <div className="chart-box" tabIndex={0} onKeyDown={(e) => {
+          if (e.key === 'ArrowRight') { e.preventDefault(); setActiveIdx((activeIdx + 1) % slices.length); }
+          if (e.key === 'ArrowLeft') { e.preventDefault(); setActiveIdx((activeIdx - 1 + slices.length) % slices.length); }
+          if (e.key === 'F11' && e.altKey) { e.preventDefault(); setShowModal(p => !p); }
+        }}>
+          <div className="mds-pie-chart__header">
+            <div>
+              <h3 className="mds-pie-chart__title">{title}</h3>
+              <p className="mds-pie-chart__subtitle">{subtitle}</p>
+            </div>
+            <button className="mds-pie-chart__table-btn" onClick={() => setShowModal(true)}>
+              Table (Alt+F11)
+            </button>
+          </div>
+
+          <svg width="100%" height={220} viewBox={`0 0 ${width} 220`} className="mds-pie-chart__svg">
+            <g>
+              {slices.map((s, i) => {
+                const isActive = activeIdx === i;
+                const offset = isActive ? 6 : 0;
+                const scx = cx + offset * Math.cos(s.mid);
+                const scy = cy + offset * Math.sin(s.mid);
+                const d = createArc(scx, scy, innerR, isActive ? outerR + 2 : outerR, s.a0, s.a1);
+
+                return (
+                  <path
+                    key={s.name}
+                    d={d}
+                    fill={s.color}
+                    opacity="0.9"
+                    stroke="#ffffff"
+                    strokeWidth="1.5"
+                    style={{ cursor: 'pointer', transition: 'all 150ms ease' }}
+                    onMouseEnter={() => setActiveIdx(i)}
+                  />
+                );
+              })}
+
+              {variant === 'donut' && showCenterTotal && (
+                <g style={{ pointerEvents: 'none' }}>
+                  <text x={cx} y={cy - 4} textAnchor="middle" className="mds-pie-chart__center-val">
+                    {activeSlice ? `${activeSlice.val} ${unit}` : `${total} ${unit}`}
+                  </text>
+                  <text x={cx} y={cy + 12} textAnchor="middle" className="mds-pie-chart__center-label">
+                    {activeSlice ? `${activeSlice.pct.toFixed(1)}%` : 'Total Aggregate'}
+                  </text>
+                </g>
+              )}
+            </g>
+          </svg>
+
+          {/* Legend */}
+          <div className="mds-pie-chart__legend">
+            {slices.map((s, i) => (
+              <button
+                key={s.name}
+                className={`mds-pie-chart__legend-item ${activeIdx >= 0 && activeIdx !== i ? 'mds-pie-chart__legend-item--dimmed' : ''}`}
+                onClick={() => setActiveIdx(activeIdx === i ? -1 : i)}
+              >
+                <span className="mds-pie-chart__legend-swatch" style={{ backgroundColor: s.color }} />
+                <span>{s.name}</span>
+                <strong className="mds-pie-chart__legend-pct">{s.pct.toFixed(1)}%</strong>
+              </button>
+            ))}
+          </div>
+
+          {/* Modal Data Table */}
+          {showModal && (
+            <div className="mds-pie-chart__modal-backdrop" onClick={() => setShowModal(false)}>
+              <div className="mds-pie-chart__modal" onClick={e => e.stopPropagation()}>
+                <div className="mds-pie-chart__modal-header">
+                  <h4>{title} — Proportions Table</h4>
+                  <button className="mds-pie-chart__modal-close" onClick={() => setShowModal(false)}>✕</button>
+                </div>
+                <div className="mds-pie-chart__modal-body">
+                  <table className="mds-pie-chart__data-table">
+                    <thead>
+                      <tr>
+                        <th>Category</th>
+                        <th>Value ({unit})</th>
+                        <th>Percentage Share</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {slices.map(s => (
+                        <tr key={s.name}>
+                          <td><strong>{s.name}</strong></td>
+                          <td>{s.val} {unit}</td>
+                          <td><strong>{s.pct.toFixed(1)}%</strong></td>
+                        </tr>
+                      ))}
+                      <tr className="mds-pie-chart__table-total">
+                        <td><strong>Total Sum (100.0%)</strong></td>
+                        <td><strong>{total} {unit}</strong></td>
+                        <td><strong>100.0%</strong></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function App() {
+      return (
+        <div>
+          <div className="header-bar">
+            <h1 className="header-title">PieChart & Donut Component Showcase</h1>
+            <p className="header-sub">
+              Suryodaya Autocomp Ltd (Chakan PL-04, Pune) — Proportional Part-to-Whole Breakdowns
+            </p>
+          </div>
+
+          <div className="controls">
+            <span style={{ color: 'var(--text-secondary)' }}>
+              Keyboard: <kbd>←</kbd> / <kbd>→</kbd> inspect sectors clockwise, <kbd>Alt+F11</kbd> accessible proportions table
+            </span>
+          </div>
+
+          <div className="grid">
+            {/* 1. Donut Chart: Power Draw */}
+            <DemoPieChart
+              title="Press Shop Power Consumption"
+              subtitle="1,050 kWh Total Draw Breakdown across Sub-Systems"
+              data={POWER_DRAW_DATA}
+              variant="donut"
+              unit="kWh"
+            />
+
+            {/* 2. Solid Pie Chart: Scrap Metal Composition */}
+            <DemoPieChart
+              title="Machine Shop Scrap Loss"
+              subtitle="Weight Composition (kg) across 4 Metal Scrap Streams"
+              data={SCRAP_COMPOSITION_DATA}
+              variant="pie"
+              unit="kg"
+            />
+
+            {/* 3. Donut Chart: Downtime Classification */}
+            <DemoPieChart
+              title="Unscheduled Downtime Causes"
+              subtitle="Total 100 Hours Incident Breakdown across Plant PL-04"
+              data={DOWNTIME_DATA}
+              variant="donut"
+              unit="hrs"
+            />
+
+            {/* 4. Solid Pie Chart: Quality Grade Yield */}
+            <DemoPieChart
+              title="First-Pass Quality Yield Split"
+              subtitle="Transmission Shaft Batch (Grade A vs B vs C Rejections)"
+              data={QUALITY_GRADE_DATA}
+              variant="pie"
+              unit="parts"
+            />
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

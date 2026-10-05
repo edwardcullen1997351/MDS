@@ -1,0 +1,409 @@
+<!-- @dsCard group="Specs · Feedback" viewport="1080x760" name="Dialog (Modal)" subtitle="Full specification — the system's modal: purpose, anatomy, focus, keyboard, a11y, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Dialog — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:16px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.stage{position:relative;background:var(--background-page);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden}
+.stage .under{padding:14px;display:flex;flex-direction:column;gap:8px;font-size:var(--text-xs);color:var(--text-tertiary)}
+.stage .fakerow{display:flex;justify-content:space-between;padding:7px 10px;border-bottom:var(--border-subtle)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Dialog, Button, Input, Field, Text, Select, Alert, Link } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+/* A stand-in page, so every dialog in this spec is shown doing the thing a
+   modal actually does: stopping a surface the user was working in. */
+const Stage = ({children,h=340}) => (
+  <div className="stage" style={{height:h}}>
+    <div className="under">
+      <div className="fakerow"><span>WO-88431 · Frame weld</span><span>Running</span></div>
+      <div className="fakerow"><span>WO-88432 · Paint</span><span>Queued</span></div>
+      <div className="fakerow"><span>WO-88433 · Trim</span><span>Queued</span></div>
+    </div>
+    {children}
+  </div>
+);
+
+function Spec(){
+  const [which, setWhich] = React.useState(null);
+  const nameRef = React.useRef(null);
+
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Feedback · Component specification</span>
+    <h1>Dialog</h1>
+    <p className="lede">The system's modal — <strong>there is no separate <code>Modal</code> component; this is it.</strong> A modal is the most expensive thing the system can do to a user: it stops the page, takes their focus, and refuses to let them read what is behind it. It earns that only for a decision that must be taken before anything else can continue, or a short form whose context is the thing underneath. Everything else — information, confirmation, a long form, a detail view — has a cheaper component that does not interrupt.</p>
+    <div className="meta">
+      <span>components/feedback/Dialog.jsx</span><span>window.MeridianDesignSystem_962c43.Dialog</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items</span><span>since: 1.0.0</span><span>17 tokens · --z-dialog (600)</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="A decision, or a short form. Two cases, no third.">
+    <p>Use a dialog when the user cannot sensibly continue until they answer, and the answer is short. The interruption is the feature: it is what stops a destructive action from being one click deep and what keeps a two-field form from costing a page navigation. If the user <em>could</em> reasonably keep working, the interruption is a cost with no return.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Confirm a destructive or irreversible action','Dialog, tone="danger"','This component. Stopping the page is exactly the point.'],
+      ['Take 1–4 fields to complete an action in context','Dialog','Short focused form: rename, reassign, schedule.'],
+      ['State a condition that persists','Alert','A modal for information is an interruption with nothing to answer.'],
+      ['Confirm something already done','Toast / Snackbar','Never a modal. The work is finished; there is nothing to decide.'],
+      ['Show a record\u2019s detail','A page or a drawer','Detail is browsing, not deciding \u2014 it needs URLs, back, and depth.'],
+      ['Take a long or multi-step form','A page','Anything past ~4 fields or one step needs a URL, autosave and room.'],
+      ['Offer options for a selected item','Menu / Popover','Non-modal, anchored, cheap to dismiss.'],
+      ['Onboard, promote or explain','Nothing','A modal on arrival is the most-dismissed element in any product.'],
+    ]}/>
+    <ul>
+      <li><strong>The test:</strong> if the user pressed <kbd>Escape</kbd> immediately, would the product be in a sane state and would they have lost nothing? If yes, it should probably not have been a modal.</li>
+      <li><strong>One at a time, always.</strong> A dialog that opens a dialog is a flow that needed a page.</li>
+      <li><strong>Never modal for anything that can fail slowly.</strong> A modal holding a 30-second job traps the user in a spinner; start the job, close, and report with a toast.</li>
+      <li><strong>Do not put anything in a modal that is the only way to reach it.</strong> A URL-less surface cannot be linked, bookmarked or returned to.</li>
+    </ul>
+    <div className="demo col">
+      <Stage h={300}>
+        <Dialog open tone="danger" width="sm" title="Delete cluster?" description="This removes all 14 nodes and their volumes. It cannot be undone."
+          footer={<><Button variant="ghost">Cancel</Button><Button variant="danger">Delete cluster</Button></>} />
+      </Stage>
+      <Text size="xs" tone="tertiary">The canonical case: irreversible, one sentence of consequence, the verb on the confirm button.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Scrim, panel, title, description, body, footer.">
+    <div className="demo col">
+      <Stage h={470}>
+        <Dialog open title="Reassign work order" description="WO-88431 · Frame weld. The current owner is notified."
+          footer={<><Button variant="ghost">Cancel</Button><Button variant="primary">Reassign</Button></>}>
+          <div style={{display:'flex',flexDirection:'column',gap:12}}>
+            <Field label="Assign to"><Select options={[{value:'a',label:'M. Okonkwo · Days'},{value:'b',label:'R. Alvarez · Swing'}]} /></Field>
+            <Field label="Note" hint="Appears in the order's history."><Input placeholder="Optional" /></Field>
+          </div>
+        </Dialog>
+      </Stage>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        {[['1','Scrim — --dialog-scrim (black 44%) with --overlay-blur, at --z-dialog (600). It is the only element in the system that exists to make content unreadable, and it closes the dialog on mousedown.'],
+          ['2','Panel — --surface-overlay, --radius-lg, --elevation-5, at 400 / 520 / 720px. Top-aligned --dialog-inset-block (64px) down, never vertically centred (§05).'],
+          ['3','Title — h2, --text-lg semibold, and the dialog\u2019s accessible name via aria-labelledby. Required; the component warns without it.'],
+          ['4','Description — one sentence under the title, wired to aria-describedby. Where the consequence goes, especially the irreversible part.'],
+          ['5','Body — the form or the detail. Scrolls independently when the panel hits the viewport, so the footer never leaves.'],
+          ['6','Footer — right-aligned action row on --dialog-footer-background above a hairline. Cancel first, confirm last, primary or danger only on the confirm.'],
+          ['7','Close — ghost IconButton labelled "Close", top right. Removed entirely when dismissible is false (§06).']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+    </div>
+    <p>The footer is a band, not floating buttons: it sits on <code>--dialog-footer-background</code> above a <code>--dialog-footer-border</code> hairline, which is the same treatment Card uses for its action row. That consistency is what lets a user recognise "these are the things I can do here" without reading the buttons first.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Controlled by the product. Focus and scroll are not its problem.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['open','boolean','true','The product holds it. Returns null when false — nothing is rendered, so no hidden focusables.'],
+      ['title','ReactNode','— (required)','The accessible name, via aria-labelledby. The component warns if it is missing.'],
+      ['description','ReactNode','—','Wired to aria-describedby. Say what will happen, including what cannot be undone.'],
+      ['tone','\u2018default\u2019 | \u2018danger\u2019','default','danger colours the title only. The confirm button carries the rest (§04).'],
+      ['width','\u2018sm\u2019 | \u2018md\u2019 | \u2018lg\u2019','md','400 / 520 / 720px from --dialog-width-* (§05).'],
+      ['footer','ReactNode','—','The action row. Cancel first, confirm last.'],
+      ['onClose','() => void','—','Scrim mousedown, close button, Escape. All three, or none.'],
+      ['dismissible','boolean','true','false blocks Escape and scrim-close AND removes the X (§06).'],
+      ['initialFocus','RefObject<HTMLElement>','—','Where focus lands. Defaults to the first focusable element (§07).'],
+    ]}/>
+    <p>What the component does <strong>not</strong> ask the product to do is the point of the API: focus trap, focus restore, page scroll lock, ARIA wiring and Escape are all internal. Every one of those is a thing products forget, and forgetting any of them makes the dialog modal in appearance only.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Two tones. No sheet, no drawer, no fullscreen.">
+    <div className="demo col">
+      <Stage h={300}>
+        <Dialog open title="Publish routing?" description="Version 7 becomes the routing the scheduler offers from the next shift."
+          footer={<><Button variant="ghost">Cancel</Button><Button variant="primary">Publish</Button></>} />
+      </Stage>
+      <Stage h={300}>
+        <Dialog open tone="danger" width="sm" title="Cancel 12 work orders?" description="Materials already issued stay issued. This cannot be undone."
+          footer={<><Button variant="ghost">Keep them</Button><Button variant="danger">Cancel orders</Button></>} />
+      </Stage>
+    </div>
+    <T cols={['Variant','Treatment','Use']} rows={[
+      ['default','Title in --dialog-title-text, primary confirm','Decisions and short forms with no destructive edge.'],
+      ['danger','Title in --dialog-title-text-critical, danger confirm','Destructive or irreversible: deletes, cancellations, force-stops. The tone is on the title and the button, never a red panel or a red scrim.'],
+    ]}/>
+    <ul>
+      <li><strong>No bottom sheet, no side drawer, no fullscreen variant.</strong> Those are different components with different dismissal, different motion and different scope; a <code>variant</code> prop would hide that a drawer is a browsing surface and a modal is a decision.</li>
+      <li><strong>No icon in the header.</strong> A dialog is already the loudest surface in the product; an alarm glyph on top of it is redundant, and the title has the words.</li>
+      <li><strong>No tinted panel for danger.</strong> A red panel destroys the contrast of every field inside it, and a form is often exactly what a danger dialog contains.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Three widths, one alignment rule.">
+    <T cols={['Width','Token','Use']} rows={[
+      ['sm · 400px','--dialog-width-sm','Confirmations. One question, one sentence, two buttons \u2014 a wide panel makes a short question look uncertain.'],
+      ['md · 520px','--dialog-width-md','The default. Short forms of 1\u20134 fields.'],
+      ['lg · 720px','--dialog-width-lg','A form that needs two columns, or a body with a table or a diff. The ceiling on purpose: past 720px the content wanted a page.'],
+    ]}/>
+    <p><strong>Top-aligned, 64px down (<code>--dialog-inset-block</code>), never vertically centred.</strong> A centred panel moves its own title upward as its content grows, so a form that gains a validation message shifts the sentence the user is reading; a top-aligned one grows downward and holds the title still. It also means two dialogs opened in sequence put their titles in the same place.</p>
+    <p><strong>Height is capped at the viewport</strong> (<code>max-height: 100%</code> inside the scrim's padding): the header and footer are fixed and the body scrolls. A dialog whose confirm button has scrolled off the bottom of the screen is a trap with no visible way out — the single worst failure this component can have, and the reason the footer is <code>flex: none</code>.</p>
+    <div className="demo col">
+      <Stage h={660}>
+        <Dialog open width="lg" title="Import 240 work orders" description="Review the mapping before the import runs. Rows with errors are skipped."
+          footer={<><Button variant="ghost">Cancel</Button><Button variant="primary">Import 238 rows</Button></>}>
+          <div style={{display:'flex',flexDirection:'column',gap:10}}>
+            <Alert tone="warning" size="sm" title="2 rows will be skipped">Rows 44 and 117 have no routing.</Alert>
+            {['Order number → WO','Line → Work centre','Due date → Due','Quantity → Qty','Routing → Routing','Owner → Assignee','Priority → Priority'].map(r=>(
+              <div key={r} style={{display:'flex',justifyContent:'space-between',fontSize:'var(--text-xs)',color:'var(--text-secondary)',borderBottom:'var(--border-subtle)',paddingBottom:6}}><span>{r}</span><span className="mono">mapped</span></div>
+            ))}
+          </div>
+        </Dialog>
+      </Stage>
+      <Text size="xs" tone="tertiary">lg with a scrolling body: the title stays put, the footer stays reachable.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="06" title="States" note="Open, closed, and the one that blocks.">
+    <T cols={['State','Treatment']} rows={[
+      ['Closed','Returns null. Nothing rendered means nothing focusable behind the scenes and no stale content flashing on the next open.'],
+      ['Opening','Scrim --anim-fade-in, panel --anim-rise-in (8px up). Focus moves in after one frame (§09).'],
+      ['Open','Page scroll locked, focus trapped, Escape armed. The page behind is unreadable and unreachable \u2014 all three, or it is not modal.'],
+      ['Submitting','Loading state on the confirm Button; the dialog stays open and dismissible unless the work is already committed.'],
+      ['Blocked (dismissible: false)','Escape and scrim-close do nothing AND the X is removed. Only for work in progress that closing would lose.'],
+      ['Closing','No exit animation. Focus returns to the element that opened it.'],
+      ['Error inside','An Alert at the top of the body, not a second dialog. Field errors stay on their fields.'],
+    ]}/>
+    <div className="demo col">
+      <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+        <Button variant="secondary" onClick={()=>setWhich('normal')}>Open (dismissible)</Button>
+        <Button variant="secondary" onClick={()=>setWhich('blocked')}>Open (blocked)</Button>
+        <Button variant="secondary" onClick={()=>setWhich('focus')}>Open (initialFocus on a field)</Button>
+      </div>
+      <Stage h={400}>
+        <Dialog open={which==='normal'} title="Schedule maintenance" description="Lines stop for the duration of the window." onClose={()=>setWhich(null)}
+          footer={<><Button variant="ghost" onClick={()=>setWhich(null)}>Cancel</Button><Button variant="primary" onClick={()=>setWhich(null)}>Schedule</Button></>}>
+          <Field label="Window start"><Input placeholder="18:00" /></Field>
+        </Dialog>
+        <Dialog open={which==='blocked'} dismissible={false} title="Import running" description="Closing now would leave 240 rows half-imported."
+          footer={<Button variant="secondary" onClick={()=>setWhich(null)}>Stop the import</Button>}>
+          <Text size="sm" tone="secondary">142 of 240 rows processed.</Text>
+        </Dialog>
+        <Dialog open={which==='focus'} title="Rename work centre" initialFocus={nameRef} onClose={()=>setWhich(null)}
+          footer={<><Button variant="ghost" onClick={()=>setWhich(null)}>Cancel</Button><Button variant="primary" onClick={()=>setWhich(null)}>Rename</Button></>}>
+          <Field label="Name"><Input ref={nameRef} defaultValue="Frame weld" /></Field>
+        </Dialog>
+      </Stage>
+      <Text size="xs" tone="tertiary">Try Escape and a scrim click in each. The blocked one has no X, because a close button that refuses to close is worse than none.</Text>
+    </div>
+    <p><strong><code>dismissible={false}</code> is a rare and answerable state, not a way to force a decision.</strong> It is legitimate while work is in progress that closing would corrupt or lose — an import mid-run, a payment mid-authorisation. It is not legitimate for "you must choose": a user who cannot escape a question they do not understand has no way out of the product but the browser's back button, and there must always be a visible action that ends the state (above, "Stop the import").</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Focus goes in, cannot leave, and comes back.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['(on open)','Focus moves to initialFocus, or the first focusable element, after one animation frame so the panel is laid out first.'],
+      ['Tab','Cycles within the panel: last → first. Focus outside the panel (after a scrim click) is pulled back to the first element.'],
+      ['Shift + Tab','Cycles backwards: first → last.'],
+      ['Escape','Closes, when dismissible. The listener is capturing and stops propagation, so it closes the dialog and not also a menu behind it.'],
+      ['Enter','Whatever the focused control does. The dialog does not bind Enter to confirm \u2014 a stray Enter in a text field must not fire a destructive action.'],
+      ['(on close)','Focus returns to the element that had it when the dialog opened, if that element still exists.'],
+    ]}/>
+    <p><strong>Where focus lands is a content decision.</strong> Default is the first focusable element, which is right for a form (the first field). For a destructive confirmation, point <code>initialFocus</code> at <em>Cancel</em>: the safe action should be the one under the user's hands, so a reflexive <kbd>Enter</kbd> or <kbd>Space</kbd> does nothing bad. Never focus a danger button on open.</p>
+    <p>The trap is capturing and internal because a modal that can be tabbed out of is not modal — a screen-reader or keyboard user leaving the panel lands in content the scrim says is unavailable, with no indication of how to get back. Restoration matters just as much and is the half most implementations drop: without it, closing a dialog dumps focus at the top of the document and a keyboard user has to tab back to where they were.</p>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="role=dialog, aria-modal, labelled by its own title.">
+    <ul>
+      <li><strong><code>role="dialog"</code> + <code>aria-modal="true"</code></strong> on the panel, so assistive technology confines itself to the dialog's subtree the same way the scrim confines the pointer.</li>
+      <li><strong><code>aria-labelledby</code> points at the real <code>h2</code></strong> rather than duplicating the title into an <code>aria-label</code> — the previous implementation's approach, which silently produced an unnamed dialog whenever the title was not a plain string.</li>
+      <li><strong><code>aria-describedby</code> points at the description</strong> when there is one, so "this cannot be undone" is announced with the dialog rather than discovered by exploring it.</li>
+      <li><strong>Title is required and warned about.</strong> An unnamed modal tells a screen-reader user only that something has taken their focus.</li>
+      <li><strong>Focus is trapped and restored</strong> (§07). Both directions, and the out-of-panel case.</li>
+      <li><strong>Page scroll is locked</strong> while open. Without it the page behind scrolls under the scrim, which loses the user's place and contradicts the claim that the page has stopped.</li>
+      <li><strong>The scrim closes on mousedown, comparing target to itself.</strong> A click handler on the wrapper fires when a drag that started inside the panel — selecting text in the body — happens to end on the scrim, closing a half-filled form under the user's hand.</li>
+      <li><strong>Close and confirm are real buttons</strong> with real names: "Close", and a verb on the confirm ("Delete cluster"), never "OK" — which a screen-reader user hears with no idea what it agrees to.</li>
+      <li><strong>Contrast:</strong> the panel is <code>--surface-overlay</code>, so nothing inside it needs to hold contrast against the scrim. Danger colour is on the title text at 700-level, and the confirm button carries its own accessible pairing.</li>
+      <li><strong>Reduced motion</strong> collapses both animations to 1ms: the dialog appears in place.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="Fade the scrim, rise the panel, nothing on exit.">
+    <T cols={['Moment','Motion','Tokens']} rows={[
+      ['Scrim in','--anim-fade-in, opacity only.','--duration-base · --ease-out'],
+      ['Panel in','--anim-rise-in \u2014 8px up. Not a scale: the system has no scale keyframe and does not need one; a zoom makes a modal feel like it pounced.','--duration-slow · --ease-out'],
+      ['Focus move','One requestAnimationFrame after mount, so the panel is laid out before it is focused.','—'],
+      ['Exit','None. The dialog is removed.','—'],
+      ['Reduced motion','Both collapse to 1ms.','prefers-reduced-motion'],
+    ]}/>
+    <p>Nothing animates out. An exit transition means the confirm press is followed by a few hundred milliseconds of the dialog still sitting over the result the user is trying to see — and if the action navigated, the dialog animates out over a page it no longer belongs to. Removal is immediate, and the toast or updated row is what tells them it worked.</p>
+    <p>The scrim and the panel move together and briefly: the interruption should be legible, not theatrical. 320ms is the system's ceiling and dialogs are the only component that uses it, because the panel travels further than anything else in the ladder.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="A question or a noun phrase; a verb on the button.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Title as a question for a decision:</strong> "Delete cluster?", "Cancel 12 work orders?"</li>
+        <li><strong>Title as a noun phrase for a form:</strong> "Reassign work order", "Schedule maintenance".</li>
+        <li><strong>Description states the consequence,</strong> irreversibility first: "This removes all 14 nodes and their volumes. It cannot be undone."</li>
+        <li><strong>Confirm button repeats the verb:</strong> "Delete cluster", "Reassign", "Publish".</li>
+        <li><strong>Cancel says what it does</strong> when that is not obvious: "Keep them".</li>
+        <li><strong>Quantify:</strong> "12 work orders", "all 14 nodes", never "these items".</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>"Are you sure?"</strong> — it names nothing, and the user's answer depends entirely on what they are being asked.</li>
+        <li><strong>"OK" / "Yes" / "No"</strong> on buttons. Out of context they agree to nothing in particular.</li>
+        <li><strong>A title that is not a title:</strong> "Warning", "Confirm", "Notice".</li>
+        <li><strong>Two paragraphs of description.</strong> One sentence, or link to the page that explains.</li>
+        <li><strong>Three actions of equal weight.</strong> Two, occasionally two plus a link — more means the decision was not framed.</li>
+        <li><strong>Blame or apology</strong> — "Oops", "Sorry, something went wrong".</li>
+      </ul></div>
+    </div>
+    <p>House pattern, in order: <strong>title asks or names → description states the consequence → the confirm button repeats the verb.</strong> The strongest single rule is the last one: a user who reads only the button must still know what will happen, because that is what a hurried operator does.</p>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Below ~600px, a modal is nearly the whole screen.">
+    <ul>
+      <li><strong>Width is a max, not a width.</strong> The panel is <code>width: 100%</code> capped at its token, so it shrinks to the viewport minus <code>--dialog-inset-inline</code> with no breakpoint.</li>
+      <li><strong>The 64px top inset stays</strong> on small screens: it keeps the panel clear of notches and status bars and preserves the top-aligned growth rule.</li>
+      <li><strong>Footer actions wrap</strong> (the row is <code>flex-wrap</code>) and stay right-aligned, so the confirm remains the last thing in reading order.</li>
+      <li><strong>Prefer <code>sm</code> for confirmations on mobile</strong> — at phone width <code>lg</code> and <code>md</code> are indistinguishable, and the narrow cap keeps the question short.</li>
+      <li><strong>Avoid <code>lg</code> on mobile entirely.</strong> A two-column form or a table in a 360px modal is a page that has not been written yet.</li>
+      <li><strong>The body scroll is what makes small screens work:</strong> header and footer pinned, content scrolling, so the confirm is always reachable with the on-screen keyboard up.</li>
+      <li><strong>Scroll lock matters more here,</strong> where an unlocked page behind a modal scrolls on every touch drag.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{display:'grid',gridTemplateColumns:'minmax(0,320px) minmax(0,1fr)',gap:16}}>
+        <Stage h={310}>
+          <Dialog open tone="danger" width="sm" title="Delete cluster?" description="This cannot be undone."
+            footer={<><Button variant="ghost" size="sm">Cancel</Button><Button variant="danger" size="sm">Delete</Button></>} />
+        </Stage>
+        <Stage h={310}>
+          <Dialog open tone="danger" width="sm" title="Delete cluster?" description="This removes all 14 nodes and their volumes. It cannot be undone."
+            footer={<><Button variant="ghost">Cancel</Button><Button variant="danger">Delete cluster</Button></>} />
+        </Stage>
+      </div>
+      <Text size="xs" tone="tertiary">Same dialog at two widths. Nothing repositions; the panel is simply narrower and the footer wraps if it must.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Six, and two of them are why users hate modals.">
+    <div className="two">
+      <div className="pane dont"><h3>The two that matter</h3><ul>
+        <li><strong>A modal for information.</strong> Nothing to decide, so the only possible interaction is dismissal — which is why users learn to close modals before reading them, and why the important one gets closed too. Use an <code>Alert</code>.</li>
+        <li><strong>A modal as a page.</strong> A long form or a detail view in a dialog has no URL, no back button, no autosave and a scroll region inside a scroll region; the browser's back button closes the whole surface and loses the work.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Also don't</h3><ul>
+        <li><strong>A dialog opening a dialog.</strong> Two traps, two scrims, and no way to reason about focus. That flow is a page.</li>
+        <li><strong>"Are you sure?" with OK / Cancel.</strong> Names nothing, confirms nothing, and trains reflexive clicking.</li>
+        <li><strong><code>dismissible={false}</code> to force an answer.</strong> Blocking is for work in progress, and there must always be a visible way out (§06).</li>
+        <li><strong>Focusing the destructive button on open.</strong> A reflexive Enter then deletes the cluster.</li>
+        <li><strong>A modal on page load</strong> — tours, promos, cookie walls with nothing to decide.</li>
+        <li><strong>A modal to confirm what already happened.</strong> That is a Toast.</li>
+      </ul></div>
+    </div>
+    <p className="warn">The review test: <strong>count the answers.</strong> If the dialog has exactly one possible response, it is not a decision — it is information wearing a modal, and it belongs in the page. And if the answer to "what breaks if the user presses Escape?" is "nothing", it did not need to interrupt at all.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="What was hardened on 5 Sep 2026, and why.">
+    <ul>
+      <li><strong>There is no <code>Modal</code> component, deliberately.</strong> A second component for the same behaviour means two focus traps, two scrim rules and two sets of ARIA to keep in step — and products choosing between them by feel. <code>Dialog</code> is the name; the modality is not optional.</li>
+      <li><strong>Focus trap, added.</strong> A capturing <code>keydown</code> that wraps <kbd>Tab</kbd> at both ends and pulls focus back when it is outside the panel. It lives in the component because a modal that can be tabbed out of is not modal, and every product that has to remember the trap eventually forgets.</li>
+      <li><strong>Focus restore, added.</strong> The cleanup returns focus to whatever had it on open, guarded by <code>document.contains</code> for the case where the trigger itself was removed by the action.</li>
+      <li><strong>Body scroll lock, added,</strong> saving and restoring the previous <code>overflow</code> rather than assuming it was empty.</li>
+      <li><strong><code>aria-labelledby</code> replaced <code>aria-label</code>.</strong> The old code only named the dialog when <code>title</code> happened to be a plain string, so every dialog with a formatted title was silently unnamed. Now the <code>h2</code> carries a <code>useId</code> and is pointed at.</li>
+      <li><strong>Scrim closes on <code>mousedown</code> with a target check</strong> instead of <code>click</code> on the wrapper. That fixes the text-selection drag that used to close a form, and removes the <code>stopPropagation</code> the panel needed.</li>
+      <li><strong>Widths moved to tokens.</strong> They were hard-coded JSX numbers (400/520/720), which made dialogs the one surface a product could not re-scale without forking — the same defect Badge's geometry had before 1.8.0.</li>
+      <li><strong>Height is capped and the body scrolls.</strong> Previously a tall dialog grew past the viewport and took its footer with it; now the header and footer are <code>flex: none</code> and the body is the scroll region.</li>
+      <li><strong>Entrance animation, restored.</strong> The panel had <code>animation: 'none'</code> hard-coded — a leftover — so dialogs appeared instantly while every other overlay in the system animated. Now <code>--anim-fade-in</code> on the scrim and <code>--anim-rise-in</code> on the panel.</li>
+      <li><strong><code>dismissible</code> removes the X as well as blocking Escape.</strong> A visible close button that refuses to close is worse than no button.</li>
+      <li><strong><code>position: absolute</code>, not <code>fixed</code>, is kept on purpose:</strong> the system's device and browser frames are <code>position: relative</code>, and a fixed dialog escapes the frame to cover the whole preview. In a real product the frame is the app root, so the behaviour is identical.</li>
+      <li><strong>17 tokens.</strong> New this pass: <code>--dialog-width-sm/md/lg</code>, <code>--dialog-inset-block</code>, <code>--dialog-inset-inline</code>, <code>--dialog-padding-inline</code>.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--dialog-background','--dialog-border','--dialog-radius','--dialog-shadow','--dialog-scrim','--dialog-title-text','--dialog-title-text-critical','--dialog-description-text','--dialog-footer-background','--dialog-footer-border','--dialog-width-sm','--dialog-width-md','--dialog-width-lg','--dialog-inset-block','--dialog-inset-inline','--dialog-padding-inline','--z-dialog'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Opening it, and getting focus right.">
+    <pre>{`import { Dialog } from '@meridian/feedback';
+
+function DeleteCluster({ cluster }) {
+  const [open, setOpen] = React.useState(false);
+  const cancelRef = React.useRef(null);   // safe action holds focus
+
+  return (
+    <>
+      <Button variant="danger" onClick={() => setOpen(true)}>Delete…</Button>
+      <Dialog
+        open={open} tone="danger" width="sm"
+        title={\`Delete \${cluster.name}?\`}
+        description={\`This removes all \${cluster.nodes} nodes and their volumes. It cannot be undone.\`}
+        onClose={() => setOpen(false)}
+        initialFocus={cancelRef}
+        footer={
+          <>
+            <Button ref={cancelRef} variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button variant="danger" loading={busy} onClick={async () => {
+              await api.destroy(cluster.id);
+              setOpen(false);                       // close first…
+              toast.show({ tone: 'success', title: 'Cluster deleted' });  // …then report
+            }}>Delete cluster</Button>
+          </>
+        }
+      />
+    </>
+  );
+}`}</pre>
+    <ul>
+      <li><strong>Point <code>initialFocus</code> at the safe action</strong> in any destructive dialog. Never let a danger button be focused on open.</li>
+      <li><strong>Close, then report.</strong> The dialog is not the place to confirm its own success — close it and raise a toast, or let the updated row speak.</li>
+      <li><strong>Put the busy state on the confirm Button,</strong> not on the dialog. Keep it dismissible while the request is in flight unless cancelling would corrupt something.</li>
+      <li><strong>Do not stack.</strong> If a dialog needs to open another, the flow needs a page.</li>
+      <li><strong>Errors go in an Alert at the top of the body;</strong> field errors stay on their fields. Never a second dialog.</li>
+      <li><strong>Keep the tree inside <code>{'{open && …}'}</code> or let <code>open</code> do it</strong> — the component returns null when closed, so nothing inside it is mounted, focusable, or fetching.</li>
+      <li><strong>Testing hooks:</strong> the scrim is <code>[data-dialog-scrim]</code>, the panel <code>[data-dialog="default|danger"]</code> with <code>role="dialog"</code>. Worth asserting explicitly: focus is inside the panel after open, focus is back on the trigger after close, <kbd>Tab</kbd> at the last element wraps to the first, and <code>document.body</code> regains its overflow. All four are invisible on a screenshot and all four have regressed here before.</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

@@ -1,0 +1,343 @@
+/* ==========================================================================
+   StockRunway & Intercompany Styles (§01–§14) - Angular
+   LeadTimeTransferGlyph & IntercompanyStockRibbon
+   Strict Design Tokens — Zero Raw Hex Colors
+   ========================================================================== */
+
+ds-lead-time-transfer-glyph,
+ds-intercompany-stock-ribbon {
+  display: block;
+}
+
+/* LeadTimeTransferGlyph */
+.ds-transfer-glyph {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-global-space-1, 4px);
+  padding: 2px 8px;
+  border-radius: var(--ds-global-radius-full, 9999px);
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  font-size: var(--ds-global-fontSize-xs, 11px);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.ds-transfer-glyph:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--ds-global-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+  border-color: var(--ds-semantic-color-border-default, #cbd5e1);
+}
+
+.ds-transfer-glyph:focus-visible {
+  outline: 2px solid var(--ds-semantic-color-border-focus, #3b82f6);
+  outline-offset: 1px;
+}
+
+.ds-transfer-glyph__icon {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.ds-transfer-glyph__route {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: var(--ds-global-fontWeight-semibold, 600);
+}
+
+.ds-transfer-glyph__arrow {
+  color: var(--ds-semantic-color-text-muted, #94a3b8);
+  font-size: 10px;
+}
+
+.ds-transfer-glyph__lead-time {
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+  padding-left: 2px;
+}
+
+/* Glyph Status Modifiers */
+.ds-transfer-glyph--in-transit {
+  background: var(--ds-global-color-info-50, #f0f9ff);
+  border-color: var(--ds-global-color-info-500, #0ea5e9);
+  color: var(--ds-global-color-info-700, #0369a1);
+}
+
+.ds-transfer-glyph--scheduled {
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+  border-color: var(--ds-semantic-color-border-subtle, #e2e8f0);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+}
+
+.ds-transfer-glyph--delayed {
+  background: var(--ds-global-color-danger-50, #fef2f2);
+  border-color: var(--ds-global-color-danger-500, #ef4444);
+  color: var(--ds-global-color-danger-700, #b91c1c);
+}
+
+.ds-transfer-glyph--completed {
+  background: var(--ds-global-color-success-50, #f0fdf4);
+  border-color: var(--ds-global-color-success-500, #22c55e);
+  color: var(--ds-global-color-success-700, #15803d);
+}
+
+/* Tooltip */
+.ds-transfer-glyph__tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: min(280px, calc(100vw - 16px));
+  box-sizing: border-box;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  border-radius: var(--ds-global-radius-md, 6px);
+  padding: var(--ds-global-space-2, 8px) var(--ds-global-space-3, 10px);
+  box-shadow: var(--ds-global-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-global-space-2, 6px);
+  pointer-events: none;
+  font-family: var(--ds-global-fontFamily-sans, system-ui, sans-serif);
+  animation: ds-glyph-tooltip-pop 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ds-glyph-tooltip-pop {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.ds-transfer-glyph__tooltip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: var(--ds-global-fontSize-xs, 11px);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+}
+
+.ds-transfer-glyph__tooltip-id {
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+  color: var(--ds-semantic-color-text-interactive, #2563eb);
+}
+
+.ds-transfer-glyph__tooltip-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3px;
+  font-size: 10px;
+}
+
+.ds-transfer-glyph__tooltip-body > div {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.ds-transfer-glyph__tooltip-label {
+  color: var(--ds-semantic-color-text-muted, #64748b);
+}
+
+.ds-transfer-glyph__tooltip-val {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  font-weight: var(--ds-global-fontWeight-semibold, 600);
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+  text-align: right;
+}
+
+.ds-transfer-glyph__tooltip-val--eta {
+  color: var(--ds-semantic-color-action-primary-default, #2563eb);
+}
+
+/* ==========================================================================
+   IntercompanyStockRibbon
+   ========================================================================== */
+.ds-stock-ribbon {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-global-space-3, 12px);
+  padding: var(--ds-global-space-3, 12px) var(--ds-global-space-4, 16px);
+  border-radius: var(--ds-global-radius-lg, 8px);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  box-shadow: var(--ds-global-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+  font-family: var(--ds-global-fontFamily-sans, system-ui, sans-serif);
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+}
+
+.ds-stock-ribbon__metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--ds-global-space-3, 12px);
+}
+
+.ds-stock-ribbon__card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--ds-global-space-2, 8px) var(--ds-global-space-3, 12px);
+  border-radius: var(--ds-global-radius-md, 6px);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+}
+
+.ds-stock-ribbon__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ds-stock-ribbon__label {
+  font-size: 11px;
+  font-weight: var(--ds-global-fontWeight-semibold, 600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ds-semantic-color-text-secondary, #475569);
+}
+
+.ds-stock-ribbon__pill {
+  font-size: 10px;
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+  padding: 1px 6px;
+  border-radius: var(--ds-global-radius-full, 9999px);
+  letter-spacing: 0.02em;
+}
+
+.ds-stock-ribbon__pill--safe {
+  background: var(--ds-global-color-success-50, #f0fdf4);
+  color: var(--ds-global-color-success-700, #15803d);
+}
+
+.ds-stock-ribbon__pill--warning {
+  background: var(--ds-global-color-warning-50, #fffbeb);
+  color: var(--ds-global-color-warning-700, #b45309);
+}
+
+.ds-stock-ribbon__pill--danger {
+  background: var(--ds-global-color-danger-50, #fef2f2);
+  color: var(--ds-global-color-danger-700, #b91c1c);
+}
+
+.ds-stock-ribbon__pill--info {
+  background: var(--ds-global-color-info-50, #f0f9ff);
+  color: var(--ds-global-color-info-700, #0369a1);
+}
+
+.ds-stock-ribbon__qty-group {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.ds-stock-ribbon__qty {
+  font-size: 20px;
+  font-weight: var(--ds-global-fontWeight-bold, 700);
+  font-family: var(--ds-global-fontFamily-mono, monospace);
+  font-variant-numeric: tabular-nums;
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+}
+
+.ds-stock-ribbon__uom {
+  font-size: 12px;
+  font-weight: var(--ds-global-fontWeight-medium, 500);
+  color: var(--ds-semantic-color-text-secondary, #475569);
+}
+
+.ds-stock-ribbon__facility {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ds-stock-ribbon__icon {
+  font-size: 12px;
+}
+
+.ds-stock-ribbon__subtext {
+  font-size: 10px;
+  color: var(--ds-semantic-color-text-secondary, #475569);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+/* Actions */
+.ds-stock-ribbon__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-global-space-2, 8px);
+  justify-content: flex-end;
+  border-top: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  padding-top: var(--ds-global-space-2, 8px);
+}
+
+.ds-stock-ribbon__action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--ds-global-radius-md, 6px);
+  font-size: var(--ds-global-fontSize-xs, 12px);
+  font-weight: var(--ds-global-fontWeight-semibold, 600);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.ds-stock-ribbon__action-btn--primary {
+  background: var(--ds-semantic-color-action-primary-default, #2563eb);
+  color: var(--ds-semantic-color-action-primary-text, #ffffff);
+  border: 1px solid var(--ds-semantic-color-action-primary-default, #2563eb);
+}
+
+.ds-stock-ribbon__action-btn--primary:hover {
+  background: var(--ds-semantic-color-action-primary-hover, #1d4ed8);
+  border-color: var(--ds-semantic-color-action-primary-hover, #1d4ed8);
+}
+
+.ds-stock-ribbon__action-btn--secondary {
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  color: var(--ds-semantic-color-text-primary, #0f172a);
+  border: 1px solid var(--ds-semantic-color-border-default, #cbd5e1);
+}
+
+.ds-stock-ribbon__action-btn--secondary:hover {
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+  border-color: var(--ds-semantic-color-border-strong, #94a3b8);
+}
+
+@media (max-width: 900px) {
+  .ds-stock-ribbon__metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .ds-stock-ribbon__metrics {
+    grid-template-columns: 1fr;
+  }
+}

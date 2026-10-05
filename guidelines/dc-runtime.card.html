@@ -1,0 +1,114 @@
+﻿<!-- @dsCard group="Guidelines" viewport="1040x1300" name="Declarative Component Runtime" subtitle="Architecture, syntax, and lifecycle guide for the dc-runtime template system" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Declarative Component Runtime Guide</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:32px}
+.wrap{max-width:1040px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0;max-width:78ch;color:var(--text-secondary);text-wrap:pretty}
+.rules{margin:24px 0 16px;padding:20px 22px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:12px}
+.rules.why{border-left:2px solid var(--action-solid)}
+.rules h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+p{margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:82ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+pre{background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-sm);padding:14px 16px;overflow-x:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:32px 0 14px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec{display:grid;grid-template-columns:220px minmax(0,1fr);gap:28px;padding:22px 0;border-bottom:var(--border-hairline)}
+.sec:last-child{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:7px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.body{display:flex;flex-direction:column;gap:12px;min-width:0}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:normal;word-break:normal}
+.sig{margin-top:40px;padding-top:14px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:12px}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Guidelines · Infrastructure</span>
+<h1>Declarative Component Runtime (`dc-runtime`)</h1>
+<p class="lede">All 22 layout and interaction templates in Meridian are authored in the Declarative Component format (<code>*.dc.html</code>). This guide documents the runtime architecture, custom tag vocabulary, and lifecycle APIs executed by <code>support.js</code>.</p>
+
+<div class="rules why">
+  <h2>Why Declarative HTML Templates?</h2>
+  <p>Rather than requiring a full Node/bundler toolchain for every layout prototype or reference harness, templates are authored in static HTML files that parse custom tags and bind live React components at runtime. This allows instantaneous inspection in any browser while preserving 100% fidelity with the production React bundle.</p>
+</div>
+
+<div class="groupline"><h2>1. Custom Tag Vocabulary</h2><span>Syntax & Directives</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§01</span><h3>Core Elements</h3></div>
+  <div class="body">
+    <table><thead><tr><th>Tag</th><th>Purpose</th><th>Example</th></tr></thead><tbody>
+      <tr><td class="k">&lt;x-dc&gt;</td><td>Defines the declarative component boundary and hosts scoped bindings.</td><td><code>&lt;x-dc name="Dashboard"&gt;...&lt;/x-dc&gt;</code></td></tr>
+      <tr><td class="k">&lt;x-import&gt;</td><td>Instantiates a React component from the global bundle (<code>window.MeridianDesignSystem_962c43</code>).</td><td><code>&lt;x-import component-from-global-scope="MeridianDesignSystem_962c43.Card" title="OEE"&gt;</code></td></tr>
+      <tr><td class="k">&lt;sc-if&gt;</td><td>Conditional rendering block evaluated against data expression.</td><td><code>&lt;sc-if value="{{ isLoaded }}"&gt;...&lt;/sc-if&gt;</code></td></tr>
+      <tr><td class="k">&lt;sc-for&gt;</td><td>Iterative loop over collections.</td><td><code>&lt;sc-for list="{{ rows }}" as="row"&gt;...&lt;/sc-for&gt;</code></td></tr>
+      <tr><td class="k">&lt;dc-import&gt;</td><td>Imports a modular sub-template defined within the same harness context.</td><td><code>&lt;dc-import name="ShortageModule" items="{{ shortages }}"&gt;</code></td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<div class="groupline"><h2>2. Component Logic & Lifecycle</h2><span>DCLogic API</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§02</span><h3>DCLogic Class</h3></div>
+  <div class="body">
+    <p>Every template includes a <code>&lt;script type="text/x-dc" data-dc-script data-props="..."&gt;</code> block containing a class extending <code>DCLogic</code>:</p>
+<pre><code>class Component extends DCLogic {
+  state = {
+    selected: null,
+    loading: true
+  };
+
+  syncTheme() {
+    const isDark = String(this.prop('theme', 'Light theme')).indexOf('Dark') === 0;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }
+
+  componentDidMount() {
+    this.syncTheme();
+  }
+
+  componentDidUpdate(prev) {
+    if (this.props.theme !== prev.theme) this.syncTheme();
+  }
+
+  renderVals() {
+    return {
+      title: 'Active Work Orders',
+      itemCount: this.state.items.length
+    };
+  }
+}</code></pre>
+  </div>
+</div>
+
+<div class="groupline"><h2>3. Harness Inspector Integration</h2><span>data-props JSON Schema</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§03</span><h3>Parametric Controls</h3></div>
+  <div class="body">
+    <p>The <code>data-props</code> attribute on the script tag defines the interactive control schema rendered by <code>support.js</code> in the harness panel:</p>
+    <ul>
+      <li><strong>Enums:</strong> <code>{"editor": "enum", "options": ["Option A", "Option B"], "default": "Option A"}</code></li>
+      <li><strong>Booleans:</strong> <code>{"editor": "boolean", "default": true}</code></li>
+      <li><strong>Ranges:</strong> <code>{"editor": "range", "min": 0, "max": 2500, "step": 100, "default": 600, "unit": "ms"}</code></li>
+    </ul>
+  </div>
+</div>
+
+<div class="sig">
+  <span>Meridian Design System · Runtime Infrastructure</span><br>
+  <span>Files: <code>templates/**/support.js</code> · <code>templates/**/*.dc.html</code></span>
+</div>
+</div>
+</body></html>

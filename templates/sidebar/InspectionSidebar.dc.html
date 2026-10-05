@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><script src="./ds-base.js"></script></helmet>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 4 }}" hint-size="100%,100%">
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<h2 style="margin:0;font-size:var(--text-sm);font-weight:var(--weight-semibold)">Drawing and inspection plan</h2>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">BRK-4820-A rev C · issued 2026-08-19 (IST)</span>
+</div>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.SearchField" label="Search characteristics" placeholder="Bore, flange, Ra…" size="sm" value="{{ query }}" onChange="{{ onQuery }}" hint-size="100%,32px"></x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.DescriptionList" items="{{ characteristics }}" layout="stacked" size="sm" divided="{{ true }}" hint-size="100%,220px"></x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Accordion" items="{{ notes }}" size="sm" variant="divided" heading-level="{{ 3 }}" hint-size="100%,140px"></x-import>
+
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty">Reference only. Tolerances are read from the released drawing and cannot be edited here — raise an ECN through engineering to change them.</p>
+
+</x-import>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:340,&quot;height&quot;:700},&quot;query&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onQuery&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(next: string) =&gt; void&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const q = (this.props.query || '').trim().toLowerCase();
+    const all = [
+      { term: 'Bore Ø 48.00 +0.05 / −0.00', value: 'Air plug gauge AG-118 · every piece in the sample · critical' },
+      { term: 'Flange thickness 6.00 ± 0.10', value: 'Digital micrometer MI-2207 · every piece in the sample' },
+      { term: 'Surface finish Ra 1.6 max', value: 'Roughness tester RT-04 · one piece per lot' },
+      { term: 'Hardness 92–96 HRB', value: 'Bench tester HB-09 · one piece per lot · after heat treat' },
+      { term: 'Edge break 0.3–0.8', value: 'Visual against master sample · every piece in the sample' },
+    ];
+    const hit = q ? all.filter((c) => (c.term + ' ' + c.value).toLowerCase().includes(q)) : all;
+    return {
+      query: this.props.query ?? '',
+      onQuery: this.props.onQuery,
+      characteristics: hit.length ? hit : [{ term: 'No characteristic matches', value: 'Clear the search to see all five on rev C.' }],
+      notes: [
+        { value: 'gauge', title: 'Gauge and method', description: '5 gauges, all calibrated', content: 'AG-118 was recalibrated 2026-09-01 (IST). Zero the micrometer against the 6.00 setting ring before the first piece and again after twenty.' },
+        { value: 'plan', title: 'Sampling plan', description: 'AQL 1.0, level II', content: 'Lot of 2,400 → sample 5, accept 0, reject 1 on critical characteristics. Any bore out of tolerance stops the lot and goes to MRB.' },
+        { value: 'history', title: 'Last three lots', description: 'LOT-2609-102 · 095 · 088', content: 'LOT-2609-102 accepted. LOT-2609-095 accepted with deviation — bore at 48.06 on one piece, deviation signed by Meera Nair. LOT-2609-088 rejected to MRB, returned to Nashik Forge & Machine Works.' },
+      ],
+    };
+  }
+}
+
+</script>
+</body>
+</html>

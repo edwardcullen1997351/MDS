@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Card" title="Material short against today's plan" subtitle="{{ subtitle }}" headingLevel="{{ 3 }}" padding="md" hint-size="100%,260px">
+<div style="display:flex;flex-direction:column;gap:11px;min-width:0">
+<sc-if value="{{ local }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">This module only</span>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ horizonOptions }}" value="{{ horizon }}" onChange="{{ onHorizon }}" size="sm" aria-label="Shortage horizon for this module" hint-size="180px,28px"></x-import>
+</div>
+</sc-if>
+<sc-for list="{{ items }}" as="s" hint-placeholder-count="3">
+<div style="display:flex;flex-direction:column;gap:3px;padding-bottom:9px;border-bottom:var(--border-subtle);min-width:0">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-primary)">{{ s.part }}</span>
+<span style="font-size:var(--text-xs);color:var(--text-secondary);flex:1 1 140px;min-width:0">{{ s.desc }}</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-critical)">{{ s.open }}</span>
+</div>
+<span style="font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty">{{ s.holds }}</span>
+</div>
+</sc-for>
+<a href="../master-detail/MasterDetail.dc.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Open the expediting queue &rarr;</a>
+</div>
+</x-import>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:460,&quot;height&quot;:300},&quot;items&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;Array&lt;{part:string;desc:string;open:string;holds:string}&gt;&quot;},&quot;local&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;subtitle&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;PL-04 · against the released work orders for 2026-09-08 (IST)&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { horizon: 'Today and tomorrow' };
+  renderVals() {
+    return {
+      items: this.props.items || [],
+      local: !!this.props.local,
+      subtitle: this.props.subtitle ?? 'PL-04 \u00b7 against the released work orders for 2026-09-08 (IST)',
+      horizonOptions: ['Today only', 'Today and tomorrow', 'This week'],
+      horizon: this.state.horizon,
+      onHorizon: (e) => this.setState({ horizon: e.target.value })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

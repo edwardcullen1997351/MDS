@@ -1,0 +1,287 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Asynchronous action" subtitle="Full specification — an operation with a logical identity of its own, pending feedback bound to it, repeat activation defined, and blocking declared rather than assumed · manufacturing ERP reference" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Asynchronous action — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.mn{font-size:10px;color:var(--text-secondary);line-height:1.5}
+.mb{align-self:flex-start;height:26px;padding:0 10px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:10px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.mb.q{background:var(--surface-sunken);color:var(--text-primary);border:var(--border-hairline)}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-warning-soft);color:var(--text-warning)}
+.ma.bad{background:var(--status-critical-soft);color:var(--text-critical)}
+.ma.ok{background:var(--status-success-soft);color:var(--text-success)}
+.split{display:grid;grid-template-columns:118px minmax(0,1fr);gap:8px}
+.rows{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-card)}
+.rows div{display:flex;align-items:center;gap:7px;padding:5px 7px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);border-bottom:var(--border-subtle)}
+.rows div:last-child{border-bottom:none}
+.rows div.on{background:var(--surface-sunken);color:var(--text-primary)}
+.dot{width:9px;height:9px;border:1px solid var(--border-strong);border-radius:50%;flex:none}
+.dot.on{border:3px solid var(--action-solid)}
+.panel{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:8px 9px;display:flex;flex-direction:column;gap:5px}
+.panel .t{font-family:var(--font-mono);font-size:10px;color:var(--text-primary)}
+.panel .f{display:flex;justify-content:space-between;gap:8px;font-size:9.5px;color:var(--text-secondary);font-family:var(--font-mono)}
+.sk{height:7px;border-radius:3px;background:var(--surface-sunken)}
+.mcount{font-size:10px;font-family:var(--font-mono);color:var(--text-tertiary)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Asynchronous action</h1>
+  <p class="lede">An operation the user starts and the system finishes later — with a logical identity of its own, pending feedback bound to that identity rather than to the control that started it, a declared answer to a second press, a resolution attributable to the request that produced it, and blocking that is a decision rather than a side effect.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: Button or IconButton, Progress</span><span>Reference implementation: <a href="asynchronous-action-reference.card.html">card</a> · <a href="../../templates/asynchronous-action/AsynchronousAction.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — MRP regeneration, availability checks and a gate-label print</span><span>Sections included: 12 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · amended 8 Sep 2026 (durability, §04/§05/§18/§20) · 0 open items — every policy amended in is reachable in the reference implementation</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>A planner at PL-04 starts an MRP regeneration that will take two minutes over 3,412 items, fires availability checks at three released work orders while it runs, and prints a gate label that answers in a quarter of a second. Three jobs, three latencies, one screen. The pattern owns what the console says while they are in flight, what a second press does, which answer belongs to which request, and whether the planner may keep working — because none of that belongs to the button or to the progress bar.</p>
+    <p><strong>Use it when</strong> an initiated operation does not complete immediately and the user needs coherent feedback about its lifecycle.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>Any action whose result arrives later: a job run, an external check, a print, a push to another system.</li><li>Several operations of different kinds and durations sharing one screen.</li><li>Operations started in one place whose result may need reporting somewhere else.</li><li>Operations that outlive the page session itself — a job still running when the planner reloads, closes the tab or hands over at shift change (§05, <code>durability</code>).</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>Retrieving what a screen displays.</strong> A query whose result <em>is</em> the content is <a href="SearchResults.spec.html">search results</a>; retrieval there is a state of the query, not an action with a lifecycle.</li><li><strong>Submitting a form.</strong> <a href="ValidatedSubmission.spec.html">Validated submission</a> owns the snapshot and the validation; it <em>uses</em> this pattern for its commit, and this specification is where its pending, failure and repeat-press rules come from.</li><li><strong>Asking before acting.</strong> The decision that precedes a destructive job is <a href="ConfirmedAction.spec.html">confirmed action</a>; what happens after the user says yes is this pattern.</li><li><strong>One operation over many chosen items.</strong> Per-item outcomes and partial failure are <a href="BulkSelectionAction.spec.html">bulk selection and action</a>. Here the operation is one thing that either completes or does not.</li><li><strong>Anything that resolves imperceptibly.</strong> A local, synchronous change needs no lifecycle and must not be given one (§17).</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">Initiation</td><td><code>Button</code> or <code>IconButton</code></td><td>Required. Names the operation, not the mechanism. Its label may change while pending ("Checking…"), but the control is not where pending state lives (§20).</td></tr>
+      <tr><td class="k">Pending</td><td><code>Progress</code></td><td>Required. <code>bar</code> with a value where the work has measurable stages; <code>spinner</code> where the wait is short and unmeasurable. Always with a <code>label</code> naming the operation and its subject, because reduced motion stops the loop dead.</td></tr>
+      <tr><td class="k">Pending in place of content</td><td><code>Skeleton</code></td><td>Optional, and only where the result will occupy a known shape — a result cell, a detail panel. The region carries <code>aria-busy</code>; the placeholders are <code>aria-hidden</code>.</td></tr>
+      <tr><td class="k">Failure</td><td><code>Alert</code></td><td>Required. Persistent, named after the operation and its subject, carrying the recovery path. Never a timed <code>Toast</code>: the failure outlives any timer.</td></tr>
+      <tr><td class="k">Success</td><td><code>Toast</code>, <code>Snackbar</code>, or in-place state</td><td>Optional. Transient is legitimate for a success the user is watching for; where the result is data, the data itself is the feedback and a toast is noise.</td></tr>
+      <tr><td class="k">Blocking</td><td><code>Dialog</code> or <code>Drawer</code></td><td>Optional, and only under the <code>page</code> blocking policy: a modal that states what is running, stays keyboard-operable, and offers a way out that does not cancel the job.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>Initiate.</strong> The user activates the control. An operation is created with a logical identity — kind, subject, sequence — and enters pending.</li>
+      <li><strong>Pending.</strong> Feedback appears, after the declared delay, attached to the operation's subject. Everything the operation does not own stays usable unless <code>blocking</code> says otherwise.</li>
+      <li><strong>Repeat activation, if it happens,</strong> resolves through <code>repeatActivation</code>: suppressed, or superseding the operation in flight.</li>
+      <li><strong>Resolve.</strong> The response is matched to its operation. If that operation no longer owns its subject, the response is filed and discarded rather than rendered.</li>
+      <li><strong>Success</strong> returns the affected region to a stable state that shows the result, and announces it.</li>
+      <li><strong>Failure</strong> states what did not happen, leaves everything else intact, and offers the recovery path that exists — retry, resume, or an explanation of why neither is possible.</li>
+      <li><strong>Orphaned resolution.</strong> If the initiating context has gone, <code>orphanPolicy</code> decides whether the result is reported elsewhere or abandoned — explicitly, either way.</li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Pending state belongs to the operation, not to the control.</strong> It is keyed by the operation's subject, so the same job reads as running wherever its subject appears — the row, the panel, the console — and a control unmounting does not end it.</li>
+      <li><strong>One pending indicator per operation, and it names its subject.</strong> A single page-level "loading" flag for several concurrent operations tells the planner that something is happening and nothing about what.</li>
+      <li><strong>A second activation has a declared answer.</strong> Under <code>suppress</code> it does nothing and says so; under <code>replace</code> the newer operation takes the subject and the older one's answer is discarded on arrival. Silence is not an answer, and two identical jobs is not a policy.</li>
+      <li><strong>The guard is the state transition,</strong> not the button's disabled attribute — a second press arrives before the attribute lands.</li>
+      <li><strong>Completion feedback describes the operation that completed,</strong> by name and subject. A generic "Done" after three overlapping checks is attributable to none of them.</li>
+      <li><strong>Responses are matched to their request.</strong> Out-of-order arrival is normal; each answer lands on its own subject, and an answer whose operation no longer owns the subject writes nothing.</li>
+      <li><strong>Surrounding interaction stays available by default.</strong> Blocking is declared, justified by the data being unreadable mid-operation, and scoped as narrowly as that justification allows.</li>
+      <li><strong>An operation outlives its initiating context.</strong> Closing the panel that started it does not cancel it, and does not silently swallow its result (§05, <code>orphanPolicy</code>).</li>
+      <li><strong>Under <code>durability: server</code> the operation's identity is issued by the server, not by the client.</strong> A client-minted id cannot be recognised by a second page load, a second tab or a second user, so every rule in this section that works by comparing identities stops holding the moment the tab does. The client's id is then a local alias for the server's, never the record.</li>
+      <li><strong>On load, the client reconciles rather than trusts.</strong> What the client last saw is a stale observation; the server's record is the state. Any operation the client believed pending is resolved against that record before anything is rendered — and a job that finished while nobody was watching is reported on arrival, not silently folded into the data.</li>
+      <li><strong>An outcome that cannot be recovered is stated, never assumed.</strong> Under <code>context</code> and <code>session</code> a job in flight at unload has no knowable outcome afterwards. The interface says so in the subject's terms — it does not show idle, does not show pending forever, and does not quietly re-run a job that writes.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="rows"><div class="on"><span>WO-24118</span><span>checking since 15:28:40</span></div><div class="on"><span>WO-24119</span><span>checking since 15:28:41</span></div><div><span>WO-24123</span><span>not checked</span></div></div><span class="mcount">ops: WO-24118#1 pending · WO-24119#2 pending · mrp#3 pending</span></div><p class="why">Three operations, three identities, three indicators. Each answer knows which row it belongs to, and the rest of the console keeps working.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma">Loading…</div><div class="rows"><div><span>WO-24118</span><span class="sk" style="width:60px"></span></div><div><span>WO-24119</span><span class="sk" style="width:60px"></span></div><div><span>WO-24123</span><span class="sk" style="width:60px"></span></div></div><span class="mcount">isLoading = true</span></div><p class="why">One boolean for three jobs: rows that were never asked look busy, the first answer clears the flag for all of them, and no message can say what finished.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Options</th><th>What it decides</th></tr></thead><tbody>
+      <tr><td class="k">blocking</td><td><code>none</code> · <code>scoped</code> · <code>page</code></td><td>What stays usable while the operation runs. <code>none</code> is the default and the honest one for most jobs. <code>scoped</code> holds the region whose data the operation is rebuilding, and marks it <code>aria-busy</code>. <code>page</code> is a last resort for an operation that makes the whole screen unsafe to read; it must stay keyboard-operable and must offer a way out that leaves the job running, not a trap with a spinner in it.</td></tr>
+      <tr><td class="k">repeatActivation</td><td><code>suppress</code> · <code>replace</code></td><td>What a second press does while the first is in flight. <code>suppress</code> for anything that writes — a duplicate MRP run or a duplicate posting is a real defect — and it says the operation is already running rather than ignoring the press silently. <code>replace</code> only for an idempotent read whose newest answer is the only one wanted; the superseded answer must then be discarded, not raced.</td></tr>
+      <tr><td class="k">completionFeedback</td><td><code>inline</code> · <code>snackbar</code></td><td>How success is told. <code>inline</code> where the result is data the user is looking at — the result itself is the feedback. <code>snackbar</code> (or a toast) where the user has moved on and would otherwise miss it. Failure is never transient, under either option (§10).</td></tr>
+      <tr><td class="k">orphanPolicy</td><td><code>report</code> · <code>abandon</code></td><td>What happens to a resolution whose initiating context has gone. <code>report</code> surfaces it where the user now is, named by subject, and is correct wherever the operation had an effect. <code>abandon</code> is legitimate only where the result is purely informational and unwanted out of context — and it is still logged, so it is a decision rather than a leak.</td></tr>
+      <tr><td class="k">durability</td><td><code>context</code> · <code>session</code> · <code>server</code></td><td>How far the operation's record reaches. <code>context</code> is the default: the operation survives its panel but not the page, and is correct only for a job whose result is worthless later — a read, a check the user can simply repeat. <code>session</code> keeps the client's own record across navigation within the session; it does not survive a reload, and its honest failure is an unknown outcome, which must be stated (§04). <code>server</code> is required for any operation that writes, takes longer than a user will wait, or must be visible to a second person: identity is server-issued, the client reconciles on load, and a result that arrived while the page was gone is reported when it returns. A posting or a plant-wide job under <code>context</code> is a defect, not a simplification.</td></tr>
+      <tr><td class="k">feedbackDelay</td><td>ms, typically 0–600</td><td>How long before any indicator appears. Around 300 ms suppresses the flash on operations that often return fast; 0 is for an operation that is never quick. The delay applies to the indicator, never to the response.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <table><thead><tr><th>State</th><th>What is true</th><th>What is displayed</th></tr></thead><tbody>
+      <tr><td class="k">idle</td><td>No operation for this subject.</td><td>The initiating control, and whatever the last resolution left behind.</td></tr>
+      <tr><td class="k">pending</td><td>An operation owns the subject and has not resolved.</td><td>Progress naming the operation and its subject after <code>feedbackDelay</code>, the region <code>aria-busy</code>, and no claim about the outcome.</td></tr>
+      <tr><td class="k">succeeded</td><td>The response arrived and belonged to the current operation.</td><td>The result in place, one announcement, and the control returned to a state that reflects what is now true.</td></tr>
+      <tr><td class="k">failed</td><td>The operation resolved without doing what was asked.</td><td>What did not happen, in the subject's own terms; the cause; and the recovery path. Everything unrelated is untouched.</td></tr>
+      <tr><td class="k">retrying</td><td>A new operation for the same subject, started from a failure.</td><td>Pending again, with what it is attempting stated — including which part is being resumed rather than repeated.</td></tr>
+      <tr><td class="k">not applied</td><td>A response arrived for an operation that no longer owns its subject, or whose context is gone under <code>abandon</code>.</td><td>Nothing in the interface; a log entry saying it was superseded or abandoned. This state exists so that "nothing happened" is a recorded decision rather than a lost response.</td></tr>
+    </tbody></table>
+    <p class="warn"><strong>Pending is not success and must never be rendered as it.</strong> A console that shows the regenerated plan while the regeneration is still on stage two has told the planner that PR-07 is scheduled when nothing has been scheduled — and the correction, if it comes, arrives against a screen that already looks finished.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Error handling</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Failure states what did not happen before it explains why.</strong> "MRP regeneration failed at stage 3 of 3, scheduling" and then the cause — not a bare "Something went wrong".</li>
+      <li><strong>Failure is persistent.</strong> It stays until the condition or the user resolves it. A timed toast carrying the only record of a failed job is a job silently lost.</li>
+      <li><strong>Retry must not repeat work that succeeded.</strong> Where the operation has stages or per-item progress, retry resumes from the failure and says so: "Retry stage 3, scheduling — stages 1 and 2 are kept". Re-running completed work is at best waste and at worst a double effect.</li>
+      <li><strong>Restarting from the beginning stays available, and is labelled as such.</strong> Resume and restart are different intentions and must be different controls.</li>
+      <li><strong>State unrelated to the failure is preserved.</strong> Other operations, other rows, unsaved input elsewhere and the user's scroll position are none of the failure's business.</li>
+      <li><strong>Where recovery is impossible, the failure says so and says what to do instead.</strong> A retry button that cannot succeed is worse than no button.</li>
+      <li><strong>A retry is a new operation with a new identity.</strong> It supersedes nothing that already succeeded, and the previous failure's response can no longer write.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma bad">MRP regeneration failed at stage 3 of 3, scheduling<br><span class="mh">Capacity for PR-07 is locked by a booked shutdown. Stages 1 and 2 finished and were kept; the plan on screen is yesterday's 21:40 IST run.</span></div><div style="display:flex;gap:6px"><div class="mb">Retry stage 3, scheduling</div><div class="mb q">Run all three stages again</div></div></div><p class="why">The failure is located, the completed work is kept, and resume and restart are separate choices with honest labels.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma bad">Error. Try again.</div><div class="mb">Retry</div><span class="mh">re-explodes 3,412 items from stage 1</span></div><p class="why">No stage, no cause, no statement of what the plan currently holds — and a retry that throws away two minutes of completed work every time it is pressed.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Pending is perceivable without sight of the animation.</strong> The region carries <code>aria-busy</code>, the <code>Progress</code> carries a text label naming the operation and its subject, and reduced motion changes nothing about what is announced.</li>
+      <li><strong>Resolution is announced politely, once, and names the operation.</strong> A live region on the affected area, not an assertive interruption per stage, and not one announcement per skeleton.</li>
+      <li><strong>Focus stays with the user.</strong> Neither starting nor finishing an operation moves focus merely to expose status; the user keeps working where they were.</li>
+      <li><strong>Focus is moved only when the user must act</strong> — and then to the control that acts, not to the message about it.</li>
+      <li><strong>An initiating control that disappears takes no focus with it.</strong> Where a control is replaced on resolution, focus lands on its successor in the same place, never on the document body.</li>
+      <li><strong>Blocking, where declared, is operable by keyboard:</strong> focus is contained deliberately, the reason is the accessible name of the container, and the way out — background, not cancel — is reachable by keyboard.</li>
+      <li><strong>Failure announces as an alert,</strong> because the user's belief about what happened is now wrong.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Pending copy describes activity in progress, in the present participle, and claims nothing.</strong> "Scheduling planned orders across PR-02 to PR-09", not "Scheduled".</li>
+      <li><strong>Every message names the operation and its subject.</strong> "Availability for WO-24118", not "Check complete" — three overlapping jobs make an unattributed message worthless.</li>
+      <li><strong>Success states the outcome, not the mechanism.</strong> What is now true about the work order, the plan or the printer.</li>
+      <li><strong>Failure copy leads with what did not happen,</strong> in the plant's own terms, and separates that from the cause.</li>
+      <li><strong>Retry labels say what will be attempted</strong> whenever more than one thing could be: "Retry stage 3, scheduling" against "Run all three stages again".</li>
+      <li><strong>Stage and progress wording matches what has actually completed.</strong> A bar at 67% with a label naming stage 3 means stages 1 and 2 are done — never a percentage invented to look like movement.</li>
+      <li><strong>A suppressed second press is answered in words.</strong> "The availability check for WO-24118 is already running (started 15:28:40)" — a press that does nothing and says nothing reads as a broken button.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><span class="ml">Stage 2 of 3 · Netting requirements against stock and open POs</span><span class="mh">33% · started 15:28:40 IST</span><div class="ma ok">Availability for WO-24119: all six components available from stores</div></div><p class="why">Activity in progress, subject named, percentage matching the stages actually finished, and a resolution attributable to one operation.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><span class="ml">Processing…</span><div class="ma ok">Success!</div><span class="mh">MRP updated</span></div><p class="why">Which of the four running jobs succeeded? "MRP updated" appears while the MRP run is still on stage two, so the one message that matters is also untrue.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§17</span><h2>Performance</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Feedback is required wherever latency is perceptible.</strong> A control that responds to nothing for a second reads as broken, and the user presses it again.</li>
+      <li><strong>Feedback must not flash.</strong> Indicators appear only after <code>feedbackDelay</code>; an indicator that lives for 120 ms is a glitch, and a skeleton that flickers into a result is worse than a still cell.</li>
+      <li><strong>The delay applies to the indicator, never to the response.</strong> A result that has arrived is rendered at once.</li>
+      <li><strong>Progress for staged work is real.</strong> Determinate progress is derived from stages actually completed; where nothing is measurable, the indicator is indeterminate and labelled, not a fake bar.</li>
+      <li><strong>Stale responses never write.</strong> Every operation carries an identity, and only the operation that currently owns its subject may update it — the guarantee that makes overlapping and out-of-order responses safe.</li>
+      <li><strong>Concurrency is bounded deliberately</strong> where the backend cannot take an unbounded fan-out; the limit is stated to the user as a queue, not enforced by silently dropping presses.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><span class="mn">Gate label · printer GT-01 · answers in ~250 ms</span><span class="mh">feedbackDelay 300 ms — nothing appears, the result simply lands</span><div class="ma ok">Gate label printed on GT-01 at 15:28:44 IST</div></div><p class="why">Short jobs stay calm: no spinner is shown for a wait the user cannot perceive, and the outcome is still stated.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="split"><div class="rows"><div><span class="sk" style="width:52px"></span></div><div><span class="sk" style="width:52px"></span></div></div><div class="panel"><span class="t">spinner 120 ms</span><span class="f"><span>then result</span><span>then spinner</span></span></div></div></div><p class="why">Indicators shown for every operation regardless of duration: the console strobes, and the planner learns to distrust movement as a signal that anything is happening.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+      <tr><td class="k">Repeated activation while pending</td><td>Resolved by <code>repeatActivation</code>, guarded at the transition, and answered in words. Never two write operations from two presses.</td></tr>
+      <tr><td class="k">Response arrives after its context closed</td><td>The operation continues; its result is reported where the user is, or abandoned, under <code>orphanPolicy</code> — and logged either way. Never an update written into a component that no longer exists.</td></tr>
+      <tr><td class="k">Several operations overlap</td><td>Each has its own identity, indicator and message. One operation's resolution clears only its own pending state.</td></tr>
+      <tr><td class="k">Responses arrive out of initiation order</td><td>Normal and safe: each answer is matched to its operation and its subject. Order of arrival carries no meaning.</td></tr>
+      <tr><td class="k">Superseded operation answers</td><td>Discarded, and recorded as superseded. It must not overwrite the newer operation's result even for a frame.</td></tr>
+      <tr><td class="k">Retry pressed before the previous failure is cleared</td><td>The retry is a new operation; the stale failure is replaced by the new pending state rather than accumulating beside it.</td></tr>
+      <tr><td class="k">Operation resolves while the user is mid-interaction elsewhere</td><td>Announced politely; focus, selection and unsaved input are left alone.</td></tr>
+      <tr><td class="k">Operation never resolves</td><td>A timeout is a failure with a cause, not perpetual pending. An indicator that spins forever is an outage the interface refuses to admit.</td></tr>
+      <tr><td class="k">Page reloaded while an operation is pending</td><td>Under <code>server</code>, the operation is re-found by its server-issued identity and rendered in whatever state the server reports — still running, finished, or failed. Under <code>context</code> and <code>session</code>, the outcome is unknown and is shown as unknown, naming the job and the subject, with the recovery that exists: check the record, or start again knowingly. Never a console that has quietly forgotten a running MRP regeneration.</td></tr>
+      <tr><td class="k">Operation resolves while the page is closed</td><td>Under <code>server</code>, reported on return, named by subject and marked as having completed while away rather than announced as if it had just happened. The user's belief about when it finished is part of what the report owes them.</td></tr>
+      <tr><td class="k">Operation started by another user, on the same subject</td><td>Under <code>server</code>, the subject reads as busy for everyone who can see it, attributed to whoever started it — and <code>repeatActivation: suppress</code> applies across users, not just across presses. A second planner starting the same MRP run because the first one's job was invisible is the failure this policy exists to stop.</td></tr>
+      <tr><td class="k">Blocking operation under <code>page</code> outlives the user's patience</td><td>The way to the background is available from the start, and taking it neither cancels the job nor loses its resolution.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Give every operation a stable logical identity</strong> — kind, subject and a monotonic sequence: <code>{ id: 'WO-24118#7', kind: 'atp-check', subject: 'WO-24118' }</code>. Everything else in this specification is enforced by comparing identities.</li>
+      <li><strong>Hold pending, success and failure outside component state.</strong> Keyed by subject, in state that outlives any panel, row or button — the reason a job survives its initiating context and reads as running in every place its subject appears.</li>
+      <li><strong>Keep a map of subject to owning operation,</strong> and check it before any response writes. That single check delivers repeat suppression, supersession, out-of-order safety and orphan handling.</li>
+      <li><strong>Never derive pending from the control.</strong> A disabled attribute, a spinner inside a button or a local <code>isLoading</code> is a view of the state, never the state itself.</li>
+      <li><strong>Guard duplicates at the transition</strong> and make the guard the same code the policy is declared in, so <code>suppress</code> and <code>replace</code> cannot diverge between call sites.</li>
+      <li><strong>Model staged work as completed stages, not as a percentage,</strong> and derive the percentage. Retry then resumes by construction, and the label and the bar cannot disagree.</li>
+      <li><strong>Under <code>durability: server</code>, take the identity from the server and treat the local one as an alias.</strong> Reconcile on load in one pass — fetch the operations that are open or recently settled for the subjects on screen, then apply the same subject-to-owner check used everywhere else. That reuse is the point: reconciliation is not a second code path, it is the ordinary check run against a record the client did not write.</li>
+      <li><strong>Do not resume by re-sending.</strong> Recovering a job means re-attaching to the one that is running, never issuing a second one. Where re-sending is genuinely required, it needs an idempotency key on the request, and the retry rules in §10 apply unchanged.</li>
+      <li><strong>Log every resolution, including the ones you discard.</strong> Superseded, abandoned and timed-out responses that vanish silently are unbebuggable in the field and indistinguishable from a hung job.</li>
+      <li><strong>Clear timers and subscriptions on unmount, but do not cancel the work</strong> unless the operation is genuinely cancellable and the user asked. Dropping the listener is not cancelling the job, and pretending otherwise loses results.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted"><strong>Omitted sections and why.</strong>
+§06 Variants — a job with stages, a per-row check and a fire-and-forget print differ in duration and blocking, both of which are declared properties (§05), not different contracts.
+§07 Sizes — no coordinated sizing exists at the pattern level.
+§09 Validation — the pattern begins after the input was accepted; deciding whether input is acceptable belongs to <a href="ValidatedSubmission.spec.html">validated submission</a> and to the controls. A failure of the operation is never reported as invalid input (§10).
+§11 Input &amp; interaction modalities — the controls own their pointer, touch and keyboard behaviour; the pattern's cross-component obligations are the focus and announcement rules in §12.
+§13 Motion — indicator motion is component-owned and decorative; the only pattern-owned timing rule is the appearance threshold in §17, which is deliberately not a motion rule.
+§15 Responsive — the operation's lifecycle does not change with available space; where a blocking dialog becomes a full screen, every rule here is unchanged.
+§16 Internationalization — nothing in the lifecycle is direction- or locale-sensitive beyond the formatting of the values it reports, which belongs to the product's locale rules.
+§19 Anti-patterns — the refusals in §01, the identity rules in §04 and the failure rules in §10 cover the recurring misuses; the page-level loading flag and the infinite spinner are named in §04 and §18.
+§21 Developer notes — the contract in §04, §05, §08, §10 and §20 is the whole contract; its one requirement of an API, a response attributable to the request that asked for it, is stated in §20.</p>
+</div></body></html>

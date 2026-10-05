@@ -1,0 +1,428 @@
+<!-- @dsCard group="Specs · Feedback" viewport="1080x760" name="Drawer" subtitle="Full specification — the side surface: modal vs non-modal, three edges, focus, motion, and when it should be a page" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Drawer — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:118px}
+.staterow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.stage{position:relative;overflow:hidden;background:var(--background-page);border:var(--border-hairline);border-radius:var(--radius-md);min-width:0}
+.stage .bg{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Drawer, Dialog, Button, IconButton, Text, Heading, Badge, Tag, Card, Table, Tabs, Field, Input, Select, Divider, Popover } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{flex:1,minWidth:0}}>{children}</div></div>;
+
+/* A stage stands in for the app frame: the panel is position:absolute, so it
+   needs a positioned ancestor — in a product that ancestor is the app root. */
+const Stage = ({h=300,children,label}) => (
+  <div className="stage" style={{height:h}}>
+    <div className="bg">
+      <Text size="xs" tone="tertiary">{label || 'Lines · Days shift'}</Text>
+      {['WO-4471 · Assembly 2 · 1,200','WO-4472 · Paint 1 · 340','WO-4473 · Packing 3 · 86','WO-4474 · Assembly 1 · 980'].map(r=>(
+        <div key={r} style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-xs)',color:'var(--text-secondary)',padding:'6px 0',borderBottom:'var(--border-subtle)'}}>{r}</div>
+      ))}
+    </div>
+    {children}
+  </div>
+);
+
+const Detail = () => (
+  <div style={{display:'flex',flexDirection:'column',gap:'var(--space-4)'}}>
+    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'var(--space-3)'}}>
+      {[['OEE, shift','82.4 %'],['Output, shift','1,200'],['Cycle time','41 s'],['Scrap','0.42 %']].map(([l,v])=>(
+        <div key={l} style={{padding:'var(--space-3)',background:'var(--background-page)',border:'var(--border-subtle)',borderRadius:'var(--radius-sm)'}}>
+          <div style={{fontSize:'var(--text-2xs)',textTransform:'uppercase',letterSpacing:'var(--tracking-caps)',color:'var(--text-tertiary)',fontWeight:'var(--weight-semibold)'}}>{l}</div>
+          <div style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-lg)',marginTop:4,fontVariantNumeric:'tabular-nums'}}>{v}</div>
+        </div>
+      ))}
+    </div>
+    <div style={{display:'flex',gap:6,flexWrap:'wrap'}}><Tag label="site:tilburg" /><Tag label="area:A2" /><Tag label="wo:WO-88431" /></div>
+    <Text size="xs" tone="secondary">Last changeover 04:12. Next planned stop 18:00. Two work orders queued behind the current run.</Text>
+  </div>
+);
+
+function Spec(){
+if (!Drawer) return <div className="page"><div className="masthead"><span className="eyebrow">Feedback · Component specification</span><h1>Drawer</h1><p className="lede">The design-system bundle has not been recompiled with <code>components/feedback/Drawer.jsx</code> yet — reload once it has.</p></div></div>;
+const [a,setA] = React.useState(false);
+const [b,setB] = React.useState(true);
+const [side,setSide] = React.useState('right');
+const [size,setSize] = React.useState('md');
+const [nonModal,setNonModal] = React.useState(true);
+const [clicks,setClicks] = React.useState(0);
+const cancelRef = React.useRef(null);
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Feedback · Component specification</span>
+    <h1>Drawer</h1>
+    <p className="lede">A surface attached to an edge of the app frame — a <strong>place</strong> beside the page, where <code>Dialog</code> is a <strong>decision</strong> on top of it. Everything else about it follows from that one difference: the page behind is meant to be <em>read</em>, and with <code>modal={'{false}'}</code> it stays usable too. It is the component <code>Dialog</code> §04 refused to become a variant of, and the one the console kit had been hand-rolling since 1.0.0 — with no focus trap, no restore, no Escape and a click-to-close scrim that fired on a text-selection drag.</p>
+    <div className="meta">
+      <span>components/feedback/Drawer.jsx</span><span>window.MeridianDesignSystem_962c43.Drawer</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items</span><span>since: 1.19.0</span><span>16 tokens · 2 new keyframes · 6 dead tokens retired</span><span>layer: --z-drawer (500)</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="A place to work beside the page, not a question on top of it.">
+    <p>Open a drawer when the user needs <em>more</em> of something they can already see: the detail behind a row, the filters behind a result set, a form about a record that must stay in view. The page behind is context, not an obstacle — which is why the scrim is one step lighter than a dialog's and why the non-modal mode exists at all.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Show a record\u2019s detail beside its table','Drawer','This component. Detail is browsing, not deciding.'],
+      ['Ask one blocking question','Dialog','A decision needs the page stopped and the answer given. Dialog §01.'],
+      ['Offer options for a selected item','Menu · Popover','Anchored, cheap to dismiss, no layer geometry.'],
+      ['Show a permanent side region','Layout, not a component','A panel that is always open is a column. Give it grid space; a drawer that never closes is a layout bug with a close button.'],
+      ['Take a long or multi-step form','A page','Past ~6 fields or one step it needs a URL, autosave and room. A drawer is 460px wide.'],
+      ['Show detail that deserves a URL','A page','If it can be linked, bookmarked or opened in a tab, it is a page. This is the most common misuse (§12).'],
+      ['Confirm something already done','Toast · Snackbar','Nothing to decide.'],
+      ['Navigate the app on a phone','A navigation pattern of its own','A drawer full of nav links is a menu wearing a panel; it needs different keyboard, different landmarks and no scrim.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="try it"><Button size="sm" variant="secondary" onClick={()=>setA(true)}>Open detail</Button></Row>
+      <Stage h={300}>
+        <Drawer open={a} title="Assembly 2" description="MC-2214 · area A2" onClose={()=>setA(false)}
+          footer={<><Button variant="secondary" fullWidth>Log downtime</Button><Button variant="primary" fullWidth>Resume line</Button></>}>
+          <Detail />
+        </Drawer>
+      </Stage>
+      <Text size="xs" tone="tertiary">The rows behind stay legible — that is the argument for the component. <kbd>Esc</kbd>, the scrim and the X all close it.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Header, scrolling body, sticky footer — flush to one edge.">
+    <div className="demo col">
+      <div style={{display:'flex',flexDirection:'column',gap:10}}>
+        {[['1','Scrim (modal only) — --drawer-scrim over the whole frame, dismissing on mousedown on the scrim itself. Absent entirely when modal={false}.'],
+          ['2','Panel — --drawer-background at --elevation-4, flush to its edge: only the LEADING corners are rounded and only the leading edge has a border. The other three are off-screen, and a hairline drawn there is visible only while the panel animates.'],
+          ['3','Header — title (the accessible name) plus one optional description line, and the close IconButton. flex: none, so it never scrolls away.'],
+          ['4','Body — the only scrolling region. minHeight: 0, so it actually shrinks inside the flex column.'],
+          ['5','Footer (optional) — sticky action row on --drawer-footer-background above a --drawer-footer-border hairline. Two buttons at most, primary last.'],
+          ['6','Edge — right (default), left, or bottom (the sheet). The panel enters from the edge it is attached to.']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+      <Stage h={320}>
+        <Drawer open title="Work order WO-88431" description="Released 04:12 · due 18:00" onClose={()=>{}}
+          footer={<><Button variant="secondary" fullWidth>Hold</Button><Button variant="primary" fullWidth>Release</Button></>}>
+          <Detail />
+        </Drawer>
+      </Stage>
+    </div>
+    <p>There is no title icon, no tabs slot, no breadcrumb and no resize handle. Tabs inside a drawer are legitimate — the console kit uses them — but they are <em>content</em>, passed as children at <code>size="sm"</code>; the component does not own a tab strip, because the moment it does, half the products want it above the description and half below.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Eleven, and two of them warn.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['open','boolean','true','The product owns it. Render the drawer while the thing it is about is selected.'],
+      ['title','ReactNode','—','Required in practice; warns when missing. It is the accessible name.'],
+      ['description','ReactNode','—','ONE line: the record\u2019s identity (machine, area, id), not a paragraph.'],
+      ['side','\u2018right\u2019 | \u2018left\u2019 | \u2018bottom\u2019','right','§04. right is detail, left is filters and navigation-adjacent tools, bottom is the sheet.'],
+      ['size','\u2018sm\u2019 | \u2018md\u2019 | \u2018lg\u2019','md','Width for right/left (360 / 460 / 640), height for bottom (280 / 420 / 560).'],
+      ['modal','boolean','true','The one prop that changes behaviour rather than geometry (§04): scrim, focus trap, scroll lock and aria-modal, or none of them.'],
+      ['footer','ReactNode','—','Sticky action row. Two buttons at most; the primary goes last.'],
+      ['onClose','() => void','—','Escape, the scrim and the X all route through it. Warns when missing — without it the panel cannot be dismissed by any means.'],
+      ['dismissible','boolean','true','false blocks Escape and scrim-close AND removes the close button. For a panel holding unsaved work behind an explicit Save/Cancel.'],
+      ['initialFocus','RefObject','—','Focus this instead of the first focusable element — point it at Cancel in anything destructive.'],
+      ['style','CSSProperties','—','Merged onto the panel. Layout only; the edge geometry is the component\u2019s.'],
+    ]}/>
+    <p className="warn">There is no <code>tone</code>, no <code>variant</code>, no <code>resizable</code>, no <code>persistent</code>, no <code>overlay</code> flag and no <code>push</code> mode. A drawer never tints for severity — it is a place, and a red place says nothing about the record inside it. Resizing and pushing the page are both refused in §12 with their reasons.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Three edges and one modality. The modality is the real variant.">
+    <p>Side is geometry; <code>modal</code> is behaviour, and it is the axis on which the component either works or fails. Choose it with one question: <strong>if the user loses this panel, do they lose something?</strong> If yes it is modal — or a page. If no, non-modal, and the page beside stays usable.</p>
+    <T cols={['Mode','Scrim','Focus','Page behind','Use']} rows={[
+      ['modal (default)','Yes, --drawer-scrim','Trapped; Escape closes; restored on close','Readable, not usable — body scroll locked, aria-modal="true"','A form, an edit, anything with unsaved state.'],
+      ['modal={false}','None','Moves in, NOT trapped; Escape closes; restored on close','Fully usable — no scroll lock, no aria-modal','An inspector the user clicks rows into; a filter panel they keep adjusting against the results.'],
+    ]}/>
+    <T cols={['Side','Enters from','Geometry','Use']} rows={[
+      ['right','the right edge','Full height, width by size','Detail, inspection, edit. The default, and where an operator expects a record to open.'],
+      ['left','the left edge','Full height, width by size','Filters, tree pickers, tools — the same side as the navigation they belong beside.'],
+      ['bottom','the bottom edge','Full width, height by size, capped at 85 %','The sheet: touch, gloved hands, and any viewport too narrow for a side panel (§11).'],
+    ]}/>
+    <div className="demo col">
+      <Row label="side"><div style={{display:'flex',gap:8}}>{['right','left','bottom'].map(s=>(
+        <Button key={s} size="sm" variant={side===s?'primary':'secondary'} onClick={()=>setSide(s)}>{s}</Button>
+      ))}</div></Row>
+      <Row label="size"><div style={{display:'flex',gap:8}}>{['sm','md','lg'].map(s=>(
+        <Button key={s} size="sm" variant={size===s?'primary':'secondary'} onClick={()=>setSize(s)}>{s}</Button>
+      ))}</div></Row>
+      <Stage h={340}>
+        <Drawer open={b} side={side} size={size} title="Assembly 2" description="MC-2214 · area A2" onClose={()=>setB(false)}
+          footer={<Button variant="primary" fullWidth>Resume line</Button>}>
+          <Detail />
+        </Drawer>
+        {!b && <div style={{position:'absolute',inset:0,display:'grid',placeItems:'center'}}><Button size="sm" onClick={()=>setB(true)}>Reopen</Button></div>}
+      </Stage>
+    </div>
+    <div className="demo col">
+      <Row label="non-modal"><div style={{display:'flex',gap:12,alignItems:'center'}}><Button size="sm" variant="secondary" onClick={()=>setNonModal(!nonModal)}>{nonModal?'Close panel':'Open panel'}</Button><Text size="xs" tone="tertiary">Rows behind stay clickable: {clicks} clicked</Text></div></Row>
+      <Stage h={260} label="Lines · click a row while the panel is open">
+        <div style={{position:'absolute',left:16,top:44,display:'flex',flexDirection:'column',gap:6}}>
+          {['WO-4471','WO-4472','WO-4473'].map(r=><Button key={r} size="sm" variant="ghost" onClick={()=>setClicks(c=>c+1)}>{r}</Button>)}
+        </div>
+        <Drawer open={nonModal} modal={false} side="left" size="sm" title="Filters" onClose={()=>setNonModal(false)}>
+          <div style={{display:'flex',flexDirection:'column',gap:'var(--space-3)'}}>
+            <Field label="Area"><Select options={[{value:'a',label:'Assembly'},{value:'p',label:'Paint'}]} /></Field>
+            <Field label="Order"><Input placeholder="WO-…" /></Field>
+          </div>
+        </Drawer>
+      </Stage>
+      <Text size="xs" tone="tertiary">No scrim, no trap, no scroll lock — and no <code>aria-modal</code>, because the panel is not enforcing modality.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Three, and the widest one is an argument for a page.">
+    <T cols={['Size','Width (side)','Height (bottom)','Holds','Note']} rows={[
+      ['sm','360px','280px','A filter set, a short form, a summary','Narrow enough to sit beside a table without hiding it.'],
+      ['md','460px','420px','A record\u2019s detail: metrics, tags, a chart, a few fields','The default, and --drawer-width-md is the number the console kit had hard-coded.'],
+      ['lg','640px','560px','A detail view with a table or a wide chart inside it','If lg still feels tight, the content wants a page — not a wider drawer (§12).'],
+    ]}/>
+    <div className="demo col">
+      <Row label="all three"><Text size="xs" tone="tertiary">Switch <code>size</code> in §04 to compare against the same content — the body reflows, the header and footer do not move.</Text></Row>
+    </div>
+    <p>There is deliberately no <code>full</code> or percentage width for side panels. A drawer at 90 % of the viewport is a page with a scrim behind it: it hides the context that justified the component, and it cannot be linked to. The one place a panel legitimately covers most of the surface is the <code>bottom</code> sheet on a phone, which is capped at 85 % so the page behind is never entirely gone.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Open, closing, and the two that come from its content.">
+    <T cols={['State','Behaviour']} rows={[
+      ['Closed','Renders nothing — no hidden DOM, no retained scroll position. The product\u2019s selection is the state.'],
+      ['Opening','Slide from its own edge (§09) plus a scrim fade in the modal case. Focus moves in on the next frame, after layout.'],
+      ['Open, modal','Scrim, trap, scroll lock, aria-modal. Escape and scrim-mousedown close.'],
+      ['Open, non-modal','No scrim, no trap, no lock. The page beside scrolls and clicks normally; Escape still closes, because a panel with no scrim still needs a keyboard exit.'],
+      ['Not dismissible','Escape and scrim-close are blocked AND the X is removed — a close button that refuses to close is worse than none. The footer must then carry an explicit way out.'],
+      ['Loading its content','The panel opens immediately with Skeletons inside. Never delay the panel on a fetch: the user asked for the panel, and an empty frame that appears 400ms later reads as a mis-click.'],
+      ['Closing','Unmounts. Focus returns to the element that opened it, guarded by document.contains in case the action removed that row.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="not dismissible"><Text size="xs" tone="tertiary">No X, no Escape, no scrim-close — the footer is the only exit, and <code>initialFocus</code> sits on Cancel.</Text></Row>
+      <Stage h={280}>
+        <Drawer open title="Edit line limits" description="MC-2214 · unsaved" dismissible={false} initialFocus={cancelRef} onClose={()=>{}}
+          footer={<><Button ref={cancelRef} variant="secondary" fullWidth>Cancel</Button><Button variant="primary" fullWidth>Save</Button></>}>
+          <div style={{display:'flex',flexDirection:'column',gap:'var(--space-3)'}}>
+            <Field label="Target cycle time" hint="Seconds per unit."><Input defaultValue="41" /></Field>
+            <Field label="Scrap ceiling"><Input defaultValue="0.5 %" /></Field>
+          </div>
+        </Drawer>
+      </Stage>
+    </div>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Escape in both modes; the trap only where there is a scrim.">
+    <T cols={['Key','Modal','Non-modal']} rows={[
+      ['Escape','Closes, unless dismissible={false}. Stops propagation, so one Escape closes one layer.','Same. A panel with no scrim still needs a keyboard exit, and the page beside has nothing else Escape means.'],
+      ['Tab','Trapped: wraps first↔last, and recovers focus if it has landed outside the panel.','NOT trapped. Tab leaves the panel and continues into the page — which is the point of the mode.'],
+      ['Shift+Tab','Wraps backwards from the first element.','Leaves backwards.'],
+      ['On open','Focus moves to initialFocus, or the first focusable element, or the panel itself.','Same. The panel is what the user just asked for.'],
+      ['On close','Focus returns to the trigger, if it still exists.','Same.'],
+      ['Within the body','Ordinary control keys. The scrolling body is reachable because its controls are.','Same.'],
+    ]}/>
+    <p>The trap is the same implementation as <code>Dialog</code>'s, including the out-of-panel recovery case, and it is <em>skipped entirely</em> when <code>modal={'{false}'}</code>: a non-modal panel the user cannot tab out of is a trap with no scrim to explain why, and it is how "non-modal" drawers in the wild end up more hostile than modal ones.</p>
+    <p className="warn">One thing the component does <strong>not</strong> do: give the body a tabindex. If a drawer's content is a long read with no controls, the scrolling region is unreachable by keyboard — the same defect <code>Table</code> fixed in 1.14.0 for its horizontal scroller. It is not fixed here because a drawer body with no focusable element at all is a detail panel that should be a page; if a product hits it, that is the evidence to reopen this decision.</p>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="role=dialog, named by its title, and honest about modality.">
+    <ul>
+      <li><strong><code>role="dialog"</code>, always,</strong> and <code>aria-modal="true"</code> <em>only</em> when there is a scrim. A non-modal panel claiming <code>aria-modal</code> tells assistive technology the rest of the page is unavailable while a sighted user is still clicking it — the rule <code>Popover</code> established in 1.5.0 and the reason the flag is conditional here.</li>
+      <li><strong>Named by its own title</strong> through <code>aria-labelledby</code> — not by a string prop, so a formatted title (a name plus a Badge) still names the panel. This is the defect <code>Dialog</code> shipped with until 1.12.0: <code>aria-label</code> taken from <code>title</code> only when it was a plain string, leaving every formatted title unnamed.</li>
+      <li><strong><code>aria-describedby</code> points at the description</strong> when there is one, so the record's identity is read with the panel's name.</li>
+      <li><strong>Focus moves in and is restored,</strong> in both modes, with <code>document.contains</code> guarding a trigger the action removed.</li>
+      <li><strong>The close button is a real <code>IconButton</code> with the name "Close panel"</strong> — never a bare glyph, and never the only exit (Escape and, when modal, the scrim also close).</li>
+      <li><strong>The heading is an <code>h2</code>.</strong> A drawer is a layer, not a place in the document outline, so it does not try to continue the page's heading levels; content inside starts at <code>h3</code>.</li>
+      <li><strong>No breadcrumb, ever.</strong> A layer is not a position in a hierarchy (<code>Breadcrumb</code> §12).</li>
+      <li><strong>Scroll lock is modal-only,</strong> which is an accessibility decision as much as a UX one: locking the page under a panel that says "carry on beside me" strands a screen-magnifier user who is reading the page, not the panel.</li>
+      <li><strong>One layer at a time.</strong> Nested drawers are refused in §12: two trapped layers make Escape ambiguous and the restore chain guesswork.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="It enters from the edge it is attached to. Nothing else moves.">
+    <T cols={['Moment','Motion','Tokens']} rows={[
+      ['Panel opening','A slide from its OWN edge over --duration-slow (320ms), eased out. Motion that disagrees with position tells the user the panel came from somewhere it did not.','--anim-slide-in-right | -left | -up'],
+      ['Scrim','Fade only, in step with the panel.','--anim-fade-in'],
+      ['Closing','Unmount, no exit animation.','—'],
+      ['The page behind','Nothing. It does not shift, scale, dim beyond the scrim, or push aside (§12).','—'],
+      ['Content inside','Nothing animates in. Data never animates.','—'],
+      ['Reduced motion','--motion-slide collapses to 0 and durations to 1ms, so all three edges become a plain appearance. The panel is still legible and still where it should be.','prefers-reduced-motion'],
+    ]}/>
+    <p>Two keyframes are new — <code>mer-slide-in-left</code> and <code>mer-slide-in-up</code> — because the system had shipped only <code>mer-slide-in-right</code>, defined for a component that did not exist yet. All three translate <code>--motion-slide</code>, so reduced motion neutralises them in one place rather than three.</p>
+    <p className="warn">There is no exit animation, and that is deliberate rather than unfinished. An exiting panel has to stay mounted while it animates, which means the thing it was about — a deleted row, a released order — is still on screen after the action completed, and the component would have to hold state about content it no longer represents. The system's rule is that closing is instant everywhere (Dialog, Popover, Menu); one component animating out would make dismissal feel inconsistent rather than polished.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="A subject, its identity, and one row of actions.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Title = the subject.</strong> "Assembly 2", "WO-88431" — the thing, named as the operator names it.</li>
+        <li><strong>Description = its identity,</strong> one line, mono where it is a machine string: "MC-2214 · area A2".</li>
+        <li><strong>Front-load what was clicked for.</strong> The metric or field that prompted the panel goes first, above the fold of a 460px column.</li>
+        <li><strong>Two footer buttons at most,</strong> primary last, verbs that name the action: "Log downtime", "Resume line".</li>
+        <li><strong>Section long content</strong> with 11px uppercase overlines or <code>sm</code> tabs.</li>
+        <li><strong>Say when it is stale.</strong> A panel open beside live data must not silently show a snapshot.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>A paragraph as the description.</strong> The header must stay one or two lines; prose belongs in the body.</li>
+        <li><strong>A form that outgrows the column.</strong> Six fields is the practical ceiling; more is a page.</li>
+        <li><strong>Five footer buttons.</strong> An action row that needs two lines is a page’s toolbar — and the footer does not wrap, so a fifth button shrinks the other four instead.</li>
+        <li><strong>Navigation links</strong> as the content. That is a menu.</li>
+        <li><strong>A second scrolling region</strong> inside the body. One scrollbar per panel, or the user cannot tell what will move.</li>
+        <li><strong>"Details" as a title.</strong> Name the record, not the panel.</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Below the width where a side panel leaves room, it is a sheet.">
+    <ul>
+      <li><strong>Side panels are fixed-width with <code>maxWidth: 100%</code>,</strong> so they never exceed the frame — but a 460px panel on a 420px viewport <em>is</em> the whole screen, and a full-screen panel with a scrim behind it is a worse page than a page.</li>
+      <li><strong>Below the tablet breakpoint (600px), switch <code>side</code> to <code>bottom</code></strong> — one prop, driven by the product's own media query. The sheet keeps the top of the page visible, which is the context the drawer exists to preserve, and its actions are near the thumb.</li>
+      <li><strong>The sheet is capped at 85 %,</strong> so the page behind is never entirely gone. Content taller than that scrolls in the body, as it does at every size.</li>
+      <li><strong>Footer buttons go <code>fullWidth</code> at every size,</strong> and the footer deliberately does <em>not</em> wrap: two <code>fullWidth</code> buttons each base-size to the whole content width, so a wrapping footer breaks its line before either button shrinks — one action row becomes two. Without wrapping they shrink together and share the row down to a phone (§13).</li>
+      <li><strong>Density applies to the content, not the panel.</strong> Padding is <code>--drawer-padding-inline</code> at every density; the controls inside ride <code>[data-density]</code> as they do everywhere.</li>
+      <li><strong>Touch: <code>md</code> or <code>lg</code>,</strong> and never <code>sm</code> with a two-button footer on a phone — two 44px targets plus gap needs about 300px of row.</li>
+      <li><strong>No swipe-to-dismiss.</strong> The system has no gesture vocabulary, and a swipe that closes a panel holding an unsaved form is a data loss with no undo. The X and Escape are the exits at every size.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{maxWidth:420}}>
+        <Stage h={300} label="420px · sheet">
+          <Drawer open side="bottom" size="sm" title="WO-88431" description="Assembly 2 · due 18:00" onClose={()=>{}}
+            footer={<><Button variant="secondary" fullWidth>Hold</Button><Button variant="primary" fullWidth>Release</Button></>}>
+            <Text size="xs" tone="secondary">Sheet, capped at 85 % of the surface: the page above stays visible.</Text>
+          </Drawer>
+        </Stage>
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Most of these are a page pretending to be a panel.">
+    <div className="two">
+      <div className="pane dont"><h3>Should be something else</h3><ul>
+        <li><strong>A drawer that should be a page.</strong> If the content deserves a URL, back-button behaviour or a second tab, it is a page. A 640px panel holding a whole record is the tell.</li>
+        <li><strong>A drawer that is always open.</strong> That is a layout column; give it grid space and drop the scrim and the close button.</li>
+        <li><strong>A drawer of navigation links.</strong> A menu. Different keyboard, different landmark, no scrim.</li>
+        <li><strong>A drawer for a confirmation.</strong> "Delete this line?" is a <code>Dialog</code>: one question, one decision, no place to go.</li>
+        <li><strong>A drawer for a small anchored choice.</strong> That is a <code>Popover</code> or a <code>Menu</code> — 460px of panel for three options is a layer tax.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Refused features</h3><ul>
+        <li><strong>Nested drawers.</strong> Two trapped layers make Escape ambiguous and the focus-restore chain guesswork. Replace the panel’s content, or open a Dialog above it.</li>
+        <li><strong>Push mode</strong> (the page squeezing sideways). It re-flows every chart and table beside it, and on a console that means re-layout of hundreds of rows to open a panel.</li>
+        <li><strong>Resize handles.</strong> A per-user width that persists is a preference nobody set deliberately, and every content decision in §05 stops holding.</li>
+        <li><strong>Swipe-to-dismiss</strong> and <strong>drag-to-expand.</strong> §11.</li>
+        <li><strong>Tones.</strong> A red place says nothing about the record inside it; the Alert or Badge in the body carries severity.</li>
+        <li><strong>An exit animation.</strong> §09.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The one to argue hardest about: a drawer holding an unsaved form, dismissible on Escape and scrim.</strong> It is the default configuration and it is wrong for that content — one stray click on the page behind discards work with no undo. Either set <code>dismissible={'{false}'}</code> and give the footer Save and Cancel, or confirm the discard with a <code>Dialog</code> above the panel. The component cannot detect dirtiness, so this is a product decision the spec can only name.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="New in 1.19.0 — and six dead tokens found on the way in.">
+    <ul>
+      <li><strong>It is not a Dialog variant, by decision.</strong> <code>Dialog</code> §04 refused <code>variant="drawer"</code> because dismissal, scope and motion all differ — and the deciding factor is the one a flag cannot express: the non-modal mode, where there is no scrim, no trap, no scroll lock and no <code>aria-modal</code>. A single component with a flag that turns off four of its five behaviours is two components sharing a name.</li>
+      <li><strong>What IS shared is shared deliberately.</strong> The focus trap (including out-of-panel recovery), the focus restore with its <code>document.contains</code> guard, the <code>mousedown</code>-not-<code>click</code> scrim dismissal and the header/body/footer flex geometry are Dialog's, ported rather than reinvented, and the surface, shadow and radius tokens point at the same semantics. Two floating layers at one elevation must not be two colours.</li>
+      <li><strong>It replaces a hand-rolled panel that had four real defects.</strong> The console kit's <code>LineDrawer</code> (shipped 1.0.0) had <em>no focus trap, no focus restore, no Escape handler and no accessible name</em>, closed on <code>click</code> on the wrapper — so a text-selection drag ending on the scrim closed it — and hard-coded <code>width: 460</code>, <code>zIndex: 50</code> and a raw <code>--scrim</code>. That is the whole argument for putting a layer in the system: every product re-implements the expensive half and gets the invisible parts wrong.</li>
+      <li><strong>Only the leading edge is drawn.</strong> Border on the leading side, radius on the leading corners: the other three edges are flush with the frame, and a border there is a hairline the user sees only mid-animation, while a radius there shows the page through an 8px notch.</li>
+      <li><strong>Escape stops propagation.</strong> With a Dialog opened from inside a drawer, one Escape must close one layer — the dialog — and the drawer must not also close behind it.</li>
+      <li><strong>The scrim is one step lighter than Dialog's</strong> (<code>--drawer-scrim</code> → <code>--overlay-scrim</code>, not <code>--dialog-scrim</code>) and carries <strong>no backdrop blur</strong>. A drawer's argument is that the page behind stays readable; blurring it defeats the reason the user opened the panel rather than navigating.</li>
+      <li><strong><code>position: absolute</code>, not <code>fixed</code></strong> — the system's device and browser frames are <code>position: relative</code>, and a fixed panel escapes the frame. In a product the frame is the app root, so the effect is identical; a transformed ancestor is the documented caveat, same as <code>Popover</code>'s.</li>
+      <li><strong>Two warnings:</strong> no <code>title</code> (the panel announces as an unnamed dialog) and no <code>onClose</code> (nothing can dismiss it — the definition of a trap). No warning for <code>modal={'{false}'}</code> plus <code>dismissible={'{false}'}</code>, which is legal: a non-modal panel closed only by its own footer button is a valid inspector.</li>
+      <li><strong>The footer does not wrap, and that is load-bearing.</strong> It shipped with <code>flex-wrap: wrap</code> copied from Dialog's footer, where the buttons are not <code>fullWidth</code> — here they are, so each one's base size is the entire content width and the flex line broke before either could shrink: the documented single action row rendered as the two-row toolbar §10 forbids, in this spec's own demos and in the console kit. Removing the wrap is the whole fix; <code>flex-shrink</code> then does what it was always going to do. The general lesson is narrow but real: <strong>wrapping and <code>fullWidth</code> children are incompatible</strong>, because wrapping resolves before shrinking.</li>
+      <li><strong><code>initialFocus</code> only became real in 1.19.1.</strong> Writing this spec's §06 demo surfaced it: <code>Button</code> and <code>IconButton</code> were plain function components, so <code>&lt;Button ref={'{cancelRef}'}&gt;</code> logged React's "function components cannot be given refs" warning, left <code>cancelRef.current</code> null, and the panel silently fell back to focusing the first <em>field</em> — in a destructive dialog, the opposite of the intent. <code>Dialog</code> had documented the same pattern since 1.12.0, so it had never worked there either. Both components now <code>forwardRef</code> to their <code>&lt;button&gt;</code>. A documented pattern that no-ops is worse than a missing feature: nobody checks a ref they were told to pass.</li>
+      <li><strong>16 tokens, two new keyframes,</strong> and no geometry left in the JSX: widths, heights, padding, radius, shadow, scrim and both text colours all resolve through <code>--drawer-*</code>.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--drawer-background','--drawer-border','--drawer-radius','--drawer-shadow','--drawer-scrim','--drawer-width-sm','--drawer-width-md','--drawer-width-lg','--drawer-height-sm','--drawer-height-md','--drawer-height-lg','--drawer-padding-inline','--drawer-title-text','--drawer-description-text','--drawer-footer-background','--drawer-footer-border','--anim-slide-in-left','--anim-slide-in-up'].map(t=><span key={t}>{t}</span>)}
+    </div>
+    <p className="warn"><strong>Six dead tokens retired, and they were dead in a way the 1.14.2 sweep could not see.</strong> <code>layout.css</code> held a "Layer geometry" block — <code>--drawer-w</code>, <code>--dialog-w-sm/md/lg</code>, <code>--dialog-offset-top</code>, <code>--toast-w</code>, <code>--toast-inset</code> — read by nothing: every one duplicated a component token the component actually reads (<code>--dialog-width-*</code>, <code>--dialog-inset-block</code>, <code>--toast-width</code>, <code>--toast-viewport-inset</code>). Found by this component going to consume <code>--drawer-w</code> and discovering it had no consumer, and the reason they survived is instructive: <strong>1.14.2 swept the 384 component tokens, and these sat one tier up.</strong> A duplicate at the wrong tier is worse than an unread token, because a product reading <code>--drawer-w</code> would theme nothing and see nothing wrong. Removed rather than wired — layer geometry belongs to the component that draws the layer. Breaking for anyone who read them, which is nobody in this repo, and it is a version bump rather than an edit.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Wiring it into a product.">
+    <pre>{`import { Drawer } from '@meridian/feedback';
+
+// Detail beside a table: the selection IS the open state.
+const [line, setLine] = React.useState(null);
+
+<Table rows={lines} rowKey="id" onRowClick={setLine} …/>
+<Drawer
+  open={!!line}
+  title={line?.name}
+  description={line && \`\${line.machine} · area \${line.area}\`}
+  onClose={() => setLine(null)}
+  footer={<>
+    <Button variant="secondary" fullWidth>Log downtime</Button>
+    <Button variant="primary" fullWidth>Resume line</Button>
+  </>}>
+  {line && <LineDetail line={line} />}
+</Drawer>
+
+// Responsive: one prop, driven by the product's own query.
+const sheet = useMediaQuery('(max-width: 599px)');
+<Drawer side={sheet ? 'bottom' : 'right'} size={sheet ? 'md' : 'md'} …/>
+
+// Unsaved work: do NOT leave it dismissible.
+<Drawer title="Edit limits" dismissible={false} initialFocus={cancelRef}
+  footer={<><Button ref={cancelRef} variant="secondary" onClick={close}>Cancel</Button>
+            <Button variant="primary" onClick={save}>Save</Button></>}>
+  …fields…
+</Drawer>
+
+// Open it immediately and skeleton the body — never delay the panel.
+<Drawer open={!!id} title={record?.name ?? 'Loading'} onClose={close}>
+  {record ? <Detail record={record} /> : <><Skeleton width="40%" /><Skeleton lines={4} /></>}
+</Drawer>`}</pre>
+    <ul>
+      <li><strong>Derive <code>open</code> from the selection,</strong> not from a second boolean. Two sources of truth is how a panel ends up open with nothing in it.</li>
+      <li><strong>Unmount the content with the panel.</strong> Do not keep a closed drawer mounted to preserve scroll position — a stale panel re-opening on old data is worse than a fresh one.</li>
+      <li><strong>Put the panel at the app root,</strong> inside the positioned frame — not inside a scrolling column or a card, whose <code>overflow</code> would clip it.</li>
+      <li><strong>Do not deep-link a drawer.</strong> If a URL should open it, the content is a page (§01). The exception is a query parameter for a filter panel, which is a UI preference rather than a location.</li>
+      <li><strong>A Dialog may open above a Drawer</strong> (<code>--z-dialog</code> 600 &gt; <code>--z-drawer</code> 500) — that is the discard-confirmation pattern. A drawer above a drawer is refused (§12).</li>
+      <li><strong>Toasts, not inline notices, for results</strong> when the panel closes on save: the surface unmounts, so the confirmation belongs to what remains (<code>feedback-boundaries</code>).</li>
+      <li><strong>Testing hooks:</strong> <code>getByRole('dialog', {'{ name: \'Assembly 2\' }'})</code>; assert <code>aria-modal</code> is <em>absent</em> in the non-modal case, that Escape calls <code>onClose</code>, and that focus returns to the trigger on close. <code>[data-drawer="right|left|bottom"]</code> identifies the edge.</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

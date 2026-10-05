@@ -1,0 +1,292 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Collection editing" subtitle="Full specification — committed values kept apart from drafts, validation over the draft, and a commit that is the only thing that writes the collection · manufacturing ERP reference" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Collection editing — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.mn{font-size:10px;color:var(--text-secondary);line-height:1.5}
+.mb{align-self:flex-start;height:26px;padding:0 10px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:10px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.mb.q{background:var(--surface-sunken);color:var(--text-primary);border:var(--border-hairline)}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-warning-soft);color:var(--text-warning)}
+.ma.bad{background:var(--status-critical-soft);color:var(--text-critical)}
+.ma.ok{background:var(--status-success-soft);color:var(--text-success)}
+.split{display:grid;grid-template-columns:118px minmax(0,1fr);gap:8px}
+.rows{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-card)}
+.rows div{display:flex;align-items:center;gap:7px;padding:5px 7px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);border-bottom:var(--border-subtle)}
+.rows div:last-child{border-bottom:none}
+.rows div.on{background:var(--surface-sunken);color:var(--text-primary)}
+.dot{width:9px;height:9px;border:1px solid var(--border-strong);border-radius:50%;flex:none}
+.dot.on{border:3px solid var(--action-solid)}
+.panel{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:8px 9px;display:flex;flex-direction:column;gap:5px}
+.panel .t{font-family:var(--font-mono);font-size:10px;color:var(--text-primary)}
+.panel .f{display:flex;justify-content:space-between;gap:8px;font-size:9.5px;color:var(--text-secondary);font-family:var(--font-mono)}
+.sk{height:7px;border-radius:3px;background:var(--surface-sunken)}
+.mcount{font-size:10px;font-family:var(--font-mono);color:var(--text-tertiary)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Collection editing</h1>
+  <p class="lede">Changing values on items of a collection in place — with the committed values and the draft held apart, validation run over the draft as a whole, a commit that is the only thing permitted to write the collection, and a failure that leaves the user's figures exactly where they typed them.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: Table or List, Field, an editable input, Button</span><span>Reference implementation: <a href="collection-editing-reference.card.html">card</a> · <a href="../../templates/collection-editing/CollectionEditing.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — the press-shop weekly shift capacity plan</span><span>Sections included: 13 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>A planner is looking at ten press slots for week 2026-W37 and needs to move Monday's PR-03 quantity from 4,800 to 4,400 and put Wednesday's PR-05 slot onto shift C. It is four keystrokes of work against data she can already see, and sending her into a form for each slot loses the comparison that made the change obvious. The pattern owns everything between the first keystroke and the plan actually changing: what the row shows while it is being edited, what happens to the figures if the commit fails, and what the collection says when someone else revised the slot underneath her.</p>
+    <p><strong>Use it when</strong> users change values on items of a collection in the collection's own context, and the collection's other rows are part of how they decide.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>Adjusting a few fields of a record where neighbouring records are the reference — plans, prices, quantities, assignments.</li><li>Corrections and small revisions that do not justify a separate screen.</li><li>Editing that the user expects to abandon freely, row by row.</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>Creating or completing a record.</strong> A record with many fields, dependencies and a meaningful submit is <a href="ValidatedSubmission.spec.html">validated submission</a>, and across steps, <a href="StagedInput.spec.html">staged input</a>. In-place editing of eighteen fields is a form with a table drawn around it.</li><li><strong>One operation over many chosen items.</strong> Setting one value on twenty rows at once is <a href="BulkSelectionAction.spec.html">bulk selection and action</a> — one snapshot, one operation, per-item outcomes.</li><li><strong>Inspecting rather than changing.</strong> If the row only opens a panel to read, that is <a href="SelectionDrivenDetail.spec.html">selection-driven detail</a>; selection is not a draft.</li><li><strong>Changing the order of the collection, or an item's membership of it.</strong> Moving a row to a new position is <a href="DirectManipulationOfOrder.spec.html">direct manipulation of order</a> — order is committed state with its own commit and its own rollback, not a field with a draft. A typed sequence <em>number</em> is this pattern; the move itself is not.</li><li><strong>Immediate-effect controls.</strong> A switch that takes effect on toggle has no draft, no cancel and no commit — it is a control with an optimistic update and its own failure handling, not this pattern.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">Collection</td><td><code>Table</code> or <code>List</code></td><td>Required. Supplies the items, their stable identities and the context that makes in-place editing worth having. It does not hold the drafts (§20).</td></tr>
+      <tr><td class="k">Editable value</td><td><code>Field</code> + <code>Input</code>, <code>Select</code>, <code>Checkbox</code>, <code>Switch</code>, <code>Combobox</code>, <code>DatePicker</code>, <code>TimeField</code></td><td>Required. Every editor is inside a <code>Field</code>, which owns the label, the error wiring and <code>aria-invalid</code>. In a table cell the label is <code>labelHidden</code> and names the value <em>and its row</em> — "Planned quantity for PR-03 · Mon 08 Sep".</td></tr>
+      <tr><td class="k">Enter edit</td><td><code>Button</code> or <code>IconButton</code></td><td>Required under the <code>button</code> entry policy, and recommended even under row activation: a row that only edits on click is undiscoverable and unreachable without a pointer.</td></tr>
+      <tr><td class="k">Commit and cancel</td><td><code>Button</code>, or a <code>ButtonGroup</code></td><td>Required, both, per edited item and inside its row. A single global "Save" over several open drafts is a different pattern with a different failure model.</td></tr>
+      <tr><td class="k">Row state</td><td><code>Badge</code></td><td>Optional but strongly advised where drafts can coexist: the row says whether it is committed, a draft, invalid, saving or not saved.</td></tr>
+      <tr><td class="k">Saving</td><td><code>Progress</code></td><td>Required where the commit is asynchronous and slow enough to notice. The collection stays readable.</td></tr>
+      <tr><td class="k">Failure and conflict</td><td><code>Alert</code></td><td>Required. Persistent, named after the item, and never a timed <code>Toast</code>: a toast that expires takes the only statement that the plan was not changed with it. <code>Toast</code> or <code>Snackbar</code> is legitimate for a <em>successful</em> save only.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>Read.</strong> The collection shows committed values. Nothing is a draft.</li>
+      <li><strong>Entry.</strong> The user enters editing for one item, by its <code>Edit</code> control or by row activation under the declared <code>entry</code> policy. A draft is created for that identity, initialised from the committed values, and stamped with the revision it was opened against.</li>
+      <li><strong>Editing.</strong> The user changes values. The draft is the only thing that changes; the collection's canonical values are untouched, and other rows still show their own committed figures.</li>
+      <li><strong>Commit or cancel.</strong> Cancel discards the draft, which restores the committed values because they were never written to. Commit validates the draft first (§09) and refuses without leaving editing.</li>
+      <li><strong>Conflict check.</strong> If the item's committed revision has moved since the draft was opened, the declared <code>staleDraftPolicy</code> decides: refuse and show both sets, or overwrite.</li>
+      <li><strong>Saving.</strong> The operation runs on the validated draft. The row reports saving and refuses a second activation.</li>
+      <li><strong>Resolution.</strong> On success the canonical values are replaced, the draft is disposed of under <code>postSaveDisposition</code>, and the save is announced. On failure the draft stands, the canonical values do not move, and the message says so.</li>
+    </ol>
+    <p>The order of steps 4 and 5 is load-bearing: validation is about the draft alone and belongs to the user, while the conflict check is about the world and belongs to the collection. Running them the other way round reports someone else's revision to a user whose own figures are not yet valid.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Committed values and draft values are separate state.</strong> The draft is keyed by the item's identity and holds its own copy; canonical data is not mutated as the user types, and no component reads the draft as though it were the plan.</li>
+      <li><strong>Entering editing initialises the draft from the committed values,</strong> every time — never from a previous draft, and never from whatever the input last held.</li>
+      <li><strong>Cancel restores the committed values by discarding the draft.</strong> There is no "undo" to compute: if canonical data was never written, restoration is deletion.</li>
+      <li><strong>Editing one item cannot touch another.</strong> Drafts are per identity. A shared editor buffer, or a draft keyed by row position, is how a quantity typed for Monday lands on Tuesday.</li>
+      <li><strong>Identity is stable through sorting, filtering and refresh.</strong> A draft belongs to the slot, not the row: re-sorting the collection moves the row and takes the draft with it, and a collection refresh that changes other rows leaves the draft alone.</li>
+      <li><strong>Whether several items may be edited at once is declared, not accidental.</strong> Under <code>single</code> the pattern refuses a second entry and says which item is still open; under <code>multi</code> each draft validates, commits and fails independently.</li>
+      <li><strong>The commit is the only writer.</strong> Canonical values change on a successful commit and at no other moment — not on blur, not on keystroke, not optimistically before the response.</li>
+      <li><strong>A commit is single-shot until it resolves.</strong> A second activation on the same item does nothing; the guard is the state transition, not the button's disabled attribute.</li>
+      <li><strong>A superseded commit response is discarded.</strong> A response that arrives after a newer commit for the same item, or after the item left the collection, writes nothing.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="rows"><div class="on"><span class="id">PR-03 · Mon</span><span>draft 4,400</span></div><div><span class="id">PR-03 · Tue</span><span>4,800</span></div></div><span class="mcount">committed = {"PL-0301":{qty:4800}} · drafts = {"PL-0301":{qty:"4400"}}</span><span class="mn">The plan still reads 4,800 until you save.</span></div><p class="why">Two values, two places, one identity. Cancel is a deletion, a failed save costs nothing, and the row can honestly say what the plan currently holds.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="rows"><div class="on"><span class="id">row 1</span><span>4,400</span></div><div><span class="id">row 2</span><span>4,800</span></div></div><span class="mcount">plan[0].qty = 4400 (typed straight in)</span><span class="mn">Saving…</span></div><p class="why">Canonical data mutated by keystroke and keyed by position. Cancel has nothing to restore, a failed commit leaves the plan showing figures MES never accepted, and one re-sort moves the edit onto a different press.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Options</th><th>What it decides</th></tr></thead><tbody>
+      <tr><td class="k">concurrency</td><td><code>single</code> · <code>multi</code></td><td>How many items may hold a draft at once. <code>single</code> keeps the state model small and the user's attention on one row, and is the safe default; <code>multi</code> suits a planner making a pass down a column, and requires per-row state, per-row validation and per-row failure — all three, or it is <code>single</code> with a bug.</td></tr>
+      <tr><td class="k">entry</td><td><code>button</code> · <code>row</code></td><td>How editing starts. <code>button</code> is discoverable, keyboard-reachable and cannot be triggered by a stray click. <code>row</code> suits a heads-down data-entry screen, and only ever <em>in addition</em> to a real control (§12) — a click-to-edit row with no <code>Edit</code> affordance is unusable without a mouse.</td></tr>
+      <tr><td class="k">staleDraftPolicy</td><td><code>block</code> · <code>overwrite</code></td><td>What happens when the item's committed revision moved after the draft was opened. <code>block</code> refuses the commit, shows both sets of figures and asks — correct wherever the other party's change may be load-bearing, which in a shared plan it always is. <code>overwrite</code> is only defensible where the edited fields cannot conflict in practice, and must still be a decision, not a silent last-write-wins.</td></tr>
+      <tr><td class="k">postSaveDisposition</td><td><code>exit</code> · <code>stay</code></td><td>What the row does after a successful commit. <code>exit</code> returns to read and moves focus back to the row's own control; <code>stay</code> keeps the editors open with the draft re-based on the new committed values, for a user working down a column. Either way the save is announced and the row stops claiming to be a draft.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <table><thead><tr><th>State</th><th>What is true</th><th>What is displayed</th></tr></thead><tbody>
+      <tr><td class="k">read</td><td>No draft for this item.</td><td>Committed values, an <code>Edit</code> control, no editors.</td></tr>
+      <tr><td class="k">editing</td><td>A draft exists and matches the committed values.</td><td>Editors seeded from committed values, commit and cancel, and a statement that the collection is unchanged.</td></tr>
+      <tr><td class="k">invalid draft</td><td>The draft breaks a rule. Still fully editable.</td><td>The problem on the offending field, the rule that field must satisfy, and a commit that refuses without discarding anything.</td></tr>
+      <tr><td class="k">saving</td><td>A validated draft is being committed.</td><td>Progress naming the item; the row's controls inert; the rest of the collection readable and editable under <code>multi</code>.</td></tr>
+      <tr><td class="k">save failed</td><td>The commit failed. The draft is intact and the collection is unchanged.</td><td>The cause, an explicit statement that nothing was committed, the committed value still in the collection's own numbers, and a retry.</td></tr>
+      <tr><td class="k">stale draft</td><td>The item's committed revision moved under an open draft.</td><td>Both sets of figures with their revisions, and the choice the <code>staleDraftPolicy</code> defines.</td></tr>
+      <tr><td class="k">saved</td><td>Canonical values replaced.</td><td>The new committed values, the draft disposed of under policy, and one announcement.</td></tr>
+    </tbody></table>
+    <p class="warn"><strong>"Saving" and "saved" are not the same claim, and a row must never make the second while doing the first.</strong> An in-place editor that drops back to read state the moment the button is pressed has told the planner the plan says 4,400 when MES has not yet been asked — and if the commit then fails, the correction arrives against a row that already looks committed.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§09</span><h2>Validation</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Validation runs over the draft, before the commit.</strong> Not over the committed values, and not over a merge of the two.</li>
+      <li><strong>Cross-value rules inside the item are evaluated coherently,</strong> against one snapshot of the draft: the quantity rule depends on the shift and the manning chosen in the same draft, so all three are read together. Evaluating each field against the committed values of its siblings produces errors that contradict what the user can see.</li>
+      <li><strong>An invalid draft stays editable and stays whole.</strong> A refused commit clears nothing, closes nothing and moves nothing but focus, which goes to the first offending field.</li>
+      <li><strong>The problem is attached to the field it belongs to</strong> — through <code>Field</code>'s <code>error</code>, so the editor is <code>aria-invalid</code> and points at the message — and the rule stays visible beside it as a hint.</li>
+      <li><strong>Where a rule spans fields, it is reported on the field the user can change to satisfy it,</strong> and states the other values it depends on: "Shift C with 1 operator makes 3,000. Over by 1,800." A rule reported on nothing in particular is a rule nobody can act on.</li>
+      <li><strong>Validation is not a gate on typing.</strong> Errors may appear as the user works, but no keystroke is rejected and no editor is locked; the commit is the gate.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><span class="ml">Planned qty</span><div class="rows"><div><span class="id">6,000</span><span style="color:var(--text-critical)">shift B · 2 operators make 4,800 — over by 1,200</span></div></div><span class="mh">multiples of 200 · your figures are still here</span></div><p class="why">One snapshot, the rule named with the values it used, the offending field marked, and nothing thrown away.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma bad">Invalid input.</div><div class="rows"><div><span class="id">4,800</span><span>reset to committed value</span></div></div></div><p class="why">The message names no field, no rule and no numbers, and the refusal has reverted the row — so the planner's four keystrokes are gone and she cannot see what was wrong with them.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Error handling</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>A failed commit preserves the draft, exactly as typed.</strong> This is the pattern's first obligation on failure: the work is the user's, and the failure was not theirs.</li>
+      <li><strong>A failed commit leaves the collection unchanged, and says so in the collection's own numbers.</strong> "Nothing was committed: the plan still reads 4,800 pieces." A message that only says "save failed" leaves the planner unsure which figure MES now holds.</li>
+      <li><strong>The unsaved draft is never presented as committed data.</strong> The row keeps a state that distinguishes them — and anything that reads the collection downstream keeps reading the committed values.</li>
+      <li><strong>Retry operates on the draft as it is at the moment of retry,</strong> not on the values that failed. The user may have corrected them in between; retrying the old attempt discards a correction silently.</li>
+      <li><strong>A conflict is not a failure.</strong> A stale draft has not been refused by the service — it has been overtaken. It reports both revisions and offers a choice, and it never overwrites without one under <code>block</code>.</li>
+      <li><strong>An item withdrawn mid-edit ends the edit and keeps the explanation.</strong> The draft cannot be committed because its subject is gone; the pattern says which item left, why, and what the uncommitted figures were, rather than dropping the editor and the work in silence.</li>
+      <li><strong>The collection never fails with the editor.</strong> A failed commit on one row leaves every other row readable and editable.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma bad">PR-03 · Mon 08 Sep was not saved<br><span class="mh">The MES day plan refused the commit — the week lock is held by Anjali Deshmukh. Nothing was committed: the plan still reads 4,800 pieces, and your 4,400 is still in the row.</span></div><div class="mb">Retry saving PR-03 · Mon 08 Sep</div></div><p class="why">Cause, consequence and the two figures kept apart — so the planner knows what the plan holds, what she typed, and that retry will send what she can see.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma bad">Couldn't save. Try again later.</div><div class="rows"><div><span class="id">PR-03 · Mon</span><span>4,400</span></div></div></div><p class="why">The row now shows 4,400 as though it were the plan, the draft is indistinguishable from committed data, and the next person to open the screen releases a quantity MES never accepted.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Entering and leaving editing are perceivable.</strong> The row's state is stated in text, not only by the appearance of a box: a screen-reader user who cannot see the editors must be told the row is now editable and, later, that it is committed.</li>
+      <li><strong>Focus moves into the first editor on entry,</strong> so the keyboard is where the work is; it never lands on the row's container.</li>
+      <li><strong>Focus returns predictably on exit.</strong> After a commit under <code>exit</code>, or after a cancel, focus goes back to that row's <code>Edit</code> control — not to the top of the table and not to the document.</li>
+      <li><strong>Every editor is named by its value and its row.</strong> "Planned quantity for PR-03 · Mon 08 Sep", visually hidden in the cell — a column of editors all called "Quantity" is unnavigable.</li>
+      <li><strong>Validation messages are associated with their editor,</strong> through the <code>Field</code> that owns it, so the error is read on arrival at the control rather than announced into the void.</li>
+      <li><strong>Refusals and failures are announced where the user is.</strong> A refused commit announces the problems and moves focus to the first one; a failed save announces as an alert, because the user's belief about what was saved is now wrong.</li>
+      <li><strong>Row activation is never the only way in.</strong> Under the <code>row</code> entry policy the <code>Edit</code> control remains, because a click target on a table row is not operable by keyboard and not announced as anything.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Edit, save and cancel are three distinguishable actions,</strong> named as such and never abbreviated into one ambiguous control. Their accessible names carry the item: "Save the PR-03 · Mon 08 Sep slot".</li>
+      <li><strong>While a draft is open, the row says what the collection still holds.</strong> "The plan still reads 4,800 pieces until you save" is the sentence that makes the draft model visible.</li>
+      <li><strong>Failure copy states that nothing was committed,</strong> in the collection's units, before it explains the cause. "Not saved" first, mechanism second.</li>
+      <li><strong>Cancel copy says what will be restored,</strong> not what will be lost — the committed figures are the thing the user is returning to.</li>
+      <li><strong>A conflict names both parties' figures and their revisions,</strong> and labels the choices by what they do: "Save my figures over revision 5", "Discard mine and take the revision". Never "Overwrite?" alone.</li>
+      <li><strong>Rules are stated as hints before they are stated as errors.</strong> "Multiples of 200" beside the field costs nothing and prevents the error it describes.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><span class="mn">Editing PR-03 · Mon 08 Sep — the plan still reads 4,800 pieces until you save.</span><div style="display:flex;gap:6px"><div class="mb">Save</div><div class="mb q">Cancel</div></div><span class="mh">Cancel restores 4,800 · multiples of 200</span></div><p class="why">Three distinct actions, and the committed figure visible the whole time the draft is open.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><span class="mn">Editing</span><div style="display:flex;gap:6px"><div class="mb">Done</div><div class="mb q">Close</div></div></div><p class="why">"Done" and "Close" — one of these commits a change to a live production plan and the other throws it away, and nothing on screen says which.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§17</span><h2>Performance</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The commit is guarded at the state transition,</strong> not by disabling the button: a second press arrives before the disabled attribute lands, and a double commit on a plan slot is a double release.</li>
+      <li><strong>Each commit carries a request identity,</strong> and only the current one for that item may write canonical values or clear the draft — a response that arrives after a newer commit, a cancel, or the item's withdrawal writes nothing.</li>
+      <li><strong>Typing is never gated on validation or on the network.</strong> Editors respond to keystrokes at once; validation is cheap and local, and anything expensive happens at commit.</li>
+      <li><strong>The collection stays usable while a row saves.</strong> Only the saving row's controls are inert; sorting, filtering and — under <code>multi</code> — other drafts continue.</li>
+      <li><strong>A slow commit is reported in the row it belongs to,</strong> with progress naming the item. A page-level spinner over a per-row commit hides which row is waiting.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+      <tr><td class="k">Item removed during editing</td><td>Editing ends, the draft cannot be committed, and the pattern states which item left, why, and what the uncommitted figures were. Never a silent disappearance of the editor.</td></tr>
+      <tr><td class="k">External update to the item being edited</td><td>The draft is untouched; the conflict surfaces at commit under <code>staleDraftPolicy</code>. Live-patching a draft from a refresh destroys the user's work without asking.</td></tr>
+      <tr><td class="k">External update to other items</td><td>Applied normally. Other rows refreshing is not a reason to disturb an open draft.</td></tr>
+      <tr><td class="k">Filter or sort hides the item being edited</td><td>The draft is kept and reported — "1 edit in progress on a slot this filter hides" — never discarded because its row went off screen.</td></tr>
+      <tr><td class="k">Repeated save activation</td><td>The second activation is refused while the first is in flight. No queue, no second commit.</td></tr>
+      <tr><td class="k">Save resolves after the editing context changed</td><td>Discarded if it belongs to a superseded commit, a cancelled draft or a withdrawn item; canonical values are written only for the commit that is still current.</td></tr>
+      <tr><td class="k">Entering edit on a second item under <code>single</code></td><td>Refused, with the open item named and focus returned to it. Not a silent discard of the first draft.</td></tr>
+      <tr><td class="k">Draft identical to committed values</td><td>Committing is permitted and harmless; cancelling is equivalent. The pattern does not claim a change it cannot see.</td></tr>
+      <tr><td class="k">Navigating away with an open draft</td><td>Out of the pattern's control to prevent, in its obligation to warn: an unsaved draft is announced as unsaved, and the product decides whether to guard the exit.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Hold three things separately:</strong> the item's identity, the committed values, and the draft. The draft map is keyed by identity — <code>{ 'PL-0301': { qty, shift, manning, baseRev } }</code> — never by index, and never a single "editing buffer" shared between rows.</li>
+      <li><strong>Never write canonical data before the commit succeeds.</strong> This one rule delivers cancel, failure recovery and the honest row state for free; every alternative reconstructs them badly.</li>
+      <li><strong>Stamp the draft with the revision it was opened against</strong> and compare at commit. Without a revision (or an ETag, or a timestamp the service honours) there is no way to detect a stale draft, and <code>staleDraftPolicy</code> is unimplementable.</li>
+      <li><strong>Derive the row's state, do not store it.</strong> Read, editing, invalid, saving, failed and stale are all computable from the draft, the validation result and the in-flight commit; a stored <code>isEditing</code> flag is what leaves a row editable after its item disappears.</li>
+      <li><strong>Validate a copy of the whole draft in one function,</strong> returning problems per field. Per-input validators that close over stale siblings are the usual source of contradictory cross-value errors.</li>
+      <li><strong>Tag each commit with a monotonic request number</strong> and check it — plus current membership — before writing anything.</li>
+      <li><strong>Keep focus management with the transitions,</strong> not in the editors: entry focuses the first editor, refusal focuses the first problem, exit focuses the row's own control. Editors that grab focus on mount fight the pattern.</li>
+      <li><strong>Do not reuse the collection's row objects as drafts.</strong> Copy the values out; a draft holding a reference into the collection is a mutation waiting for a re-render.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted"><strong>Omitted sections and why.</strong>
+§06 Variants — row editing, cell editing and an in-row expanded editor are presentations of one contract; the behavioural choices that would distinguish them are declared properties (§05).
+§07 Sizes — no coordinated sizing exists at the pattern level; control sizes are the components' own.
+§11 Input &amp; interaction modalities — the editors and the collection own their own pointer, touch and keyboard behaviour; the pattern's cross-component rules — focus into the first editor, back to the row's control, and a real control under the <code>row</code> entry policy — are in §12.
+§13 Motion — a row may transition between read and edit, but no motion carries pattern-owned meaning and none may delay a validation or failure announcement.
+§15 Responsive — where a row cannot hold editors, the editors may move into a sheet or a panel; the draft, validation, commit and cancel contract is unchanged, and an editing surface with its own submit and its own record is <a href="ValidatedSubmission.spec.html">validated submission</a>, not a responsive form of this pattern.
+§16 Internationalization — the pattern is direction-agnostic; locale-sensitive parsing and formatting of the values being edited belong to the input components and the product's locale rules.
+§19 Anti-patterns — the refusals in §01, the separation rules in §04 and the failure rules in §10 cover the recurring misuses.
+§21 Developer notes — the contract in §04, §05, §08, §10 and §20 is the whole contract; its two requirements of an API, a per-item revision and a commit response attributable to the request that asked for it, are stated in §20.</p>
+</div></body></html>

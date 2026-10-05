@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Collection refinement" description="Interaction pattern reference implementation, set in a manufacturing ERP — triaging the maintenance work request backlog: one canonical criteria model behind every control, active criteria removable from where they are shown, explicit composition rules, immediate or applied refinement, and pagination reconciled when the collection shrinks under it." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}fieldset{margin:0;min-width:0}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:1260px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/CollectionRefinement.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+</div>
+<p style="margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note, the refinement-state panel under the criteria, and the two tweaks under <span style="font-family:var(--font-mono)">Demo harness</span> — exists to make the contract visible. The backlog query is a timer standing in for the CMMS call; the comment above it says what to replace. The four tweaks under <span style="font-family:var(--font-mono)">Pattern properties</span> are not harness: <span style="font-family:var(--font-mono)">mode</span>, <span style="font-family:var(--font-mono)">debounce</span>, <span style="font-family:var(--font-mono)">unavailableOptions</span> and <span style="font-family:var(--font-mono)">zeroResultRecovery</span> are the §05 policies an adopting team must declare.</p>
+<p style="margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Pick Press shop and Machine shop, then Breakdown: two dimensions compose as AND, values inside one dimension as OR, and the rule is stated where the criteria are. Remove a criterion from its tag and watch its own control clear — one model, not two copies. Go to page 3 of the unrefined backlog and then add a criterion: the position is reconciled and the reconciliation is announced. Narrow to Paint shop + Awaiting spares for a valid combination with no matches, and take the way back the <span style="font-family:var(--font-mono)">zeroResultRecovery</span> policy offers. Switch <span style="font-family:var(--font-mono)">mode</span> to <span style="font-family:var(--font-mono)">explicit</span> to reach the changed-but-unapplied state, where the tags and the table still describe the applied refinement and the pending changes are counted separately.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Maintenance · Chakan plant (PL-04) · shift A handover, 2026-09-07 07:00 (IST)</span>
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">Work request backlog</h1>
+<p style="margin:0;max-width:78ch;color:var(--text-secondary);font-size:var(--text-sm);line-height:1.55">Vikram Bhosale (maintenance) is deciding what shift A takes on with two fitters and one electrician. 24 open requests; the criteria on the left are the ones he refines by every morning.</p>
+</div>
+
+<div style="display:grid;grid-template-columns:308px minmax(0,1fr);gap:28px;align-items:start">
+
+<div style="display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-direction:column;gap:18px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);padding:18px">
+<div style="display:flex;flex-direction:column;gap:3px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Refine backlog</span>
+<span style="font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.5;text-wrap:pretty">Different criteria must all hold; several values within one criterion count as any of them. Counts are what each value would leave.</span>
+</div>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.ChipGroup" label="Area" hint="Any of the selected areas." multiple="{{ true }}" size="sm" options="{{ areaOptions }}" value="{{ dAreas }}" onChange="{{ onAreas }}" hint-size="100%,120px"></x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.ChipGroup" label="Priority" hint="One priority band, or any." size="sm" options="{{ priorityOptions }}" value="{{ dPriority }}" onChange="{{ onPriority }}" hint-size="100%,96px"></x-import>
+
+<sc-if value="{{ ready }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Status" hint="Any of the selected statuses." hint-size="100%,84px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.MultiCombobox" options="{{ statusOptions }}" value="{{ dStatuses }}" onChange="{{ onStatuses }}" placeholder="Any status" size="sm" collapseAfter="{{ 2 }}" hint-size="100%,34px"></x-import>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.RangeSlider" label="Estimated downtime" value="{{ dDowntime }}" onChange="{{ onDowntime }}" min="{{ 0 }}" max="{{ 16 }}" step="{{ 1 }}" unit="h" showValue="{{ true }}" size="sm" hint-size="100%,58px"></x-import>
+</sc-if>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.DateRangePicker" label="Raised between" value="{{ dRange }}" onChange="{{ onRange }}" min="2026-08-24" max="2026-09-07" size="sm" layout="stacked" hint="Inclusive. Leave both empty for the whole backlog." hint-size="100%,150px"></x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Checkbox" label="Spares required" description="Only requests blocked on or needing a part." checked="{{ dSpares }}" onChange="{{ onSpares }}" hint-size="100%,44px"></x-import>
+
+<sc-if value="{{ explicit }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:10px;padding-top:14px;border-top:var(--border-hairline)">
+<span style="font-size:var(--text-xs);color:var(--text-secondary);line-height:1.5;text-wrap:pretty">{{ pendingNote }}</span>
+<div style="display:flex;gap:8px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="primary" size="sm" type="button" onClick="{{ onApply }}" disabled="{{ noPending }}" hint-size="150px,30px">{{ applyLabel }}</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" type="button" onClick="{{ onDiscard }}" disabled="{{ noPending }}" hint-size="90px,30px">Discard</x-import>
+</div>
+</div>
+</sc-if>
+</div>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:12px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:16px 18px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Refinement state · remove on copy</span>
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="6">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:92px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+<div style="border-top:var(--border-hairline);padding-top:11px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Applied criteria — the canonical model</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ appliedText }}</pre>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">One object drives the controls, the tags, the counts and the retrieval — §20. Nothing on screen holds its own copy of a criterion.</p>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+
+<div style="display:flex;flex-direction:column;gap:12px;padding:16px 20px;border-bottom:var(--border-hairline)">
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px">
+<span style="font-size:var(--text-xs);color:var(--text-secondary)">{{ activeHeading }}</span>
+<sc-if value="{{ anyActive }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" type="button" onClick="{{ onClearAll }}" hint-size="180px,30px">{{ clearAllLabel }}</x-import>
+</sc-if>
+</div>
+<sc-if value="{{ anyActive }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.TagList" gap="{{ 6 }}" hint-size="100%,30px">{{ activeTags }}</x-import>
+</sc-if>
+<div role="status" aria-live="polite" style="min-height:19px;font-size:var(--text-xs);line-height:1.55;color:var(--text-secondary);text-wrap:pretty">{{ announcement }}</div>
+<sc-if value="{{ updating }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Progress" variant="bar" size="sm" label="{{ progressLabel }}" delay="{{ 200 }}" hint-size="100%,20px"></x-import>
+</sc-if>
+</div>
+
+<sc-if value="{{ showEmpty }}" hint-placeholder-val="{{ false }}">
+<div style="padding:26px 20px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.EmptyState" variant="no-results" title="{{ emptyTitle }}" size="md" live="polite" headingLevel="{{ 2 }}" hint="{{ emptyHint }}" actions="{{ emptyActions }}" hint-size="100%,180px">{{ emptyBody }}</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{ showTable }}" hint-placeholder-val="{{ true }}">
+<div>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Table" caption="{{ tableCaption }}" columns="{{ columns }}" rows="{{ pageRows }}" rowKey="id" loading="{{ tableLoading }}" loadingRows="{{ 5 }}" minWidth="820px" sort="{{ sort }}" onSortChange="{{ onSort }}" hint-size="100%,320px"></x-import>
+</div>
+</sc-if>
+
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-top:var(--border-hairline);background:var(--surface-sunken)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ summary }}</span>
+<sc-if value="{{ showPagination }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Pagination" page="{{ page }}" totalItems="{{ totalItems }}" pageSize="{{ pageSize }}" onPageChange="{{ onPage }}" variant="numbered" size="sm" itemLabel="requests" showSummary="{{ false }}" label="Backlog pages" hint-size="260px,28px"></x-import>
+</sc-if>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1320,&quot;height&quot;:980},&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;immediate&quot;,&quot;explicit&quot;],&quot;default&quot;:&quot;immediate&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Refinement applies&quot;},&quot;debounce&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:600,&quot;step&quot;:50,&quot;default&quot;:200,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Debounce (immediate only)&quot;},&quot;unavailableOptions&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;disabled-with-count&quot;,&quot;hidden&quot;],&quot;default&quot;:&quot;disabled-with-count&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Values that would match nothing&quot;},&quot;zeroResultRecovery&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;remove-last&quot;,&quot;clear-all&quot;],&quot;default&quot;:&quot;remove-last&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Way back from no matches&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:150,&quot;max&quot;:2000,&quot;step&quot;:50,&quot;default&quot;:550,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Simulated latency&quot;},&quot;outOfOrder&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Delay every other response&quot;}}">
+// Open work requests, PL-04, as of 2026-09-07 07:00 IST.
+const REQUESTS = [
+  { id: 'MWR-2026-0414', asset: 'Compressor 1 — dryer dew point high', area: 'Utilities', priority: 'Urgent', status: 'New', raised: '2026-09-07', hours: 4, spares: false, by: 'Vikram Bhosale' },
+  { id: 'MWR-2026-0413', asset: 'Compressor 2 — unloader valve cycling', area: 'Utilities', priority: 'Breakdown', status: 'New', raised: '2026-09-07', hours: 6, spares: false, by: 'Vikram Bhosale' },
+  { id: 'MWR-2026-0412', asset: 'Press line 2 — slide gib wear, knocking at BDC', area: 'Press shop', priority: 'Breakdown', status: 'New', raised: '2026-09-06', hours: 8, spares: true, by: 'Sandeep Kulkarni' },
+  { id: 'MWR-2026-0411', asset: 'Paint booth 1 — extraction fan bearing noise', area: 'Paint shop', priority: 'Urgent', status: 'New', raised: '2026-09-06', hours: 5, spares: true, by: 'Shalini Rao' },
+  { id: 'MWR-2026-0410', asset: 'CNC cell 4 — spindle vibration above alarm', area: 'Machine shop', priority: 'Urgent', status: 'New', raised: '2026-09-06', hours: 10, spares: false, by: 'Sandeep Kulkarni' },
+  { id: 'MWR-2026-0409', asset: 'Press line 2 — die cushion pressure drop', area: 'Press shop', priority: 'Urgent', status: 'Triaged', raised: '2026-09-05', hours: 4, spares: false, by: 'Shalini Rao' },
+  { id: 'MWR-2026-0408', asset: 'Assembly line A — nutrunner torque drift', area: 'Assembly', priority: 'Urgent', status: 'New', raised: '2026-09-05', hours: 2, spares: false, by: 'Sandeep Kulkarni' },
+  { id: 'MWR-2026-0407', asset: 'CNC cell 2 — coolant pump seal weeping', area: 'Machine shop', priority: 'Planned', status: 'Triaged', raised: '2026-09-05', hours: 3, spares: true, by: 'Priya Iyer' },
+  { id: 'MWR-2026-0406', asset: 'Chiller 1 — condenser fouling', area: 'Utilities', priority: 'Planned', status: 'Scheduled', raised: '2026-09-05', hours: 3, spares: false, by: 'Vikram Bhosale' },
+  { id: 'MWR-2026-0405', asset: 'Paint booth 2 — oven zone 3 under temperature', area: 'Paint shop', priority: 'Breakdown', status: 'Triaged', raised: '2026-09-04', hours: 16, spares: false, by: 'Shalini Rao' },
+  { id: 'MWR-2026-0404', asset: 'Assembly line A — conveyor drive chain slack', area: 'Assembly', priority: 'Planned', status: 'Triaged', raised: '2026-09-04', hours: 3, spares: false, by: 'Sandeep Kulkarni' },
+  { id: 'MWR-2026-0403', asset: 'Weld shop — robot 2 wire feeder fault', area: 'Weld shop', priority: 'Breakdown', status: 'New', raised: '2026-09-04', hours: 7, spares: true, by: 'Sandeep Kulkarni' },
+  { id: 'MWR-2026-0402', asset: 'Press line 1 — safety light curtain intermittent', area: 'Press shop', priority: 'Breakdown', status: 'Awaiting spares', raised: '2026-09-04', hours: 6, spares: true, by: 'Shalini Rao' },
+  { id: 'MWR-2026-0401', asset: 'CNC cell 1 — tool changer misindex', area: 'Machine shop', priority: 'Breakdown', status: 'Awaiting spares', raised: '2026-09-03', hours: 14, spares: true, by: 'Priya Iyer' },
+  { id: 'MWR-2026-0400', asset: 'Assembly line B — leak test rig calibration overdue', area: 'Assembly', priority: 'Urgent', status: 'Scheduled', raised: '2026-09-03', hours: 1, spares: false, by: 'Meera Nair' },
+  { id: 'MWR-2026-0399', asset: 'DG set — battery bank not holding charge', area: 'Utilities', priority: 'Urgent', status: 'Awaiting spares', raised: '2026-09-02', hours: 2, spares: true, by: 'Vikram Bhosale' },
+  { id: 'MWR-2026-0398', asset: 'Press line 3 — lubrication line leak', area: 'Press shop', priority: 'Planned', status: 'Scheduled', raised: '2026-09-02', hours: 2, spares: false, by: 'Sandeep Kulkarni' },
+  { id: 'MWR-2026-0397', asset: 'Weld shop — fume extraction flow low', area: 'Weld shop', priority: 'Planned', status: 'Triaged', raised: '2026-09-01', hours: 2, spares: false, by: 'Shalini Rao' },
+  { id: 'MWR-2026-0396', asset: 'Pretreatment line — pH dosing pump erratic', area: 'Paint shop', priority: 'Planned', status: 'On hold', raised: '2026-08-30', hours: 4, spares: true, by: 'Shalini Rao' },
+  { id: 'MWR-2026-0395', asset: 'Blanking die BRK-4820 — shear edge dressing', area: 'Press shop', priority: 'Planned', status: 'On hold', raised: '2026-08-29', hours: 12, spares: true, by: 'Priya Iyer' },
+  { id: 'MWR-2026-0393', asset: 'Assembly line B — station 6 fixture clamp worn', area: 'Assembly', priority: 'Planned', status: 'Awaiting spares', raised: '2026-08-29', hours: 4, spares: true, by: 'Sandeep Kulkarni' },
+  { id: 'MWR-2026-0392', asset: 'Weld shop — fixture 4 locator pin wear', area: 'Weld shop', priority: 'Planned', status: 'On hold', raised: '2026-08-28', hours: 5, spares: true, by: 'Priya Iyer' },
+  { id: 'MWR-2026-0390', asset: 'Cooling tower — fill media replacement', area: 'Utilities', priority: 'Planned', status: 'Triaged', raised: '2026-08-28', hours: 9, spares: true, by: 'Vikram Bhosale' },
+  { id: 'MWR-2026-0388', asset: 'VMC 3 — way cover torn', area: 'Machine shop', priority: 'Planned', status: 'Scheduled', raised: '2026-08-27', hours: 1, spares: false, by: 'Priya Iyer' }
+];
+const AREAS = ['Press shop', 'Machine shop', 'Weld shop', 'Paint shop', 'Assembly', 'Utilities'];
+const STATUSES = ['New', 'Triaged', 'Awaiting spares', 'Scheduled', 'On hold'];
+const PRIORITIES = ['Breakdown', 'Urgent', 'Planned'];
+const PAGE = 5;
+const HOURS = [0, 16];
+// The unrefined state. Clearing returns exactly here — controls and results.
+const NONE = { areas: [], priority: 'any', statuses: [], hours: [0, 16], range: [undefined, undefined], spares: false };
+const Btn = () => window.MeridianDesignSystem_962c43.Button;
+const Tag = () => window.MeridianDesignSystem_962c43.Tag;
+const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+class Component extends DCLogic {
+  state = {
+    draft: { ...NONE },      // what the controls say
+    applied: { ...NONE },    // what the collection on screen is refined by
+    rows: [], total: 24, page: 1, updating: false,
+    sort: { key: 'raised', direction: 'desc' },
+    announcement: '', requests: 0, discarded: 0, lastResolved: '\u2014', lastAdded: null
+  };
+  seq = 0;
+
+  // ─── Composition. Explicit and total: dimensions are ANDed, values within
+  // a dimension are ORed, ranges are inclusive. Never dependent on the order
+  // the controls happen to appear in.
+  select(c, ignore) {
+    const on = k => k !== ignore;
+    return REQUESTS.filter(r => {
+      if (on('areas') && c.areas.length && !c.areas.includes(r.area)) return false;
+      if (on('priority') && c.priority !== 'any' && r.priority !== c.priority) return false;
+      if (on('statuses') && c.statuses.length && !c.statuses.includes(r.status)) return false;
+      if (on('hours') && (r.hours < c.hours[0] || r.hours > c.hours[1])) return false;
+      if (on('range')) {
+        if (c.range[0] && r.raised < c.range[0]) return false;
+        if (c.range[1] && r.raised > c.range[1]) return false;
+      }
+      if (on('spares') && c.spares && !r.spares) return false;
+      return true;
+    });
+  }
+
+  sorted(list) {
+    const s = this.state.sort, dir = s.direction === 'desc' ? -1 : 1;
+    return list.slice().sort((a, b) => {
+      const x = a[s.key], y = b[s.key];
+      if (typeof x === 'number') return (x - y) * dir;
+      return String(x).localeCompare(String(y)) * dir;
+    });
+  }
+
+  // Human description of each active criterion — used by the tags, the
+  // announcements and the zero-result copy, so all three say the same thing.
+  active(c) {
+    const out = [];
+    c.areas.forEach(a => out.push({ key: 'areas:' + a, dim: 'areas', value: a, label: 'Area: ' + a }));
+    if (c.priority !== 'any') out.push({ key: 'priority', dim: 'priority', label: 'Priority: ' + c.priority });
+    c.statuses.forEach(s => out.push({ key: 'statuses:' + s, dim: 'statuses', value: s, label: 'Status: ' + s }));
+    if (!same(c.hours, HOURS)) out.push({ key: 'hours', dim: 'hours', label: 'Downtime: ' + c.hours[0] + '\u2013' + c.hours[1] + ' h' });
+    if (c.range[0] || c.range[1]) out.push({ key: 'range', dim: 'range', label: 'Raised: ' + (c.range[0] || 'any') + ' \u2192 ' + (c.range[1] || 'any') });
+    if (c.spares) out.push({ key: 'spares', dim: 'spares', label: 'Spares required' });
+    return out;
+  }
+
+  mode() { return this.props.mode || 'immediate'; }
+
+  // ─── One retrieval of the refined collection. Only the current request may
+  // write result state, so a slow answer to superseded criteria is discarded.
+  run(criteria, page, note) {
+    const id = ++this.seq;
+    clearTimeout(this._debounce);
+    const from = page === 1 && this.state.page > 1 && !same(criteria, this.state.applied) ? this.state.page : 0;
+    const latency = this.props.latency ?? 550;
+    const delay = (this.props.outOfOrder && id % 2 === 1) ? latency * 3 : latency;
+    this.setState(s => ({ applied: criteria, draft: this.mode() === 'immediate' ? criteria : s.draft, updating: true, page, requests: s.requests + 1 }));
+    // REPLACE: stands in for the CMMS backlog query —
+    //   fetch('/api/work-requests?' + new URLSearchParams(toQuery(criteria, page, sort)))
+    // Keep the id guard: it is what stops a stale response from overwriting
+    // newer criterion state.
+    setTimeout(() => {
+      if (id !== this.seq) { this.setState(s => ({ discarded: s.discarded + 1, lastResolved: 'discarded #' + id })); return; }
+      const all = this.sorted(this.select(criteria));
+      const pageCount = Math.max(1, Math.ceil(all.length / PAGE));
+      const clamped = page > pageCount;
+      const p = Math.min(page, pageCount);
+      const n = this.active(criteria).length;
+      const lo = all.length ? (p - 1) * PAGE + 1 : 0;
+      const hi = Math.min(p * PAGE, all.length);
+      const said = all.length
+        ? all.length + (all.length === 1 ? ' request matches ' : ' requests match ') + (n ? n + (n === 1 ? ' criterion' : ' criteria') : 'the unrefined backlog') + '. Showing ' + lo + '\u2013' + hi + '.'
+          + (clamped ? ' Back to page ' + p + ' \u2014 the page you were on no longer exists under these criteria.' : (from ? ' Back to page 1 \u2014 page ' + from + ' belonged to the previous refinement.' : ''))
+        : 'No requests match ' + n + (n === 1 ? ' criterion' : ' criteria') + '. The backlog still holds 24 open requests.';
+      this.setState({ rows: all, total: all.length, page: p, updating: false, lastResolved: 'resolved #' + id + ' \u2192 ' + all.length, announcement: (note ? note + ' ' : '') + said });
+    }, delay);
+  }
+
+  componentDidMount() { this.run({ ...NONE }, 1, ''); }
+  componentWillUnmount() { clearTimeout(this._debounce); }
+
+  // Every control writes to the one draft object. In immediate mode the draft
+  // is committed on a controlled interval; in explicit mode it waits.
+  edit(patch, added) {
+    const draft = { ...this.state.draft, ...patch };
+    this.setState({ draft, lastAdded: added ?? this.state.lastAdded });
+    if (this.mode() !== 'immediate') { this.setState({ announcement: '' }); return; }
+    clearTimeout(this._debounce);
+    const wait = this.props.debounce ?? 200;
+    this._debounce = setTimeout(() => this.run(draft, 1, ''), wait);
+  }
+
+  apply = () => this.run(this.state.draft, 1, 'Criteria applied.');
+  discard = () => this.setState(s => ({ draft: s.applied, announcement: 'Pending changes discarded. The criteria are as applied.' }));
+
+  // Removing an active criterion is itself an explicit act: it applies at
+  // once, and it writes through the same model, so the control it came from
+  // updates with it.
+  remove = (item) => {
+    const patch = {};
+    if (item.dim === 'areas') patch.areas = this.state.applied.areas.filter(a => a !== item.value);
+    if (item.dim === 'statuses') patch.statuses = this.state.applied.statuses.filter(s => s !== item.value);
+    if (item.dim === 'priority') patch.priority = 'any';
+    if (item.dim === 'hours') patch.hours = [...HOURS];
+    if (item.dim === 'range') patch.range = [undefined, undefined];
+    if (item.dim === 'spares') patch.spares = false;
+    const next = { ...this.state.applied, ...patch };
+    this.setState({ draft: { ...this.state.draft, ...patch } });
+    this.run(next, 1, 'Removed ' + item.label + '.');
+  };
+
+  clearAll = () => { this.setState({ draft: { ...NONE }, lastAdded: null }); this.run({ ...NONE }, 1, 'All criteria cleared.'); };
+
+  changePage = (p) => this.run(this.state.applied, p, '');
+
+  changeSort = (sort) => this.setState({ sort }, () => this.run(this.state.applied, this.state.page, ''));
+
+  renderVals() {
+    const s = this.state;
+    const explicit = this.mode() === 'explicit';
+    const applied = s.applied, draft = s.draft;
+    const items = this.active(applied);
+    const n = items.length;
+    const pending = this.active(draft).filter(d => !this.active(applied).some(a => a.key === d.key && a.label === d.label)).length
+      + this.active(applied).filter(a => !this.active(draft).some(d => d.key === a.key && d.label === a.label)).length;
+    const total = s.total;
+    const lo = total ? (s.page - 1) * PAGE + 1 : 0;
+    const hi = Math.min(s.page * PAGE, total);
+    const pageRows = this.sorted(this.select(applied)).slice((s.page - 1) * PAGE, s.page * PAGE);
+
+    // Counts are computed against the other criteria only, so a value's count
+    // states what choosing it would leave — and a value that would leave
+    // nothing is shown unavailable rather than removed (§05).
+    const hide = (this.props.unavailableOptions || 'disabled-with-count') === 'hidden';
+    const areaPool = this.select(draft, 'areas');
+    const areaOpts = AREAS.map(a => ({ value: a, label: a, count: areaPool.filter(r => r.area === a).length }))
+      .filter(o => !(hide && o.count === 0 && !draft.areas.includes(o.value)))
+      .map(o => ({ ...o, disabled: o.count === 0 && !draft.areas.includes(o.value) }));
+    const prioPool = this.select(draft, 'priority');
+    const prioOpts = [{ value: 'any', label: 'Any', count: prioPool.length }].concat(
+      PRIORITIES.map(p => ({ value: p, label: p, count: prioPool.filter(r => r.priority === p).length }))
+        .filter(o => !(hide && o.count === 0 && draft.priority !== o.value))
+        .map(o => ({ ...o, disabled: o.count === 0 && draft.priority !== o.value })));
+    const statusPool = this.select(draft, 'statuses');
+    const statusOpts = STATUSES.map(st => {
+      const c = statusPool.filter(r => r.status === st).length;
+      return { value: st, label: st, description: c + ' of the current refinement', disabled: c === 0 && !draft.statuses.includes(st) };
+    }).filter(o => !(hide && o.disabled));
+
+    const recovery = this.props.zeroResultRecovery || 'remove-last';
+    const last = s.lastAdded && items.some(i => i.key === s.lastAdded.key) ? s.lastAdded : items[items.length - 1];
+
+    return {
+      explicit, ready: true,
+      areaOptions: areaOpts, priorityOptions: prioOpts, statusOptions: statusOpts,
+      dAreas: draft.areas, dPriority: draft.priority, dStatuses: draft.statuses,
+      dDowntime: draft.hours, dRange: draft.range, dSpares: draft.spares,
+      onAreas: next => this.edit({ areas: next }, next.length ? { key: 'areas:' + next[next.length - 1], dim: 'areas', value: next[next.length - 1], label: 'Area: ' + next[next.length - 1] } : null),
+      onPriority: next => this.edit({ priority: next }, next === 'any' ? null : { key: 'priority', dim: 'priority', label: 'Priority: ' + next }),
+      onStatuses: next => this.edit({ statuses: next }, next.length ? { key: 'statuses:' + next[next.length - 1], dim: 'statuses', value: next[next.length - 1], label: 'Status: ' + next[next.length - 1] } : null),
+      onDowntime: next => this.edit({ hours: next }, { key: 'hours', dim: 'hours', label: 'Downtime: ' + next[0] + '\u2013' + next[1] + ' h' }),
+      onRange: next => this.edit({ range: next }, { key: 'range', dim: 'range', label: 'Raised: ' + (next[0] || 'any') + ' \u2192 ' + (next[1] || 'any') }),
+      onSpares: e => this.edit({ spares: e.target.checked }, e.target.checked ? { key: 'spares', dim: 'spares', label: 'Spares required' } : null),
+
+      pendingNote: pending
+        ? pending + (pending === 1 ? ' change is' : ' changes are') + ' not applied yet. The tags and the table below still describe the applied refinement.'
+        : 'No pending changes \u2014 the controls and the collection agree.',
+      applyLabel: pending ? 'Apply ' + pending + (pending === 1 ? ' change' : ' changes') : 'Apply',
+      noPending: pending === 0,
+      onApply: this.apply, onDiscard: this.discard,
+
+      anyActive: n > 0,
+      activeHeading: n
+        ? n + (n === 1 ? ' criterion applied' : ' criteria applied') + ' \u00b7 all must hold'
+        : 'Unrefined \u2014 all 24 open requests',
+      activeTags: items.map(it => React.createElement(Tag(), { key: it.key, label: it.label, font: 'sans', size: 'sm', maxWidth: 260, style: { flexShrink: 0 }, onRemove: () => this.remove(it), removeLabel: 'Remove criterion ' + it.label })),
+      clearAllLabel: 'Clear all ' + n + (n === 1 ? ' criterion' : ' criteria'),
+      onClearAll: this.clearAll,
+
+      announcement: s.announcement,
+      updating: s.updating,
+      progressLabel: 'Refining the backlog by ' + (this.active(applied).length || 'no') + ' criteria',
+
+      showEmpty: total === 0 && !s.updating,
+      emptyTitle: 'No request matches these ' + n + ' criteria',
+      emptyBody: 'The combination is valid and the backlog is not empty \u2014 all 24 open requests are still there, and none of them satisfies every criterion at once. ' + (last ? 'The narrowest of them is \u201C' + last.label + '\u201D.' : ''),
+      emptyHint: 'Criteria compose as AND across dimensions, OR within one.',
+      emptyActions: recovery === 'clear-all'
+        ? [React.createElement(Btn(), { key: 'clear', variant: 'secondary', size: 'sm', type: 'button', onClick: this.clearAll }, 'Clear all ' + n + ' criteria')]
+        : [
+            last ? React.createElement(Btn(), { key: 'last', variant: 'secondary', size: 'sm', type: 'button', onClick: () => this.remove(last) }, 'Remove \u201C' + last.label + '\u201D') : null,
+            React.createElement(Btn(), { key: 'clear', variant: 'ghost', size: 'sm', type: 'button', onClick: this.clearAll }, 'Clear all criteria')
+          ].filter(Boolean),
+
+      showTable: total > 0 || s.updating,
+      tableLoading: s.updating && total === 0,
+      pageRows: pageRows.map(r => ({ id: r.id, asset: r.asset, area: r.area, priority: r.priority, status: r.status, raised: r.raised, hours: r.hours + ' h', spares: r.spares ? 'yes' : '\u2014', by: r.by })),
+      columns: [
+        { key: 'id', header: 'Request', mono: true, width: '142px', sortable: true },
+        { key: 'asset', header: 'Asset and fault', wrap: true },
+        { key: 'area', header: 'Area', width: '116px' },
+        { key: 'priority', header: 'Priority', width: '96px', sortable: true },
+        { key: 'status', header: 'Status', width: '126px' },
+        { key: 'raised', header: 'Raised', mono: true, width: '104px', sortable: true },
+        { key: 'hours', header: 'Downtime', align: 'right', mono: true, width: '92px', sortable: true },
+        { key: 'spares', header: 'Spares', align: 'center', width: '74px' }
+      ],
+      tableCaption: 'Open work requests, refined by ' + n + ' criteria',
+      sort: s.sort, onSort: this.changeSort,
+
+      showPagination: total > 0 && !s.updating,
+      page: s.page, totalItems: total, pageSize: PAGE, onPage: this.changePage,
+      summary: total
+        ? total + ' of 24 requests \u00b7 showing ' + lo + '\u2013' + hi + ' \u00b7 ' + (n ? n + ' criteria' : 'unrefined')
+        : (s.updating ? 'updating\u2026' : '0 of 24 requests \u00b7 ' + n + ' criteria'),
+
+      stateRows: [
+        { k: 'mode', v: explicit ? 'explicit application' : 'immediate, ' + (this.props.debounce ?? 200) + ' ms' },
+        { k: 'state', v: s.updating ? 'updating' : (total === 0 ? 'refined \u00b7 no matches' : (n ? 'refined' : 'unrefined')) },
+        { k: 'pending', v: explicit ? (pending ? pending + ' unapplied' : 'none') : 'n/a \u2014 immediate' },
+        { k: 'criteria', v: n + ' active \u00b7 ' + total + ' of 24 requests' },
+        { k: 'page', v: s.page + ' of ' + Math.max(1, Math.ceil(total / PAGE)) },
+        { k: 'requests', v: s.requests + ' issued \u00b7 ' + s.discarded + ' discarded' },
+        { k: 'last', v: s.lastResolved }
+      ],
+      appliedText: JSON.stringify(applied, null, 1)
+    };
+  }
+}
+
+</script>
+</body>
+</html>

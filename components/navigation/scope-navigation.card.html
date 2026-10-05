@@ -1,0 +1,64 @@
+<!-- @dsCard group="Components" viewport="780x420" name="Navigation — scope" subtitle="Organizational scope navigation: plant/tenant context switching, route preservation, and environment badges" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Scope Navigation</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--surface-card);padding:20px;font-family:var(--font-sans)}
+.row{display:flex;flex-direction:column;gap:18px}
+.col{display:flex;flex-direction:column;gap:8px}
+.lbl{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold)}
+.scope-box{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--background-page);border:var(--border-hairline);border-radius:var(--radius-md);cursor:pointer;max-width:320px}
+.scope-av{width:28px;height:28px;border-radius:var(--radius-xs);background:var(--action-solid);color:#fff;font-family:var(--font-mono);font-size:var(--text-xs);font-weight:bold;display:flex;align-items:center;justify-content:center}
+.scope-info{display:flex;flex-direction:column;gap:2px;flex:1;margin:0 10px}
+.scope-name{font-size:var(--text-xs);font-weight:bold;color:var(--text-primary)}
+.scope-sub{font-size:10px;color:var(--text-tertiary)}
+.banner-scope{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--status-info-soft);border:1px solid var(--border-subtle);border-radius:var(--radius-md)}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const SCOPES = [
+  { id: 'PL-04', name: 'Chakan Plant (PL-04)', region: 'Pune · Heavy Press', gst: '27AABCS1429B1Z8' },
+  { id: 'PL-01', name: 'Bhosari Plant (PL-01)', region: 'Pune · Tool Room', gst: '27AABCS1429B1Z2' },
+  { id: 'PL-02', name: 'Manesar Plant (PL-02)', region: 'NCR · Robotic Weld', gst: '06AABCS1429B1ZX' }
+];
+
+function Demo(){
+  const [active, setActive] = React.useState(SCOPES[0]);
+
+  return (
+    <div className="row">
+      <div className="col">
+        <span className="lbl">Scope Trigger Dropdown (Plant Switcher)</span>
+        <div className="scope-box" onClick={()=>setActive(SCOPES[(SCOPES.indexOf(active)+1)%SCOPES.length])}>
+          <div className="scope-av">{active.id.slice(0, 2)}</div>
+          <div className="scope-info">
+            <span className="scope-name">{active.name}</span>
+            <span className="scope-sub">{active.region}</span>
+          </div>
+          <span style={{fontSize:10,color:'var(--text-tertiary)'}}>▾ (Click to switch)</span>
+        </div>
+      </div>
+
+      <div className="col">
+        <span className="lbl">Active Scope Banner Context</span>
+        <div className="banner-scope">
+          <div style={{display:'flex',flexDirection:'column',gap:2}}>
+            <span style={{fontSize:'var(--text-xs)',fontWeight:'bold',fontFamily:'var(--font-mono)'}}>
+              CONTEXT: {active.name}
+            </span>
+            <span style={{fontSize:10,color:'var(--text-secondary)'}}>
+              GSTIN: {active.gst} · Active Plant ERP Session (Chakan PL-04 Server)
+            </span>
+          </div>
+          <span style={{fontSize:'var(--text-2xs)',fontFamily:'var(--font-mono)',padding:'2px 8px',borderRadius:999,background:'var(--surface-card)',border:'var(--border-hairline)'}}>
+            ONLINE
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

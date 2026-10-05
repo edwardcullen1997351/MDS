@@ -1,0 +1,321 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="FileDropzone" subtitle="Full specification — selection, drop and validation; it never uploads" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>FileDropzone — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:5px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.omit{border-left:2px solid var(--border-strong);padding-left:12px;color:var(--text-tertiary);font-size:var(--text-xs)}
+a,a:hover{color:var(--text-link)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { FileDropzone, FileItem, Field, Text, Button, Badge } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+function Live(){
+  const [note,setNote] = React.useState('');
+  const [files,setFiles] = React.useState([]);
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:10,width:460}}>
+      <Field label="Revised drawing and BOM" hint="ECR-2291 · routing change · BRK-4820-A">
+        <FileDropzone multiple accept=".pdf,.dwg,.csv" maxSize={20*1024*1024} maxFiles={5}
+          currentCount={files.length}
+          label="Drop the revised drawing and BOM here, or browse"
+          hint="PDF, DWG or CSV · up to 20 MB each · 5 files"
+          onSelect={(ok,bad)=>{setFiles(f=>[...f,...ok]);setNote(bad.length?bad.length+' refused: '+bad.map(b=>b.reason).join(', '):ok.length+' accepted');}} />
+      </Field>
+      {note && <Text size="xs" tone="tertiary">{note}</Text>}
+    </div>
+  );
+}
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>FileDropzone</h1>
+    <p className="lede">The place a file comes in. It picks, it accepts a drop, and it decides whether each file is allowed — then it hands the caller two lists and forgets them. It holds no queue, starts no request and knows nothing about progress, because the moment a component owns transport it owns retries, cancellation and every failure mode of somebody else's network.</p>
+    <div className="meta">
+      <span>components/forms/FileDropzone.jsx</span><span>window.MeridianDesignSystem_962c43.FileDropzone</span><span style={{color:'var(--text-primary)'}}>status: frozen 7 Sep 2026 · 0 open items</span><span>pairs with: FileItem</span><span>since: 1.29.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Selection and validation. Not upload.">
+    <p>A FileDropzone exists because two separate affordances — a picker button and a drag target — describe one act, and because every product that accepted files had re-implemented the same three validation rules in a slightly different order. It is the input end of the file capability; <code>FileItem</code> is the representation end, and the upload itself belongs to the surface (§14).</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Take one or more files from the user','FileDropzone','This component.'],
+      ['Show a file that has been taken','FileItem','Identity, size, state, progress, removal.'],
+      ['Upload, retry, cancel','Neither — the surface','Transport is a product concern; see §14.'],
+      ['A single hidden file input with no target',<span className="t">&lt;input type="file"&gt;</span>,'If there is genuinely no drop affordance and no validation, the native input is honest.'],
+      ['Text the user types','Input, Textarea','A path typed by hand is not a file.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> wherever a record takes attachments: engineering change requests, nonconformance evidence, supplier certificates, maintenance photos.</li>
+      <li><strong>Do not use</strong> as a general drop target for reordering rows or dragging records — it accepts files, not application data.</li>
+      <li><strong>Do not wire it straight to an endpoint.</strong> A dropzone that uploads on select cannot be used on a surface with an explicit Save, which is most of them.</li>
+    </ul>
+    <div className="demo"><Live /></div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A dashed target, a real file input, a label and a rules line.">
+    <div className="demo"><FileDropzone multiple accept=".pdf,.dwg,.csv" maxSize={20*1024*1024} label="Drop the revised drawing and BOM here, or browse" hint="PDF, DWG or CSV · up to 20 MB each" onSelect={()=>{}} style={{width:420}} /></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Target</strong> — <code>--radius-md</code>, <code>--surface-sunken</code>, and a <strong>dashed</strong> <code>--border-control</code> boundary. Dashed is the whole idea: a solid hairline box is a card, and nobody drops anything onto a card.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>File input</strong> — a real <code>&lt;input type="file"&gt;</code>, visually hidden but present. It is the keyboard, the accessible name and the form value; nothing here is a <code>div</code> pretending to be a control.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Label</strong> — a <code>&lt;label for&gt;</code> on that input, so the whole phrase is the picker's name and its click target. One sentence naming both routes: “Drop … here, or browse”.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Rules line</strong> (<code>hint</code>) — what is allowed, before the user tries. Linked with <code>aria-describedby</code>, never folded into the label.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Focus ring</strong> — 3 px <code>--input-focus-ring</code> on the target, driven by the hidden input's <code>:focus-visible</code>. The target is the only visible thing, so the ring has to land on it.</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>No file list.</strong> Selected files are rendered by the caller with <code>FileItem</code>, outside this component. It has no children slot for them, deliberately.</span></div>
+    </div>
+    <T cols={['Region','Value (md)','Token']} rows={[
+      ['Target padding','22 px (14 at sm)','—'],
+      ['Corner','6 px','--radius-md'],
+      ['Boundary','1 px dashed','--border-control · hover --border-control-hover'],
+      ['Rest fill','sunken','--surface-sunken'],
+      ['Drag-over fill','selected','--surface-selected'],
+      ['Label target','≥ 28 px','--control-h-sm'],
+      ['Focus','3 px ring','--input-focus-ring · invalid --input-focus-ring-invalid'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Three validation rules, one event, no value.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['label',<span className="t">ReactNode</span>,'“Drop files here, or browse”','Names both routes. Also the picker’s accessible name.'],
+      ['hint',<span className="t">ReactNode</span>,'—','The rules, stated before the attempt. Announced as the description.'],
+      ['accept',<span className="t">string</span>,'—','Native accept list. Extensions, exact types or wildcards — and enforced on drop too, which the platform does not do.'],
+      ['multiple',<span className="t">boolean</span>,<span className="t">false</span>,'Off, a multi-file drop yields one accepted file and the rest as count rejections.'],
+      ['maxSize',<span className="t">number</span>,'—','Bytes, per file.'],
+      ['maxFiles',<span className="t">number</span>,'—','Across the selection, counted with currentCount.'],
+      ['currentCount',<span className="t">number</span>,<span className="t">0</span>,'How many the caller already holds. Without it maxFiles can only see one drop at a time.'],
+      ['invalid',<span className="t">boolean</span>,<span className="t">false</span>,'Paints the critical boundary and ring. The message is the surface’s (§10).'],
+      ['disabled',<span className="t">boolean</span>,<span className="t">false</span>,'Picker and drop both refuse.'],
+      ['size',<span className="t">'sm' | 'md'</span>,<span className="t">'md'</span>,'§05.'],
+      ['onSelect',<span className="t">(accepted, rejected) => void</span>,'—','The only event. Fires once per pick or drop, with both lists.'],
+      ['…rest',<span className="t">InputHTMLAttributes</span>,'—','name, required, aria-*, data-*.'],
+    ]}/>
+    <p><strong>There is no <code>value</code>, no <code>files</code> and no <code>onUpload</code></strong>, and that is the contract rather than an omission. The component is stateless about files: it clears the native input after every selection so the same file can be re-picked, and the caller is the single source of truth for what is attached.</p>
+    <p><strong>Rejections are returned, not thrown and not swallowed.</strong> <code>rejected</code> is an array of <code>{'{ file, reason }'}</code> with <code>reason</code> in <code>'type' | 'size' | 'count'</code> — three reasons because there are three rules, and a caller that ignores the array has silently discarded a user's file.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="None. Two placements.">
+    <p className="omit"><strong>No variant prop.</strong> A dropzone has one job and one appearance; the two placements below differ in size and copy, not in contract.</p>
+    <T cols={['Placement','Shape','Note']} rows={[
+      ['Form field','md, inside a Field with label and hint','The default. ECR attachments, NC evidence.'],
+      ['Panel or empty state','sm, no Field, rules in the hint','Beside an existing attachment list, where the label above would repeat the section heading.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="field"><div style={{width:380}}><Field label="Attachments" hint="Anjali Deshmukh · Chakan plant (PL-04)"><FileDropzone multiple accept=".pdf,.dwg,.csv" label="Drop files here, or browse" hint="PDF, DWG or CSV · up to 20 MB each" onSelect={()=>{}} /></Field></div></Row>
+      <Row label="panel, sm"><div style={{width:300}}><FileDropzone size="sm" accept=".pdf" label="Add another sheet" hint="PDF · up to 20 MB" onSelect={()=>{}} /></div></Row>
+    </div>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two. The target is a region, not a control.">
+    <T cols={['size','Padding','Label','Use']} rows={[
+      ['sm','14 px','12 px','Beside an existing list, in a panel, in a drawer.'],
+      ['md','22 px','13 px','Default. A form field, where the target is the main affordance.'],
+    ]}/>
+    <p>The target does <strong>not</strong> read <code>--control-h-*</code> — it is a region rather than a control, so density changes only the label row's minimum height (<code>--control-h-sm</code>), never the padding. A dropzone that grew to 44 px of padding under <code>expanded</code> would push the file list off a phone screen.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Six, and drag-over is the one that must be unmistakable.">
+    <T cols={['State','Appearance','Notes']} rows={[
+      ['Rest','dashed --border-control on --surface-sunken','A boundary at 4.74:1 — the dashes are the invitation, not the contrast.'],
+      ['Hover','--border-control-hover','Border only. A fill change on hover pre-empts drag-over.'],
+      ['Drag-over','--border-control-hover + --surface-selected fill','The fill is reserved for this one state, because a dragging user is looking at the cursor and needs a change in the mass of the target, not its edge.'],
+      ['Focus visible','3 px --input-focus-ring on the target','From the hidden input. Never suppressed — the input itself is invisible.'],
+      ['Invalid','--status-critical-solid boundary + critical ring','Set by the caller after a rejection or a failed required check.'],
+      ['Disabled','--border-subtle on --surface-disabled, label --text-disabled','Both routes inert; drop handlers return early.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="rest"><div style={{width:320}}><FileDropzone size="sm" label="Drop files here, or browse" onSelect={()=>{}} /></div></Row>
+      <Row label="invalid"><div style={{width:320}}><FileDropzone size="sm" invalid label="Drop files here, or browse" hint="A drawing is required before the ECR can be released." onSelect={()=>{}} /></div></Row>
+      <Row label="disabled"><div style={{width:320}}><FileDropzone size="sm" disabled label="Attachments locked" hint="ECR-2291 is released; attachments are frozen." onSelect={()=>{}} /></div></Row>
+    </div>
+    <p className="warn"><strong>There is no “uploading” state on the dropzone.</strong> A spinner on the target says the target is busy, when what is busy is a file that has already left it. In-flight work is shown per file, on <code>FileItem</code>.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="A file input, so the platform already answers this.">
+    <T cols={['Key','Behaviour','Note']} rows={[
+      ['Tab','Focuses the hidden input; the ring lands on the target.','One tab stop.'],
+      ['Enter / Space','Opens the platform picker.','Native behaviour, not re-implemented — a hand-rolled picker cannot be opened without a user gesture on every browser.'],
+      ['Escape','Dismisses the picker.','Owned by the platform dialog.'],
+      ['Click on the label','Opens the picker.','The label is bound with for, so the whole phrase is the target.'],
+    ]}/>
+    <ul>
+      <li><strong>Drag and drop is never the only route.</strong> The picker is always present, because dragging is unavailable to keyboard users and awkward on touch.</li>
+      <li><strong>No paste-to-attach here.</strong> Ctrl-V of a photo is a surface behaviour, not a control's — the listener sits on the document or the form and reuses the exported <code>validateFiles</code>. Closed as decided (§14).</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="A real input, a described target, and rejections that must be spoken by the caller.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Role & name','A native <input type="file"> labelled by a <label for>. The dashed region is presentational; the control is real, so it announces as "button, Drop the revised drawing and BOM here, or browse, file upload".'],
+      ['Rules before the attempt (3.3.2)','hint is linked with aria-describedby, so the accept list and the size cap are announced with the control rather than discovered by failing.'],
+      ['Rejections (3.3.1)','The component paints invalid but does NOT write text. A rejection the caller does not render is an error nobody is told about — put it in a Field error or an Alert, in a live region (§10).'],
+      ['Boundary (1.4.11)','--border-control, 4.74:1 on a card. The dashed stroke does not reduce the measured contrast.'],
+      ['Drag-over cue (1.4.1)','A fill change plus a border change — not colour alone, and not a cursor.'],
+      ['Focus (2.4.7)','3 px ring on the visible target, :focus-visible-gated. The input is 0×0, so a ring on the input would be invisible.'],
+      ['Target size (2.5.8)','The label row is at least --control-h-sm, and the whole padded region is clickable.'],
+      ['Keyboard equivalence (2.1.1)','The picker is the keyboard route to a drag interaction, always available.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="Colour only.">
+    <T cols={['Change','Duration','Property']} rows={[
+      ['Border, fill, ring','fast','--transition-control'],
+      ['Anything on drop','—','never — no scale, no pulse, no bounce'],
+    ]}/>
+    <p>A target that grows or pulses on drag-over moves under the cursor at the exact moment the user is aiming at it. The fill change carries the state.</p>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="Say what is allowed before it is refused.">
+    <T cols={['Slot','Job','Write','Not']} rows={[
+      ['label','Both routes, one sentence','Drop the revised drawing and BOM here, or browse','Upload files · Click here · Drag & drop'],
+      ['hint','The rules, in the order they are enforced','PDF, DWG or CSV · up to 20 MB each · 5 files','Max file size exceeded'],
+      ['Rejection (caller)','Which file, which rule','press-setup-notes.docx is 30 MB — the limit is 20 MB','Invalid file'],
+      ['Disabled reason','Where the lock comes from','ECR-2291 is released; attachments are frozen.','Not available'],
+    ]}/>
+    <ul>
+      <li><strong>Name the file in every rejection.</strong> Three files dropped and one refused is the common case, and “Invalid file” does not say which.</li>
+      <li><strong>State the cap in the unit the user thinks in</strong> — 20 MB, not 20971520 bytes.</li>
+      <li><strong>Never write “Upload”</strong> in the label. Nothing is uploaded by dropping; the record is saved later, and promising otherwise is how an operator closes the tab too early.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Full width, and the rules line wraps.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','Full width, size="sm". Drag is unavailable on touch, so the label leads with the picker: “Browse for the drawing”.'],
+      ['tablet ≥ 600','As authored, md.'],
+      ['desktop ≥ 1024','As authored. The target sits above the file list, never beside it — a two-column split puts the drop target and its result out of each other’s reach.'],
+      ['ultrawide ≥ 1600','Cap inside --measure-narrow with the rest of the form.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>State the rules in <code>hint</code>.</li>
+        <li>Render <code>rejected</code> yourself, naming the file.</li>
+        <li>Pass <code>currentCount</code> with <code>maxFiles</code>.</li>
+        <li>Keep the picker available on touch.</li>
+        <li>Show selected files below, with <code>FileItem</code>.</li>
+        <li>Re-validate on the server.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>Upload on select.</li>
+        <li>Drag-only, with no picker.</li>
+        <li>A <code>div</code> with a click handler instead of the input.</li>
+        <li>Discard <code>rejected</code>.</li>
+        <li>A spinner on the target.</li>
+        <li>“Upload files” as the label.</li>
+        <li>A dropzone for reordering rows.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this component invites.</strong> Dropping four files, seeing two appear, and never being told about the other two. The component returns them; nothing forces the caller to render them. Treat an empty rejection handler as a bug, and assert on it in tests (§14).</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="What ships in 1.29.0.">
+    <ul>
+      <li><strong>One hidden native input</strong> inside the target, <code>position:absolute;opacity:0;width:0;height:0</code> — hidden, never <code>display:none</code>, which removes it from the tab order.</li>
+      <li><strong><code>e.target.value = ''</code> after every selection.</strong> Without it, picking the same file twice fires no change event, which reads as the component ignoring the user.</li>
+      <li><strong><code>accept</code> is enforced twice.</strong> The platform applies it to the picker and ignores it entirely on drop, so <code>matchesAccept</code> re-applies extensions, exact types and <code>type/*</code> wildcards to every dropped file.</li>
+      <li><strong><code>validateFiles</code> is exported</strong> alongside the component, so a caller validating a paste or a server response applies the same three rules in the same order: type, then size, then count.</li>
+      <li><strong>Count is checked against <code>currentCount + accepted-so-far</code></strong>, so a five-file cap cannot be beaten by five separate drops.</li>
+      <li><strong><code>fileGlyph</code> is exported</strong> — extension to a Lucide glyph name, falling back to <code>'file'</code>. Added additively at 1.29.1 for callers that render files <em>somewhere else</em>: a <code>Table</code> name cell, a document list, an activity feed. It is deliberately <strong>not</strong> consumed by <code>FileItem</code>, whose §02 refuses a file-type glyph on the row — five drawings in a set would show five identical icons, which is decoration that costs 16 px of the name. Extension mapping lives in one table here rather than in each consumer, because “is .stp a drawing?” should have one answer in the system. <strong>Reach:</strong> importable from the package, and — like <code>validateFiles</code>, <code>formatBytes</code> and every other lowercase helper here — <em>not</em> on <code>window.&lt;Namespace&gt;</code>, since the compiler exposes capital-initial names only. A card or spec page cannot call it; the Components card mirrors the map locally for its demo.</li>
+      <li><strong><code>formatBytes</code> is exported</strong> and shared with <code>FileItem</code>, so the cap in the hint and the size on the row are printed by the same function.</li>
+      <li><strong>It reads <code>FieldContext</code>, and claims the group.</strong> Inside a <code>Field</code> the field owns the input's <code>id</code>, its description ids and its invalid flag, so the set's label and the set's error reach the control. It then calls <code>field.claimGroup()</code> — the same mechanism <code>DateRangePicker</code> uses — because the inner “Drop … or browse” <code>&lt;label for&gt;</code> already points at this input, and <strong>browsers concatenate every <code>&lt;label for&gt;</code> aimed at one control</strong>: leaving the Field's label pointing there too announced “Revised drawing and BOM Drop the revised drawing and BOM here, or browse”. So the set name is carried by the <strong>target</strong>, not by the control: the dashed region becomes <code>role="group"</code> named with <code>aria-labelledby={'{field.labelId}'}</code>, and the input keeps its own single name from the inner label. The set is announced once, as the group the control sits in — never concatenated onto the control, by the browser or by hand. The local <code>hint</code> id is appended to the field's description ids, never substituted.</li>
+      <li><strong>Two console warnings:</strong> no <code>onSelect</code>; <code>maxFiles &gt; 1</code> with <code>multiple={'{false}'}</code>.</li>
+      <li><strong>Tokens consumed:</strong></li>
+    </ul>
+    <div className="tokenlist">
+      <span>--border-control</span><span>--border-control-hover</span><span>--border-subtle</span><span>--surface-sunken</span><span>--surface-selected</span><span>--surface-disabled</span><span>--status-critical-solid</span><span>--input-focus-ring</span><span>--input-focus-ring-invalid</span><span>--radius-md</span><span>--control-h-sm</span><span>--text-sm · --text-xs</span><span>--text-primary · --text-tertiary · --text-disabled</span><span>--transition-control</span>
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="The caller owns the upload. Here is the shape of it.">
+    <pre>{`import { FileDropzone, FileItem } from '@meridian/ds';
+
+// the queue is yours; the dropzone only hands you files
+const [files, setFiles] = React.useState([]);
+
+function onSelect(accepted, rejected) {
+  setFiles(prev => [...prev, ...accepted.map(f => ({
+    id: crypto.randomUUID(), file: f, name: f.name, size: f.size, state: 'queued',
+  }))]);
+  // never drop this on the floor — name the file and the rule
+  setErrors(rejected.map(r => describe(r)));
+}
+
+<FileDropzone multiple accept=".pdf,.dwg,.csv"
+  maxSize={20 * 1024 * 1024} maxFiles={5} currentCount={files.length}
+  label="Drop the revised drawing and BOM here, or browse"
+  hint="PDF, DWG or CSV · up to 20 MB each · 5 files"
+  invalid={errors.length > 0}
+  onSelect={onSelect} />
+
+{files.map(f => <FileItem key={f.id} {...f} onRemove={() => remove(f.id)} />)}`}</pre>
+    <ul>
+      <li><strong>Validation here is a courtesy, not a control.</strong> <code>accept</code> and <code>maxSize</code> are client-side and trivially bypassed; the server re-checks both, and the dropzone's job is to stop the user wasting a 30 MB upload on a rule they could have been told about.</li>
+      <li><strong>Testing.</strong> <code>getByLabelText(/drop the revised drawing/i)</code> and <code>userEvent.upload</code>. Assert that a wrong-type file arrives in <code>rejected</code> with <code>reason: 'type'</code>, that <code>maxFiles</code> counts <code>currentCount</code>, that a <code>drop</code> event with a wrong-type file is refused (the platform will not do it for you), and that picking the same file twice fires <code>onSelect</code> twice.</li>
+      <li><strong>Lint.</strong> Flag <code>onSelect</code> handlers whose second parameter is unused, <code>maxFiles</code> without <code>currentCount</code>, and a fetch/XHR call inside an <code>onSelect</code> body on a surface that also renders a submit <code>Button</code>.</li>
+      <li><strong>Closed as decided — no paste-to-attach.</strong> Ctrl-V of a photo is a real plant behaviour, and it is a <em>surface</em> behaviour: a paste listener has to sit on the document, or on the record's form, because a pasted image belongs to whichever field is in play — and a component that installed a document listener would fight every other one on the page. The route is the exported <code>validateFiles</code>: read <code>e.clipboardData.files</code> in the surface, apply the same three rules in the same order, and append to the same queue. Nothing is missing from the component; a <code>usePasteFiles</code> helper may still land beside <code>validateFiles</code>, and it would not change this API.</li>
+      <li><strong>Closed as decided — no directory or folder drop.</strong> <code>webkitdirectory</code> and <code>DataTransferItem.webkitGetAsEntry</code> are both non-standard, and a folder is not a thing this system attaches: an ECR takes a drawing and a BOM, named, each validated. Dropping a folder of forty files onto a five-file cap produces thirty-five count rejections and no useful outcome. If a product ever genuinely needs a tree, it needs an importer, not a dropzone.</li>
+      <li><strong>Closed as decided — no image preview.</strong> A thumbnail is a property of a file's <em>row</em>, so the question was <code>FileItem</code>'s and is closed there: the name carries the extension, and most attachments here are drawings and CSVs that have no useful thumbnail. Nothing about it belongs to this component.</li>
+      <li><strong>Frozen 7 Sep 2026.</strong> API closed: <code>label</code>, <code>hint</code>, <code>accept</code>, <code>multiple</code>, <code>maxSize</code>, <code>maxFiles</code>, <code>currentCount</code>, <code>invalid</code>, <code>disabled</code>, <code>size</code>, <code>onSelect</code>, <code>style</code>, plus native input attributes — and the exports <code>validateFiles</code>, <code>formatBytes</code> and <code>fileGlyph</code> (the last added additively at 1.29.1 — a new export changes nothing for existing callers, which is why it did not reopen the freeze). The three open questions were all resolved outwards: paste belongs to the surface, folders belong to an importer, previews belong to the row. Nothing here waits on anything.</li>
+    </ul>
+  </Sec>
+</div>);}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

@@ -1,0 +1,507 @@
+<!-- @dsCard group="Components" viewport="980x880" name="BarChart — discrete magnitude comparison" subtitle="Vertical, horizontal, grouped, stacked, normalized, diverging, floating — strict zero-baseline and en-IN formatting" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>BarChart</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);padding:24px;font-family:var(--font-sans);color:var(--text-primary)}
+.controls{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;padding:12px 16px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);margin-bottom:20px;font-size:var(--text-xs)}
+.controls label{display:inline-flex;align-items:center;gap:6px;color:var(--text-secondary);font-weight:var(--weight-medium)}
+.controls select,.controls button{font-family:inherit;font-size:inherit;padding:4px 8px;border-radius:var(--radius-xs);border:var(--border-hairline);background:var(--surface-sunken);color:var(--text-primary)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.chart-box{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:16px 20px;box-shadow:var(--shadow-xs)}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+
+<script type="text/babel">
+const DEFAULT_SERIES_COLORS = [
+  'var(--viz-1, #2563eb)',
+  'var(--viz-2, #0d9488)',
+  'var(--viz-3, #d97706)',
+  'var(--viz-4, #7c3aed)',
+  'var(--viz-5, #db2777)',
+  'var(--viz-6, #4b5563)',
+];
+
+function formatVal(val, unit) {
+  if (val == null || isNaN(val)) return '—';
+  if (unit === '₹' || unit === 'INR') return `₹${Number(val).toLocaleString('en-IN')}`;
+  if (unit === '%') return `${Number(val).toFixed(1)}%`;
+  const n = Number(val).toLocaleString('en-IN');
+  return unit ? `${n} ${unit}` : n;
+}
+
+function BarChartRenderer({
+  data = [],
+  categoryKey = 'label',
+  valueKey = 'value',
+  series = null,
+  variant = 'vertical',
+  title = '',
+  caption = '',
+  unit = '',
+  referenceLines = [],
+  baseline = 0,
+  height = 240,
+  showGrid = true,
+  showLegend = true,
+  onSelect = null
+}) {
+  const [hovered, setHovered] = React.useState(null);
+  const [isTable, setIsTable] = React.useState(false);
+  const [activeSeries, setActiveSeries] = React.useState(null);
+
+  const isHorizontal = variant === 'horizontal' || variant === 'diverging';
+  const isGrouped = variant === 'grouped';
+  const isStacked = variant === 'stacked';
+  const isNormalized = variant === 'normalized';
+  const isDiverging = variant === 'diverging';
+  const isFloating = variant === 'floating';
+
+  const normalizedSeries = React.useMemo(() => {
+    if (series && Array.isArray(series) && series.length > 0) {
+      return series.map((s, idx) => ({
+        key: typeof s === 'string' ? s : s.key,
+        label: typeof s === 'string' ? s : (s.label || s.key),
+        color: (typeof s === 'object' && s.color) ? s.color : DEFAULT_SERIES_COLORS[idx % DEFAULT_SERIES_COLORS.length]
+      }));
+    }
+    return [{ key: valueKey, label: title || 'Value', color: DEFAULT_SERIES_COLORS[0] }];
+  }, [series, valueKey, title]);
+
+  const processedData = React.useMemo(() => {
+    if (!data || data.length === 0) return [];
+    return data.map((item, idx) => {
+      const cat = item[categoryKey] != null ? item[categoryKey] : `Cat ${idx + 1}`;
+      if (isNormalized) {
+        const total = normalizedSeries.reduce((sum, s) => sum + Math.max(0, Number(item[s.key]) || 0), 0);
+        const pcts = {};
+        let run = 0;
+        normalizedSeries.forEach(s => {
+          const raw = Math.max(0, Number(item[s.key]) || 0);
+          const pct = total > 0 ? (raw / total) * 100 : 0;
+          pcts[s.key] = { raw, pct, start: run, end: run + pct };
+          run += pct;
+        });
+        return { ...item, _cat: cat, _pcts: pcts, _total: total };
+      }
+      if (isStacked) {
+        let pos = 0, neg = 0;
+        const stack = {};
+        normalizedSeries.forEach(s => {
+          const v = Number(item[s.key]) || 0;
+          if (v >= 0) { stack[s.key] = { start: pos, end: pos + v, val: v }; pos += v; }
+          else { stack[s.key] = { start: neg, end: neg + v, val: v }; neg += v; }
+        });
+        return { ...item, _cat: cat, _pos: pos, _neg: neg, _stack: stack };
+      }
+      if (isFloating) {
+        const start = Number(item.start ?? item.min ?? 0);
+        const end = Number(item.end ?? item.max ?? item[valueKey] ?? 0);
+        return { ...item, _cat: cat, _start: Math.min(start, end), _end: Math.max(start, end) };
+      }
+      return { ...item, _cat: cat };
+    });
+  }, [data, categoryKey, normalizedSeries, isNormalized, isStacked, isFloating, valueKey]);
+
+  const [minVal, maxVal] = React.useMemo(() => {
+    if (isNormalized) return [0, 100];
+    if (processedData.length === 0) return [0, 100];
+    let min = baseline, max = baseline;
+    if (isStacked) {
+      processedData.forEach(d => { if (d._pos > max) max = d._pos; if (d._neg < min) min = d._neg; });
+    } else if (isFloating) {
+      processedData.forEach(d => { if (d._end > max) max = d._end; if (d._start < min) min = d._start; });
+    } else if (normalizedSeries.length > 1) {
+      processedData.forEach(d => { normalizedSeries.forEach(s => { const v = Number(d[s.key]) || 0; if (v > max) max = v; if (v < min) min = v; }); });
+    } else {
+      processedData.forEach(d => { const v = Number(d[valueKey]) || 0; if (v > max) max = v; if (v < min) min = v; });
+    }
+    referenceLines.forEach(rl => { if (rl.value > max) max = rl.value; if (rl.value < min) min = rl.value; });
+    const diff = max - min || 10;
+    max = max + diff * 0.08;
+    if (min < 0) min = min - diff * 0.08;
+    if (min >= 0 && baseline === 0) min = 0;
+    return [min, max];
+  }, [isNormalized, processedData, baseline, isStacked, isFloating, normalizedSeries, valueKey, referenceLines]);
+
+  const margins = isHorizontal ? { top: 12, right: 28, bottom: 28, left: 110 } : { top: 12, right: 16, bottom: 36, left: 52 };
+  const svgW = 440, svgH = height;
+  const pW = svgW - margins.left - margins.right;
+  const pH = svgH - margins.top - margins.bottom;
+
+  const valToPos = (val) => {
+    const clamped = Math.max(minVal, Math.min(maxVal, val));
+    const r = (clamped - minVal) / (maxVal - minVal || 1);
+    return isHorizontal ? r * pW : pH - (r * pH);
+  };
+  const bPos = valToPos(baseline);
+
+  const ticks = [0, 0.25, 0.5, 0.75, 1].map(r => minVal + (maxVal - minVal) * r);
+  const catBand = (isHorizontal ? pH : pW) / Math.max(1, processedData.length);
+  const barPad = catBand * 0.22;
+  const usable = catBand - barPad;
+
+  return (
+    <div style={{ position: 'relative', width: '100%' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+        <div>
+          {title && <div style={{ fontSize: 'var(--text-xs)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>{title}</div>}
+          {caption && <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--text-tertiary)' }}>{caption}</div>}
+        </div>
+        <button type="button" onClick={() => setIsTable(!isTable)} style={{ background: 'transparent', border: 'var(--border-hairline)', borderRadius: 2, padding: '1px 6px', fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+          {isTable ? 'Chart' : 'Table'}
+        </button>
+      </div>
+
+      {isTable ? (
+        <div style={{ maxHeight: height, overflow: 'auto', border: 'var(--border-hairline)', borderRadius: 'var(--radius-sm)' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+            <thead>
+              <tr style={{ background: 'var(--surface-sunken)', borderBottom: 'var(--border-hairline)' }}>
+                <th style={{ padding: '6px 8px', textAlign: 'left' }}>Category</th>
+                {normalizedSeries.map(s => <th key={s.key} style={{ padding: '6px 8px', textAlign: 'right' }}>{s.label}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {processedData.map((d, i) => (
+                <tr key={i} style={{ borderBottom: 'var(--border-subtle)' }}>
+                  <td style={{ padding: '6px 8px' }}>{d._cat}</td>
+                  {normalizedSeries.map(s => <td key={s.key} style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>{formatVal(d[s.key], isNormalized ? '%' : unit)}</td>)}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <svg width="100%" height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ overflow: 'visible' }}>
+          {showGrid && ticks.map((t, i) => {
+            const pos = valToPos(t);
+            if (isHorizontal) {
+              const x = margins.left + pos;
+              return (
+                <g key={i}>
+                  <line x1={x} y1={margins.top} x2={x} y2={margins.top + pH} stroke="var(--border-subtle)" strokeDasharray={t === baseline ? 'none' : '2 2'} />
+                  <text x={x} y={margins.top + pH + 14} textAnchor="middle" fontSize="9" fontFamily="var(--font-mono)" fill="var(--text-tertiary)">{formatVal(t, isNormalized ? '%' : unit)}</text>
+                </g>
+              );
+            }
+            const y = margins.top + pos;
+            return (
+              <g key={i}>
+                <line x1={margins.left} y1={y} x2={margins.left + pW} y2={y} stroke="var(--border-subtle)" strokeDasharray={t === baseline ? 'none' : '2 2'} />
+                <text x={margins.left - 6} y={y + 3} textAnchor="end" fontSize="9" fontFamily="var(--font-mono)" fill="var(--text-tertiary)">{formatVal(t, isNormalized ? '%' : unit)}</text>
+              </g>
+            );
+          })}
+
+          <line
+            x1={isHorizontal ? margins.left + bPos : margins.left}
+            y1={isHorizontal ? margins.top : margins.top + bPos}
+            x2={isHorizontal ? margins.left + bPos : margins.left + pW}
+            y2={isHorizontal ? margins.top + pH : margins.top + bPos}
+            stroke="var(--border-strong)"
+            strokeWidth="1.2"
+          />
+
+          {referenceLines.map((rl, i) => {
+            const p = valToPos(rl.value);
+            const col = rl.tone === 'danger' ? 'var(--status-danger-solid, #ef4444)' : 'var(--action-solid, #2563eb)';
+            if (isHorizontal) {
+              return (
+                <g key={i}>
+                  <line x1={margins.left + p} y1={margins.top} x2={margins.left + p} y2={margins.top + pH} stroke={col} strokeDasharray="3 3" strokeWidth="1.5" />
+                  <text x={margins.left + p} y={margins.top - 2} textAnchor="middle" fontSize="8" fontFamily="var(--font-mono)" fill={col} fontWeight="bold">{rl.label}</text>
+                </g>
+              );
+            }
+            return (
+              <g key={i}>
+                <line x1={margins.left} y1={margins.top + p} x2={margins.left + pW} y2={margins.top + p} stroke={col} strokeDasharray="3 3" strokeWidth="1.5" />
+                <text x={margins.left + pW} y={margins.top + p - 2} textAnchor="end" fontSize="8" fontFamily="var(--font-mono)" fill={col} fontWeight="bold">{rl.label}</text>
+              </g>
+            );
+          })}
+
+          {processedData.map((d, i) => {
+            const isHov = hovered?.index === i;
+            if (isHorizontal) {
+              const cY = margins.top + i * catBand + catBand / 2;
+              const barY = margins.top + i * catBand + barPad / 2;
+              return (
+                <g key={i} onMouseEnter={() => setHovered({ data: d, index: i })} onMouseLeave={() => setHovered(null)} onClick={() => onSelect && onSelect(d)} style={{ cursor: onSelect ? 'pointer' : 'default' }}>
+                  <text x={margins.left - 8} y={cY + 3} textAnchor="end" fontSize="10" fontFamily="var(--font-sans)" fill={isHov ? 'var(--text-primary)' : 'var(--text-secondary)'} fontWeight={isHov ? '600' : '400'}>{d._cat}</text>
+                  {isGrouped ? (
+                    normalizedSeries.map((s, sIdx) => {
+                      const sbH = usable / normalizedSeries.length;
+                      const y = barY + sIdx * sbH;
+                      const v = Number(d[s.key]) || 0;
+                      const p = valToPos(v);
+                      const sx = margins.left + Math.min(bPos, p);
+                      const bw = Math.abs(p - bPos);
+                      return <rect key={s.key} x={sx} y={y} width={Math.max(2, bw)} height={sbH - 2} rx="2" fill={s.color} opacity={isHov ? 0.95 : 0.85} />;
+                    })
+                  ) : isStacked ? (
+                    normalizedSeries.map(s => {
+                      const st = d._stack[s.key];
+                      if (!st || st.val === 0) return null;
+                      const sx = margins.left + valToPos(st.start);
+                      const ex = margins.left + valToPos(st.end);
+                      return <rect key={s.key} x={Math.min(sx, ex)} y={barY} width={Math.abs(ex - sx)} height={usable} fill={s.color} opacity={isHov ? 0.95 : 0.85} />;
+                    })
+                  ) : (
+                    (() => {
+                      const v = Number(d[valueKey]) || 0;
+                      const p = valToPos(v);
+                      const sx = margins.left + Math.min(bPos, p);
+                      const bw = Math.abs(p - bPos);
+                      const col = isDiverging ? (v >= 0 ? 'var(--status-success-solid, #10b981)' : 'var(--status-danger-solid, #ef4444)') : normalizedSeries[0].color;
+                      return <rect x={sx} y={barY} width={Math.max(2, bw)} height={usable} rx="2" fill={col} opacity={isHov ? 0.95 : 0.85} />;
+                    })()
+                  )}
+                </g>
+              );
+            }
+
+            const cX = margins.left + i * catBand + catBand / 2;
+            const barX = margins.left + i * catBand + barPad / 2;
+            return (
+              <g key={i} onMouseEnter={() => setHovered({ data: d, index: i })} onMouseLeave={() => setHovered(null)} onClick={() => onSelect && onSelect(d)} style={{ cursor: onSelect ? 'pointer' : 'default' }}>
+                <text x={cX} y={margins.top + pH + 14} textAnchor="middle" fontSize="10" fontFamily="var(--font-sans)" fill={isHov ? 'var(--text-primary)' : 'var(--text-secondary)'} fontWeight={isHov ? '600' : '400'}>{d._cat}</text>
+                {isGrouped ? (
+                  normalizedSeries.map((s, sIdx) => {
+                    const sbW = usable / normalizedSeries.length;
+                    const x = barX + sIdx * sbW;
+                    const v = Number(d[s.key]) || 0;
+                    const p = valToPos(v);
+                    const sy = margins.top + Math.min(bPos, p);
+                    const bh = Math.abs(p - bPos);
+                    return <rect key={s.key} x={x} y={sy} width={Math.max(2, sbW - 2)} height={Math.max(2, bh)} rx="2" fill={s.color} opacity={isHov ? 0.95 : 0.85} />;
+                  })
+                ) : isStacked ? (
+                  normalizedSeries.map(s => {
+                    const st = d._stack[s.key];
+                    if (!st || st.val === 0) return null;
+                    const sy = margins.top + valToPos(st.start);
+                    const ey = margins.top + valToPos(st.end);
+                    return <rect key={s.key} x={barX} y={Math.min(sy, ey)} width={usable} height={Math.abs(ey - sy)} fill={s.color} opacity={isHov ? 0.95 : 0.85} />;
+                  })
+                ) : isNormalized ? (
+                  normalizedSeries.map(s => {
+                    const pInfo = d._pcts[s.key];
+                    if (!pInfo || pInfo.pct === 0) return null;
+                    const sy = margins.top + valToPos(pInfo.start);
+                    const ey = margins.top + valToPos(pInfo.end);
+                    return <rect key={s.key} x={barX} y={Math.min(sy, ey)} width={usable} height={Math.abs(ey - sy)} fill={s.color} opacity={isHov ? 0.95 : 0.85} />;
+                  })
+                ) : isFloating ? (
+                  (() => {
+                    const sy = margins.top + valToPos(d._start);
+                    const ey = margins.top + valToPos(d._end);
+                    return <rect x={barX} y={Math.min(sy, ey)} width={usable} height={Math.abs(ey - sy)} rx="2" fill={normalizedSeries[0].color} opacity={isHov ? 0.95 : 0.85} />;
+                  })()
+                ) : (
+                  (() => {
+                    const v = Number(d[valueKey]) || 0;
+                    const p = valToPos(v);
+                    const sy = margins.top + Math.min(bPos, p);
+                    const bh = Math.abs(p - bPos);
+                    return <rect x={barX} y={sy} width={usable} height={Math.max(2, bh)} rx="2" fill={normalizedSeries[0].color} opacity={isHov ? 0.95 : 0.85} />;
+                  })()
+                )}
+              </g>
+            );
+          })}
+        </svg>
+      )}
+
+      {hovered && !isTable && (
+        <div style={{ position: 'absolute', top: 0, right: 0, background: 'var(--surface-card)', border: 'var(--border-hairline)', borderRadius: 'var(--radius-xs)', padding: '6px 10px', boxShadow: 'var(--shadow-sm)', fontSize: 11, pointerEvents: 'none', zIndex: 10 }}>
+          <div style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: 2 }}>{hovered.data._cat}</div>
+          {normalizedSeries.map(s => (
+            <div key={s.key} style={{ display: 'flex', gap: 8, justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+              <span>{s.label}:</span>
+              <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>{formatVal(hovered.data[s.key], isNormalized ? '%' : unit)}</strong>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showLegend && normalizedSeries.length > 1 && !isTable && (
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 8 }}>
+          {normalizedSeries.map(s => (
+            <div key={s.key} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-secondary)' }}>
+              <span style={{ width: 8, height: 8, borderRadius: 2, background: s.color }} />
+              <span>{s.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const SCRAP_DATA = [
+  { line: 'Line 1 (Tandem)', scrap: 142000, target: 120000 },
+  { line: 'Line 2 (Prog)', scrap: 88000, target: 100000 },
+  { line: 'Line 3 (Transfer)', scrap: 215000, target: 150000 },
+  { line: 'Line 4 (Blanking)', scrap: 64000, target: 80000 },
+];
+
+const SHIFT_OUTPUT_DATA = [
+  { day: 'Mon', 'Shift A': 420, 'Shift B': 390, 'Shift C': 310 },
+  { day: 'Tue', 'Shift A': 450, 'Shift B': 410, 'Shift C': 290 },
+  { day: 'Wed', 'Shift A': 430, 'Shift B': 440, 'Shift C': 340 },
+  { day: 'Thu', 'Shift A': 460, 'Shift B': 420, 'Shift C': 360 },
+  { day: 'Fri', 'Shift A': 440, 'Shift B': 380, 'Shift C': 300 },
+];
+
+const DEFECT_COMPOSITION_DATA = [
+  { component: 'Crankcase', Porosity: 45, Burr: 25, Dimensional: 30 },
+  { component: 'Flywheel', Porosity: 20, Burr: 55, Dimensional: 25 },
+  { component: 'Brake Disc', Porosity: 15, Burr: 30, Dimensional: 55 },
+];
+
+const TEMPERATURE_VARIANCE_DATA = [
+  { zone: 'Furnace 1', delta: 4.2 },
+  { zone: 'Furnace 2', delta: -2.8 },
+  { zone: 'Quench 1', delta: -6.5 },
+  { zone: 'Quench 2', delta: 1.9 },
+  { zone: 'Anneal 1', delta: 8.4 },
+];
+
+const TOLERANCE_FLOATING_DATA = [
+  { stage: 'Rough Turning', min: 48.2, max: 51.8 },
+  { stage: 'Semi-Finish', min: 49.4, max: 50.6 },
+  { stage: 'Final Grind', min: 49.92, max: 50.08 },
+];
+
+function Showcase() {
+  const [theme, setTheme] = React.useState('light');
+  const [selectedPlantItem, setSelectedPlantItem] = React.useState(null);
+
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  return (
+    <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+      <div className="controls">
+        <label>
+          Theme:
+          <select value={theme} onChange={e => setTheme(e.target.value)}>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </label>
+        <div style={{ marginLeft: 'auto', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-tertiary)' }}>
+          Suryodaya Autocomp Ltd · PL-04 Chakan Plant (Pune)
+        </div>
+      </div>
+
+      <div className="grid">
+        <div className="chart-box">
+          <BarChartRenderer
+            title="Press Shop Monthly Scrap Cost"
+            caption="PL-04 press lines vs ceiling threshold (₹ en-IN)"
+            data={SCRAP_DATA}
+            categoryKey="line"
+            valueKey="scrap"
+            variant="horizontal"
+            unit="₹"
+            referenceLines={[{ value: 120000, label: 'Ceiling' }]}
+            onSelect={(item) => setSelectedPlantItem(item)}
+          />
+        </div>
+
+        <div className="chart-box">
+          <BarChartRenderer
+            title="Shift Output Comparison (Units)"
+            caption="Shift A / B / C production run totals"
+            data={SHIFT_OUTPUT_DATA}
+            categoryKey="day"
+            series={[
+              { key: 'Shift A', label: 'Shift A', color: 'var(--viz-1)' },
+              { key: 'Shift B', label: 'Shift B', color: 'var(--viz-2)' },
+              { key: 'Shift C', label: 'Shift C', color: 'var(--viz-3)' }
+            ]}
+            variant="grouped"
+            unit="units"
+            onSelect={(item) => setSelectedPlantItem(item)}
+          />
+        </div>
+
+        <div className="chart-box">
+          <BarChartRenderer
+            title="Defect Mode Proportion (% Normalized)"
+            caption="100% categorical defect breakdown across components"
+            data={DEFECT_COMPOSITION_DATA}
+            categoryKey="component"
+            series={[
+              { key: 'Porosity', label: 'Porosity', color: 'var(--viz-1)' },
+              { key: 'Burr', label: 'Burr/Flash', color: 'var(--viz-3)' },
+              { key: 'Dimensional', label: 'Dimension', color: 'var(--viz-4)' }
+            ]}
+            variant="normalized"
+            unit="%"
+            onSelect={(item) => setSelectedPlantItem(item)}
+          />
+        </div>
+
+        <div className="chart-box">
+          <BarChartRenderer
+            title="Heat Treatment Temperature Delta (°C)"
+            caption="Deviation from 850°C setpoint across thermal zones"
+            data={TEMPERATURE_VARIANCE_DATA}
+            categoryKey="zone"
+            valueKey="delta"
+            variant="diverging"
+            unit="°C"
+            baseline={0}
+            onSelect={(item) => setSelectedPlantItem(item)}
+          />
+        </div>
+
+        <div className="chart-box">
+          <BarChartRenderer
+            title="Cumulative Shift Output (Stacked)"
+            caption="Combined daily shop volume stacked by shift"
+            data={SHIFT_OUTPUT_DATA}
+            categoryKey="day"
+            series={[
+              { key: 'Shift A', label: 'Shift A', color: 'var(--viz-1)' },
+              { key: 'Shift B', label: 'Shift B', color: 'var(--viz-2)' },
+              { key: 'Shift C', label: 'Shift C', color: 'var(--viz-3)' }
+            ]}
+            variant="stacked"
+            unit="units"
+            onSelect={(item) => setSelectedPlantItem(item)}
+          />
+        </div>
+
+        <div className="chart-box">
+          <BarChartRenderer
+            title="Machining Dimension Tolerance Window"
+            caption="Target 50.00mm ± tolerance band per stage"
+            data={TOLERANCE_FLOATING_DATA}
+            categoryKey="stage"
+            variant="floating"
+            unit="mm"
+            referenceLines={[{ value: 50.0, label: 'Nominal 50mm' }]}
+            onSelect={(item) => setSelectedPlantItem(item)}
+          />
+        </div>
+      </div>
+
+      {selectedPlantItem && (
+        <div style={{ marginTop: 20, padding: '10px 14px', background: 'var(--surface-sunken)', border: 'var(--border-hairline)', borderRadius: 'var(--radius-sm)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
+          Active Selection: {JSON.stringify(selectedPlantItem)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Showcase />);
+</script></body></html>

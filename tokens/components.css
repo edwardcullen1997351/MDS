@@ -1,0 +1,1114 @@
+/* ── TIER 3 · COMPONENT TOKENS ─────────────────────────────────────────
+   One layer above semantic. Every value here is a reference to a SEMANTIC
+   token — never a primitive ramp, never a literal. A component reads only
+   its own tokens; a consumer retheming one component changes nothing else.
+
+   Pattern: --<component>-[<variant>|<part>]-<property>[-<state>]
+   This is the ONLY tier where a token may be named after a component. */
+:root{
+
+/* ── Button ────────────────────────────────────────────────────────────*/
+--button-radius:var(--radius-sm);
+--button-focus-ring:var(--focus-ring);
+--button-primary-background:var(--action-solid);
+--button-primary-background-hover:var(--action-solid-hover);
+--button-primary-background-active:var(--action-solid-active);
+--button-primary-foreground:var(--action-on-solid);
+--button-primary-shadow:var(--elevation-1);
+--button-secondary-background:var(--surface-card);
+--button-secondary-background-hover:var(--surface-hover);
+--button-secondary-background-active:var(--surface-active);
+--button-secondary-foreground:var(--text-primary);
+--button-secondary-border:var(--border-default);
+--button-secondary-border-hover:var(--border-strong);
+--button-ghost-background-hover:var(--surface-hover);
+--button-ghost-background-active:var(--surface-active);
+--button-ghost-foreground:var(--text-secondary);
+--button-ghost-foreground-hover:var(--text-primary);
+--button-critical-background:var(--status-critical-solid);
+--button-critical-background-hover:var(--status-critical-solid-hover);
+--button-critical-background-active:var(--status-critical-solid-active);
+--button-critical-foreground:var(--action-on-solid);
+--button-link-foreground:var(--text-link);
+--button-link-foreground-hover:var(--action-solid-hover);
+--button-link-foreground-active:var(--action-solid-active);
+--button-disabled-background:var(--surface-disabled);
+--button-disabled-foreground:var(--text-disabled);
+--button-disabled-border:var(--border-default);
+
+/* ── Link ──────────────────────────────────────────────────────────────
+   Navigation, not action. `subtle` inherits the body hierarchy for
+   breadcrumbs and metadata rows, where a blue link per line is noise. */
+--link-foreground:var(--text-link);
+--link-foreground-hover:var(--action-solid-hover);
+--link-foreground-active:var(--action-solid-active);
+--link-foreground-subtle:var(--text-secondary);
+--link-foreground-subtle-hover:var(--text-primary);
+--link-foreground-inverse:var(--text-link-inverse);
+--link-foreground-inverse-hover:var(--text-link-inverse-hover);
+--link-foreground-inverse-active:var(--text-link-inverse-active);
+
+/* ── ButtonGroup ───────────────────────────────────────────────────────
+   Joined action buttons. The seam is each button's own border, overlapped
+   by 1px; the divider only draws for ghost groups, whose buttons have no
+   visible border of their own. */
+--button-group-radius:var(--radius-sm);
+--button-group-border:var(--border-default);
+--button-group-divider:var(--border-default);
+
+/* ── Toolbar (composite) ───────────────────────────────────────────────
+   An action surface, not a card: it sits on the plane it acts on, so the
+   background is the raised surface and the frame is a hairline. The gap is
+   the control rhythm — wide enough that two adjacent ghost buttons do not
+   read as one joined group, which is ButtonGroup's job. */
+--toolbar-background:var(--surface-raised);
+--toolbar-border:var(--border-subtle);
+--toolbar-radius:var(--radius-md);
+--toolbar-padding:var(--space-1);
+--toolbar-gap:var(--space-2);
+
+/* ── SearchField (composite) ───────────────────────────────────────────
+   Only the distance between the field and an explicit submit control: the
+   two are separate actions, so they are not joined like a ButtonGroup. */
+--search-field-gap:var(--space-2);
+
+/* ── DateTimePicker (composite) ────────────────────────────────────────
+   The distance between the date and the time halves of ONE value. Deliberately
+   the same as the range gap: both composites join two named controls that read
+   as one answer, and two different gaps for the same relationship would read
+   as two different kinds of grouping. */
+--date-time-gap:var(--space-3);
+
+/* ── DateRangePicker (composite) ───────────────────────────────────────
+   The distance between the two endpoints — wider than a field's own internal
+   gap, because these are two named controls rather than one control's parts,
+   and the same value has to read correctly when they stack. */
+--date-range-gap:var(--space-3);
+
+/* ── SplitButton (composite) ───────────────────────────────────────────
+   Two halves, one control. The seam is drawn once and never by both: an
+   outlined pair shares one border colour, a ghost pair draws a divider it
+   has no border for, and a solid pair can only be divided by the fill's
+   own inverse — a grey line on action blue disappears. */
+--split-button-radius:var(--radius-sm);
+--split-button-border:var(--border-default);
+--split-button-divider:var(--border-default);
+--split-button-seam-solid:var(--action-on-solid);
+
+/* ── IconButton ────────────────────────────────────────────────────────*/
+--icon-button-radius:var(--radius-sm);
+--icon-button-foreground:var(--text-secondary);
+--icon-button-foreground-hover:var(--text-primary);
+--icon-button-foreground-selected:var(--action-text);
+--icon-button-foreground-disabled:var(--text-disabled);
+--icon-button-background-hover:var(--surface-hover);
+--icon-button-background-active:var(--surface-active);
+--icon-button-background-selected:var(--surface-selected);
+--icon-button-border:var(--border-control);
+--icon-button-border-disabled:var(--border-subtle);
+--icon-button-solid-background:var(--action-solid);
+--icon-button-solid-background-hover:var(--action-solid-hover);
+--icon-button-solid-background-active:var(--action-solid-active);
+--icon-button-solid-foreground:var(--action-on-solid);
+/* Filled critical — the counterpart of Button's `danger`, so a destructive
+   icon action is not drawn in action blue. Same ramp as the lettered one. */
+--icon-button-critical-background:var(--status-critical-solid);
+--icon-button-critical-background-hover:var(--status-critical-solid-hover);
+--icon-button-critical-background-active:var(--status-critical-solid-active);
+--icon-button-critical-foreground:var(--action-on-solid);
+
+/* ── Card ──────────────────────────────────────────────────────────────*/
+--card-background:var(--surface-card);
+--card-border:var(--border-default);
+--card-border-hover:var(--border-strong);
+--card-radius:var(--radius-md);
+--card-shadow:var(--elevation-1);
+--card-shadow-elevated:var(--elevation-3);
+--card-title-text:var(--text-primary);
+--card-subtitle-text:var(--text-tertiary);
+--card-header-border:var(--border-subtle);
+--card-footer-background:var(--background-page);
+--card-footer-border:var(--border-subtle);
+--card-background-hover:var(--surface-hover);
+--card-focus-ring:var(--focus-ring);
+
+/* ── Table ─────────────────────────────────────────────────────────────*/
+--table-header-background:var(--background-page);
+/* NOT --text-tertiary. Column headers are 11px uppercase with caps tracking —
+   the smallest, thinnest text in the system — and tertiary on the page ground
+   measures 4.46:1, four hundredths under 1.4.3. A header names the column an
+   operator is scanning; it is content, not chrome. --text-secondary clears it
+   at 6.7:1 and the uppercase tracking still reads as a header without leaning
+   on lightness. Found 5 Sep 2026 by tools/check-contracts.mjs. */
+--table-header-text:var(--text-secondary);
+--table-header-text-active:var(--text-primary);
+--table-header-border:var(--border-default);
+--table-header-height:var(--header-h);
+--table-row-height:var(--row-h);
+--table-row-background-hover:var(--surface-hover);
+--table-row-background-selected:var(--surface-selected);
+--table-row-border:var(--border-subtle);
+--table-cell-text:var(--text-primary);
+--table-cell-padding-x:var(--cell-px);
+--table-empty-text:var(--text-tertiary);
+/* No --table-caption-text: the caption is visually hidden by contract (the
+   table's name is already a heading above it), so a colour token for it
+   would have no job. It was defined in the 1.14.0 pass and never referenced
+   — the same dead-token defect that pass fixed in --cell-py — and removed
+   on the same day. */
+--table-cell-padding-y:var(--cell-py);
+/* The sticky header needs an opaque fill and a rule that reads against rows
+   scrolling under it — --background-page alone leaves the first row's
+   descenders showing through at sub-pixel offsets. */
+--table-header-background-sticky:var(--background-page);
+--table-header-shadow-sticky:0 1px 0 0 var(--border-default);
+--table-row-background-focus:var(--surface-hover);
+/* Frozen leading columns need their OWN opaque fill: a sticky cell with a
+   transparent background has the scrolling cells pass visibly underneath
+   it. That opacity is also why the row tints cannot simply be inherited —
+   base.css layers them as a gradient over this fill (see the frozen rules
+   there). The right edge is a box-shadow, not a border, because a border on
+   a sticky cell inside border-collapse renders inconsistently and is the
+   first thing to disappear when the table scrolls. */
+--table-frozen-background:var(--surface-card);
+--table-frozen-shadow:1px 0 0 0 var(--border-default);
+/* An outline, not the --ring-focus box-shadow the rest of the system uses: a
+   box-shadow on a <tr> inside border-collapse renders unreliably and is
+   clipped by the neighbouring cells. Inset offset so the ring stays inside
+   the row rather than overlapping the hairline above it. */
+--table-focus-ring:2px solid var(--border-focus);
+
+/* ── DescriptionList ───────────────────────────────────────────────────
+   One record's fields. Requested by name three times before it existed:
+   Table §01 ("show one record's fields → a definition list"), Table §12 ("a
+   table for one record is a definition list wearing a table") and List §14.
+
+   Its own token family rather than List's, because almost nothing is shared:
+   there is no leading slot, no actions, no divider, and the geometry is a
+   two-column grid rather than a stack of rows. The term column is a token
+   because it must be the same width down the whole list — that alignment IS
+   the component \u2014 and a percentage would make it drift with the container. */
+--description-list-term-width:180px;
+--description-list-row-gap-sm:var(--space-2);
+--description-list-row-gap-md:var(--space-3);
+--description-list-column-gap:var(--space-4);
+--description-list-term-text:var(--text-tertiary);
+--description-list-description-text:var(--text-primary);
+--description-list-divider:var(--border-subtle);
+--description-list-empty-text:var(--text-tertiary);
+
+/* ── List ──────────────────────────────────────────────────────────────
+   The run of records Table refuses. Table §01 sends two shapes away — "items
+   with unlike shapes" and "one record's fields" — and until now the system
+   had nowhere to send them, so every product hand-rolled a div stack.
+
+   Two token decisions worth stating. The row has no hover, selected or
+   pressed fill, because the row is not a control (§07): interaction lives in
+   the row's content, so the states belong to the Link or the IconButton
+   inside it. And the leading slot is a real sized box rather than a bare
+   glyph, because a 16px icon beside 13px text on one row and a 24px Avatar on
+   the next would put the text on two different left edges. */
+--list-divider:var(--border-subtle);
+--list-row-padding-y-sm:var(--space-2);
+--list-row-padding-y-md:var(--space-3);
+--list-row-padding-y-lg:var(--space-4);
+--list-gap-sm:var(--space-2);
+--list-gap-md:var(--space-3);
+--list-gap-lg:var(--space-4);
+--list-gutter-gap:var(--space-3);
+--list-leading-size-sm:20px;
+--list-leading-size-md:24px;
+--list-leading-size-lg:32px;
+--list-leading-background:var(--surface-sunken);
+--list-leading-foreground:var(--text-secondary);
+--list-leading-radius:var(--radius-sm);
+--list-title-text:var(--text-primary);
+--list-description-text:var(--text-secondary);
+--list-meta-text:var(--text-tertiary);
+--list-marker-text:var(--text-tertiary);
+--list-actions-gap:var(--space-2);
+
+/* ── Avatar ────────────────────────────────────────────────────────────
+   One neutral treatment, and NO colour identity — which is the whole design
+   decision, forced by the system's own colour law.
+
+   Every other design system hashes a name to a hue. Meridian cannot: every
+   ramp it owns already means something. Green is Success, orange is Warning,
+   red is Critical, and the ordered --viz-1…6 series means SERIES identity,
+   not category identity — its second step IS green-600 and its sixth IS
+   red-600. A hashed avatar would therefore put a Critical-red disc beside an
+   operator's name in an alarm list, and a Success-green one beside the next
+   operator, meaning nothing. Design Principles: "a colour used decoratively
+   is a colour that can no longer carry meaning."
+
+   So identity is carried by the initials, and the disc is a sunken surface
+   in every case. The one thing that may be coloured is the presence dot,
+   because presence genuinely IS a state and the state ramps are exactly
+   what state should use.
+
+   The person/machine split earns its keep in a plant console: PRS-4120 is
+   not a person. It follows Tag's rule — mono for identifiers out of the
+   data, sans for names a human wrote. */
+--avatar-background:var(--surface-sunken);
+--avatar-background-machine:var(--surface-raised);
+--avatar-foreground:var(--text-secondary);
+--avatar-foreground-machine:var(--text-tertiary);
+/* NOT --border-subtle: in the light scope it and --surface-sunken are both
+   --grey-100, so a person avatar drew a #edeff3 hairline on a #edeff3 fill —
+   an invisible edge that still spent 1px of the disc under border-box, and
+   left person and machine avatars inconsistent for no stated reason. Exactly
+   the equal-value collision Skeleton hit in 1.16, in the same token pair.
+   --border-default (grey-200 light, rgba(255,255,255,.12) dark) separates
+   from BOTH fills in BOTH scopes. Any future retarget must be checked in
+   both: equal values here fail silently and look like a rendering bug. */
+--avatar-border:var(--border-default);
+--avatar-radius:var(--radius-full);
+--avatar-radius-machine:var(--radius-xs);
+--avatar-size-xs:20px;
+--avatar-size-sm:24px;
+--avatar-size-md:32px;
+--avatar-size-lg:40px;
+--avatar-size-xl:64px;
+/* The ring that separates overlapping discs in a group. It is the PAGE
+   colour rather than a border colour: the disc must appear to punch a hole
+   in the one behind it, and a grey border on a grey disc just thickens it. */
+--avatar-group-ring:var(--surface-card);
+--avatar-group-ring-width:2px;
+--avatar-group-overlap:0.32; /* @kind other */
+/* Deliberately the same value as --avatar-foreground, and a separate name for
+   the reason --segmented-background-selected is separate from Tabs'. The chip
+   reads "+2": that is INFORMATION, so it owes 4.5:1, and at 9.6px (a 24px sm
+   disc × the 0.4 ratio) there is no grey lighter than --text-secondary that
+   clears it on --surface-sunken. --text-tertiary measured 4.11:1.
+
+   So the chip recedes by LETTERFORM rather than by lightness — a plus sign and
+   a digit among letters is already the odd one out — and the token stays for a
+   consumer whose chip sits on a lighter ground. Retargeting it lighter is a
+   1.4.3 regression, not a style choice. */
+--avatar-overflow-foreground:var(--text-secondary);
+/* Presence — the only coloured part, because presence is state. */
+--avatar-status-size:0.3;
+--avatar-status-online:var(--status-success-solid);
+--avatar-status-busy:var(--status-critical-solid);
+--avatar-status-away:var(--status-warning-solid);
+/* NOT --border-strong. That is a HAIRLINE token, tuned to sit quietly against
+   a surface, and used as a solid mark fill it measures 1.60:1 against the
+   dot's own white ring — the identical token at the identical ratio that the
+   Governance backlog still tracks as a live 1.4.11 failure on Checkbox and
+   Radio borders. A presence dot is a non-text indicator and owes 3:1.
+   --text-tertiary is tuned for exactly this: a quiet mark that is still
+   legible, ~4.1:1 on white. */
+--avatar-status-offline:var(--text-tertiary);
+
+/* ── EmptyState ────────────────────────────────────────────────────────
+   The absence of data, explained. Its tokens exist because it is NOT a Card
+   and NOT an Alert: by default it paints nothing at all — no surface, no
+   border — because it almost always sits inside a Card or a Table region
+   that already has one, and a bordered box inside a bordered box is the most
+   common way this component is got wrong.
+
+   The measure is a real token, not a magic number: the prose is one or two
+   sentences and it must stay a readable column even when the region is
+   1400px wide. Centred text past ~50ch stops being scannable.
+
+   There is no illustration slot and no illustration token. The glyph is
+   capped at --icon-lg (22px), which is the system's ceiling for any icon on
+   a surface — see Icon §05. A 120px drawing is a different design language
+   than the one this system is, and it would need an asset pipeline the
+   project does not have. */
+--empty-state-background:transparent;
+--empty-state-background-bordered:var(--surface-sunken);
+/* NOT --border-subtle: it and --surface-sunken are both --grey-100 in the
+   light scope, so `bordered` drew an invisible hairline on its own fill — the
+   third instance of this collision in the system after Skeleton 1.16 and
+   Avatar 1.21.6, and the reason the warning now lives on the border family in
+   semantic.css. --border-default separates from both grounds in both scopes.
+   Found 5 Sep 2026 by tools/check-contracts.mjs. */
+--empty-state-border:var(--border-default);
+--empty-state-radius:var(--radius-md);
+--empty-state-padding-sm:var(--space-6);
+--empty-state-padding-md:var(--space-8);
+--empty-state-padding-lg:var(--space-10);
+--empty-state-gap:var(--space-3);
+--empty-state-gap-actions:var(--space-2);
+--empty-state-min-height-sm:120px;
+--empty-state-min-height-md:200px;
+--empty-state-min-height-lg:280px;
+/* The prose column. Not a percentage: the cap must hold at any region width. */
+--empty-state-measure:46ch;
+--empty-state-icon:var(--text-tertiary);
+/* The one coloured glyph, for `cleared` — an empty queue is an achievement,
+   not a gap, and the tick is what stops the layout reading as a failure. It
+   is decorative: the title says the same thing in words. */
+--empty-state-icon-positive:var(--status-success-solid);
+--empty-state-title-text:var(--text-primary);
+--empty-state-body-text:var(--text-secondary);
+--empty-state-hint-text:var(--text-tertiary);
+
+/* ── Skeleton ──────────────────────────────────────────────────────────
+   A shape standing in for content that has not arrived. Deliberately the
+   quietest surface in the system: it is furniture, and an operator must be
+   able to tell at a glance that it is NOT data. The sheen is a single
+   low-contrast sweep, not a pulse — a pulsing block in a table of forty
+   rows is forty things blinking. */
+--skeleton-background:var(--surface-sunken);
+/* NOT --surface-hover: in the light scope it and --surface-sunken are both
+   --grey-100, so the sweep was a #edeff3 sheen over a #edeff3 fill — zero
+   visible motion. --surface-raised is one step lighter than sunken in BOTH
+   scopes (grey-0 over grey-100 light, grey-800 over #0f1318 dark), which is
+   the subtle lift a sweep wants. Any future retarget must be checked in both
+   scopes: equal values here fail silently and look like a static block. */
+--skeleton-sheen:var(--surface-raised);
+--skeleton-radius:var(--radius-xs);
+/* The floor under a 1em line: at --text-2xs inside a compact row, 1em of a
+   scaled-down font rounds to a hairline that reads as a border, not a
+   placeholder. */
+--skeleton-min-height:8px;
+--skeleton-line-gap:var(--space-2);
+
+/* ── Badge — one row per tone ──────────────────────────────────────────*
+   --radius-xs, deliberately squarer than Tag's --radius-sm: a badge is a
+   printed label, a tag is a control you can press and dismiss. The two must
+   never converge by sharing a variable. Heights and padding live in
+   density.css, not here — a badge sits inside rows that re-map with density,
+   so it re-maps too (type size never does). There is still no coarse-pointer
+   block and never will be: a badge is not a target. */
+--badge-radius:var(--radius-xs);
+--badge-gap-sm:4px;
+--badge-gap-md:5px;
+--badge-dot-size:6px;
+--badge-neutral-background:var(--status-neutral-soft);
+--badge-neutral-foreground:var(--text-secondary);
+--badge-neutral-border:var(--status-neutral-border);
+--badge-neutral-dot:var(--status-neutral-solid);
+--badge-accent-background:var(--action-soft);
+--badge-accent-foreground:var(--text-accent);
+--badge-accent-border:var(--action-border);
+--badge-accent-dot:var(--action-solid);
+--badge-success-background:var(--status-success-soft);
+--badge-success-foreground:var(--text-success);
+--badge-success-border:var(--status-success-border);
+--badge-success-dot:var(--status-success-solid);
+--badge-warning-background:var(--status-warning-soft);
+--badge-warning-foreground:var(--text-warning);
+--badge-warning-border:var(--status-warning-border);
+--badge-warning-dot:var(--status-warning-solid);
+--badge-critical-background:var(--status-critical-soft);
+--badge-critical-foreground:var(--text-critical);
+--badge-critical-border:var(--status-critical-border);
+--badge-critical-dot:var(--status-critical-solid);
+
+/* ── SegmentedControl ──────────────────────────────────────────────────
+   The joined track: one sunken well with a raised segment marking the
+   current value. It shares the Tabs pill paint deliberately — a user who
+   has learned "raised segment = the one you are on" should not have to
+   learn it twice — so --segmented-background-selected and
+   --tab-pill-background-active resolve to the same surface. They stay
+   SEPARATE tokens because the two components answer different questions
+   (Tabs owns panels, this owns a value) and either may be re-skinned
+   without the other; a component token never references another
+   component's. The track is --surface-sunken rather than a border-only
+   group because the well is what says "these belong to one question", and
+   the selected segment must read as lifted OUT of it: card surface, a
+   hairline, and one step of elevation, never a colour fill. Colour here
+   would compete with the content the control is switching. */
+--segmented-track-background:var(--surface-sunken);
+--segmented-track-background-disabled:var(--surface-disabled);
+--segmented-track-border:var(--border-default);
+--segmented-track-radius:var(--radius-md);
+--segmented-radius:var(--radius-sm);
+--segmented-height-sm:var(--control-h-sm);
+--segmented-height-md:var(--control-h-md);
+--segmented-padding-sm:10px;
+--segmented-padding-md:12px;
+--segmented-background-hover:var(--surface-hover);
+--segmented-background-selected:var(--surface-card);
+--segmented-border-selected:var(--border-default);
+--segmented-shadow-selected:var(--elevation-1);
+--segmented-foreground:var(--text-secondary);
+--segmented-foreground-hover:var(--text-primary);
+--segmented-foreground-selected:var(--text-primary);
+--segmented-foreground-disabled:var(--text-disabled);
+--segmented-icon:var(--text-tertiary);
+--segmented-icon-selected:var(--text-secondary);
+/* The divider only exists between two UNSELECTED neighbours: the raised
+   segment already separates itself, and a rule beside it reads as a seam. */
+--segmented-divider:var(--border-subtle);
+--segmented-focus-ring:var(--focus-ring);
+
+/* ── Chip ──────────────────────────────────────────────────────────────
+   The offered option, and the third shape in the label family: Badge is
+   --radius-xs (a printed label), Tag is --radius-sm at 20/24px (a value you
+   can dismiss), Chip is --radius-sm at FULL CONTROL HEIGHT — it is an input,
+   so it sits on --control-h-* and rides density with every other control.
+   The check gutter is reserved at all times, selected or not, so selecting a
+   chip cannot re-flow the row. Selection reuses the action ramp because a
+   chosen option is a state the user set, exactly as with Tag. */
+--chip-radius:var(--radius-sm);
+--chip-height-sm:var(--control-h-sm);
+--chip-height-md:var(--control-h-md);
+--chip-padding-sm:10px;
+--chip-padding-md:12px;
+--chip-check-size:var(--icon-mark);
+--chip-background:var(--surface-card);
+--chip-background-hover:var(--surface-hover);
+--chip-background-selected:var(--action-soft);
+--chip-background-selected-hover:var(--action-soft-hover);
+--chip-background-disabled:var(--surface-disabled);
+--chip-foreground:var(--text-primary);
+--chip-foreground-selected:var(--action-text);
+--chip-foreground-disabled:var(--text-disabled);
+--chip-icon:var(--text-tertiary);
+--chip-count-foreground:var(--text-tertiary);
+/* The resting border IS the chip: an unselected chip has nothing else to
+   identify it as a control, so it is load-bearing under 1.4.11 and takes
+   --border-control (4.74:1 on a card), not a structural hairline. */
+--chip-border:var(--border-control);
+--chip-border-hover:var(--border-control-hover);
+--chip-border-selected:var(--action-solid);
+--chip-border-disabled:var(--border-default);
+--chip-focus-ring:var(--focus-ring);
+
+
+/* ── Tag ───────────────────────────────────────────────────────────
+   Monochrome on purpose: a tag's text is user- or data-derived, so no colour
+   the system picks could describe it honestly — tones belong to Badge. The
+   only colour here is `selected`, which reuses the action ramp because an
+   applied filter IS a state the user set. Distinct from Badge in radius too:
+   --radius-sm, because a tag is a control-shaped thing you can press and
+   dismiss, not a printed label. */
+--tag-radius:var(--radius-sm);
+--tag-background:var(--surface-card);
+--tag-background-hover:var(--surface-hover);
+--tag-background-disabled:var(--surface-disabled);
+--tag-background-selected:var(--action-soft);
+--tag-background-selected-hover:var(--action-soft-hover);
+--tag-foreground:var(--text-primary);
+--tag-foreground-selected:var(--action-text);
+--tag-foreground-disabled:var(--text-disabled);
+--tag-icon:var(--text-tertiary);
+--tag-border:var(--border-default);
+--tag-border-hover:var(--border-control-hover);
+--tag-border-selected:var(--action-border);
+--tag-border-disabled:var(--border-default);
+--tag-remove-foreground:var(--text-tertiary);
+--tag-remove-foreground-hover:var(--text-primary);
+--tag-remove-background-hover:var(--surface-active);
+--tag-focus-ring:var(--focus-ring);
+/* Geometry is tokenised, not hard-coded in the component, so a coarse
+   pointer can raise it without the component knowing about pointers. The
+   remove target grows to 44px while the glyph stays 16px — it overflows the
+   tag invisibly via negative margins, so nothing reflows. Closes the touch
+   item left open at 1.7.0. */
+--tag-height-sm:20px;
+--tag-height-md:24px;
+--tag-padding-sm:6px;
+--tag-padding-md:8px;
+--tag-remove-target:16px;
+
+/* ── Input — shared by Input, Textarea and Select ──────────────────────*
+   The resting border IS the control: an empty field has nothing else to
+   identify it, so it is load-bearing under WCAG 1.4.11 and takes
+   --border-control (4.74:1 on a card), not a structural hairline. Retargeted
+   from --border-default (1.29:1) in 1.2.0 — see readme. */
+--input-radius:var(--radius-sm);
+--input-background:var(--surface-card);
+--input-background-disabled:var(--surface-disabled);
+--input-border:var(--border-control);
+--input-border-hover:var(--border-control-hover);
+--input-border-focus:var(--border-focus);
+--input-border-invalid:var(--status-critical-solid);
+--input-text:var(--text-primary);
+--input-text-disabled:var(--text-disabled);
+--input-placeholder:var(--text-tertiary);
+--input-icon:var(--text-tertiary);
+--input-focus-ring:var(--focus-ring);
+--input-focus-ring-invalid:var(--focus-ring-critical);
+
+/* ── Combobox ───────────────────────────────────────────────────
+   The control box is Input's — same chrome, same --input-* tokens, so a
+   Combobox and an Input in one form are indistinguishable at rest. These are
+   the LIST: a popover surface we draw ourselves, its options and their
+   states. Unlike Select, every pixel here is ours to get right. */
+--combobox-list-background:var(--surface-overlay);
+--combobox-list-border:var(--border-default);
+--combobox-list-radius:var(--radius-md);
+--combobox-list-shadow:var(--elevation-3);
+--combobox-option-text:var(--text-primary);
+--combobox-option-description-text:var(--text-tertiary);
+--combobox-option-match-text:var(--selection-text-accent);
+--combobox-option-check:var(--action-text);
+--combobox-option-background-active:var(--surface-hover);
+--combobox-option-background-selected:var(--surface-selected);
+--combobox-status-text:var(--text-tertiary);
+
+/* ── MultiCombobox ─────────────────────────────────────────────────────
+   Its own family, not a reuse of --combobox-*, for the reason Autocomplete
+   states below: a component token may never reference another component's.
+   The list paint resolves to the same semantics as Combobox's on purpose —
+   one list appearance across the system — and the tokens stay separate so
+   either can be re-skinned alone.
+
+   What is genuinely new here is the BOX, which is not Input's. A field
+   holding chips has no fixed control height: it starts at one row and grows
+   as tokens wrap, so the geometry is a min-height plus its own padding
+   rather than --control-h-*. The overflow counter ("+3") is typographic,
+   not a Badge — a Badge states a condition the system determined, and this
+   is a count of what the user selected. */
+--multi-combobox-background:var(--surface-card);
+--multi-combobox-background-disabled:var(--surface-disabled);
+--multi-combobox-border:var(--border-control);
+--multi-combobox-border-hover:var(--border-control-hover);
+--multi-combobox-border-focus:var(--border-focus);
+--multi-combobox-border-invalid:var(--status-critical-solid);
+--multi-combobox-radius:var(--radius-sm);
+--multi-combobox-focus-ring:var(--focus-ring);
+--multi-combobox-focus-ring-invalid:var(--focus-ring-critical);
+--multi-combobox-text:var(--text-primary);
+--multi-combobox-text-disabled:var(--text-disabled);
+--multi-combobox-placeholder:var(--text-tertiary);
+--multi-combobox-icon:var(--text-tertiary);
+--multi-combobox-overflow-text:var(--text-secondary);
+--multi-combobox-min-height-sm:var(--control-h-sm);
+--multi-combobox-min-height-md:var(--control-h-md);
+--multi-combobox-min-height-lg:var(--control-h-lg);
+--multi-combobox-list-background:var(--surface-overlay);
+--multi-combobox-list-border:var(--border-default);
+--multi-combobox-list-radius:var(--radius-md);
+--multi-combobox-list-shadow:var(--elevation-3);
+--multi-combobox-option-text:var(--text-primary);
+--multi-combobox-option-description-text:var(--text-tertiary);
+--multi-combobox-option-match-text:var(--selection-text-accent);
+--multi-combobox-option-check:var(--action-text);
+--multi-combobox-option-background-active:var(--surface-hover);
+--multi-combobox-option-background-selected:var(--surface-selected);
+--multi-combobox-status-text:var(--text-tertiary);
+
+/* ── Autocomplete ───────────────────────────────────────────────
+   Same division of labour as Combobox: the box is Input's, these are the
+   SUGGESTION list. Its own family rather than a reuse of --combobox-*,
+   because a component token may never reference another component's. The two
+   differences that carry meaning: there is no -selected pair (nothing is ever
+   committed, so a row has one state — the cursor), and -completion-text
+   emphasises what the suggestion would ADD rather than what matched. */
+--autocomplete-list-background:var(--surface-overlay);
+--autocomplete-list-border:var(--border-default);
+--autocomplete-list-radius:var(--radius-md);
+--autocomplete-list-shadow:var(--elevation-3);
+--autocomplete-suggestion-text:var(--text-primary);
+--autocomplete-suggestion-description-text:var(--text-tertiary);
+--autocomplete-suggestion-completion-text:var(--selection-text-accent);
+--autocomplete-suggestion-background-active:var(--surface-hover);
+--autocomplete-ghost-text:var(--text-tertiary);
+--autocomplete-status-text:var(--text-tertiary);
+
+/* ── Popover ────────────────────────────────────────────────────
+   The anchored panel. Sits one step below Dialog in weight: elevation-3 (the
+   menu/popover level) rather than -4, and the tighter --radius-md, because it
+   is attached to a trigger rather than floating over a scrim. */
+--popover-background:var(--surface-overlay);
+--popover-border:var(--border-default);
+--popover-radius:var(--radius-md);
+--popover-shadow:var(--elevation-3);
+--popover-title-text:var(--text-secondary);
+--popover-divider:var(--border-subtle);
+
+/* ── Menu ───────────────────────────────────────────────────────
+   The command surface. Shares Popover's shell values by intent (same
+   elevation, same radius — it is the same class of anchored surface) but
+   owns them separately, because a component token may never reference
+   another component's. What is genuinely Menu's own is the ROW: one active
+   state and no hover/active split, because the cursor is keyboard and
+   pointer alike; a shortcut colour quiet enough to read as metadata; and a
+   critical pair, since a menu is where destructive commands actually live.
+   The critical row is tinted only when active — a red-on-white row at rest
+   in a list of six reads as an error, not an option. */
+--menu-background:var(--surface-overlay);
+--menu-border:var(--border-default);
+--menu-radius:var(--radius-md);
+--menu-shadow:var(--elevation-3);
+--menu-divider:var(--border-subtle);
+--menu-group-text:var(--text-tertiary);
+--menu-item-text:var(--text-primary);
+--menu-item-icon:var(--text-secondary);
+--menu-item-description-text:var(--text-tertiary);
+--menu-item-shortcut-text:var(--text-tertiary);
+--menu-item-check:var(--action-text);
+--menu-item-background-active:var(--surface-hover);
+/* No --menu-item-background-selected: a checked row is marked by its tick
+   and nothing else. A tint as well would double-signal, and it would make a
+   checked row compete with the keyboard cursor's own
+   --menu-item-background-active. Defined and never read until 1.14.2. */
+--menu-item-text-critical:var(--text-critical);
+--menu-item-background-critical-active:var(--status-critical-soft);
+--menu-item-text-disabled:var(--text-disabled);
+
+/* ── Checkbox · Radio · Switch ─────────────────────────────────────────*/
+/* An unchecked box IS its border — nothing else identifies it — so the border
+   is load-bearing under WCAG 1.4.11 and takes --border-control (4.74:1).
+   Retargeted from --border-strong (1.60:1) in 1.2.0 on the Checkbox freeze. */
+--checkbox-radius:var(--radius-xs);
+--checkbox-background:var(--surface-card);
+--checkbox-background-hover:var(--surface-hover);
+--checkbox-background-checked:var(--action-solid);
+--checkbox-background-checked-hover:var(--action-solid-hover);
+--checkbox-background-disabled:var(--surface-disabled);
+--checkbox-border:var(--border-control);
+--checkbox-border-hover:var(--border-control-hover);
+--checkbox-border-checked:var(--action-solid);
+--checkbox-border-checked-hover:var(--action-solid-hover);
+--checkbox-border-disabled:var(--border-default);
+--checkbox-mark:var(--action-on-solid);
+--radio-background:var(--surface-card);
+--radio-background-hover:var(--surface-hover);
+--radio-background-disabled:var(--surface-disabled);
+--radio-border:var(--border-control);
+--radio-border-hover:var(--border-control-hover);
+--radio-border-checked:var(--action-solid);
+--radio-border-checked-hover:var(--action-solid-hover);
+--radio-border-disabled:var(--border-default);
+--radio-dot:var(--action-solid);
+--radio-dot-hover:var(--action-solid-hover);
+--radio-dot-disabled:var(--text-disabled);
+/* The track is the whole control, and --surface-track measures only 1.60:1
+   against a card — so the switch is identified by its BORDER, which is
+   load-bearing under WCAG 1.4.11 and takes --border-control (4.74:1).
+   Retargeted from --surface-track in 1.2.0 on the Switch freeze. */
+--switch-track:var(--surface-track);
+--switch-track-checked:var(--action-solid);
+--switch-track-checked-hover:var(--action-solid-hover);
+--switch-track-disabled:var(--surface-disabled);
+--switch-border:var(--border-control);
+--switch-border-hover:var(--border-control-hover);
+--switch-border-checked:var(--action-solid);
+--switch-border-checked-hover:var(--action-solid-hover);
+--switch-border-disabled:var(--border-default);
+--switch-knob:var(--surface-knob);
+--switch-knob-border:var(--border-control);
+--switch-knob-disabled:var(--text-disabled);
+--switch-knob-shadow:var(--elevation-1);
+
+/* ── Slider ─────────────────────────────────────────────────────────────
+   Identical geometry to Progress, opposite semantics — a progress fill is
+   the system reporting, a slider fill is a value the operator owns — so the
+   slider must never borrow --progress-* (Progress §07). A 4px track cannot
+   carry a boundary, so the control is identified by its THUMB, whose
+   hairline is load-bearing under WCAG 1.4.11 and takes --border-control
+   (4.74:1): the Switch knob rule, for the same reason. The fill is
+   --action-solid because setting a value is an action; there are no tones,
+   because a red threshold slider would colour a value, not a state. */
+--slider-track:var(--surface-track);
+--slider-track-disabled:var(--surface-disabled);
+--slider-fill:var(--action-solid);
+--slider-fill-hover:var(--action-solid-hover);
+--slider-fill-disabled:var(--border-default);
+--slider-thumb:var(--surface-knob);
+--slider-thumb-disabled:var(--text-disabled);
+--slider-thumb-border:var(--border-control);
+--slider-thumb-border-hover:var(--border-control-hover);
+--slider-thumb-border-active:var(--action-solid);
+--slider-thumb-border-disabled:var(--border-default);
+--slider-thumb-shadow:var(--elevation-1);
+--slider-tick:var(--border-strong);
+--slider-tick-label:var(--text-tertiary);
+--slider-label-text:var(--text-primary);
+--slider-value-text:var(--text-primary);
+--slider-radius:var(--radius-pill);
+--slider-track-height-sm:3px;
+--slider-track-height-md:4px;
+--slider-thumb-size-sm:14px;
+--slider-thumb-size-md:16px;
+
+/* ── Field ─────────────────────────────────────────────────────────────*/
+--field-label-text:var(--text-secondary);
+--field-hint-text:var(--text-tertiary);
+--field-error-text:var(--text-critical);
+--field-required-mark:var(--status-critical-solid);
+--field-gap:var(--space-half);
+--field-message-gap:var(--space-1);
+
+/* ── Tabs ──────────────────────────────────────────────────────────────
+   Two variants, one token group: the underline bar is page-level furniture
+   and the segmented control is a local switch, but they are the same
+   component and must never drift into two colour vocabularies. The count
+   sits on its own tokens because it is data, not label — it dims when the
+   tab is inactive and must be able to dim independently of the text. */
+--tabs-border:var(--border-default);
+--tab-text:var(--text-secondary);
+--tab-text-hover:var(--text-primary);
+--tab-text-active:var(--text-primary);
+--tab-text-disabled:var(--text-disabled);
+--tab-icon:var(--text-tertiary);
+--tab-icon-active:var(--text-secondary);
+--tab-count-text:var(--text-tertiary);
+--tab-count-text-active:var(--text-secondary);
+--tab-indicator:var(--action-solid);
+--tab-indicator-hover:var(--border-strong);
+--tab-focus-ring:var(--focus-ring);
+--tabs-pill-background:var(--surface-sunken);
+--tabs-pill-border:var(--border-default);
+--tab-pill-background-active:var(--surface-card);
+--tab-pill-background-hover:var(--surface-hover);
+--tab-pill-shadow-active:var(--elevation-1);
+/* No --tabs-scroll-fade: the overflow cue is a mask, which fades to
+   whatever is behind the bar and needs no colour. A colour-gradient overlay
+   would need a wrapper element and would paint over the pill variant's own
+   background. Removed 1.14.2 after the mask shipped. */
+
+/* ── Accordion ─────────────────────────────────────────────────────────
+   A disclosure is a row that becomes a container, so it needs its own
+   surface tokens rather than borrowing Card's: a bordered accordion is one
+   card holding many rows, and retargeting --card-* must not silently move
+   the divider between them. The expanded header takes no tint of its own —
+   --accordion-header-background-expanded resolves to the same value as rest
+   deliberately, because the open panel below it is already the state; a
+   tinted header plus an open panel says the same thing twice. Products that
+   want a louder open row retarget this one variable. */
+--accordion-background:var(--surface-card);
+--accordion-border:var(--border-default);
+--accordion-radius:var(--radius-md);
+--accordion-divider:var(--border-subtle);
+--accordion-header-background:transparent;
+--accordion-header-background-hover:var(--surface-hover);
+--accordion-header-background-expanded:transparent;
+--accordion-header-text:var(--text-primary);
+--accordion-header-text-hover:var(--text-primary);
+--accordion-header-text-disabled:var(--text-disabled);
+--accordion-header-focus-ring:var(--focus-ring);
+--accordion-description-text:var(--text-tertiary);
+--accordion-marker:var(--text-tertiary);
+--accordion-marker-expanded:var(--text-secondary);
+--accordion-marker-disabled:var(--text-disabled);
+--accordion-panel-text:var(--text-secondary);
+/* No --accordion-panel-border: rows are already separated by
+   --accordion-divider. A second rule that appears only while a panel is open
+   is a line flickering in and out on every expand. Never read. */
+
+/* ── Breadcrumb ────────────────────────────────────────────────────────
+   Its own text tokens rather than --link-*: a trail is standalone navigation
+   whose resting state must be quieter than a link in prose (no underline at
+   rest, secondary rather than action colour), and the current-page crumb is
+   not a link at all. Sharing Link's variables would tie the loudest text in
+   a page header to the quietest. */
+--breadcrumb-text:var(--text-secondary);
+--breadcrumb-text-hover:var(--text-primary);
+--breadcrumb-text-current:var(--text-primary);
+--breadcrumb-separator:var(--text-disabled);
+--breadcrumb-icon:var(--text-tertiary);
+--breadcrumb-overflow-text:var(--text-tertiary);
+--breadcrumb-focus-ring:var(--focus-ring);
+
+/* ── Pagination ────────────────────────────────────────────────────────
+   The current page is a filled chip, not a tinted link: it is the one
+   control in the row that is a STATE rather than a destination, and at 28px
+   a border alone does not carry that. Arrows get their own text tokens
+   because their disabled state is load-bearing — the first and last page are
+   where a user learns the list has ends. */
+--pagination-page-text:var(--text-secondary);
+--pagination-page-text-hover:var(--text-primary);
+--pagination-page-text-current:var(--action-on-solid);
+--pagination-page-background-hover:var(--surface-hover);
+--pagination-page-background-current:var(--action-solid);
+--pagination-page-radius:var(--radius-sm);
+/* No --pagination-arrow-text: it resolved to --text-secondary, exactly what
+   the page numbers already use, so it was two names for one value and
+   wiring it changed nothing. Quietening the arrows would need
+   --text-tertiary, which the text contract reserves for what the operator
+   need NOT read in order to act — and an arrow is acted upon. Arrows and
+   numbers are interactive controls of equal standing; only the disabled
+   colour distinguishes them. Removed 1.14.2. */
+--pagination-arrow-text-disabled:var(--text-disabled);
+--pagination-ellipsis-text:var(--text-tertiary);
+--pagination-summary-text:var(--text-tertiary);
+/* No --pagination-border: the rule between a table and its paginator is
+   the CARD's seam, not a part of Pagination, and the token contract only
+   lets a component token name that component's own parts. Consumers use
+   --border-subtle (see Pagination §14). Referenced only in docs, never in
+   code, until removed in 1.14.2. */
+--pagination-focus-ring:var(--focus-ring);
+
+/* ── Dialog (the system's modal) ───────────────────────────────────────
+   Widths are tokens, not JSX numbers, so a product can re-scale its modals
+   without forking the component. Top-aligned 64px down rather than centred:
+   a centred dialog moves its own title upward as content grows, so a form
+   that gains a validation message shifts the thing the user is reading. */
+/* ── DatePicker ─────────────────────────────────────────────────────────
+   The calendar panel. The FIELD borrows --input-* wholesale, exactly as
+   Select, Combobox and Autocomplete do, so a date field cannot drift from
+   the text field beside it; everything here is the panel and the grid. */
+--datepicker-panel-background:var(--surface-overlay);
+--datepicker-panel-border:var(--border-default);
+--datepicker-panel-radius:var(--radius-md);
+--datepicker-panel-shadow:var(--elevation-3);
+--datepicker-header-text:var(--text-primary);
+--datepicker-weekday-text:var(--text-tertiary);
+--datepicker-day-size:30px;
+--datepicker-day-radius:var(--radius-sm);
+--datepicker-day-text:var(--text-primary);
+--datepicker-day-outside-text:var(--text-tertiary);
+--datepicker-day-disabled-text:var(--text-disabled);
+--datepicker-day-background-hover:var(--surface-hover);
+--datepicker-day-background-selected:var(--action-solid);
+--datepicker-day-foreground-selected:var(--action-on-solid);
+/* The span between two ends of a range. A tint, never the solid: the two
+   ENDS are the choices, and painting forty days in action blue makes the
+   range look like forty selections. */
+--datepicker-day-background-range:var(--surface-selected);
+--datepicker-day-foreground-range:var(--text-accent);
+--datepicker-today-border:var(--border-control);
+--datepicker-footer-border:var(--border-subtle);
+
+/* ── Progress ───────────────────────────────────────────────────────────
+   WORK IN FLIGHT — never a level. A utilisation gauge, an OEE bar or a
+   capacity meter looks identical and means something else entirely: it
+   reports a state that is simply true, not a task that is going to finish.
+   Those are charts (or role="meter"); this component is for something that
+   started and will end, which is why it has one indicator colour and no
+   tones — a red progress bar is a chart pretending a job is failing. */
+--progress-track:var(--surface-sunken);
+--progress-indicator:var(--action-solid);
+--progress-radius:var(--radius-full);
+--progress-height-sm:2px;
+--progress-height-md:4px;
+/* The travelling segment of an indeterminate bar. Wide enough to read as one
+   object crossing the track, narrow enough that the track stays visible —
+   at 100% it is a flashing bar, not a moving one. */
+--progress-indeterminate-width:40%;
+--progress-label-text:var(--text-secondary);
+--progress-value-text:var(--text-secondary);
+--progress-spinner-track:var(--border-default);
+--progress-spinner-indicator:var(--action-solid);
+--progress-spinner-width:2px;
+--progress-spinner-size-sm:14px;
+--progress-spinner-size-md:16px;
+--progress-spinner-size-lg:20px;
+
+/* ── Drawer ─────────────────────────────────────────────────────────────
+   The side surface: a PLACE beside the page, not a decision on top of it.
+   It shares Dialog's overlay surface and shadow deliberately — two floating
+   layers at the same elevation must not be two colours — and differs where
+   the behaviour differs: the panel is flush to an edge, so only its leading
+   corners are rounded and only its leading edge has a border. The other
+   three edges are off-screen, and a border drawn there is a hairline the
+   user sees only while the panel animates. */
+--drawer-background:var(--surface-overlay);
+--drawer-border:var(--border-default);
+--drawer-radius:var(--radius-lg);
+--drawer-shadow:var(--elevation-4);
+/* One step lighter than --dialog-scrim: a drawer's whole argument is that the
+   page behind stays readable, and a modal-weight scrim over a table the user
+   is comparing against defeats the reason they opened the panel. */
+--drawer-scrim:var(--overlay-scrim);
+--drawer-width-sm:360px;
+--drawer-width-md:460px;
+--drawer-width-lg:640px;
+/* Bottom sheets are measured in height, and capped at 85% of the surface by
+   the component: a sheet that covers the page is a page. */
+--drawer-height-sm:280px;
+--drawer-height-md:420px;
+--drawer-height-lg:560px;
+--drawer-padding-inline:var(--space-5);
+--drawer-title-text:var(--text-primary);
+--drawer-description-text:var(--text-secondary);
+--drawer-footer-background:var(--background-page);
+--drawer-footer-border:var(--border-subtle);
+
+--dialog-background:var(--surface-overlay);
+--dialog-width-sm:400px;
+--dialog-width-md:520px;
+--dialog-width-lg:720px;
+--dialog-inset-block:var(--space-16);
+--dialog-inset-inline:var(--space-6);
+--dialog-padding-inline:var(--space-6);
+--dialog-border:var(--border-default);
+--dialog-radius:var(--radius-lg);
+--dialog-shadow:var(--elevation-5);
+--dialog-scrim:var(--overlay-scrim);
+--dialog-title-text:var(--text-primary);
+--dialog-title-text-critical:var(--text-critical);
+--dialog-description-text:var(--text-secondary);
+--dialog-footer-background:var(--background-page);
+--dialog-footer-border:var(--border-subtle);
+
+/* ── Toast ─────────────────────────────────────────────────────────────*/
+--toast-background:var(--surface-overlay);
+--toast-border:var(--border-default);
+--toast-radius:var(--radius-md);
+--toast-shadow:var(--elevation-4);
+--toast-title-text:var(--text-primary);
+--toast-message-text:var(--text-secondary);
+--toast-icon-info:var(--status-info-solid);
+--toast-icon-success:var(--status-success-solid);
+--toast-icon-warning:var(--status-warning-solid);
+--toast-icon-critical:var(--status-critical-solid);
+--toast-dismiss-icon:var(--text-tertiary);
+--toast-overflow-text:var(--text-tertiary);
+--toast-width:360px;
+--toast-gap:var(--space-2);
+--toast-viewport-inset:var(--space-6);
+
+/* ── Alert ─────────────────────────────────────────────────────────────
+   The persistent one. Toast and Snackbar are events that expire; an alert
+   is a CONDITION, in the page flow, that stays until the condition does.
+   Tinted rather than white-with-a-stripe: the tint is what lets a reader
+   scanning a long page see that a block is not ordinary content, and the
+   tone colour is carried by the tint, the border, the icon AND a word — no
+   alert is ever colour alone. Body copy stays --text-primary/secondary
+   rather than the tone's text colour, which is reserved for the title: a
+   whole paragraph in red-700 is unreadable at --text-sm. */
+--alert-radius:var(--radius-md);
+--alert-padding-sm:var(--space-3);
+--alert-padding-md:var(--space-4);
+--alert-gap:var(--space-3);
+--alert-title-text:var(--text-primary);
+--alert-body-text:var(--text-secondary);
+--alert-dismiss-icon:var(--text-tertiary);
+--alert-accent-width:3px;
+--alert-info-background:var(--status-info-soft);
+--alert-info-border:var(--status-info-border);
+--alert-info-icon:var(--status-info-solid);
+--alert-info-title:var(--status-info-text);
+--alert-success-background:var(--status-success-soft);
+--alert-success-border:var(--status-success-border);
+--alert-success-icon:var(--status-success-solid);
+--alert-success-title:var(--status-success-text);
+--alert-warning-background:var(--status-warning-soft);
+--alert-warning-border:var(--status-warning-border);
+--alert-warning-icon:var(--status-warning-solid);
+--alert-warning-title:var(--status-warning-text);
+--alert-critical-background:var(--status-critical-soft);
+--alert-critical-border:var(--status-critical-border);
+--alert-critical-icon:var(--status-critical-solid);
+--alert-critical-title:var(--status-critical-text);
+--alert-neutral-background:var(--status-neutral-soft);
+--alert-neutral-border:var(--status-neutral-border);
+--alert-neutral-icon:var(--status-neutral-solid);
+--alert-neutral-title:var(--text-primary);
+
+/* ── Snackbar ──────────────────────────────────────────────────────────
+   A bar, not a card. Snackbar borrows nothing from --toast-*: it is wider,
+   shorter, lower (--elevation-2 against the toast's 4), tighter in radius,
+   and it carries no tone colour at all — its whole job is one sentence and
+   one action, anchored to the surface that caused it. It is deliberately
+   NOT inverted: --surface-inverse belongs to Tooltip, and a second inverted
+   surface in the same corner of the screen would read as the same layer. */
+--snackbar-background:var(--surface-overlay);
+--snackbar-border:var(--border-strong);
+--snackbar-radius:var(--radius-sm);
+--snackbar-shadow:var(--elevation-2);
+--snackbar-text:var(--text-primary);
+--snackbar-dismiss-icon:var(--text-tertiary);
+--snackbar-attached-border:var(--border-default);
+--snackbar-height-sm:36px;
+--snackbar-height-md:44px;
+--snackbar-padding-sm:var(--space-3);
+--snackbar-padding-md:var(--space-4);
+--snackbar-gap:var(--space-4);
+--snackbar-max-width:560px;
+--snackbar-inset:var(--space-4);
+
+/* ── Tooltip ───────────────────────────────────────────────────────────
+   The only inverted surface in the system, and inverted deliberately: a tip
+   must read as a layer ABOVE the page rather than another card on it, at a
+   size too small to establish itself any other way. --radius-xs and
+   --elevation-3 keep it small and close; a tooltip that looks like a popover
+   invites the user to try to click into it. */
+--tooltip-background:var(--surface-inverse);
+--tooltip-foreground:var(--text-inverse);
+--tooltip-border:var(--border-inverse);
+--tooltip-radius:var(--radius-xs);
+--tooltip-shadow:var(--elevation-3);
+--tooltip-shortcut-text:var(--text-disabled);
+--tooltip-padding:5px 8px;
+--tooltip-max-width:260px;
+
+/* ── Tree ──────────────────────────────────────────────────────────────
+   A hierarchy the user walks, not a run of records. Two geometry rules are
+   the whole component:
+
+   · --tree-indent is ONE step, applied per level. It is 16px and not the
+     20-24px a file browser uses, because a nine-level BOM at 24px spends
+     216px of a 360px panel on empty air. Deeper trees are handled by
+     scrolling the label column, never by shrinking the step per level —
+     an indent that varies by depth stops encoding depth.
+   · The row is a control (role="treeitem" with one tab stop for the whole
+     tree), so it takes --radius-sm, the house control corner, and the
+     standard --focus-ring. It is NOT a table row: no full-bleed band, no
+     zebra. The selected tint stops at the row's own rounded box.
+
+   The guide rule is --border-subtle and never --border-default: at eight
+   levels the guides are the most repeated line on the screen, and at
+   default weight they out-draw the labels beside them. */
+--tree-row-height-sm:var(--control-h-sm);
+--tree-row-height-md:var(--control-h-md);
+--tree-row-radius:var(--radius-sm);
+--tree-row-padding-x:var(--space-2);
+--tree-row-gap:var(--space-2);
+--tree-indent:16px;
+--tree-guide:var(--border-subtle);
+--tree-row-background-hover:var(--surface-hover);
+--tree-row-background-selected:var(--surface-selected);
+/* No --tree-row-text: a row's resting colour is --tree-branch-text or
+   --tree-leaf-text, never a third value that neither branch nor leaf reads. */
+--tree-row-text-selected:var(--text-accent);
+--tree-row-text-disabled:var(--text-disabled);
+--tree-branch-text:var(--text-primary);
+--tree-leaf-text:var(--text-secondary);
+--tree-chevron:var(--text-tertiary);
+--tree-chevron-hover:var(--text-primary);
+--tree-leading-foreground:var(--text-secondary);
+--tree-meta-text:var(--text-tertiary);
+--tree-indicator-border:var(--border-control);
+--tree-indicator-background:var(--surface-card);
+--tree-indicator-background-selected:var(--action-solid);
+--tree-indicator-foreground:var(--action-on-solid);
+/* ── ScopePicker (composite) ───────────────────────────────────────────
+   Several hierarchy nodes as ONE scope value. The composite owns the frame,
+   the distance between the query and the tree, and the summary band; the
+   Tree and the SearchField inside keep their own tokens.
+
+   The tree pane is height-capped and scrolls: a scope picker sits inside a
+   form, and a hierarchy that pushes the Submit button off screen is why
+   products hand-rolled this in the first place. The cap is a token, not a
+   prop — a form field with a caller-chosen height is a layout accident.
+
+   --scope-picker-gap is the frame's own rhythm: the distance from the frame to
+   its message line, and the distance between the summary band's phrases. One
+   token for both, because they are the same relationship — a derived line
+   sitting against the thing it describes.
+
+   --scope-picker-summary-background is --surface-sunken and not the card
+   fill: the summary is a derived readout, not another input, and the one
+   surface change is what says so without a second border. */
+--scope-picker-gap:var(--space-2);
+--scope-picker-radius:var(--radius-md);
+--scope-picker-border:var(--border-default);
+--scope-picker-border-invalid:var(--status-critical-solid);
+--scope-picker-background:var(--surface-card);
+--scope-picker-tree-padding:var(--space-2);
+--scope-picker-tree-max-height:280px;
+--scope-picker-summary-background:var(--surface-sunken);
+--scope-picker-summary-border:var(--border-subtle);
+--scope-picker-summary-padding:var(--space-2) var(--space-3);
+--scope-picker-summary-text:var(--text-secondary);
+--scope-picker-summary-count-text:var(--text-primary);
+--scope-picker-empty-text:var(--text-tertiary);
+--scope-picker-invalid-text:var(--text-critical);
+}
+
+/* ── COARSE POINTER ────────────────────────────────────────────────────
+   The only pointer-conditional block in the token layer. Tag is the one
+   component whose resting geometry is below the 44px target minimum and
+   whose content the user must still be able to dismiss on a phone, so its
+   height and remove target are raised here rather than by a `touch` prop no
+   product would remember to pass. Nothing else in the system needs this:
+   every other control already meets 44px at its md size. */
+@media (pointer:coarse){
+  :root{
+    --tag-height-sm:32px;
+    --tag-height-md:36px;
+    --tag-padding-sm:10px;
+    --tag-padding-md:12px;
+    --tag-remove-target:44px;
+  }
+}

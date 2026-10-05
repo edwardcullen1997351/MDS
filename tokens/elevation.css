@@ -1,0 +1,33 @@
+:root{
+/* ── ELEVATION 0–5 ─────────────────────────────────────────────────────
+   A z-order vocabulary, not a decorative range. Hairline-first: a border
+   does the structural work and shadow only lifts things that genuinely
+   float. All steps are cool-black at low alpha with a tight blur. */
+--shadow-none:none;
+--shadow-xs:0 1px 2px rgba(11,14,18,.06);
+--shadow-sm:0 1px 3px rgba(11,14,18,.08),0 1px 2px -1px rgba(11,14,18,.06);
+--shadow-md:0 4px 12px -2px rgba(11,14,18,.10),0 2px 4px -2px rgba(11,14,18,.06);
+--shadow-lg:0 16px 32px -8px rgba(11,14,18,.16),0 4px 8px -4px rgba(11,14,18,.08);
+--shadow-xl:0 32px 64px -16px rgba(11,14,18,.22),0 8px 16px -8px rgba(11,14,18,.10);
+--shadow-inset:inset 0 1px 0 rgba(255,255,255,.06); /* dark surfaces only */
+
+/* Numbered aliases — level maps to what may sit at it. */
+--elevation-0:var(--shadow-none); /* flush: page, table rows, sidebar, inputs */
+--elevation-1:var(--shadow-xs);   /* resting cards and buttons */
+--elevation-2:var(--shadow-sm);   /* sticky bars, table headers, raised cards */
+--elevation-3:var(--shadow-md);   /* menus, popovers, tooltips, selects */
+--elevation-4:var(--shadow-lg);   /* toasts, drawers */
+--elevation-5:var(--shadow-xl);   /* dialogs */
+
+/* Focus rings — drawn as dual-band box-shadow with 2px offset for guaranteed >= 3:1 contrast against both component fill and background (WCAG 2.2 SC 2.4.13) */
+--focus-ring-width:2px;
+--focus-ring-offset:2px;
+--focus-ring-color:var(--blue-600);
+--ring-focus:0 0 0 var(--focus-ring-offset) var(--surface-card), 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--focus-ring-color);
+--ring-danger:0 0 0 var(--focus-ring-offset) var(--surface-card), 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--status-critical-solid);
+--ring-inverse:0 0 0 var(--focus-ring-offset) var(--surface-inverse), 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--grey-0);
+
+/* Overlay compositing */
+--scrim:rgba(11,14,18,.44);
+--blur-overlay:blur(2px); /* @kind other */
+}

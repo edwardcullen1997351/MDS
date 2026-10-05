@@ -1,0 +1,26 @@
+:root{
+/* ── OPACITY ───────────────────────────────────────────────────────────
+   Opacity is for compositing — scrims, tints, disabled *decoration*, chart
+   fills, stale data. It is NEVER applied to a whole interactive element:
+   a disabled control gets --surface-disabled and --text-disabled so its
+   text stays legible and its border stays crisp. */
+--opacity-0:0; /* @kind other */
+--opacity-4:0.04; /* @kind other */
+--opacity-8:0.08; /* @kind other */
+--opacity-12:0.12; /* @kind other */
+--opacity-16:0.16; /* @kind other */
+--opacity-24:0.24; /* @kind other */
+--opacity-32:0.32; /* @kind other */
+--opacity-48:0.48; /* @kind other */
+--opacity-64:0.64; /* @kind other */
+--opacity-80:0.80; /* @kind other */
+--opacity-100:1; /* @kind other */
+
+/* Roles */
+--opacity-tint:var(--opacity-8);      /* hover fill over a coloured surface */
+--opacity-tint-strong:var(--opacity-16); /* @kind other */
+--opacity-chart-fill:var(--opacity-12); /* area under a series line */
+--opacity-stale:var(--opacity-48);    /* a reading that is old but real */
+--opacity-scrim:0.44; /* @kind other */
+--opacity-ghost:var(--opacity-64);    /* element being dragged */
+}

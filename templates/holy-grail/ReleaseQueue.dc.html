@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><script src="./ds-base.js"></script></helmet>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 4 }}" hint-size="100%,100%">
+
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 18px">
+<h2 style="margin:0;font-size:var(--text-md);font-weight:var(--weight-semibold)">Releasable work orders</h2>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ summary }}</span>
+</div>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Surface" tone="card" elevation="{{ 1 }}" padding="none" radius="md" border="{{ true }}" hint-size="100%,620px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Table" columns="{{ columns }}" rows="{{ rows }}" row-key="id" caption="Releasable work orders, press shop, week 2026-W37" selectable="{{ true }}" selected-keys="{{ selected }}" onSelectionChange="{{ onSelect }}" row-label="{{ rowLabel }}" sort="{{ sort }}" onSortChange="{{ onSort }}" sticky-header="{{ true }}" freeze-leading="{{ true }}" min-width="880px" empty-message="{{ emptyMessage }}" hint-size="100%,600px"></x-import>
+</x-import>
+
+<sc-if value="{{ cleared }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="secondary" size="sm" onClick="{{ onClear }}" hint-size="150px,30px">Clear the criteria</x-import>
+</sc-if>
+
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty">Press-minutes are the planned run time at the standard rate, before the die change. Value is the standard cost of the order, not the sale price.</p>
+
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:900,&quot;height&quot;:760},&quot;rows&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;any[]&quot;},&quot;selected&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string[]&quot;},&quot;onSelect&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(keys: string[]) =&gt; void&quot;},&quot;sort&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;{ key: string; direction: 'asc' | 'desc' }&quot;},&quot;onSort&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(sort: any) =&gt; void&quot;},&quot;cleared&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;onClear&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const rows = this.props.rows || [];
+    const R = React.createElement;
+    const NS = window.MeridianDesignSystem_962c43 || {};
+    const Badge = NS.Badge;
+    const tone = { full: 'success', short: 'warning', none: 'critical' };
+    const label = { full: 'Full kit', short: 'Short', none: 'Not issued' };
+    const mins = rows.reduce((t, r) => t + r.mins, 0);
+    return {
+      rows,
+      selected: this.props.selected || [],
+      onSelect: this.props.onSelect,
+      sort: this.props.sort,
+      onSort: this.props.onSort,
+      cleared: !!this.props.cleared,
+      onClear: this.props.onClear,
+      rowLabel: (row) => row.wo + ', ' + row.part,
+      summary: rows.length + ' shown \u00b7 ' + mins.toLocaleString('en-IN') + ' press-minutes \u00b7 sorted by due date',
+      emptyMessage: 'No work order in week 2026-W37 matches these criteria. Widen the line or material position on the left.',
+      columns: [
+        { key: 'wo', header: 'Work order', mono: true, width: '110px', sortable: true },
+        { key: 'part', header: 'Part', mono: true, width: '116px' },
+        { key: 'name', header: 'Description', wrap: true },
+        { key: 'qty', header: 'Qty', align: 'right', width: '72px', mono: true, sortable: true, render: (r) => r.qty.toLocaleString('en-IN') },
+        { key: 'line', header: 'Line', mono: true, width: '64px', sortable: true },
+        { key: 'mins', header: 'Press min', align: 'right', mono: true, width: '86px', sortable: true },
+        { key: 'due', header: 'Due (IST)', mono: true, width: '112px', sortable: true, render: (r) => (Badge && r.due < '2026-09-08'
+            ? R('span', { style: { display: 'inline-flex', gap: '6px', alignItems: 'center' } }, r.due, R(Badge, { tone: 'critical', size: 'sm' }, 'overdue'))
+            : r.due) },
+        { key: 'material', header: 'Material', width: '108px', render: (r) => (Badge ? R(Badge, { tone: tone[r.material], size: 'sm' }, label[r.material]) : label[r.material]) },
+        { key: 'value', header: 'Value', align: 'right', mono: true, width: '106px', sortable: true, render: (r) => '\u20b9' + r.value.toLocaleString('en-IN') },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

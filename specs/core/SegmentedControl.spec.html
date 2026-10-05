@@ -1,0 +1,299 @@
+<!-- @dsCard group="Specs · Core" viewport="1080x760" name="SegmentedControl" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>SegmentedControl — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:5px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.rows{display:flex;flex-direction:column;gap:14px}
+.w280{width:280px}
+.w360{width:360px}
+
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+const Do = ({children}) => <div className="pane do"><h3>Do</h3><ul>{children}</ul></div>;
+const Dont = ({children}) => <div className="pane dont"><h3>Don't</h3><ul>{children}</ul></div>;
+const { SegmentedControl, Tabs, ChipGroup, Select, Button, Text, Badge } = window.MeridianDesignSystem_962c43;
+
+function ViewDemo(){
+  const [v,setV] = React.useState('board');
+  return <SegmentedControl label="View" value={v} onChange={setV}
+    options={[{value:'list',label:'List',icon:'list'},{value:'board',label:'Board',icon:'columns-3'},{value:'calendar',label:'Calendar',icon:'calendar'}]} />;
+}
+function Uncontrolled({...p}){ return <SegmentedControl label="Example" defaultValue="b" options={[{value:'a',label:'One'},{value:'b',label:'Two'},{value:'c',label:'Three'}]} {...p} />; }
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Core · Component specification</span>
+    <h1>SegmentedControl</h1>
+    <p className="lede">One value, two to four options, all of them visible, in the width of a toolbar row. A sunken track with one segment lifted out of it — the shortest possible answer to "which one am I in?", and the only control in the system that answers it without owning anything else on the page.</p>
+    <div className="meta">
+      <span>components/core/SegmentedControl.jsx</span><span>window.MeridianDesignSystem_962c43.SegmentedControl</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 1 open item</span><span>since: 1.19.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="A value, not a panel. The whole spec follows from that.">
+    <p>Reach for a SegmentedControl when a small, fixed set of alternatives is <em>mutually exclusive</em>, <em>equally weighted</em>, and <em>cheap to switch between</em> — a calendar's Day/Week/Month, a price table's Monthly/Annual, an editor's alignment, a chart's units. The user is not filling in a form field; they are choosing which version of the same thing to look at.</p>
+    <p><strong>The confusion worth designing against is <code>Tabs variant="pill"</code>,</strong> which is this exact paint. The two are not variants of each other: a tablist <em>owns panels</em> — <code>aria-controls</code>, one <code>tabpanel</code> per tab, and content replaced in place — while this owns a <em>value</em> and nothing else. If the press swaps a region of the page, it is Tabs. If the press changes a setting that something else reads, it is this.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Switch which view of a page is showing','Tabs (variant="pill")','It owns the panels. Same appearance, different semantics — and screen-reader users navigate tablists by a shortcut this control does not claim.'],
+      ['Set a mode or a unit that other content reads','SegmentedControl','This component.'],
+      ['Filter data by a short set of labels','ChipGroup','Chips wrap, carry counts, and go multi-select. A filter row is not a mode switch.'],
+      ['Offer five or more options','Select','The track is fixed width and every label must be legible at once; five is where that stops being true.'],
+      ['Turn one thing on or off','Switch','Two states are not two options. "On/Off" as a segmented control is a switch with extra chrome.'],
+      ['Fire two related commands','ButtonGroup','Joined buttons that do NOT remember a choice. ButtonGroup holds no selected state, deliberately — see its spec §01.'],
+      ['Pick one of a long or unknown list','Select, Combobox','Anything the design does not author cannot be laid out edge to edge.'],
+    ]}/>
+    <div className="demo"><ViewDemo /><Text size="xs" tone="tertiary">Three options, icons optional, one tab stop.</Text></div>
+    <ul>
+      <li><strong>Two to four options.</strong> Two is legitimate (Monthly/Annual). Five warns: the labels shrink, the track outgrows a toolbar, and the set has become a list.</li>
+      <li><strong>Do not use</strong> where the options are not equally weighted. A segmented control gives every option identical visual weight; if one is the default and the rest are exceptions, that is a <code>Select</code>.</li>
+      <li><strong>Do not use</strong> in a table row or a dense list. The track is a toolbar object; per-row mode switches belong in a row menu.</li>
+      <li><strong>Do not use</strong> for a destructive or expensive choice. Selection follows focus, so arrowing across the track fires every option on the way past.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A well, a raised segment, and a legend you usually cannot see.">
+    <div className="demo"><Uncontrolled labelVisible /></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Track</strong> — <code>--segmented-track-background</code> (sunken) inside a <code>--segmented-track-border</code> hairline, on <code>--segmented-track-radius</code>. The well is what says "these belong to one question"; without it the segments read as three loose buttons.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Segment</strong> — a <code>&lt;label&gt;</code> wrapping a visually hidden radio. Full control height, so the control rides density with every other control in the row.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Selected segment</strong> — lifted OUT of the well: <code>--segmented-background-selected</code> (card), a hairline, and one step of <code>--segmented-shadow-selected</code>. Never a colour fill — colour here competes with the content the control is switching.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Divider</strong> — <code>--segmented-divider</code>, painted on a segment's left edge and only between two <em>unselected</em> neighbours. Beside the raised segment a rule reads as a seam. It is transparent rather than absent, so nothing re-flows when selection moves.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Legend</strong> — the question. Visually hidden by default (still the group's accessible name), shown above the track with <code>labelVisible</code> when the control sits in a form rather than a toolbar.</span></div>
+    </div>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Twelve, and the value model is the only subtle one.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['options','SegmentOption[]','—','{ value, label, icon?, disabled? }. Two to four.'],
+      ['value','string','—','Controlled ONLY together with onChange (§13). Alone it warns.'],
+      ['defaultValue','string','first option','Uncontrolled start. The control then holds its own value.'],
+      ['onChange','(next, e) => void','—','Emits the next VALUE, not an event — the event is the second argument if you need it.'],
+      ['label','ReactNode','—','The question. Required in practice: with no label and no aria-label the control warns.'],
+      ['labelVisible','boolean','false','Renders the legend above the track. In a toolbar the question is the surrounding context.'],
+      ['size','\u2018sm\u2019 | \u2018md\u2019','md','28 / 34 px at comfortable density.'],
+      ['disabled','boolean','false','Native <fieldset disabled>, so the platform owns the whole subtree.'],
+      ['equalWidth','boolean','true','Equal columns. Off, segments size to their labels — only for a track whose labels are already similar.'],
+      ['iconOnly','boolean','false','Square segments, glyph only. Every option then needs an icon and a STRING label.'],
+      ['fullWidth','boolean','false','Stretch to the container. For a form field or a narrow panel, not a toolbar.'],
+      ['name','string','generated','Pass one only for a real form POST; generated names stop per-row controls colliding.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Three switches, no tones.">
+    <div className="demo col">
+      <Row label="default"><Uncontrolled /></Row>
+      <Row label="labelVisible"><Uncontrolled labelVisible /></Row>
+      <Row label="iconOnly"><SegmentedControl label="Alignment" iconOnly defaultValue="center" options={[{value:'left',label:'Align left',icon:'align-left'},{value:'center',label:'Align centre',icon:'align-center'},{value:'right',label:'Align right',icon:'align-right'}]} /></Row>
+      <Row label="fullWidth"><div style={{width:320}}><Uncontrolled fullWidth /></div></Row>
+    </div>
+    <p><strong>There are no tones.</strong> A red or green segmented control would colour a <em>value</em>, not a state — the same rule that keeps tones off Slider. If a mode is dangerous, the confirmation is a Dialog, not a red segment.</p>
+    <p><strong><code>iconOnly</code> is not a shorthand.</strong> It requires a string <code>label</code> per option, which becomes both the accessible name and the tooltip. A glyph-only control with no names is unusable by anyone who does not already recognise the icons — and alignment icons are close to the only set that reliably clears that bar.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two rungs, and one geometry rule that is not optional.">
+    <div className="demo col">
+      <Row label="sm · 28px"><Uncontrolled size="sm" /></Row>
+      <Row label="md · 34px"><Uncontrolled size="md" /></Row>
+    </div>
+    <p><strong>Every label reserves its BOLD width at all times.</strong> Medium weight on the selected segment is what makes the current value legible at a glance, and that half-pixel of extra weight would re-flow the whole track on every arrow press. The fix is not equal columns — it is a hidden medium-weight copy of the label sitting in the same grid cell as the visible one, so the cell is always as wide as the selected state will ever need. The track is then stable whether or not the columns are equal.</p><p><strong><code>equalWidth</code> distributes the leftover space</strong> and floors each track at its own content width (<code>minmax(max-content, 1fr)</code>). The floor is load-bearing: with a <code>0</code> minimum the tracks collapse below their labels and an inline-block track ellipsises every one of them at rest — "Calendar" as "Calend…", which is how this shipped for exactly one build. Turn <code>equalWidth</code> off only when the track must hug its labels inside a crowded toolbar.</p>
+    <p>There is no <code>lg</code>. A segmented control is a chrome object: it sits beside Buttons and IconButtons at sm or md, and a 40 px track would out-weigh the content it is switching.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Rest, hover, selected, focus, disabled — and one per-option state.">
+    <div className="demo col">
+      <Row label="rest / hover"><Uncontrolled /></Row>
+      <Row label="option disabled"><SegmentedControl label="Units" defaultValue="c" options={[{value:'c',label:'°C'},{value:'f',label:'°F'},{value:'k',label:'K',disabled:true}]} /></Row>
+      <Row label="whole control"><Uncontrolled disabled /></Row>
+    </div>
+    <T cols={['State','What changes','Token']} rows={[
+      ['Rest','Secondary text on the bare track.','--segmented-foreground'],
+      ['Hover','Text to primary, a faint surface tint. Unselected segments only.','--segmented-background-hover · --segmented-foreground-hover'],
+      ['Selected','Card surface, hairline, one elevation step, medium weight, primary text.','--segmented-background-selected · --segmented-shadow-selected'],
+      ['Focus','The focus ring on the focused SEGMENT, not the track — the ring must show which option Enter would leave you on.','--segmented-focus-ring'],
+      ['Option disabled','Disabled text, no hover, skipped by the arrow keys. Still rendered: removing it would change the question.','--segmented-foreground-disabled'],
+      ['Control disabled','The whole track greys, including its background. Native fieldset disabled, so nothing inside is reachable.','--segmented-track-background-disabled'],
+    ]}/>
+    <p><strong>Focus and selection are separate.</strong> They coincide most of the time — selection follows focus — but a disabled option can hold neither, and the ring is drawn on the segment rather than the well so that "where am I" and "what is chosen" never merge into one cue.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="All of it is the platform's. That is the point.">
+    <T cols={['Key','Does','Why it is not our code']} rows={[
+      ['Tab','Enters the track at the SELECTED segment; the next Tab leaves the control entirely.','Native radio groups are one tab stop. Hand-rolled segmented controls put a stop on every segment — the most common defect in this pattern.'],
+      ['\u2190 \u2192 / \u2191 \u2193','Move to the previous / next option, wrapping at both ends, and select it.','Wrapping and disabled-skipping are free from the platform and wrong in most re-implementations.'],
+      ['Space','Selects the focused option (already selected when arrowing).','Radio semantics.'],
+      ['Home · End','Not bound.','Radio groups do not define them, and with four options at most there is nothing to jump over.'],
+    ]}/>
+    <p><strong>Selection follows focus, and that is a deliberate exception</strong> to the usual "focus then commit" rule. It is safe here because every option is already rendered and switching costs nothing — no fetch, no navigation, no data loss. Where switching <em>is</em> expensive, do not use this component; a set of options that must be confirmed is a <code>Select</code> plus an Apply <code>Button</code>.</p>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="A fieldset, a legend, and native radios. Nothing invented.">
+    <ul>
+      <li><strong>Structure.</strong> A real <code>&lt;fieldset&gt;</code> with a <code>&lt;legend&gt;</code> over same-name radios. Screen readers announce "View, radio group, Board, 2 of 3" — the question, the role, the value and the position, none of which we had to write.</li>
+      <li><strong>The hidden legend is still the name.</strong> When <code>labelVisible</code> is false the legend is clipped, not <code>display: none</code> — hiding it that way would remove it from the accessibility tree and leave the group anonymous.</li>
+      <li><strong>Icon-only naming.</strong> With <code>iconOnly</code>, each option's string <code>label</code> becomes the radio's accessible name and the segment's <code>title</code>. A glyph with no name is the one configuration this component refuses to render quietly — it warns.</li>
+      <li><strong>Target size.</strong> At <code>md</code> the segment is 34 px tall — below the 44 px in WCAG 2.5.5 (AAA) and above the 24 px in 2.5.8 (AA). On a touch surface use <code>md</code> and let the track be wider, or move the choice into a <code>Select</code>.</li>
+      <li><strong>Contrast.</strong> The selected segment is identified by surface, border AND weight, never by colour alone (1.4.1). Unselected text is <code>--text-secondary</code>, which clears 4.5:1 on the sunken track.</li>
+      <li><strong>No <code>role="tablist"</code>, ever.</strong> Borrowing tab semantics for a control with no panels sends screen-reader users looking for a region that does not exist.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="One transition. No sliding thumb.">
+    <T cols={['Moment','Motion','Token']} rows={[
+      ['Selection moves','Background, border, shadow and text colour cross-fade in place on both segments.','--transition-control'],
+      ['Hover','Same transition, surface tint only.','--transition-control'],
+      ['Focus ring','Instant. A ring that fades in is a ring you arrive before.','—'],
+    ]}/>
+    <p><strong>The thumb does not slide, and the decision is worth stating</strong> because a sliding pill is the signature move of this pattern elsewhere. It needs the selected surface to be a separately positioned element, absolutely placed and measured from the segments — which breaks equal-width columns under a re-render, mis-lands during a font swap, and animates the one moment where the user is already looking at the thing that changed. The cross-fade costs nothing, cannot mis-measure, and reads as instant.</p>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="One or two words, parallel, no verbs.">
+    <T cols={['Do','Not','Why']} rows={[
+      ['List · Board · Calendar','List view · Board view · Calendar view','The shared noun is the legend\u2019s job, not each label\u2019s.'],
+      ['Monthly · Annual','Pay monthly · Pay annually','A segmented control sets a value; verbs make it read like a row of buttons.'],
+      ['Day · Week · Month · Quarter','D · W · M · Q','Initials save 30 px and cost the user the meaning.'],
+      ['°C · °F','Celsius · Fahrenheit (in a toolbar)','Symbols are legitimate where they are the domain\u2019s own notation.'],
+      ['Grid · Rows','Grid · List rows','Parallel length keeps equal columns honest.'],
+    ]}/>
+    <ul>
+      <li><strong>Sentence case, no ending punctuation, no counts.</strong> A count belongs on a Chip (which filters data); a segmented control switches a mode and a number beside it implies filtering.</li>
+      <li><strong>The legend is a noun, not a question.</strong> "View", "Units", "Billing cycle" — not "Which view?".</li>
+      <li><strong>Never mix icon-only and labelled segments</strong> in one track. Either every option carries its own glyph or none does.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Composition" note="Where it sits, and what it must not be nested in.">
+    <ul>
+      <li><strong>In a page header,</strong> right-aligned beside the primary action, at <code>md</code>. This is the common case and the reason <code>labelVisible</code> defaults to false.</li>
+      <li><strong>In a toolbar above a chart or a table,</strong> at <code>sm</code>, grouped with the other chrome. Two segmented controls side by side is legitimate (range and units); three is a toolbar that wants a Menu.</li>
+      <li><strong>In a form,</strong> with <code>labelVisible</code> — and then it is a peer of <code>Field</code>, not a child of it. <code>Field</code> labels ONE control with a <code>&lt;label for&gt;</code>; this control already carries a fieldset and legend, and nesting the two produces a double announcement. Use <code>Fieldset</code>'s hint and error rows if you need them.</li>
+      <li><strong>Inside a Dialog or a Drawer,</strong> at <code>fullWidth</code>, where the panel is narrow and the track can own the row.</li>
+      <li><strong>Never inside a Table cell,</strong> a Menu, or a Tab strip. In a cell it is oversized; in a menu it is a submenu; in a tab strip it is two navigation models arguing.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:16,flexWrap:'wrap'}}>
+        <Text weight="medium">Reservations</Text>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <SegmentedControl label="Range" size="sm" defaultValue="week" options={[{value:'day',label:'Day'},{value:'week',label:'Week'},{value:'month',label:'Month'}]} />
+          <Button variant="primary" size="sm" iconLeft="plus">New booking</Button>
+        </div>
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Do and don't" note="The five that come up in review.">
+    <div className="two">
+      <Do>
+        <li>Give it a <strong>label</strong>, visible or not.</li>
+        <li>Keep the set at <strong>two to four</strong> parallel, equally weighted options.</li>
+        <li>Let it set a <strong>value</strong> that other content reads.</li>
+        <li>Use <strong>Tabs variant="pill"</strong> when panels are involved — it is the same paint.</li>
+        <li>Keep a temporarily unavailable option <strong>present and disabled</strong>.</li>
+      </Do>
+      <Dont>
+        <li>Wrap it in a <strong>Field</strong> — double label.</li>
+        <li>Give it <strong>role="tablist"</strong> or five options.</li>
+        <li>Use it for an <strong>expensive</strong> switch: selection follows focus.</li>
+        <li>Put one in <strong>every table row</strong>.</li>
+        <li>Colour a segment to mean <strong>danger</strong> or <strong>success</strong>.</li>
+      </Dont>
+    </div>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="Six decisions in the file, and the tokens.">
+    <ul>
+      <li><strong>Native radios behind labels, exactly as <code>Chip</code> does it.</strong> One tab stop, wrapping arrows, disabled-skipping and the announcement all come from the platform, so this file contains no key handler, no roving <code>tabindex</code> and no <code>aria-checked</code> bookkeeping.</li>
+      <li><strong>The <code>name</code> is generated from <code>useId</code>.</strong> A control rendered per card or per row would otherwise collide into one radio set, and switching row four would silently clear row one — the defect RadioGroup fixed in 1.2.0 and ChipGroup in 1.17.0.</li>
+      <li><strong>Controlled only when <code>value</code> AND <code>onChange</code> are both present.</strong> Otherwise the component holds its own state, so an uncontrolled control still moves. <code>value</code> alone warns rather than silently freezing.</li>
+      <li><strong>The divider is a border on the segment, not an element between segments.</strong> A divider element would occupy a grid column and the segments would stop being equal widths.</li>
+      <li><strong>Track columns are <code>minmax(max-content, 1fr)</code>, never <code>minmax(0, 1fr)</code>.</strong> The <code>1fr</code> equalises; the <code>max-content</code> floor is what stops an unconstrained inline-block track from collapsing every label to an ellipsis. Paired with the hidden bold-width reserve in each label (§05), the track cannot re-flow and cannot clip.</li>
+      <li><strong>Focus is tracked with <code>:focus-visible</code>,</strong> so a pointer press does not leave a ring behind.</li>
+      <li><strong>Four console warnings:</strong> no accessible name, fewer than two options, more than four, and a value matching no option. Rendering is unaffected by all four.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--segmented-track-background','--segmented-track-background-disabled','--segmented-track-border','--segmented-track-radius','--segmented-radius','--segmented-height-sm','--segmented-height-md','--segmented-padding-sm','--segmented-padding-md','--segmented-background-hover','--segmented-background-selected','--segmented-border-selected','--segmented-shadow-selected','--segmented-foreground','--segmented-foreground-hover','--segmented-foreground-selected','--segmented-foreground-disabled','--segmented-icon','--segmented-icon-selected','--segmented-divider','--segmented-focus-ring'].map(t=><span key={t}>{t}</span>)}
+    </div>
+    <p><strong>Twenty-one tokens, and one of them is a deliberate near-duplicate.</strong> <code>--segmented-background-selected</code> and <code>--tab-pill-background-active</code> resolve to the same surface: a user who has learned "raised segment = the one you are on" should not have to learn it twice. They stay separate tokens because a component token may never reference another component's, and either control may be re-skinned alone.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { SegmentedControl } from '@meridian/ds';
+
+// Controlled — the normal case
+const [view, setView] = useState('board');
+<SegmentedControl label="View" value={view} onChange={setView}
+  options={[
+    { value: 'list',     label: 'List' },
+    { value: 'board',    label: 'Board' },
+    { value: 'calendar', label: 'Calendar' },
+  ]} />
+
+// In a form, with the question shown
+<SegmentedControl label="Billing cycle" labelVisible
+  value={cycle} onChange={setCycle}
+  options={[{ value: 'monthly', label: 'Monthly' }, { value: 'annual', label: 'Annual' }]} />`}</pre>
+    <ul>
+      <li><strong>Testing.</strong> <code>getByRole('group', {'{ name: /view/i }'})</code> first — that assertion is the component's purpose. <strong>Not <code>radiogroup</code></strong>: this control is a real <code>&lt;fieldset&gt;</code>, which maps to the ARIA <code>group</code> role, and the system deliberately does not override it — <code>Fieldset</code> reasons <em>from</em> <code>group</code> (it dropped <code>aria-invalid</code> and <code>aria-required</code> at 1.16.1 because <code>group</code> supports neither), and <code>RadioGroup</code>, <code>ChipGroup</code> and <code>CheckboxGroup</code> all expose the same role. The "radio group" a screen reader speaks in §08 is the <em>announcement</em> a fieldset over same-name radios produces, not the queryable role. This line read <code>radiogroup</code> until 1.27.11, and no shipped component ever matched it. Then <code>getByRole('radio', {'{ name: /board/i }'})</code>; assert that <code>ArrowRight</code> from the last option wraps to the first, that a disabled option is skipped rather than focused, and that two controls rendered side by side do not share a <code>name</code>.</li>
+      <li><strong>Lint.</strong> Flag a <code>SegmentedControl</code> inside a <code>Field</code>; one with five or more options; one inside a <code>Table</code>; a hand-written <code>role="tablist"</code> on a div with buttons; and <code>iconOnly</code> with a non-string label.</li>
+      <li><strong>Frozen 5 Sep 2026.</strong> API closed: <code>options</code>, <code>value</code>, <code>defaultValue</code>, <code>onChange</code>, <code>label</code>, <code>labelVisible</code>, <code>size</code>, <code>disabled</code>, <code>equalWidth</code>, <code>iconOnly</code>, <code>fullWidth</code>, <code>name</code>, <code>style</code>, plus native fieldset attributes.</li>
+      <li><strong>Additive.</strong> Nothing changes for existing call sites; this component did not exist before 1.19.0. Two specs asked for it — <code>Radio</code> §14 and <code>RadioGroup</code> §14 — and both entries are now closed.</li>
+      <li><strong>Open — the vertical variant.</strong> A stacked segmented control is a real pattern in narrow panels, and it is not this component with <code>flex-direction: column</code>: the divider rule, the equal-width guarantee and the arrow-key axis all change. If a surface needs it, it arrives as a prop with its own review, not as a CSS override.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

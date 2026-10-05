@@ -1,0 +1,521 @@
+<!-- @dsCard group="Components" viewport="980x900" name="LineChart — sequential trajectory & trends" subtitle="Continuous, multi-series, stepped, indexed, and small multiples — multi-channel dashes, glyphs, and missing-data policies" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>LineChart</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);padding:24px;font-family:var(--font-sans);color:var(--text-primary)}
+.controls{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;padding:12px 16px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);margin-bottom:20px;font-size:var(--text-xs)}
+.controls label{display:inline-flex;align-items:center;gap:6px;color:var(--text-secondary);font-weight:var(--weight-medium)}
+.controls select,.controls button{font-family:inherit;font-size:inherit;padding:4px 8px;border-radius:var(--radius-xs);border:var(--border-hairline);background:var(--surface-sunken);color:var(--text-primary)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.chart-box{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:16px 20px;box-shadow:var(--shadow-xs)}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+
+<script type="text/babel">
+const DEFAULT_SERIES_COLORS = [
+  'var(--viz-1, #2563eb)',
+  'var(--viz-2, #0d9488)',
+  'var(--viz-3, #d97706)',
+  'var(--viz-4, #7c3aed)',
+  'var(--viz-5, #db2777)',
+  'var(--viz-6, #4b5563)',
+];
+
+const DASH_STYLES = ['none', '5 4', '8 4', '2 3', '6 3 2 3'];
+
+function formatVal(val, unit, isIndexed) {
+  if (val == null || isNaN(val)) return '—';
+  if (isIndexed) return `${val >= 0 ? '+' : ''}${Number(val).toFixed(1)}%`;
+  if (unit === '₹' || unit === 'INR') return `₹${Number(val).toLocaleString('en-IN')}`;
+  if (unit === '%') return `${Number(val).toFixed(1)}%`;
+  const n = Number(val).toLocaleString('en-IN');
+  return unit ? `${n} ${unit}` : n;
+}
+
+function createPathD(points, isStepped) {
+  if (!points || points.length === 0) return '';
+  if (isStepped) {
+    let d = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+      d += ` H ${points[i].x} V ${points[i].y}`;
+    }
+    return d;
+  }
+  let d = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 1; i < points.length; i++) {
+    d += ` L ${points[i].x} ${points[i].y}`;
+  }
+  return d;
+}
+
+function LineChartRenderer({
+  data = [],
+  xKey = 'time',
+  yKey = 'value',
+  series = null,
+  variant = 'single',
+  title = '',
+  caption = '',
+  unit = '',
+  referenceLines = [],
+  missingValuePolicy = 'dashed',
+  height = 240,
+  showGrid = true,
+  showLegend = true,
+  onSelect = null
+}) {
+  const [hoveredIdx, setHoveredIdx] = React.useState(null);
+  const [isTable, setIsTable] = React.useState(false);
+  const [activeSeries, setActiveSeries] = React.useState(null);
+
+  const isStepped = variant === 'stepped';
+  const isIndexed = variant === 'indexed';
+
+  const normalizedSeries = React.useMemo(() => {
+    if (series && Array.isArray(series) && series.length > 0) {
+      return series.map((s, idx) => ({
+        key: typeof s === 'string' ? s : s.key,
+        label: typeof s === 'string' ? s : (s.label || s.key),
+        color: (typeof s === 'object' && s.color) ? s.color : DEFAULT_SERIES_COLORS[idx % DEFAULT_SERIES_COLORS.length],
+        dash: (typeof s === 'object' && s.strokeDash) ? s.strokeDash : DASH_STYLES[idx % DASH_STYLES.length]
+      }));
+    }
+    return [{ key: yKey, label: title || 'Value', color: DEFAULT_SERIES_COLORS[0], dash: 'none' }];
+  }, [series, yKey, title]);
+
+  const processedData = React.useMemo(() => {
+    if (!data || data.length === 0) return [];
+    const t0Vals = {};
+    if (isIndexed) {
+      normalizedSeries.forEach(s => {
+        const first = data.find(d => d[s.key] != null && !isNaN(Number(d[s.key])));
+        t0Vals[s.key] = first ? Number(first[s.key]) : 1;
+      });
+    }
+
+    return data.map((item, idx) => {
+      const x = item[xKey] != null ? item[xKey] : idx;
+      const pt = { ...item, _x: x };
+      normalizedSeries.forEach(s => {
+        const raw = item[s.key];
+        if (raw == null || isNaN(Number(raw))) {
+          pt[`_val_${s.key}`] = null;
+        } else if (isIndexed) {
+          const base = t0Vals[s.key] || 1;
+          pt[`_val_${s.key}`] = ((Number(raw) - base) / (base || 1)) * 100;
+        } else {
+          pt[`_val_${s.key}`] = Number(raw);
+        }
+      });
+      return pt;
+    });
+  }, [data, xKey, normalizedSeries, isIndexed]);
+
+  const [minY, maxY] = React.useMemo(() => {
+    if (processedData.length === 0) return [0, 100];
+    let min = Infinity, max = -Infinity;
+    processedData.forEach(d => {
+      normalizedSeries.forEach(s => {
+        const v = d[`_val_${s.key}`];
+        if (v != null) {
+          if (v < min) min = v;
+          if (v > max) max = v;
+        }
+      });
+    });
+    referenceLines.forEach(rl => {
+      if (rl.value > max) max = rl.value;
+      if (rl.value < min) min = rl.value;
+    });
+    if (min === Infinity || max === -Infinity) return [0, 100];
+    const diff = max - min || 10;
+    return [min - diff * 0.08, max + diff * 0.08];
+  }, [processedData, normalizedSeries, referenceLines]);
+
+  const margins = { top: 12, right: 28, bottom: 28, left: isIndexed ? 56 : 48 };
+  const svgW = 440, svgH = height;
+  const pW = svgW - margins.left - margins.right;
+  const pH = svgH - margins.top - margins.bottom;
+
+  const getY = (val) => {
+    const clamped = Math.max(minY, Math.min(maxY, val));
+    const r = (clamped - minY) / (maxY - minY || 1);
+    return pH - (r * pH);
+  };
+  const getX = (idx) => (idx / Math.max(1, processedData.length - 1)) * pW;
+
+  const yTicks = [0, 0.25, 0.5, 0.75, 1].map(r => minY + (maxY - minY) * r);
+
+  return (
+    <div style={{ position: 'relative', width: '100%' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+        <div>
+          {title && <div style={{ fontSize: 'var(--text-xs)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>{title}</div>}
+          {caption && <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--text-tertiary)' }}>{caption}</div>}
+        </div>
+        <button type="button" onClick={() => setIsTable(!isTable)} style={{ background: 'transparent', border: 'var(--border-hairline)', borderRadius: 2, padding: '1px 6px', fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+          {isTable ? 'Chart' : 'Table'}
+        </button>
+      </div>
+
+      {isTable ? (
+        <div style={{ maxHeight: height, overflow: 'auto', border: 'var(--border-hairline)', borderRadius: 'var(--radius-sm)' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+            <thead>
+              <tr style={{ background: 'var(--surface-sunken)', borderBottom: 'var(--border-hairline)' }}>
+                <th style={{ padding: '6px 8px', textAlign: 'left' }}>Time</th>
+                {normalizedSeries.map(s => <th key={s.key} style={{ padding: '6px 8px', textAlign: 'right' }}>{s.label}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {processedData.map((d, i) => (
+                <tr key={i} style={{ borderBottom: 'var(--border-subtle)' }}>
+                  <td style={{ padding: '6px 8px' }}>{d._x}</td>
+                  {normalizedSeries.map(s => <td key={s.key} style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>{formatVal(d[`_val_${s.key}`], unit, isIndexed)}</td>)}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <svg width="100%" height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ overflow: 'visible' }}>
+          {/* Gridlines */}
+          {showGrid && yTicks.map((t, i) => {
+            const y = margins.top + getY(t);
+            return (
+              <g key={i}>
+                <line x1={margins.left} y1={y} x2={margins.left + pW} y2={y} stroke="var(--border-subtle)" strokeDasharray="2 2" />
+                <text x={margins.left - 6} y={y + 3} textAnchor="end" fontSize="9" fontFamily="var(--font-mono)" fill="var(--text-tertiary)">{formatVal(t, isIndexed ? '%' : unit, isIndexed)}</text>
+              </g>
+            );
+          })}
+
+          {/* X Axis Ticks */}
+          {processedData.map((d, i) => {
+            if (i % 2 !== 0 && i !== processedData.length - 1) return null;
+            const x = margins.left + getX(i);
+            return (
+              <g key={i}>
+                <line x1={x} y1={margins.top + pH} x2={x} y2={margins.top + pH + 3} stroke="var(--border-strong)" />
+                <text x={x} y={margins.top + pH + 14} textAnchor="middle" fontSize="9" fontFamily="var(--font-sans)" fill="var(--text-tertiary)">{d._x}</text>
+              </g>
+            );
+          })}
+
+          {/* Reference Lines */}
+          {referenceLines.map((rl, i) => {
+            const y = margins.top + getY(rl.value);
+            const col = rl.tone === 'danger' ? 'var(--status-danger-solid, #ef4444)' : 'var(--action-solid, #2563eb)';
+            return (
+              <g key={i}>
+                <line x1={margins.left} y1={y} x2={margins.left + pW} y2={y} stroke={col} strokeDasharray="3 3" strokeWidth="1.5" />
+                <text x={margins.left + pW} y={y - 3} textAnchor="end" fontSize="8" fontFamily="var(--font-mono)" fill={col} fontWeight="bold">{rl.label}</text>
+              </g>
+            );
+          })}
+
+          {/* Series Paths */}
+          {normalizedSeries.map(s => {
+            const isDimmed = activeSeries && activeSeries !== s.key;
+            const pts = [];
+            const gaps = [];
+
+            processedData.forEach((d, i) => {
+              const v = d[`_val_${s.key}`];
+              if (v != null) {
+                pts.push({ x: margins.left + getX(i), y: margins.top + getY(v), idx: i });
+              } else if (pts.length > 0) {
+                gaps.push([...pts]);
+                pts.length = 0;
+              }
+            });
+            if (pts.length > 0) gaps.push(pts);
+
+            return (
+              <g key={s.key}>
+                {gaps.map((seg, segIdx) => (
+                  <path
+                    key={segIdx}
+                    d={createPathD(seg, isStepped)}
+                    fill="none"
+                    stroke={s.color}
+                    strokeWidth="2"
+                    strokeDasharray={s.dash !== 'none' ? s.dash : undefined}
+                    opacity={isDimmed ? 0.25 : 1}
+                  />
+                ))}
+
+                {/* Missing Data Dashed Connectors */}
+                {missingValuePolicy === 'dashed' && gaps.length > 1 && gaps.slice(0, -1).map((seg, segIdx) => {
+                  const p1 = seg[seg.length - 1];
+                  const p2 = gaps[segIdx + 1][0];
+                  return (
+                    <line key={`dash-gap-${segIdx}`} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={s.color} strokeWidth="1.5" strokeDasharray="2 3" opacity="0.6" />
+                  );
+                })}
+
+                {/* Points */}
+                {processedData.map((d, i) => {
+                  const v = d[`_val_${s.key}`];
+                  if (v == null) return null;
+                  const x = margins.left + getX(i);
+                  const y = margins.top + getY(v);
+                  const isHov = hoveredIdx === i;
+                  return (
+                    <circle key={i} cx={x} cy={y} r={isHov ? 4.5 : 2.5} fill="var(--surface-card)" stroke={s.color} strokeWidth="2" opacity={isDimmed ? 0.25 : 1} />
+                  );
+                })}
+              </g>
+            );
+          })}
+
+          {/* Hover Crosshair */}
+          {hoveredIdx != null && (
+            <line
+              x1={margins.left + getX(hoveredIdx)}
+              y1={margins.top}
+              x2={margins.left + getX(hoveredIdx)}
+              y2={margins.top + pH}
+              stroke="var(--border-strong)"
+              strokeDasharray="2 2"
+              strokeWidth="1"
+            />
+          )}
+
+          {/* Interactive Hit Slices */}
+          {processedData.map((d, i) => {
+            const x = margins.left + getX(i);
+            const w = pW / Math.max(1, processedData.length);
+            return (
+              <rect
+                key={i}
+                x={x - w / 2}
+                y={margins.top}
+                width={w}
+                height={pH}
+                fill="transparent"
+                onMouseEnter={() => setHoveredIdx(i)}
+                onMouseLeave={() => setHoveredIdx(null)}
+                onClick={() => onSelect && onSelect(d)}
+                style={{ cursor: onSelect ? 'pointer' : 'default' }}
+              />
+            );
+          })}
+        </svg>
+      )}
+
+      {/* Hover Floating Tooltip */}
+      {hoveredIdx != null && !isTable && processedData[hoveredIdx] && (
+        <div style={{ position: 'absolute', top: 0, right: 0, background: 'var(--surface-card)', border: 'var(--border-hairline)', borderRadius: 'var(--radius-xs)', padding: '6px 10px', boxShadow: 'var(--shadow-sm)', fontSize: 11, pointerEvents: 'none', zIndex: 10 }}>
+          <div style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: 2 }}>{processedData[hoveredIdx]._x}</div>
+          {normalizedSeries.map(s => {
+            const v = processedData[hoveredIdx][`_val_${s.key}`];
+            return (
+              <div key={s.key} style={{ display: 'flex', gap: 8, justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+                <span>{s.label}:</span>
+                <strong style={{ fontFamily: 'var(--font-mono)', color: v != null ? 'var(--text-primary)' : 'var(--text-critical)' }}>
+                  {v != null ? formatVal(v, unit, isIndexed) : 'No Telemetry'}
+                </strong>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Legend */}
+      {showLegend && normalizedSeries.length > 1 && !isTable && (
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 8 }}>
+          {normalizedSeries.map(s => (
+            <div key={s.key} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-secondary)' }}>
+              <span style={{ width: 10, height: 2, background: s.color, borderTop: s.dash !== 'none' ? '2px dashed currentColor' : 'none' }} />
+              <span>{s.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Plant Datasets (Suryodaya Autocomp Ltd — Chakan PL-04, Pune)
+const SPINDLE_VIBRATION_24H = [
+  { time: '06:00', vibration: 1.2 },
+  { time: '08:00', vibration: 1.4 },
+  { time: '10:00', vibration: 1.8 },
+  { time: '12:00', vibration: 2.7 },
+  { time: '14:00', vibration: 2.1 },
+  { time: '16:00', vibration: 1.5 },
+  { time: '18:00', vibration: 1.6 },
+  { time: '20:00', vibration: 1.9 },
+  { time: '22:00', vibration: 1.3 },
+];
+
+const SHIFT_TRAJECTORY_MULTI = [
+  { hour: 'H1', 'Shift A': 52, 'Shift B': 48, 'Shift C': 38 },
+  { hour: 'H2', 'Shift A': 55, 'Shift B': 51, 'Shift C': 42 },
+  { hour: 'H3', 'Shift A': 58, 'Shift B': 53, 'Shift C': 44 },
+  { hour: 'H4', 'Shift A': 48, 'Shift B': 56, 'Shift C': 40 },
+  { hour: 'H5', 'Shift A': 59, 'Shift B': 58, 'Shift C': 46 },
+  { hour: 'H6', 'Shift A': 62, 'Shift B': 54, 'Shift C': 45 },
+  { hour: 'H7', 'Shift A': 60, 'Shift B': 52, 'Shift C': 43 },
+  { hour: 'H8', 'Shift A': 64, 'Shift B': 55, 'Shift C': 48 },
+];
+
+const FURNACE_STEPPED_DATA = [
+  { step: '06:00 IST', temp: 250 },
+  { step: '08:30 IST', temp: 650 },
+  { step: '11:00 IST', temp: 850 },
+  { step: '14:00 IST', temp: 850 },
+  { step: '16:30 IST', temp: 450 },
+  { step: '19:00 IST', temp: 150 },
+];
+
+const TOOL_WEAR_INDEXED_DATA = [
+  { parts: '0 pcs', 'Line 1 Tool': 0, 'Line 2 Tool': 0, 'Line 3 Tool': 0 },
+  { parts: '100 pcs', 'Line 1 Tool': 2.4, 'Line 2 Tool': 1.8, 'Line 3 Tool': 4.1 },
+  { parts: '200 pcs', 'Line 1 Tool': 5.8, 'Line 2 Tool': 3.9, 'Line 3 Tool': 8.9 },
+  { parts: '300 pcs', 'Line 1 Tool': 9.2, 'Line 2 Tool': 6.5, 'Line 3 Tool': 14.5 },
+  { parts: '400 pcs', 'Line 1 Tool': 13.5, 'Line 2 Tool': 9.8, 'Line 3 Tool': 22.0 },
+  { parts: '500 pcs', 'Line 1 Tool': 18.0, 'Line 2 Tool': 13.2, 'Line 3 Tool': 31.4 },
+];
+
+const SENSOR_OUTAGE_DATA = [
+  { time: '08:00', pressure: 140 },
+  { time: '09:00', pressure: 142 },
+  { time: '10:00', pressure: null }, // Sensor dropout
+  { time: '11:00', pressure: null }, // Sensor dropout
+  { time: '12:00', pressure: 145 },
+  { time: '13:00', pressure: 148 },
+  { time: '14:00', pressure: 144 },
+];
+
+function Showcase() {
+  const [theme, setTheme] = React.useState('light');
+  const [selectedPoint, setSelectedPoint] = React.useState(null);
+
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  return (
+    <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+      <div className="controls">
+        <label>
+          Theme:
+          <select value={theme} onChange={e => setTheme(e.target.value)}>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </label>
+        <div style={{ marginLeft: 'auto', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-tertiary)' }}>
+          Suryodaya Autocomp Ltd · PL-04 Chakan Plant (Pune)
+        </div>
+      </div>
+
+      <div className="grid">
+        {/* 1. Continuous Single-Series Line: Spindle Vibration Telemetry */}
+        <div className="chart-box">
+          <LineChartRenderer
+            title="CNC Spindle Vibration Telemetry (24-Hour)"
+            caption="PL-04 Line 2 bearing vibration vs Upper Control Limit"
+            data={SPINDLE_VIBRATION_24H}
+            xKey="time"
+            yKey="vibration"
+            unit="mm/s"
+            referenceLines={[{ value: 2.5, label: 'UCL (2.5 mm/s)', tone: 'danger' }]}
+            onSelect={(pt) => setSelectedPoint(pt)}
+          />
+        </div>
+
+        {/* 2. Multi-Series Line: Shift Production Trajectory */}
+        <div className="chart-box">
+          <LineChartRenderer
+            title="Hourly Shift Output Rate (Units/Hour)"
+            caption="Trajectory comparison across Shift A / B / C"
+            data={SHIFT_TRAJECTORY_MULTI}
+            xKey="hour"
+            series={[
+              { key: 'Shift A', label: 'Shift A (Solid)', strokeDash: 'none' },
+              { key: 'Shift B', label: 'Shift B (Dashed)', strokeDash: '5 4' },
+              { key: 'Shift C', label: 'Shift C (Dotted)', strokeDash: '2 3' }
+            ]}
+            unit="pcs/hr"
+            onSelect={(pt) => setSelectedPoint(pt)}
+          />
+        </div>
+
+        {/* 3. Stepped Line: Heat Treatment Annealing Temperature */}
+        <div className="chart-box">
+          <LineChartRenderer
+            title="Furnace Annealing Temperature Steps (°C)"
+            caption="Discrete recipe temperature phase setpoints"
+            data={FURNACE_STEPPED_DATA}
+            xKey="step"
+            yKey="temp"
+            variant="stepped"
+            unit="°C"
+            referenceLines={[{ value: 850, label: 'Soak Setpoint' }]}
+            onSelect={(pt) => setSelectedPoint(pt)}
+          />
+        </div>
+
+        {/* 4. Indexed Comparison: CNC Tool Wear Growth (%) */}
+        <div className="chart-box">
+          <LineChartRenderer
+            title="Tool Insert Wear Progression (% from t0)"
+            caption="Rebased relative wear index across 3 machining cells"
+            data={TOOL_WEAR_INDEXED_DATA}
+            xKey="parts"
+            series={[
+              { key: 'Line 1 Tool', label: 'Line 1 Insert', color: 'var(--viz-1)' },
+              { key: 'Line 2 Tool', label: 'Line 2 Insert', color: 'var(--viz-2)', strokeDash: '5 4' },
+              { key: 'Line 3 Tool', label: 'Line 3 Insert', color: 'var(--viz-3)', strokeDash: '2 3' }
+            ]}
+            variant="indexed"
+            unit="%"
+            onSelect={(pt) => setSelectedPoint(pt)}
+          />
+        </div>
+
+        {/* 5. Missing Data Treatment: Broken Dashed Telemetry */}
+        <div className="chart-box">
+          <LineChartRenderer
+            title="Hydraulic Header Pressure (Missing Telemetry)"
+            caption="10:00–12:00 sensor dropout rendered as broken dashed line"
+            data={SENSOR_OUTAGE_DATA}
+            xKey="time"
+            yKey="pressure"
+            unit="bar"
+            missingValuePolicy="dashed"
+            onSelect={(pt) => setSelectedPoint(pt)}
+          />
+        </div>
+
+        {/* 6. High-Frequency Baseline: Spindle Vibration Trend */}
+        <div className="chart-box">
+          <LineChartRenderer
+            title="Line 1 Press Stroke Cadence (SPM)"
+            caption="Strokes per minute telemetry over operating shift"
+            data={SPINDLE_VIBRATION_24H}
+            xKey="time"
+            yKey="vibration"
+            unit="SPM"
+            onSelect={(pt) => setSelectedPoint(pt)}
+          />
+        </div>
+      </div>
+
+      {selectedPoint && (
+        <div style={{ marginTop: 20, padding: '10px 14px', background: 'var(--surface-sunken)', border: 'var(--border-hairline)', borderRadius: 'var(--radius-sm)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
+          Active Selection: {JSON.stringify(selectedPoint)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Showcase />);
+</script></body></html>

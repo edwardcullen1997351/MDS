@@ -1,0 +1,548 @@
+<!-- @dsCard group="Specs · Navigation" viewport="1120x760" name="Step Navigation" subtitle="Multi-Stage Process Navigation System — stage progression, completion tracking, validation gates, and linear/non-linear routing" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Step Navigation — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:68ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:74ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:76ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-direction:column;gap:16px}
+.demo-row{display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:120px;padding-top:6px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.badge-tier{display:inline-block;padding:2px 8px;font-family:var(--font-mono);font-size:var(--text-2xs);letter-spacing:var(--tracking-caps);text-transform:uppercase;border-radius:var(--radius-full);background:var(--status-info-soft);color:var(--status-info-solid)}
+
+/* Mock Stepper Styles */
+.mock-stepper-horizontal{display:flex;align-items:center;width:100%;position:relative}
+.mock-step-node{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:2;background:none;border:none;padding:0;cursor:pointer;flex:1}
+.mock-step-node:disabled{cursor:not-allowed;opacity:0.6}
+.mock-step-circle{width:32px;height:32px;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--text-xs);font-weight:var(--weight-semibold);background:var(--surface-card);border:2px solid var(--border-hairline);color:var(--text-tertiary);transition:all 0.2s ease}
+.mock-step-node.completed .mock-step-circle{background:var(--status-success-solid);border-color:var(--status-success-solid);color:#ffffff}
+.mock-step-node.current .mock-step-circle{background:var(--surface-card);border-color:var(--action-solid);color:var(--action-solid);box-shadow:0 0 0 3px var(--status-info-soft)}
+.mock-step-node.error .mock-step-circle{background:var(--surface-card);border-color:var(--status-critical-solid);color:var(--status-critical-solid)}
+.mock-step-title{font-size:var(--text-xs);font-weight:var(--weight-medium);color:var(--text-secondary);text-align:center;max-width:140px}
+.mock-step-node.current .mock-step-title{color:var(--text-primary);font-weight:var(--weight-semibold)}
+.mock-step-divider{flex:1;height:2px;background:var(--border-hairline);margin:0 -8px 24px -8px;position:relative;z-index:1}
+.mock-step-divider.filled{background:var(--status-success-solid)}
+
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Button, IconButton, Badge, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section id={`sec-${n}`}>
+    <div className="sec-head">
+      <span className="num">§{n}</span>
+      <h2>{title}</h2>
+      {note && <div className="sec-note">{note}</div>}
+    </div>
+    <div className="body">{children}</div>
+  </section>
+);
+
+const ERP_PROCESS_STAGES = [
+  { id: 'STG-01', title: 'BOM & Material Requisition', sub: 'Chakan PL-04 · Raw Coil Stock', optional: false },
+  { id: 'STG-02', title: 'Line & Machine Allocation', sub: 'Press Shop · Line 1 (500T Platen)', optional: false },
+  { id: 'STG-03', title: 'Die Setup & Tooling Clearance', sub: 'Tool Room Sign-off', optional: false },
+  { id: 'STG-04', title: 'First-Piece QA Inspection', sub: 'Micro-meter & Hardness Test', optional: true },
+  { id: 'STG-05', title: 'Dispatch & E-Way Bill', sub: 'GST Portal Sync (₹4,82,500)', optional: false },
+];
+
+function InteractiveStepDemo() {
+  const [currentStep, setCurrentStep] = React.useState(2); // Die Setup
+  const [completedSteps, setCompletedSteps] = React.useState([0, 1]);
+  const [hasError, setHasError] = React.useState(false);
+  const [isLinear, setIsLinear] = React.useState(true);
+  const [variant, setVariant] = React.useState('horizontal'); // horizontal | vertical | compact-pill
+
+  const total = ERP_PROCESS_STAGES.length;
+  const currentStage = ERP_PROCESS_STAGES[currentStep];
+
+  const handleStepClick = (index) => {
+    if (isLinear) {
+      // In linear mode, can only jump to completed steps or the next immediately available step
+      if (completedSteps.includes(index) || index === Math.max(...completedSteps, -1) + 1) {
+        setCurrentStep(index);
+        setHasError(false);
+      }
+    } else {
+      setCurrentStep(index);
+      setHasError(false);
+    }
+  };
+
+  const handleCompleteCurrent = () => {
+    if (!completedSteps.includes(currentStep)) {
+      setCompletedSteps([...completedSteps, currentStep]);
+    }
+    if (currentStep < total - 1) {
+      setCurrentStep(currentStep + 1);
+      setHasError(false);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+      setHasError(false);
+    }
+  };
+
+  const isStepAccessible = (index) => {
+    if (!isLinear) return true;
+    return completedSteps.includes(index) || index <= Math.max(...completedSteps, -1) + 1;
+  };
+
+  return (
+    <div className="demo">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px',borderBottom:'var(--border-hairline)',paddingBottom:'12px'}}>
+        <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
+          <span className="eyebrow">Interactive Rig</span>
+          <Badge tone="info">MO-2026-CH-918</Badge>
+          <span style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+            Stage {currentStep + 1} of {total} · {isLinear ? 'Linear Enforcement' : 'Non-Linear Free Navigation'}
+          </span>
+        </div>
+        <div style={{display:'flex',gap:'12px',alignItems:'center'}}>
+          <label style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-2xs)',display:'flex',alignItems:'center',gap:'6px',cursor:'pointer'}}>
+            <input type="checkbox" checked={isLinear} onChange={e => setIsLinear(e.target.checked)} />
+            Linear Mode
+          </label>
+          <label style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-2xs)',display:'flex',alignItems:'center',gap:'6px',cursor:'pointer'}}>
+            <input type="checkbox" checked={hasError} onChange={e => setHasError(e.target.checked)} />
+            Simulate Error State
+          </label>
+          <div style={{display:'flex',gap:'4px'}}>
+            {['horizontal', 'vertical', 'compact-pill'].map(v => (
+              <button
+                key={v}
+                onClick={() => setVariant(v)}
+                style={{
+                  padding:'4px 8px',
+                  borderRadius:'var(--radius-xs)',
+                  border:'var(--border-hairline)',
+                  background: variant === v ? 'var(--action-solid)' : 'var(--surface-card)',
+                  color: variant === v ? '#fff' : 'var(--text-secondary)',
+                  fontFamily:'var(--font-mono)',
+                  fontSize:'var(--text-2xs)',
+                  cursor:'pointer'
+                }}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Step Navigation Bar Render */}
+      {variant === 'horizontal' && (
+        <nav aria-label="Job Order Workflow Steps" style={{padding:'20px 0'}}>
+          <ol style={{listStyle:'none',padding:0,margin:0,display:'flex',alignItems:'center',width:'100%'}}>
+            {ERP_PROCESS_STAGES.map((stg, i) => {
+              const isCompleted = completedSteps.includes(i);
+              const isCurrent = i === currentStep;
+              const isErr = isCurrent && hasError;
+              const accessible = isStepAccessible(i);
+
+              return (
+                <React.Fragment key={stg.id}>
+                  <li style={{flex:1,display:'flex',justifyContent:'center'}}>
+                    <button
+                      type="button"
+                      disabled={!accessible}
+                      onClick={() => handleStepClick(i)}
+                      className={`mock-step-node ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''} ${isErr ? 'error' : ''}`}
+                      aria-current={isCurrent ? 'step' : undefined}
+                      aria-label={`${stg.title}${isCompleted ? ' (Completed)' : ''}${isCurrent ? ' (Current stage)' : ''}${isErr ? ' (Validation error)' : ''}`}
+                    >
+                      <div className="mock-step-circle">
+                        {isErr ? '!' : (isCompleted ? '✓' : i + 1)}
+                      </div>
+                      <div className="mock-step-title">
+                        {stg.title}
+                        {stg.optional && <span style={{display:'block',fontSize:'10px',color:'var(--text-tertiary)'}}>(Optional)</span>}
+                      </div>
+                    </button>
+                  </li>
+                  {i < total - 1 && (
+                    <div className={`mock-step-divider ${completedSteps.includes(i) ? 'filled' : ''}`} />
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </ol>
+        </nav>
+      )}
+
+      {variant === 'vertical' && (
+        <nav aria-label="Job Order Workflow Steps" style={{background:'var(--surface-card)',border:'var(--border-hairline)',borderRadius:'var(--radius-md)',padding:'16px'}}>
+          <ol style={{listStyle:'none',padding:0,margin:0,display:'flex',flexDirection:'column',gap:'16px'}}>
+            {ERP_PROCESS_STAGES.map((stg, i) => {
+              const isCompleted = completedSteps.includes(i);
+              const isCurrent = i === currentStep;
+              const isErr = isCurrent && hasError;
+              const accessible = isStepAccessible(i);
+
+              return (
+                <li key={stg.id} style={{display:'flex',alignItems:'flex-start',gap:'12px'}}>
+                  <button
+                    type="button"
+                    disabled={!accessible}
+                    onClick={() => handleStepClick(i)}
+                    style={{
+                      display:'flex',
+                      alignItems:'center',
+                      gap:'12px',
+                      background:'none',
+                      border:'none',
+                      padding:0,
+                      cursor: accessible ? 'pointer' : 'not-allowed',
+                      opacity: accessible ? 1 : 0.45,
+                      textAlign:'left'
+                    }}
+                  >
+                    <div className="mock-step-circle" style={{
+                      borderColor: isErr ? 'var(--status-critical-solid)' : (isCompleted ? 'var(--status-success-solid)' : (isCurrent ? 'var(--action-solid)' : 'var(--border-hairline)')),
+                      background: isCompleted ? 'var(--status-success-solid)' : 'var(--surface-card)',
+                      color: isCompleted ? '#ffffff' : (isErr ? 'var(--status-critical-solid)' : (isCurrent ? 'var(--action-solid)' : 'var(--text-tertiary)'))
+                    }}>
+                      {isErr ? '!' : (isCompleted ? '✓' : i + 1)}
+                    </div>
+                    <div>
+                      <div style={{fontSize:'var(--text-sm)',fontWeight: isCurrent ? 'var(--weight-semibold)' : 'var(--weight-normal)',color: isCurrent ? 'var(--text-primary)' : 'var(--text-secondary)'}}>
+                        {stg.id}: {stg.title}
+                      </div>
+                      <div style={{fontSize:'var(--text-2xs)',color:'var(--text-tertiary)'}}>
+                        {stg.sub} {stg.optional && '· (Optional stage)'}
+                      </div>
+                    </div>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
+      )}
+
+      {variant === 'compact-pill' && (
+        <nav aria-label="Job Order Workflow Steps" style={{display:'flex',alignItems:'center',justifyContent:'space-between',background:'var(--surface-sunken)',padding:'10px 16px',borderRadius:'var(--radius-md)',border:'var(--border-hairline)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+            <span style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-xs)',fontWeight:'var(--weight-semibold)',color:'var(--action-solid)'}}>
+              STAGE {currentStep + 1} OF {total}
+            </span>
+            <span style={{fontSize:'var(--text-xs)',fontWeight:'var(--weight-medium)',color:'var(--text-primary)'}}>
+              {currentStage.title}
+            </span>
+          </div>
+          <div style={{display:'flex',gap:'6px'}}>
+            {ERP_PROCESS_STAGES.map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  width:'24px',
+                  height:'6px',
+                  borderRadius:'var(--radius-full)',
+                  background: completedSteps.includes(i) ? 'var(--status-success-solid)' : (i === currentStep ? 'var(--action-solid)' : 'var(--border-hairline)')
+                }}
+              />
+            ))}
+          </div>
+        </nav>
+      )}
+
+      {/* Stage Body Simulation */}
+      <div style={{background:'var(--surface-sunken)',padding:'18px 20px',borderRadius:'var(--radius-md)',border: hasError ? '1px solid var(--status-critical-solid)' : 'var(--border-subtle)',display:'flex',flexDirection:'column',gap:'10px'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <span style={{fontFamily:'var(--font-mono)',fontSize:'var(--text-xs)',color: hasError ? 'var(--status-critical-solid)' : 'var(--text-tertiary)'}}>
+            {hasError ? 'STAGE VALIDATION ERROR OCCURRED' : `ACTIVE STAGE PANEL · ${currentStage.id}`}
+          </span>
+          <Badge tone={hasError ? 'critical' : (completedSteps.includes(currentStep) ? 'success' : 'info')}>
+            {hasError ? 'Validation Gate Blocked' : (completedSteps.includes(currentStep) ? 'Stage Completed' : 'In Progress')}
+          </Badge>
+        </div>
+        <div style={{fontSize:'var(--text-base)',fontWeight:'var(--weight-semibold)',color:'var(--text-primary)'}}>
+          {currentStage.title}
+        </div>
+        <div style={{fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+          {currentStage.sub}. All required engineering parameters and sensor telemetry must be verified before advancing to the subsequent job routing stage.
+        </div>
+      </div>
+
+      {/* Stage Navigation Action Controls */}
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:'8px'}}>
+        <Button variant="secondary" disabled={currentStep === 0} onClick={handleBack}>
+          ← Previous Stage
+        </Button>
+        <div style={{display:'flex',gap:'12px'}}>
+          {currentStage.optional && (
+            <Button variant="ghost" onClick={() => setCurrentStep(s => Math.min(s + 1, total - 1))}>
+              Skip Optional Stage
+            </Button>
+          )}
+          <Button variant="primary" onClick={handleCompleteCurrent}>
+            {currentStep === total - 1 ? 'Finalize & Submit Job Order ✓' : 'Save & Proceed to Next Stage →'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div className="page">
+      <div className="masthead">
+        <div className="eyebrow">Meridian Design System · Navigation Architecture · System 9 of 9</div>
+        <h1>Step Navigation</h1>
+        <p className="lede">
+          Communicates position in a bounded multi-stage process and, where permitted, allows navigation among its stages. Standardizes completion tracking, validation gates, optional stage handling, and linear versus non-linear progression rules.
+        </p>
+        <div className="meta">
+          <span>SPEC: MDS-NAV-STEP-09</span>
+          <span>STATUS: FROZEN (0 OPEN ITEMS)</span>
+          <span>CATEGORY: NAV-SYSTEM</span>
+          <span>W3C: ARIA-CURRENT="STEP" PATTERN</span>
+          <span>ENTERPRISE: CHAKAN PL-04</span>
+        </div>
+      </div>
+
+      {/* §01 Purpose & Intent */}
+      <Sec n="01" title="Purpose & Intent" note="Why Step Navigation exists and its architectural boundaries.">
+        <p>
+          <strong>Step Navigation</strong> provides structured, progression-aware traversal through a multi-stage business workflow where each stage carries validation, state completion, or sequential dependency semantics. It separates the concepts of <em>progression state</em> (upcoming, current, completed, error) from <em>navigation mechanisms</em> (step list links vs form action buttons).
+        </p>
+        <ul>
+          <li><strong>Bounded Multi-Stage Process:</strong> Enforces a defined sequence of stages with clear entry and completion criteria.</li>
+          <li><strong>Validation & Gate Enforcement:</strong> In linear processes, prevents forward navigation past uncompleted or invalid stages.</li>
+          <li><strong>Non-Linear Flexibility:</strong> Permits random-access jumping among stages when business rules allow independent data completion.</li>
+          <li><strong>Clear State Separation:</strong> Strictly distinguishes current active route from stage completion status and form validity flags.</li>
+        </ul>
+      </Sec>
+
+      {/* §02 Anatomy & Composition */}
+      <Sec n="02" title="Anatomy & Composition" note="Required structural, node, and connecting elements.">
+        <table>
+          <thead>
+            <tr><th>Element</th><th>Requirement</th><th>Semantics / Role</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td className="k">StepNav (Root)</td><td>Required</td><td><code>&lt;nav aria-label="..."&gt;</code></td><td>Landmark container identifying the process navigation boundary.</td></tr>
+            <tr><td className="k">Step List</td><td>Required</td><td><code>&lt;ol&gt;</code></td><td>Ordered list establishing the deterministic stage sequence.</td></tr>
+            <tr><td className="k">Step Item (Node)</td><td>Required</td><td><code>&lt;li&gt; &gt; &lt;button&gt;</code> / <code>&lt;a&gt;</code></td><td>Individual stage node exposing stage index, state icon, and label.</td></tr>
+            <tr><td className="k">Step Divider / Connector</td><td>Optional</td><td><code>&lt;div aria-hidden="true"&gt;</code></td><td>Visual connecting stroke indicating progression fill between steps.</td></tr>
+            <tr><td className="k">Forward / Back Controls</td><td>Required</td><td><code>&lt;Button&gt;</code></td><td>Action bar controls that trigger stage save, validation, and traversal.</td></tr>
+            <tr><td className="k">Optional Stage Badge</td><td>Optional</td><td><code>&lt;Badge&gt;</code> / <code>&lt;Text&gt;</code></td><td>Explicit textual marker communicating that stage completion is non-mandatory.</td></tr>
+          </tbody>
+        </table>
+      </Sec>
+
+      {/* §03 Properties & Design Tokens */}
+      <Sec n="03" title="Properties & Design Tokens" note="MDS design token bindings for colors, borders, and fills.">
+        <div className="tokenlist">
+          <div><code>--surface-card</code>: Step node fill and card backgrounds</div>
+          <div><code>--status-success-solid</code>: Completed step node stroke & checkmark fill</div>
+          <div><code>--action-solid</code>: Active current step stroke & primary progress bar</div>
+          <div><code>--status-critical-solid</code>: Validation error indicator stroke & badge</div>
+          <div><code>--border-hairline</code>: Inactive / upcoming connector line</div>
+          <div><code>--radius-full</code>: Circular node geometry (32px diameter)</div>
+          <div><code>--font-mono</code>: Step numbers (1, 2, 3) and stage codes (STG-01)</div>
+        </div>
+      </Sec>
+
+      {/* §04 Variants */}
+      <Sec n="04" title="Variants" note="Supported layout variations.">
+        <table>
+          <thead>
+            <tr><th>Variant Key</th><th>Orientation</th><th>Use Case</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="k">horizontal</td>
+              <td>Top horizontal strip with connecting bars.</td>
+              <td>Full-width desktop ERP wizards, multi-step job creation, procurement PO approval.</td>
+            </tr>
+            <tr>
+              <td className="k">vertical</td>
+              <td>Left or right sidebar stacked list with stage descriptions.</td>
+              <td>Complex configurations, equipment audit inspections, and multi-section machine logs.</td>
+            </tr>
+            <tr>
+              <td className="k">compact-pill</td>
+              <td>Minimalist header bar with segmented progress pills.</td>
+              <td>Shopfloor tablet UI, handheld mobile barcode terminals, and modal dialogs.</td>
+            </tr>
+          </tbody>
+        </table>
+      </Sec>
+
+      {/* §05 Sizes & Density */}
+      <Sec n="05" title="Sizes & Density" note="Node dimensions and text scale.">
+        <table>
+          <thead>
+            <tr><th>Size</th><th>Node Circle</th><th>Connector Height</th><th>Label Font Size</th><th>Context</th></tr>
+          </thead>
+          <tbody>
+            <tr><td className="k">sm</td><td>24×24px</td><td>2px</td><td>11px</td><td>Modal workflows, sidebars</td></tr>
+            <tr><td className="k">md (default)</td><td>32×32px</td><td>2px</td><td>12px</td><td>Standard desktop business wizards</td></tr>
+            <tr><td className="k">lg</td><td>40×40px</td><td>3px</td><td>14px</td><td>Shopfloor touch kiosks & inspection pads</td></tr>
+          </tbody>
+        </table>
+      </Sec>
+
+      {/* §06 States & Interactions */}
+      <Sec n="06" title="States & Interactions" note="Lifecycle states of individual stage nodes.">
+        <div className="demo">
+          <div className="staterow">
+            <span className="lbl">Upcoming / Locked:</span>
+            <span style={{color:'var(--text-tertiary)'}}>Subtle border, inactive number, <code>aria-disabled="true"</code> in linear workflows.</span>
+          </div>
+          <div className="staterow">
+            <span className="lbl">Current:</span>
+            <span style={{color:'var(--action-solid)',fontWeight:'var(--weight-semibold)'}}>High-contrast border, soft glow ring, <code>aria-current="step"</code>.</span>
+          </div>
+          <div className="staterow">
+            <span className="lbl">Completed:</span>
+            <span style={{color:'var(--text-success)'}}>Green solid fill, checkmark icon (✓), accessible for backward review.</span>
+          </div>
+          <div className="staterow">
+            <span className="lbl">Error-Associated:</span>
+            <span style={{color:'var(--status-critical-solid)'}}>Red border, exclamation mark (!), <code>aria-invalid="true"</code> indicating blocked validation.</span>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §07 Keyboard Navigation */}
+      <Sec n="07" title="Keyboard Navigation" note="W3C APG keyboard interaction pattern.">
+        <ul>
+          <li><kbd>Tab</kbd> / <kbd>Shift + Tab</kbd>: Move focus sequentially through interactive step nodes and action buttons.</li>
+          <li><kbd>Enter</kbd> / <kbd>Space</kbd>: Activate focused step node (jumping to that stage if accessible) or submit action button.</li>
+          <li><kbd>ArrowLeft</kbd> / <kbd>ArrowRight</kbd>: Traversal between step list items when configured as a roving tabindex composite.</li>
+        </ul>
+      </Sec>
+
+      {/* §08 Accessibility & Screen Readers */}
+      <Sec n="08" title="Accessibility & Screen Readers" note="WCAG 2.2 AA/AAA accessibility conformance.">
+        <ul>
+          <li><strong>Landmark Semantics:</strong> Wrap the entire stepper in <code>&lt;nav aria-label="Workflow step navigation"&gt;</code>.</li>
+          <li><strong>Ordered Semantics:</strong> Use an ordered list <code>&lt;ol&gt;</code> to convey the total count and ordinal sequence of stages to assistive technologies.</li>
+          <li><strong>Current Step Identifier:</strong> The active stage must carry <code>aria-current="step"</code>.</li>
+          <li><strong>Non-Visual State Indicators:</strong> Accessible names must explicitly announce status: <em>"Stage 1: BOM & Material Requisition (Completed)"</em>, <em>"Stage 3: Die Setup (Current stage, validation error)"</em>.</li>
+        </ul>
+      </Sec>
+
+      {/* §09 Motion & Transitions */}
+      <Sec n="09" title="Motion & Transitions" note="Predictable animation and reduced motion compliance.">
+        <p>
+          Connector fill transitions at <code>200ms cubic-bezier(0,0,0.2,1)</code>. Step circle color and scale transitions at <code>150ms</code>. All transitions collapse to 0ms when <code>prefers-reduced-motion: reduce</code> is detected.
+        </p>
+      </Sec>
+
+      {/* §10 Content Rules & Internationalization */}
+      <Sec n="10" title="Content Rules & Internationalization" note="Stage naming conventions and multilingual support.">
+        <ul>
+          <li><strong>Stage-Level Naming:</strong> Use high-level stage names (e.g. <em>"Tooling Setup"</em>, <em>"QA Clearance"</em>) rather than granular task names (<em>"Enter Platen Gap"</em>).</li>
+          <li><strong>Stable Labels:</strong> Do not dynamically rename step titles as the user fills in fields.</li>
+          <li><strong>Bilingual Labels:</strong> Support English / Hindi / Marathi translations for shopfloor line operators in Maharashtra manufacturing plants.</li>
+        </ul>
+      </Sec>
+
+      {/* §11 Responsive Design & Touch */}
+      <Sec n="11" title="Responsive Design & Touch" note="Adaptation for mobile, handheld barcode scanners, and shopfloor tablets.">
+        <p>
+          On narrow screens (&lt; 768px), horizontal steppers automatically condense into the <code>compact-pill</code> or vertical accordion format to prevent label wrapping and node overlap. Touch targets maintain minimum 44×44px hit bounds.
+        </p>
+      </Sec>
+
+      {/* §12 Anti-patterns & Usage Boundaries */}
+      <Sec n="12" title="Anti-patterns & Boundaries" note="Where NOT to use Step Navigation.">
+        <div className="two">
+          <div className="pane do">
+            <h3>Do</h3>
+            <ul>
+              <li>Use for multi-stage processes requiring validation, state gates, or sequential submission.</li>
+              <li>Provide explicit Forward (Save & Continue) and Back buttons.</li>
+              <li>Indicate optional stages clearly so users understand they can be skipped.</li>
+            </ul>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <ul>
+              <li>Do NOT use as decorative non-interactive progress trackers.</li>
+              <li>Do NOT use for peer in-page content switching without process semantics (use <strong>Tab Navigation</strong>).</li>
+              <li>Do NOT use for linear document or SOP reading without validation gates (use <strong>Sequential Navigation</strong>).</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §13 Implementation Details */}
+      <Sec n="13" title="Implementation Details" note="Interactive Reference Rig with Live Switcher.">
+        <InteractiveStepDemo />
+      </Sec>
+
+      {/* §14 Developer Notes */}
+      <Sec n="14" title="Developer Notes" note="API contracts and props specification.">
+        <pre>{`interface StepItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  optional?: boolean;
+  disabled?: boolean;
+}
+
+interface StepNavigationProps {
+  steps: StepItem[];
+  currentStep: number;
+  completedSteps?: number[];
+  errorStep?: number;
+  isLinear?: boolean;
+  variant?: 'horizontal' | 'vertical' | 'compact-pill';
+  size?: 'sm' | 'md' | 'lg';
+  onStepClick?: (stepIndex: number, step: StepItem) => void;
+  onNext?: () => void;
+  onBack?: () => void;
+  onSkip?: () => void;
+  ariaLabel?: string;
+  className?: string;
+}`}</pre>
+      </Sec>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script></body></html>

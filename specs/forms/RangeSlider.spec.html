@@ -1,0 +1,287 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="RangeSlider" subtitle="Full specification — purpose, anatomy, props, states, keyboard, a11y, motion, content, responsive, anti-patterns" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>RangeSlider — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:18px 20px;display:flex;flex-direction:column;gap:16px}
+.demo.plain{background:transparent;border:none;box-shadow:none;padding:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:104px;padding-top:4px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.grid2{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { RangeSlider, Slider, Input, Field, Card, Text } = window.MeridianDesignSystem_962c43;
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{flex:1,minWidth:0}}>{children}</div></div>;
+/* Uncontrolled, and mounted after first paint.
+
+   Nine controlled RangeSliders each re-rendering per pointer move, mounted
+   synchronously while in-browser Babel was still compiling, wedged the
+   renderer for about a minute — and a spec nobody can open is a spec nobody
+   reads. Uncontrolled removes the state churn; the idle mount removes the
+   thundering herd at load. The placeholder reserves the exact height, so
+   nothing shifts when the real control arrives. */
+const Live = ({start, ...p}) => {
+  const [on, setOn] = React.useState(false);
+  React.useEffect(() => {
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 60));
+    const h = idle(() => setOn(true));
+    return () => (window.cancelIdleCallback || clearTimeout)(h);
+  }, []);
+  if (!on) return <div style={{height: p.size === 'sm' ? 34 : 40}} aria-hidden="true" />;
+  return <RangeSlider {...p} defaultValue={start || [20,80]} />;
+};
+
+const SAMPLE = "import { RangeSlider, Field } from '@meridian/ds';\n\nconst [band, setBand] = useState([20, 80]);\n\n<RangeSlider\n  label=\"Price band\"          /* names BOTH thumbs: \"Price band Minimum\" */\n  value={band}\n  onChange={setBand}          /* receives [low, high] — not an event */\n  min={0} max={200} step={5}\n  minDistance={10}            /* the gap they may not close */\n  unit=\"€\"\n/>\n\n// Precise bounds someone already knows are two Inputs, not a slider:\n<Field label=\"From\"><Input type=\"number\" /></Field>\n<Field label=\"To\"><Input type=\"number\" /></Field>";
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>RangeSlider</h1>
+    <p className="lede">Two thumbs, one range. A <strong>sibling</strong> of <code>Slider</code> rather than a <code>range</code> prop on it, and the fourth time this system has split a component instead of growing one. Its construction is unusual and deliberate: the inputs are real but pointer-inert, and dragging is handled on the track — for a reason the obvious construction cannot fix.</p>
+    <div className="meta">
+      <span>components/forms/RangeSlider.jsx</span><span>window.MeridianDesignSystem_962c43.RangeSlider</span><span style={{color:'var(--text-primary)'}}>status: frozen 6 Sep 2026 · 2 open items</span><span>since: 1.23.1</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="A band someone chooses approximately.">
+    <p>Use a RangeSlider when the user picks a <em>span</em> of a continuous quantity and the exact numbers matter less than the shape of the band: a price filter, a shift window, a tolerance, a cycle-time range on a chart. The control's virtue is that both ends are visible against the same scale at once — you can see that the band sits low, or is narrow, without reading either number.</p>
+    <p className="warn"><strong>It is a sibling, not a <code>range</code> prop, and that was the first decision.</strong> A second thumb changes what the control <em>is</em>: <code>value</code> becomes a pair, <code>onChange</code> reports a pair, every ARIA value attribute doubles, and each thumb needs its own accessible name. A <code>range</code> boolean would make half of <code>Slider</code>'s API conditional on it — the shape that produced <code>Card</code>'s <code>interactive</code> defect in 1.15.0. The system has now made this same split four times: Combobox/MultiCombobox, Checkbox/CheckboxGroup, Radio/RadioGroup, and here.</p>
+    <div className="demo plain">
+      <Card padding="md"><Live label="Price band" unit="€" /></Card>
+    </div>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Choose a band, approximately','RangeSlider','This component.'],
+      ['Choose one value on a scale','Slider','One thumb. Half this component\u2019s API is about the second one.'],
+      ['Enter precise bounds someone already knows','Two Inputs in a Field each','A slider is for choosing approximately. If the user knows \u201c14.50 to 19.75\u201d, dragging to it is worse than typing it.'],
+      ['Filter a set by a category','ChipGroup / MultiCombobox','A range is continuous. Categories are not.'],
+      ['Show a range you do not let the user change','Text, or a bar','A control that cannot move is a display wearing a control\u2019s affordances.'],
+      ['Pick a date span','DatePicker range','Dates have their own arithmetic, calendar and keyboard.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A track, a fill between the thumbs, two thumbs, one readout.">
+    <div className="demo"><Live label="Cycle time" min={0} max={60} step={0.5} unit="s" minDistance={2} start={[8,26]} /></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Track</strong> — the full scale, <code>--slider-track</code>. Always the whole range, so the band's position is readable against it.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Fill</strong> — <em>between</em> the thumbs, not from zero. The selected region of a range is what sits inside it; a fill from the left edge would say the low thumb is a maximum.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Two thumbs</strong> — each a real <code>&lt;input type="range"&gt;</code> for the keyboard and the accessibility tree, drawn by a span the input never paints (§13).</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>One readout</strong> — “20 – 80”, mono with tabular figures so it does not jitter mid-drag. One reading, not two numbers: the value of a range is the range.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Label</strong> — associated with the low thumb for click-to-focus, but <em>not</em> the accessible name of either (§08).</span></div>
+    </div>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Thirteen, and the four the backlog demanded.">
+    <p>The backlog entry for this component named four questions it had to answer before it could be built. All four are props or documented rules here.</p>
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['label','string','\u2014','What the range measures. Composed into BOTH thumb names (§08).'],
+      ['value','[number, number]','\u2014','Controlled pair. Needs onChange.'],
+      ['defaultValue','[number, number]','[min, max]','Uncontrolled.'],
+      ['onChange','(v: [number, number]) => void','\u2014','Receives the PAIR, not an event \u2014 there is no single event that describes two thumbs.'],
+      ['min / max / step','number','0 / 100 / 1','The scale.'],
+      ['minDistance','number','0','The gap the thumbs may not close. Backlog answer #2.'],
+      ['startLabel / endLabel','string','Minimum / Maximum','Qualify each thumb within the group. Backlog answer #1.'],
+      ['unit','string','\u2014','Appended with a thin space.'],
+      ['format','(n: number) => string','\u2014','Full control of the readout; takes ONE number, so the same function serves both ends.'],
+      ['showValue','boolean','true','The \u201c20 \u2013 80\u201d readout.'],
+      ['size','sm | md','md','Track and thumb size.'],
+      ['disabled','boolean','false','\u2014'],
+    ]}/>
+    <p><strong>There is no <code>onChangeEnd</code>.</strong> A range bound to an expensive query wants one, and the honest answer is that debouncing belongs to the caller: a component that fires two different change events invites products to wire the wrong one and then wonder why the chart lags a thumb behind.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="None. That is the design.">
+    <p>There is one RangeSlider. No pill variant, no vertical axis, no histogram behind the track.</p>
+    <ul>
+      <li><strong>No vertical orientation.</strong> A vertical range means reading a scale bottom-to-top while the labels read top-to-bottom, and every keyboard convention for a slider is horizontal. <code>SegmentedControl</code> gained a vertical option in 1.23.2 because a stack of segments is still a list; a rotated scale is a different reading task.</li>
+      <li><strong>No histogram or density plot behind the track.</strong> It is the most-requested decoration for a price filter and it is a chart: it needs its own data, its own empty state, its own axis. If the distribution matters, put a chart above the control and let the control stay a control.</li>
+      <li><strong>No tick marks or labelled stops</strong> — unlike <code>Slider</code>, which has <code>marks</code>. Two thumbs already put four numbers on the screen (two positions, two values); adding a printed scale under them is the point at which a user reads instead of drags.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two, and no lg.">
+    <div className="demo plain">
+      <Row label="sm"><Card padding="md"><Live label="Shift window" size="sm" min={0} max={24} start={[6,14]} format={(n)=>String(n).padStart(2,'0')+':00'} /></Card></Row>
+      <Row label="md"><Card padding="md"><Live label="Shift window" min={0} max={24} start={[6,14]} format={(n)=>String(n).padStart(2,'0')+':00'} /></Card></Row>
+    </div>
+    <T cols={['Size','Thumb · track','Use it for']} rows={[
+      ['sm','14px \u00b7 3px','A filter panel, a drawer, a toolbar popover.'],
+      ['md','16px \u00b7 4px','A form, a settings page. The default.'],
+    ]}/>
+    <p><strong>No <code>lg</code>,</strong> matching <code>Slider</code>. A bigger slider is not a more important one.</p>
+    <p className="warn"><strong>The drag surface is 16px tall at <code>md</code>, not 44px — and this section claimed otherwise for two builds.</strong> The track element is thumb-height rather than track-height, so the grabbable region is the full 16px rather than the 4px painted line: that half was true and is why it is built this way. The 44px assertion was not. Measured, the pointer surface is 16px at <code>md</code> and 14px at <code>sm</code> — roughly a third of the system's own floor — and since both inputs are pointer-inert (§13), the track is the only surface there is. A false accessibility assurance in a normative spec is worse than a missing one, because §05 is exactly where a reader checks this. The gap is real and shared with <code>Slider</code>, whose geometry is identical by design (§13), so it is logged as a two-component system item (§14) rather than patched in one.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Per-thumb, not per-control.">
+    <T cols={['State','What renders','Note']} rows={[
+      ['Rest','Track, fill between the thumbs, two thumbs.','\u2014'],
+      ['Hover (anywhere on the track)','The fill brightens to --slider-fill-hover.','The whole control responds, because the whole track is the drag surface.'],
+      ['Focus','The focused thumb takes the focus ring and --slider-thumb-border-active.','Per THUMB \u2014 they are two tab stops, and a ring around both would say the wrong one is focused.'],
+      ['Dragging','The dragged thumb keeps the focus treatment; the readout updates live.','No separate pressed colour: a thumb under a finger is already the most obvious thing on screen.'],
+      ['Thumbs together','Both draw at the same position, one overlapping the other.','Still separable \u2014 the tie-break in §07 is what makes this state escapable.'],
+      ['At a bound','The thumb stops. No bounce, no rubber band.','\u2014'],
+      ['Disabled','Muted track, fill and thumbs; both inputs disabled.','One flag for the pair. A range with one draggable end is not a state this control has.'],
+    ]}/>
+    <div className="demo plain grid2">
+      <Card title="Thumbs together" headingLevel={2} padding="md"><Live label="Tolerance" unit="%" start={[52,52]} /></Card>
+      <Card title="Disabled" headingLevel={2} padding="md"><RangeSlider label="Locked band" defaultValue={[30,70]} disabled /></Card>
+    </div>
+    <p className="warn"><strong>There is no invalid state.</strong> A slider cannot produce a value outside its own scale, and the one relationship that could break — low above high — is prevented rather than reported. A control that can only be right does not need a way to say it is wrong.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Two tab stops, and the rule that neither thumb pushes the other.">
+    <T cols={['Key','Does','Why']} rows={[
+      ['Tab','Moves to the low thumb, then the high thumb, then out.','Two controls, two stops \u2014 they are two inputs, not one widget with a mode.'],
+      ['\u2190 \u2193 / \u2192 \u2191','Moves the focused thumb by one step.','Native range behaviour, kept rather than reimplemented.'],
+      ['Home / End','Focused thumb to its own limit \u2014 which is the OTHER thumb, not the scale end.','End on the low thumb takes it to the high thumb (less minDistance), because that IS its maximum.'],
+      ['PageUp / PageDown','Larger jump, browser-defined.','Free with the native input.'],
+      ['Track click','Moves the nearer thumb to that point.','Backlog answer #4.'],
+      ['Track click with both thumbs together','Moves the thumb on the side the pointer is on.','\u201cNearer\u201d is undecidable when the distance is equal; direction is the only signal left.'],
+    ]}/>
+    <p className="warn"><strong>The crossing rule, and the one that matters more: no pushing.</strong> The thumbs may meet but never cross — a range whose start is past its end is not a state any product wants to receive. When a thumb reaches the other it <em>stops</em>. It does not push the far thumb along, which is the common alternative and is wrong: pushing silently rewrites a value the user set deliberately, so dragging the low thumb across the band destroys the high bound the user had already chosen. Stopping is legible; pushing is a hidden edit.</p>
+    <p><code>minDistance</code> generalises that stop: with <code>minDistance={'{2}'}</code> the low thumb halts 2 steps short. Backlog answer #3.</p>
+    <div className="demo plain">
+      <Card padding="md"><Live label="Cycle time" min={0} max={60} step={0.5} unit="s" minDistance={2} start={[16,18]} /></Card>
+    </div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="Two real inputs, and a name defect worth remembering.">
+    <ul>
+      <li><strong>Two genuine <code>&lt;input type="range"&gt;</code> elements.</strong> Neither thumb is a <code>div</code> with <code>role="slider"</code>, so arrow keys, Home/End, PageUp/PageDown, the announced value and the focus model are the platform's rather than a reimplementation of it.</li>
+      <li className="warn"><strong>Each thumb's name is COMPOSED, and getting this wrong shipped.</strong> <code>aria-label</code> outranks a visible <code>&lt;label for&gt;</code>, so naming a thumb “Minimum” <em>replaced</em> the group name instead of qualifying it: a correct call passing <code>label="Price band"</code> announced “Minimum, 20” with the subject gone. Each thumb now announces “Price band Minimum” / “Price band Maximum”. Fixed 1.23.6.</li>
+      <li className="warn"><strong>And the warning made it worse before it was found.</strong> “No accessible name — pass <code>label</code>” fires only when <code>label</code> is <em>absent</em>, so every caller doing the right thing got silence and the defect. A guard that checks only the missing case is a false reassurance for the present one; <code>uncomposed-name</code> in <code>check-contracts</code> now catches this shape across the system (§14).</li>
+      <li className="warn"><strong>Each input's NATIVE <code>min</code>/<code>max</code> is the other thumb</strong> — the low thumb's maximum is the high thumb's value, less <code>minDistance</code>. Until 1.24.2 those were the full scale and the real bounds were published as <code>aria-valuemin</code>/<code>aria-valuemax</code>, which ARIA in HTML forbids on <code>input[type=range]</code> precisely because <code>min</code>/<code>max</code> already convey them: the browser computed the range from the scale and the aria pair was inert. This spec claimed a screen-reader user heard the real limit; they heard the scale. On the native attributes it is true — and arrow keys now stop at the other thumb for free, which is what §07 documents.</li>
+      <li><strong><code>aria-valuetext</code> carries the formatted value</strong> (“20 €”, “06:00”), because a bare number announces the scale, not the quantity.</li>
+      <li><strong>The readout is <code>aria-hidden</code>.</strong> Both inputs already announce their values; reading “20 – 80” a third time adds nothing.</li>
+      <li><strong>The visible label keeps <code>htmlFor</code></strong> pointed at the low thumb, so clicking it focuses something sensible — but it is not the accessible name of either input.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="Only what the finger does.">
+    <T cols={['Moment','Motion','Why']} rows={[
+      ['Dragging','The thumb tracks the pointer exactly. No easing.','A thumb that lags its finger feels broken \u2014 the pointer IS the animation.'],
+      ['Track click','The thumb jumps. No travel animation.','Watching a thumb slide 400px to where you already clicked is a delay dressed as feedback.'],
+      ['Fill','Follows the thumbs. No transition.','The fill is derived geometry; animating it separately would decouple it from the thumb it belongs to.'],
+      ['Focus ring','Appears with --transition-control, like every focusable control.','The one transition here, and it is the system\u2019s standard.'],
+    ]}/>
+    <p><strong>Unlike <code>Slider</code>, which transitions its fill on value change,</strong> nothing here eases: a two-thumb control is dragged far more than it is set programmatically, and a transition that helps a jump makes every drag feel loose.</p>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="Label the quantity; let the numbers be numbers.">
+    <T cols={['Do','Not','Why']} rows={[
+      ['label: \u201cPrice band\u201d','label: \u201cSelect a price range\u201d','It is composed into both thumb names \u2014 \u201cSelect a price range Minimum\u201d.'],
+      ['unit=\u201c\u20ac\u201d, or format for currency placement','Baking the unit into every tick of copy','One place to change it.'],
+      ['format for anything not a plain number','Showing 6 and 14 for a shift window','\u201c06:00 \u2013 14:00\u201d is the quantity; 6 and 14 are the scale.'],
+      ['Keep startLabel/endLabel short','\u201cThe lowest price you are willing to pay\u201d','It is a qualifier appended to the label, and it is read on every value change.'],
+      ['A scale a person can reason about (0\u2013100, 0\u201360)','0\u201317,483','If the numbers are arbitrary, the control is a lottery. Use Inputs.'],
+    ]}/>
+    <ul>
+      <li><strong>Set <code>step</code> to the precision the domain actually has.</strong> A step of 1 on a 0–10,000 scale gives 10,000 keyboard presses to cross it; a step of 100 crosses it in 100 and is no less accurate than the user's intent.</li>
+      <li><strong>Use <code>minDistance</code> whenever a zero-width band is meaningless</strong> — a price filter that can select “exactly €40” returns nothing.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Fluid by default; the readout is what breaks first.">
+    <ul>
+      <li><strong>No width, and <code>min-width: 0</code>.</strong> The control is as wide as its container. All geometry is percentage-based against the track's measured box, so it needs no resize observer.</li>
+      <li><strong>The thumb never overhangs either end.</strong> Position is <code>calc(r * 100% - r * thumbSize)</code>, so at 0 % the thumb's left edge sits on the track's left edge and at 100 % its right edge on the right — the same trick <code>Slider</code> uses, and the reason a thumb at max is not half outside its own control.</li>
+      <li><strong>Below roughly 240px, drop <code>showValue</code></strong> and put the readout under the control. The label and “20 – 80” share one row; at that width the label truncates to make room for numbers that are also on the thumbs' announcements.</li>
+      <li><strong>The drag surface is thumb-height, not track-height</strong> — 16px at <code>md</code>, 14px at <code>sm</code>, with the 4px visual track centred in it. Better than grabbing a 4px line, and still short of the 44px touch floor (§05).</li>
+      <li><strong><code>touch-action: none</code> on the track</strong>, so a horizontal drag adjusts the range instead of scrolling the page. Only on the track: the rest of the form scrolls normally.</li>
+    </ul>
+    <div className="demo plain">
+      <div style={{width:250}}><Card padding="md"><Live label="Band" size="sm" showValue={false} /></Card></div>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns" note="Six, and the first two are construction mistakes.">
+    <div className="two">
+      <div className="pane dont"><h3>Construction</h3><ul>
+        <li><strong>Two stacked full-width inputs.</strong> The obvious build, and permanently broken: whichever is later in the DOM wins every pointer hit, so the low thumb becomes undraggable the moment the values meet (§13).</li>
+        <li><strong>Divs with <code>role="slider"</code>.</strong> You then owe arrow keys, Home/End, PageUp/PageDown, value announcement and focus \u2014 all of which the native input already has.</li>
+        <li><strong>Pushing the far thumb.</strong> Silently rewrites a value the user chose (§07).</li>
+      </ul></div>
+      <div className="pane dont"><h3>Use</h3><ul>
+        <li><strong>Precise numeric entry.</strong> If the user knows the bounds, two Inputs are faster and exact.</li>
+        <li><strong>A histogram behind the track.</strong> That is a chart with a control on top of it \u2014 build both, separately (§04).</li>
+        <li><strong>Firing an expensive query on every change.</strong> Debounce in the caller; the control has no onChangeEnd on purpose (§03).</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="Why the inputs do not handle the pointer.">
+    <p className="warn"><strong>The central construction decision.</strong> Two real inputs provide keyboard and assistive-tech operation, but they are <code>pointer-events: none</code> and dragging is handled on the track. The obvious alternative — two full-width, opacity-0 inputs stacked over the visuals — hands every pointer hit to whichever is later in the DOM, so the low thumb becomes undraggable as soon as the two values meet. The usual fix is <code>pointer-events: none</code> on the input with <code>auto</code> on <code>::-webkit-slider-thumb</code>, which needs a pseudo-element rule; this system styles inline, and its one stylesheet exception is capped at three components by the container-query decision.</p>
+    <p>Handling the drag also fixes what that construction <em>cannot</em>: when both thumbs sit on the same value, “nearer” is undecidable, and DOM order silently decides for you. Here the pick falls back to which side of the pair the pointer is on, so a click to the left always takes the low thumb.</p>
+    <ul>
+      <li><strong>Neither input is <code>display:none</code> or <code>visibility:hidden</code></strong> — both would remove them from the accessibility tree along with the keyboard. They are transparent, positioned over the track, and inert to the pointer only.</li>
+      <li><strong><code>setPointerCapture</code> on pointerdown,</strong> so a drag that leaves the track keeps controlling the thumb, and release is caught even outside the window. Released in a <code>try/catch</code> \u2014 the pointer can already be gone.</li>
+      <li><strong>Values are stepped on the way in,</strong> not on the way out: <code>round((v - min) / step) * step + min</code> at the moment of the pointer read, so the emitted pair is always on-step and a product never receives 43.7183 from a slider whose step is 1.</li>
+      <li><strong>The clamp is against the OTHER thumb,</strong> not the scale, which is what implements both the no-crossing rule and <code>minDistance</code> in one expression.</li>
+      <li className="warn"><strong>Four token names were invented from memory in 1.23.1</strong> — <code>--slider-thumb-background</code> for <code>--slider-thumb</code>, and three more. <code>var()</code> with no declaration resolves to nothing, so both thumbs rendered present, correctly positioned, and <em>painting nothing</em>. It is why <code>undefined-token</code> exists in the checker (§14).</li>
+    </ul>
+    <div className="tokenlist">
+      {['--slider-track','--slider-track-height-sm','--slider-track-height-md','--slider-fill','--slider-fill-hover','--slider-fill-disabled','--slider-radius','--slider-thumb','--slider-thumb-disabled','--slider-thumb-size-sm','--slider-thumb-size-md','--slider-thumb-border','--slider-thumb-border-active','--slider-thumb-border-disabled','--slider-thumb-shadow'].map(t=><span key={t}>{t}</span>)}
+    </div>
+    <p><strong>No <code>--range-slider-*</code> family.</strong> It reads <code>Slider</code>'s tokens, because the two controls must be visually identical when they sit in the same form — a range whose thumbs differ by a pixel from the slider above it looks like a different product. The absence of its own family is the decision, not an omission.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, and the record.">
+    <pre>{SAMPLE}</pre>
+    <ul>
+      <li><strong>Testing.</strong> Assert the pair first: <code>getAllByRole('slider')</code> returns exactly TWO, named “&lt;label&gt; Minimum” and “&lt;label&gt; Maximum” — that composition is the fix from 1.23.6 and the thing most likely to regress. Then: dragging the low thumb past the high one stops it at the high one; <code>minDistance</code> holds; the far thumb does NOT move when the near one is dragged into it; a click to the left of two coincident thumbs moves the LOW one; and each input's <code>aria-valuemax</code> equals the other thumb's value.</li>
+      <li><strong>Lint.</strong> Flag a <code>RangeSlider</code> with no <code>label</code>; <code>value</code> without <code>onChange</code>; a <code>value</code> that is not a two-element array; and any hand-rolled pair of <code>input[type=range]</code> in product code, which is this component being rebuilt.</li>
+      <li><strong>Frozen 6 Sep 2026.</strong> API closed: <code>label</code>, <code>value</code>, <code>defaultValue</code>, <code>min</code>, <code>max</code>, <code>step</code>, <code>minDistance</code>, <code>startLabel</code>, <code>endLabel</code>, <code>unit</code>, <code>format</code>, <code>showValue</code>, <code>size</code>, <code>disabled</code>, <code>onChange</code>, <code>style</code>, <code>id</code>.</li>
+      <li><strong>The record, because it is short and unflattering.</strong> Three defects in two review rounds: invisible thumbs (four invented token names, §13), both thumbs discarding the group name (§08), and a card clipped by 170px — on the same day the card-viewport audit was built for exactly that class and the new card was not run through it. Two of the three produced permanent checker rules, <code>undefined-token</code> and <code>uncomposed-name</code>, which then found the identical name defect sitting in <code>DatePicker</code>. <strong>This component is the reason two system-wide rules exist</strong>, which is the most useful thing it did beyond having two thumbs.</li>
+      <li><strong>Open — the drag surface is under the 44px touch floor</strong> (16px at <code>md</code>). Shared with <code>Slider</code>, whose geometry must match (§13), so it is a two-component change and a system decision rather than a fix here. Padding the track would shift the form's vertical rhythm; an overlay tall enough to reach 44px would cover the label above it and steal its clicks. Neither is obviously right, which is why it is logged rather than guessed at.</li>
+      <li><strong>Open — no <code>onChangeEnd</code>.</strong> A range bound to an expensive query re-runs it on every step. Debouncing in the caller is the current answer (§03), and the open question is whether a component that fires two change events is clearer than a product that debounces one. Not urgent: no consumer has hit it, because the console template's only range filters a client-side array.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

@@ -1,0 +1,306 @@
+<!-- @dsCard group="Specs · Data" viewport="1080x760" name="Tree" subtitle="Full specification — the nested collection: expansion vs selection, one tab stop, why the row is a control here" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Tree — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.demo.plain{background:transparent;border:none;box-shadow:none;padding:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:104px;padding-top:4px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.grid2{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Tree, Card, Badge, Text, DescriptionList, Button } = window.MeridianDesignSystem_962c43;
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{flex:1,minWidth:0}}>{children}</div></div>;
+
+const ASSETS = [{ id:'PL-04', label:'Chakan plant (PL-04)', icon:'factory', children:[
+  { id:'PRESS', label:'Press shop', icon:'layers', meta:'4 assets', children:[
+    { id:'PRS-4120', label:'PRS-4120 · 630 T press', icon:'cpu', meta:'82 %', trailing:<Badge tone="success">Running</Badge> },
+    { id:'PRS-4121', label:'PRS-4121 · 400 T press', icon:'cpu', meta:'0 %', trailing:<Badge tone="warning">Changeover</Badge> },
+    { id:'PRS-4123', label:'PRS-4123 · 250 T press', icon:'cpu', meta:'—', trailing:<Badge tone="danger">Down</Badge>, disabled:true },
+  ]},
+  { id:'WELD', label:'Weld shop', icon:'layers', meta:'6 assets', hasChildren:true },
+  { id:'ASSY', label:'Assembly', icon:'layers', meta:'2 lines', children:[
+    { id:'ASSY-1', label:'Assembly 1', icon:'workflow', meta:'shift B' },
+    { id:'ASSY-2', label:'Assembly 2', icon:'workflow', meta:'idle' },
+  ]},
+]}];
+const BOM = [{ id:'BRK-4820-A', label:'BRK-4820-A · brake caliper assy', icon:'component', meta:'1 ea', children:[
+  { id:'BRK-4820-HSG', label:'BRK-4820-HSG · housing, cast', icon:'box', meta:'1 ea' },
+  { id:'SEAL-2207-SK', label:'SEAL-2207-SK · seal kit', icon:'box', meta:'1 set', children:[
+    { id:'ORING-38', label:'O-ring, 38 × 3 NBR', icon:'circle', meta:'2 ea' },
+    { id:'ORING-54', label:'O-ring, 54 × 3 NBR', icon:'circle', meta:'2 ea' },
+  ]},
+  { id:'FAST-M10', label:'FAST-M10-45 · bolt, M10 × 45', icon:'circle', meta:'4 ea' },
+]}];
+
+const SAMPLE = "import { Tree } from '@meridian/ds';\n\n// Expansion is VIEW state — persist it if the product should remember.\nconst [open, setOpen] = usePersisted('assets.open', ['PL-04']);\nconst [sel, setSel]   = React.useState([]);\nconst [busy, setBusy] = React.useState([]);\n\n<Tree\n  label=\"Plant assets · Chakan (PL-04)\"\n  items={assets}\n  selection=\"single\"\n  expandedIds={open}\n  onExpandedChange={async (ids) => {\n    setOpen(ids);                                  // open immediately\n    const lazy = ids.find((id) => !loaded.has(id));// then fetch, if needed\n    if (!lazy) return;\n    setBusy([lazy]);\n    await loadChildren(lazy);                      // AsynchronousAction pattern\n    setBusy([]);\n  }}\n  loadingIds={busy}\n  selectedIds={sel}\n  onSelectionChange={setSel}\n  onActivate={(node) => openAsset(node.id)}\n/>\n\n// Commands act on the SELECTION, from the pane beside the tree —\n// never from a button inside a treeitem row.\n<Toolbar label={'Actions · ' + sel[0]}>…</Toolbar>";
+
+function Spec(){
+  const [open, setOpen] = React.useState(['PL-04','PRESS']);
+  const [sel, setSel] = React.useState(['PRS-4120']);
+  const [loading, setLoading] = React.useState([]);
+  const [scope, setScope] = React.useState(['SEAL-2207-SK','ORING-38','ORING-54']);
+  const onExpand = (ids) => {
+    if (ids.includes('WELD') && !open.includes('WELD')) { setLoading(['WELD']); setTimeout(()=>setLoading([]),1600); }
+    setOpen(ids);
+  };
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Data · Component specification</span>
+    <h1>Tree</h1>
+    <p className="lede">The <strong>nested</strong> collection. <code>List</code> is a flat run, <code>Accordion</code> is one level of disclosure with a tab stop per header, <code>Menu</code> closes on selection, and a <code>Table</code> row group is not a parent — so a hierarchy the user walks had nowhere to go and every console hand-rolled indented divs. Tree owns the three things none of them can: tree semantics, expansion state <em>separable from selection</em>, and one tab stop with the full tree keyboard contract.</p>
+    <div className="meta">
+      <span>components/data/Tree.jsx</span><span>window.MeridianDesignSystem_962c43.Tree</span><span style={{color:'var(--text-primary)'}}>status: built 1.30.0 · 2 open items</span><span>since: 1.30.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="A hierarchy the user walks — and the four components that refuse it.">
+    <p>Use a Tree when the relationship <em>between</em> records is the information: plant → line → station → asset, a BOM explosion, a routing with its operations and tooling, a cost-centre rollup. The user's questions are "what is under this?" and "what is this part of?", and an indent answers both at a glance.</p>
+    <p className="warn"><strong>Nesting an existing component does not produce a tree.</strong> Nested <code>Accordion</code>s give expansion and nothing else: no <code>aria-level</code>, so a screen reader reads a flat indented list; a tab stop per header, so a six-level BOM is 200 tab stops; and no ArrowLeft to climb. A nested <code>Table</code> cannot answer "focus my parent" because a row group is not a parent. This is why the gap needed a core component and not a pattern.</p>
+    <div className="demo plain grid2">
+      <Card title="Plant assets · single selection" headingLevel={2} padding="sm">
+        <Tree label="Plant assets · Chakan (PL-04)" items={ASSETS} selection="single"
+          expandedIds={open} onExpandedChange={onExpand} loadingIds={loading}
+          selectedIds={sel} onSelectionChange={setSel} />
+      </Card>
+      <Card title={sel[0] || 'Nothing selected'} headingLevel={2} padding="sm">
+        <DescriptionList items={[
+          {term:'Asset',value:sel[0]||'—',mono:true},
+          {term:'Line',value:'Press shop'},
+          {term:'OEE, shift B',value:'82 %',mono:true},
+          {term:'Next PM',value:'2026-09-14 (IST)',mono:true},
+        ]} />
+      </Card>
+    </div>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Show records nested inside records','Tree','This component.'],
+      ['Show a flat run of records','List','No parents, and its row is deliberately not a control.'],
+      ['Compare records across shared fields','Table','Columns align. An indent inside a cell is not a hierarchy.'],
+      ['Collapse a page into sections','Accordion','One level, a tab stop per header, no level semantics.'],
+      ['Offer commands from a trigger','Menu','A command surface closes on selection; a tree persists.'],
+      ['Pick from a known hierarchy by typing','Combobox','Tree typeahead only matches rows already visible (§07).'],
+      ['Show a hierarchy with per-level metrics in columns','Table with a grouping column','Once four figures per row matter, the indent is not carrying the work.'],
+      ['Show nothing, because there is nothing','EmptyState','A tree of zero nodes renders an empty box.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="One row, six slots; the group is the child list, indented once per level.">
+    <div className="demo">
+      <Tree label="Anatomy example" items={BOM} defaultExpandedIds={['BRK-4820-A','SEAL-2207-SK']} size="md" />
+      <div style={{display:'flex',flexDirection:'column',gap:6,fontSize:'var(--text-xs)',color:'var(--text-secondary)'}}>
+        <span><strong style={{color:'var(--text-primary)'}}>Twisty</strong> — chevron-right / chevron-down. Drawn only on a branch; <code>aria-hidden</code>, and a pointer refinement of the row, not a nested button.</span>
+        <span><strong style={{color:'var(--text-primary)'}}>Indicator</strong> — <code>selection="multiple"</code> only. A square with a tick, or a dash when some descendants are selected.</span>
+        <span><strong style={{color:'var(--text-primary)'}}>Glyph</strong> — what the node IS (<code>factory</code>, <code>cpu</code>, <code>box</code>). Never a status; status is <code>trailing</code>.</span>
+        <span><strong style={{color:'var(--text-primary)'}}>Label</strong> — one line, truncated, and what typeahead matches.</span>
+        <span><strong style={{color:'var(--text-primary)'}}>Meta</strong> — mono, tabular, right of the label: a quantity, a rate, a count.</span>
+        <span><strong style={{color:'var(--text-primary)'}}>Trailing</strong> — a <code>Badge</code> or status dot. Static content only.</span>
+        <span><strong style={{color:'var(--text-primary)'}}>Guide</strong> — one hairline per level at <code>--tree-guide</code>, with <code>--tree-indent</code> (16px) of indent per level.</span>
+      </div>
+    </div>
+    <p><strong>There is no actions slot.</strong> A treeitem is a control; a <code>Button</code> or <code>Menu</code> inside it is a control inside a control — two overlapping hit areas, an ambiguous Enter, and a tab stop the tree's roving-focus contract does not account for. Row commands go to the surface the selection drives (§01 demo, right pane).</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="items is data, not children — and expansion and selection are separate values.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['items','TreeNode[]','—','id, label, icon?, meta?, trailing?, children?, hasChildren?, disabled?. Ids must be unique tree-wide.'],
+      ['label','string','—','What the hierarchy is. Warns when absent: a tree announces level and position, never its subject.'],
+      ['size','sm | md','md','md = 34px rows for a browse pane; sm = 28px inside a Drawer or filter rail. Both read --control-h-*, so [data-density] applies.'],
+      ['selection','none | single | multiple','none','none = browse (press toggles, Enter activates). single = the subject of a detail pane. multiple = a set, aria-multiselectable.'],
+      ['selectedIds','string[]','[]','A set in EVERY mode — single yields 0 or 1. One shape, so no consumer branches on the mode.'],
+      ['onSelectionChange','(ids) => void','—','Fires on press, Enter, and Space (multiple).'],
+      ['cascade','boolean','false','Selecting a branch selects its descendants. Off by default — it changes what a parent selection means.'],
+      ['expandedIds / onExpandedChange','string[] / (ids) => void','—','Controlled expansion. Also the lazy-load hook: expanding a hasChildren node fires it.'],
+      ['defaultExpandedIds','string[]','[]','Uncontrolled start state. Never both.'],
+      ['onActivate','(node) => void','—','Enter, and a press when a selection contract exists. Open the record; do not use it to expand.'],
+      ['loadingIds','string[]','[]','Branches fetching children: aria-busy, and "Loading…" in place of meta.'],
+      ['guides','boolean','true','Hairline rules per level. Off for a two-level tree.'],
+    ]}/>
+    <p><strong>Why <code>items</code> and not <code>&lt;TreeItem&gt;</code> children.</strong> Roving focus has to know which row follows the one you are on <em>before</em> layout, and that order depends on expansion. A children tree only knows it after render, and gets it wrong the moment a caller writes <code>{'{'}cond &amp;&amp; &lt;TreeItem/&gt;{'}'}</code> — the same class of bug <code>List</code> shipped once with <code>__last</code>. Data in, one flattened visible order out, and the keyboard and the render walk the same array.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Three selection contracts. Everything else is the same tree.">
+    <div className="demo plain grid2">
+      <Card title="multiple + cascade — change scope" headingLevel={2} padding="sm">
+        <Tree label="BOM · BRK-4820-A" size="sm" selection="multiple" cascade items={BOM}
+          defaultExpandedIds={['BRK-4820-A','SEAL-2207-SK']} selectedIds={scope} onSelectionChange={setScope} />
+        <Text size="xs" tone="tertiary" style={{marginTop:10,display:'block'}}>{scope.length} of 6 lines in scope. A parent with some children chosen draws a dash.</Text>
+      </Card>
+      <Card title="none — browse only, guides off" headingLevel={2} padding="sm">
+        <Tree label="Routing · BRK-4820-A" size="sm" guides={false} items={[{id:'R',label:'Routing 001 · 4 operations',icon:'route',children:[
+          {id:'OP10',label:'OP10 · Cast clean',icon:'circle-dot',meta:'12 min'},
+          {id:'OP20',label:'OP20 · Bore & face',icon:'circle-dot',meta:'8 min'},
+          {id:'OP30',label:'OP30 · Assemble',icon:'circle-dot',meta:'14 min'},
+        ]}]} defaultExpandedIds={['R']} />
+      </Card>
+    </div>
+    <p><code>selection="multiple"</code> does <strong>not</strong> render a real <code>Checkbox</code>. The treeitem is already the checkable control — Space toggles it and <code>aria-selected</code> carries the answer — so a nested input would be a second control with a second tab stop announcing the same state twice. The square is an indicator, <code>aria-hidden</code>, exactly like the tick inside Checkbox's own box.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two, both from the control scale.">
+    <T cols={['Size','Row height','Label','Use']} rows={[
+      ['sm','--control-h-sm (28px)','13px','A Drawer, a filter rail, a BOM panel beside a form.'],
+      ['md','--control-h-md (34px)','14px','The default. A browse pane that is the page\'s main subject.'],
+    ]}/>
+    <p>No <code>lg</code>: a tree earns its keep by fitting depth on screen, and 40px rows at six levels is a scrollbar. Indent is one fixed 16px step per level in both sizes — an indent that varies with depth stops encoding depth.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Per row: rest, hover, focus, selected, partial, disabled, busy. Per branch: collapsed / expanded.">
+    <div className="demo">
+      <Row label="rest / hover"><Tree label="States · rest" size="sm" items={[{id:'a',label:'PRS-4120 · 630 T press',icon:'cpu',meta:'82 %'}]} /></Row>
+      <Row label="selected"><Tree label="States · selected" size="sm" selection="single" items={[{id:'a',label:'PRS-4120 · 630 T press',icon:'cpu',meta:'82 %'}]} selectedIds={['a']} /></Row>
+      <Row label="partial"><Tree label="States · partial" size="sm" selection="multiple" items={[{id:'p',label:'SEAL-2207-SK · seal kit',icon:'box',children:[{id:'c1',label:'O-ring, 38 × 3 NBR'},{id:'c2',label:'O-ring, 54 × 3 NBR'}]}]} defaultExpandedIds={['p']} selectedIds={['c1']} /></Row>
+      <Row label="disabled"><Tree label="States · disabled" size="sm" items={[{id:'a',label:'PRS-4123 · 250 T press',icon:'cpu',meta:'—',disabled:true,trailing:<Badge tone="danger">Down</Badge>}]} /></Row>
+      <Row label="busy"><Tree label="States · busy" size="sm" items={[{id:'w',label:'Weld shop',icon:'layers',hasChildren:true}]} defaultExpandedIds={['w']} loadingIds={['w']} /></Row>
+    </div>
+    <ul>
+      <li><strong>Focus</strong> is the standard <code>--focus-ring</code>, drawn on the <em>row</em> and never on the <code>li</code> — whose box contains the whole open subtree, so a ring there would fence off ten rows.</li>
+      <li><strong>Selected</strong> is <code>--surface-selected</code> with <code>--text-accent</code>, the same pair as a selected nav item and a selected table row. It stops at the row's rounded box: a tree row is not a full-bleed band.</li>
+      <li><strong>Disabled</strong> rows stay focusable and announced. A node the user may not choose still tells them the hierarchy exists — silently dropping it makes the tree lie about its shape.</li>
+      <li><strong>Busy</strong> puts <code>aria-busy</code> on the parent row and "Loading…" where <code>meta</code> sits. No placeholder child row: a non-treeitem inside <code>role="group"</code> is invalid, and a treeitem placeholder is a focus stop for a thing that does not exist.</li>
+      <li><strong>Empty</strong> is not a state of this component. Zero nodes is <code>EmptyState</code>, above or instead of the tree — the region sequence <code>Table</code> and <code>List</code> already define.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="One tab stop for the whole tree; arrows do the work.">
+    <T cols={['Key','Does']} rows={[
+      ['Tab / Shift+Tab','Enters and leaves the tree — ONE stop, wherever focus last was, else the selected node, else the first row.'],
+      ['↓ / ↑','Next / previous VISIBLE row, across levels. Stops at the ends; does not wrap.'],
+      ['→','Collapsed branch: expand. Expanded branch: focus the first child. Leaf: nothing.'],
+      ['←','Expanded branch: collapse. Otherwise: focus the parent. Root leaf: nothing.'],
+      ['Home / End','First / last visible row.'],
+      ['Enter','Activates — onActivate, and selects under single.'],
+      ['Space','multiple: toggle this node (with descendants when cascade). single: select. none: toggle the branch.'],
+      ['*','Expands every branch at the focused row\'s own level under the same parent. The only bulk expand.'],
+      ['a–z, 0–9','Typeahead over visible labels, 700ms buffer, wrapping from the focused row.'],
+    ]}/>
+    <p>There is deliberately no "expand all": on a 4,000-line BOM it produces a scrollbar and no information. And typeahead matches <strong>visible</strong> rows only — a tree cannot search what it is not showing. Searching the whole hierarchy is a filter above the tree, or a <code>Combobox</code>; both are the product's, because only the product knows which nodes to reveal for a hit.</p>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="role=tree / treeitem / group, with level and position on every row.">
+    <ul>
+      <li><code>role="tree"</code> on the container with <code>aria-label</code>, <code>aria-multiselectable</code> when <code>selection="multiple"</code>.</li>
+      <li><code>role="treeitem"</code> per row carrying <code>aria-level</code>, <code>aria-posinset</code>, <code>aria-setsize</code>, <code>aria-expanded</code> (branches only) and <code>aria-selected</code> (when a selection contract exists) — so the announcement is "PRS-4120, level 3, 2 of 4, selected", not an indented flat list.</li>
+      <li>Child lists are <code>role="group"</code> nested <em>inside</em> the parent treeitem, which is what makes ArrowLeft's "climb to parent" true in the accessibility tree and not just on screen.</li>
+      <li>Roving <code>tabindex</code>: exactly one row is <code>tabindex="0"</code> at any time. When the tabbable row is collapsed away the stop moves to the nearest surviving row, so the tree never falls out of the tab order.</li>
+      <li>The twisty and the indicator are <code>aria-hidden</code>: they are paint for state the treeitem already reports.</li>
+      <li>Contrast: labels are <code>--text-primary</code> / <code>--text-secondary</code>, and <code>meta</code> is <code>--text-tertiary</code> at 11px — which clears 4.5:1 on card and page, but is why <code>meta</code> may never carry the only copy of a critical value.</li>
+      <li><strong>Open item.</strong> Drag-to-reorder is not supported and no keyboard equivalent is specified. A product needing hierarchy editing should treat move as a form action on the selection, not as drag — see §14.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="One tint. Expansion is not animated.">
+    <p>Row background transitions at <code>--duration-fast</code> with <code>--ease-out</code>, matching every other control tint. <strong>Expansion has no transition</strong>: the system animates only opacity, transform, background, border and shadow — never height — and a tree's whole value is that the row you aimed at is where you left it. A 200ms accordion slide on a nine-level BOM moves 40 rows under the pointer. Under <code>prefers-reduced-motion</code> the tint drops to 1ms with the rest of the system.</p>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="Labels are identity; meta is one figure; trailing is state.">
+    <div className="two">
+      <div className="pane"><h3>Do</h3><ul>
+        <li><code>PRS-4120 · 630 T press</code> — the id the operator says out loud, then the qualifier.</li>
+        <li><code>meta="82 %"</code>, <code>meta="4 ea"</code>, <code>meta="12 min"</code> — one figure with its unit.</li>
+        <li><code>trailing={'{'}&lt;Badge tone="warning"&gt;Changeover&lt;/Badge&gt;{'}'}</code> — state the system owns.</li>
+        <li>A branch label that names the level: <code>Press shop</code>, not <code>Assets (4)</code> — the count is <code>meta</code>.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><code>Press shop — 4 assets, 2 running, next PM 14 Sep</code>. Three figures in a label is a table row.</li>
+        <li>A glyph that means status (<code>circle-alert</code> as the node icon). The icon says what a node <em>is</em>.</li>
+        <li>Sentences, or a second line. One line per row, truncated; the detail pane holds the rest.</li>
+        <li>Depth for its own sake. Three levels the user recognises beats six that mirror the database.</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="Labels truncate; the tree does not reflow.">
+    <p>The row is a single flex line with a truncating label, so a Tree survives a 280px rail: the twisty, indicator, glyph, <code>meta</code> and <code>trailing</code> keep their intrinsic widths and the label absorbs the loss. Below roughly 320px of container, drop <code>guides</code> and move to <code>size="sm"</code>; if depth still does not fit, the answer is a <strong>drill-down</strong> — one level per screen with a <code>Breadcrumb</code> — not a tree squeezed sideways. On a touch pointer <code>md</code> is the floor: its 34px row rises to 44px under <code>[data-density="expanded"]</code>, and the twisty is a 16px glyph in a full-height row, so the branch target is the row height, not the glyph.</p>
+  </Sec>
+
+  <Sec n="12" title="Anti patterns" note="Five, and the first is the one this system keeps meeting.">
+    <div className="two">
+      <div className="pane dont"><h3>Never</h3><ul>
+        <li><strong>A button, menu or checkbox inside a row.</strong> A control inside a control. Commands act on the selection from the pane beside the tree.</li>
+        <li><strong>A tab stop per row.</strong> That is the nested-Accordion failure this component exists to end.</li>
+        <li><strong>Selection that collapses.</strong> Choosing a parent must not close the children the user opened it to see — which is why a press with a selection contract never toggles.</li>
+        <li><strong>Expansion as data.</strong> Persisting "open" into the record is how two users fight over one field. It is view state.</li>
+        <li><strong>A tree as a menu.</strong> A hierarchy of commands anchored to a trigger is <code>Menu</code> with submenus; it closes, this persists.</li>
+      </ul></div>
+      <div className="pane"><h3>Instead</h3><ul>
+        <li>Row commands → <code>Toolbar</code> or a <code>Menu</code> over the detail pane, named for the selection.</li>
+        <li>Deep filtering → a <code>SearchField</code> above the tree that narrows <code>items</code>; the tree keeps walking what remains.</li>
+        <li>Per-level metrics → <code>Table</code> with a grouping column, once four figures per row matter.</li>
+        <li>Hierarchy editing → an explicit form action on the selection (<code>ExplicitSave</code>), not drag.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>On "the row is a control", which reverses nothing.</strong> <code>List</code>, <code>Card</code> and <code>Avatar</code> refuse a clickable row because what they were offered was a mouse-only control: no role, no tabindex, no key handler. A treeitem is the opposite — the role exists, the keyboard contract is specified in §07, and the single tab stop is accounted for. The test was never "is the row clickable"; it was "is the row a real control".</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="What ships at 1.30.0, alongside FileUpload.">
+    <pre>{SAMPLE}</pre>
+    <div className="tokenlist">
+      <span>--tree-row-height-sm / -md</span><span>--tree-row-radius</span><span>--tree-row-padding-x</span><span>--tree-row-gap</span>
+      <span>--tree-indent</span><span>--tree-guide</span><span>--tree-row-background-hover</span><span>--tree-row-background-selected</span>
+      <span>--tree-row-text-selected</span><span>--tree-row-text-disabled</span><span>--tree-branch-text</span>
+      <span>--tree-leaf-text</span><span>--tree-chevron</span><span>--tree-chevron-hover</span><span>--tree-leading-foreground</span>
+      <span>--tree-meta-text</span><span>--tree-indicator-border</span><span>--tree-indicator-background</span><span>--tree-indicator-background-selected</span>
+      <span>--tree-indicator-foreground</span><span>--tree-focus-ring</span>
+    </div>
+    <p>Tier 3 (<code>data/</code>), importing only <code>core/Icon</code> — no upward edge, and no <code>forms/Checkbox</code> precisely because §04 refuses a nested input. Expansion is controlled or uncontrolled, never both. Ids must be unique tree-wide: expansion, selection and focus are all keyed by id, so two nodes sharing one open and select together.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Two open items, both with the evidence that would reopen them.">
+    <ul>
+      <li><strong>Built at 1.30.0; not frozen.</strong> The API is closed to renames — <code>items</code>, <code>label</code>, <code>size</code>, <code>selection</code>, <code>selectedIds</code>, <code>onSelectionChange</code>, <code>cascade</code>, <code>expandedIds</code>, <code>defaultExpandedIds</code>, <code>onExpandedChange</code>, <code>onActivate</code>, <code>loadingIds</code>, <code>guides</code> — but the <a href="../../guidelines/promotion-policy.card.html">promotion policy</a> freezes after a <em>consumer</em>, not after a build, and requires zero open items. Nothing outside the design system has used this shape yet and two items are open (§14), so the masthead says <code>built</code>. <code>FileUpload</code> is the precedent: built at 1.30.0, frozen at 1.30.1, two props found in between by building a real surface against it.</li>
+      <li><strong>One dead token removed, one wired up, at first review.</strong> <code>--tree-row-text</code> was defined and never read — a row's resting colour is <code>--tree-branch-text</code> or <code>--tree-leaf-text</code>, and a third value neither reads is exactly the dead token freeze criterion 5 forbids. <code>--tree-chevron-hover</code> was the opposite defect: defined, listed here, and unwired, so the twisty — the pointer affordance for expansion — had no hover feedback. It is now applied on twisty hover at <code>--duration-fast</code>. The group is 22 tokens, all of them read.</li>
+      <li><strong>Virtualisation is not built in.</strong> Around 2,000 visible rows the flatten-and-render pass becomes noticeable on a plant terminal. Reopen when a product ships a tree that is routinely open past that; the fix is a windowed renderer over the existing flattened order, which is why that order is a single array and not a walk.</li>
+      <li><strong>No reorder or move.</strong> Drag has no keyboard equivalent in this system and none is specified here (§08). A product that must restructure a hierarchy should do it as a form action on the selection. Reopen with a real editing surface, not with a drag prototype.</li>
+      <li>Considered and declined: <code>expandAll</code> (§07), a <code>filter</code> prop (the product owns which nodes a hit reveals), a per-node <code>actions</code> slot (§12), and multi-select via <code>forms/Checkbox</code> (§04).</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

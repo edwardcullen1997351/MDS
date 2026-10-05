@@ -1,0 +1,277 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Confirmed action" subtitle="Full specification — initiation kept apart from commitment, a captured target revalidated before execution, and a failure that never reads as success · manufacturing ERP reference" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Confirmed action — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.mn{font-size:10px;color:var(--text-secondary);line-height:1.5}
+.mb{align-self:flex-start;height:26px;padding:0 10px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:10px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.mb.q{background:var(--surface-sunken);color:var(--text-primary);border:var(--border-hairline)}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-warning-soft);color:var(--text-warning)}
+.ma.bad{background:var(--status-critical-soft);color:var(--text-critical)}
+.ma.ok{background:var(--status-success-soft);color:var(--text-success)}
+.split{display:grid;grid-template-columns:118px minmax(0,1fr);gap:8px}
+.rows{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-card)}
+.rows div{display:flex;align-items:center;gap:7px;padding:5px 7px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);border-bottom:var(--border-subtle)}
+.rows div:last-child{border-bottom:none}
+.rows div.on{background:var(--surface-sunken);color:var(--text-primary)}
+.dot{width:9px;height:9px;border:1px solid var(--border-strong);border-radius:50%;flex:none}
+.dot.on{border:3px solid var(--action-solid)}
+.panel{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:8px 9px;display:flex;flex-direction:column;gap:5px}
+.panel .t{font-family:var(--font-mono);font-size:10px;color:var(--text-primary)}
+.panel .f{display:flex;justify-content:space-between;gap:8px;font-size:9.5px;color:var(--text-secondary);font-family:var(--font-mono)}
+.sk{height:7px;border-radius:3px;background:var(--surface-sunken)}
+.mcount{font-size:10px;font-family:var(--font-mono);color:var(--text-tertiary)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Confirmed action</h1>
+  <p class="lede">Requiring an explicit second act before something consequential happens — with initiation that executes nothing, a consequence stated in the units the user will live with, a target captured when the question is asked and revalidated before it is answered, a cancellation with no side effects, and a failure that can never be mistaken for the thing having worked.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: Button or IconButton, Dialog, Button</span><span>Reference implementation: <a href="confirmed-action-reference.card.html">card</a> · <a href="../../templates/confirmed-action/ConfirmedAction.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — cancelling a released work order mid-run</span><span>Sections included: 12 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>WO-2026-4471 is running on PR-03 with 3,150 of 4,800 pieces made. Cancelling it strands ₹58,275 of work in progress, releases ₹90,000 of reserved material and leaves assembly line 2 short by 1,650 pieces. One misplaced click should not do that, and a planner who does mean it should be told, in those numbers, what they are about to do. The pattern owns the gap between pressing the button and the operation happening: what the question says, what it is asking about, what happens if the answer arrives late, and what the screen says when the operation fails after the user has already committed to it.</p>
+    <p><strong>Use it when</strong> immediate execution carries a real risk of accidental, consequential and hard-to-reverse effect.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>Irreversible operations with material consequence — cancelling released work, scrapping stock, deleting a record others depend on.</li><li>Operations whose consequence is larger than the control that triggers them suggests.</li><li>Operations whose scope the user cannot fully see from the trigger — a count, a value, a downstream commitment.</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>Reversible actions.</strong> Holding the line is undoable: it acts at once and offers an undo. A confirmation on a reversible action buys nothing and teaches users to dismiss confirmations without reading them — which is how the one that mattered gets dismissed too.</li><li><strong>Friction for its own sake.</strong> A confirmation is not a way to slow a user down, and it is not a substitute for permissions: if this user may not do it, do not offer it.</li><li><strong>An operation over many chosen items.</strong> Whether a confirmation is required for a bulk operation, and what set it names, belongs to <a href="BulkSelectionAction.spec.html">bulk selection and action</a>; this pattern owns the confirmation itself.</li><li><strong>Collecting input.</strong> A dialog that gathers values and submits them is <a href="ValidatedSubmission.spec.html">validated submission</a> in a modal. An acknowledgement gate is not input.</li><li><strong>A warning the user cannot act on.</strong> If there is no decision — no way to proceed and no way to avoid it — it is an <code>Alert</code>, not a confirmation.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">Initiation</td><td><code>Button</code> or <code>IconButton</code></td><td>Required. Names the action and its target, and opens the confirmation — nothing else. An <code>IconButton</code> initiating something irreversible needs a real accessible name; "trash can" is not one.</td></tr>
+      <tr><td class="k">Confirmation surface</td><td><code>Dialog</code></td><td>Required. Modal, because the decision must not compete with the page; titled with the question, described with the consequence. <code>Dialog</code> owns focus trapping, focus restoration and the dismissal paths (§12).</td></tr>
+      <tr><td class="k">Consequence</td><td><code>Alert</code> · <code>Text</code> · <code>DescriptionList</code></td><td>Required in substance. Where the consequence is material, an <code>Alert</code> carries it and a <code>DescriptionList</code> states the captured figures — what will be stranded, released, or lost, in the units of the plant.</td></tr>
+      <tr><td class="k">Confirm</td><td><code>Button variant="danger"</code> (or <code>primary</code> when not destructive)</td><td>Required. Last in the footer, labelled with the action and its scope — never "OK", "Yes" or "Confirm" alone (§14).</td></tr>
+      <tr><td class="k">Cancel</td><td><code>Button variant="ghost"</code></td><td>Required. First in the footer. Present even where the dialog is dismissible, because a dismissal path is not a visible answer to a question.</td></tr>
+      <tr><td class="k">Acknowledgement</td><td><code>Checkbox</code></td><td>Optional, per the <code>acknowledgement</code> policy (§05). One statement of fact the user affirms; it gates the confirm control and never carries the consequence text.</td></tr>
+      <tr><td class="k">Pending</td><td><code>Progress</code></td><td>Required where execution is asynchronous and observable. Shown where the user's attention is, naming the operation and the target.</td></tr>
+      <tr><td class="k">Outcome</td><td><code>Alert</code> · <code>Toast</code> or <code>Snackbar</code> for success only</td><td>Required. Failure persists in place until acted on; a success may pass in a snackbar because nothing is left to resolve.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>Initiation.</strong> The user activates the action. The operation does <em>not</em> run. The target and the figures the user will be shown are captured (§20).</li>
+      <li><strong>Confirmation.</strong> The dialog states the action, the target and the consequence in the captured figures, and offers exactly two answers.</li>
+      <li><strong>Cancel or dismiss.</strong> Either exits with no effect whatsoever: no operation, no partial write, no change to the target. The capture is discarded and focus returns to the initiator.</li>
+      <li><strong>Confirm.</strong> The pattern revalidates the live target against the capture. If the target moved, the declared <code>targetRevalidation</code> policy decides: refuse and re-present the current figures, or proceed against the live target.</li>
+      <li><strong>Execution.</strong> The operation runs, once, on the confirmed target. Further activation does nothing until it resolves.</li>
+      <li><strong>Resolution.</strong> Success states what happened to the target in its own units. Failure states that the operation did not happen, why, and what the target still is.</li>
+      <li><strong>Retry.</strong> Retry re-enters the flow at step 1 for the same action and target, so the user re-reads a consequence computed from current figures — not a silent second attempt against a stale capture.</li>
+    </ol>
+    <p>Two separations do the work: initiation is not commitment, and confirmation state is not operation state. Collapse the first and a click executes; collapse the second and a dialog that has closed still owns the fate of an operation in flight.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Opening the confirmation executes nothing.</strong> No optimistic write, no lock, no reservation, no analytics event claiming the deed. The order is still running while the question is on screen, and the dialog says so.</li>
+      <li><strong>Cancellation is side-effect free.</strong> Cancel, Escape, the scrim and the close control all leave the target byte-for-byte as it was. There is no "cancelled" state to write anywhere.</li>
+      <li><strong>The confirmation applies to the target and action it presented.</strong> The identity is captured at initiation; nothing between the question and the answer may redirect it to another record.</li>
+      <li><strong>The live target is revalidated before execution.</strong> Where the world can move — a quantity reported, a status changed by MES — the pattern compares the live target with the capture and applies the declared policy rather than sending a stale intent.</li>
+      <li><strong>If the target is no longer valid, no substitute is chosen.</strong> The operation is refused, and the pattern says what the target is now. An action whose target vanished has no fallback target.</li>
+      <li><strong>Confirmation is single-shot.</strong> A second activation of the confirm control does nothing while the first is in flight — guarded at the state transition, not by disabling the button.</li>
+      <li><strong>Confirmation state and operation state are separate.</strong> The dialog closes on confirm; the operation continues in the page's own state, with its own pending, failure and success. A pending operation is never held inside a dismissed dialog.</li>
+      <li><strong>The consequence shown is the consequence computed for the captured target,</strong> and the pending and success messages describe the same figures. Three different numbers across question, progress and outcome is the same defect as three different targets.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><span class="ml">Cancel work order WO-2026-4471?</span><span class="mn">3,150 pieces made stay in WIP · 1,650-piece balance cancelled · ₹90,000 of material released</span><div style="display:flex;gap:6px"><div class="mb q">Keep running</div><div class="mb">Cancel 1,650 pieces and close WO-2026-4471</div></div><span class="mh">status: running — nothing has been cancelled yet</span></div><p class="why">The question names the order, the numbers are the captured ones, and the screen states that opening the dialog changed nothing.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><span class="ml">Are you sure?</span><span class="mn">This action cannot be undone.</span><div style="display:flex;gap:6px"><div class="mb q">No</div><div class="mb">Yes</div></div><span class="mh">status: cancelling… (already sent)</span></div><p class="why">No target, no consequence, and the operation has already gone to MES before the answer — so "No" is a lie and the planner learns that dialogs mean nothing.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Options</th><th>What it decides</th></tr></thead><tbody>
+      <tr><td class="k">acknowledgement</td><td><code>none</code> · <code>checkbox</code></td><td>Whether the confirm control is gated on an explicit acknowledgement. <code>none</code> is right for nearly everything: a well-written consequence and a labelled confirm button already require reading. <code>checkbox</code> is for a consequence that lands on someone <em>else</em> — a line supervisor who must be told the press is stopping — where the affirmation is a fact, not a ritual. A typed-reference gate is a third option some products need; it belongs to the same property and is subject to the same rule: one gate, never two.</td></tr>
+      <tr><td class="k">dismissal</td><td><code>dismissible</code> · <code>explicit</code></td><td>Whether Escape and the scrim close the dialog. <code>dismissible</code> is the default and is safe precisely because dismissal is side-effect free. <code>explicit</code> — no Escape, no scrim, no close control — is defensible only where an accidental dismissal loses work the user cannot recover; it must never be used to trap a user into answering.</td></tr>
+      <tr><td class="k">targetRevalidation</td><td><code>block</code> · <code>proceed</code></td><td>What happens when the target moved while the confirmation was open. <code>block</code> refuses, re-presents the current figures and asks again — correct wherever the figures are the reason the user is confirming. <code>proceed</code> acts on the live target, and is only defensible where the drift cannot change the decision. A status change that invalidates the action refuses under both.</td></tr>
+      <tr><td class="k">completionFeedback</td><td><code>alert</code> · <code>toast</code></td><td>How success is reported. <code>alert</code> in place suits an outcome with follow-on work to state — WIP someone must now disposition. <code>toast</code> suits a self-contained success. Failure is never a toast (§10).</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <table><thead><tr><th>State</th><th>What is true</th><th>What is displayed</th></tr></thead><tbody>
+      <tr><td class="k">idle</td><td>Nothing initiated. The action is available if it is permitted.</td><td>The target and the initiating control, named.</td></tr>
+      <tr><td class="k">confirmation open</td><td>A target is captured. Nothing has executed.</td><td>The question, the consequence in captured figures, confirm and cancel — and a statement that the target is unchanged.</td></tr>
+      <tr><td class="k">target drifted</td><td>The live target moved while the dialog was open.</td><td>What changed, from what to what, that nothing was executed, and the refreshed figures to confirm against.</td></tr>
+      <tr><td class="k">confirmed and pending</td><td>The operation is in flight on the confirmed target. The dialog has closed.</td><td>Progress naming the operation and the target; further activation refused.</td></tr>
+      <tr><td class="k">failed</td><td>The operation did not happen. The target is unchanged.</td><td>The cause, an explicit statement that nothing changed, and a retry that re-asks.</td></tr>
+      <tr><td class="k">completed</td><td>The operation happened, once.</td><td>What it did to the target in its own units, plus any follow-on work it created.</td></tr>
+      <tr><td class="k">cancelled</td><td>The user declined. Nothing was executed and nothing was recorded.</td><td>The idle view, with a statement of what the target still is. Not a "cancelled" banner — there is nothing to report.</td></tr>
+    </tbody></table>
+    <p class="warn"><strong>Confirmed is not completed.</strong> Closing the dialog on confirm is correct; treating the close as the outcome is not. The moment a screen shows the post-operation state while the request is still in flight, a failure has to un-tell the user something they have already acted on — and on a shop floor they have already told the supervisor.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Error handling</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>A failure after confirmation never implies success.</strong> The target keeps its pre-operation state on screen, and the message says the operation did not happen before it says why.</li>
+      <li><strong>The cause is stated in operational terms.</strong> "MES refused the cancellation — the shift B production report for PR-03 is open and must be posted first" tells the planner what to do next; "Something went wrong" tells them to try again forever.</li>
+      <li><strong>Retry preserves the action and the target,</strong> and re-asks: the consequence is recomputed from current figures and confirmed again. A silent retry against the original capture can send an intent the user formed several minutes and several hundred pieces ago.</li>
+      <li><strong>If the target is no longer valid, retry refuses and says what the target is now</strong> — never substituting a similar record, and never disabling itself without explanation.</li>
+      <li><strong>Failure is persistent and in place.</strong> Not a toast: the only record of a consequential operation not happening must not expire on a timer.</li>
+      <li><strong>An unknown outcome is reported as unknown.</strong> Where the response is lost rather than refused, the pattern says the operation may have been sent and points at where the truth is — never a guess in either direction.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="ma bad">WO-2026-4471 was not cancelled<br><span class="mh">MES refused the cancellation — the shift B production report for PR-03 is open and must be posted first (MES-4412). The order is still running and nothing was stranded.</span></div><div class="mb">Try cancelling WO-2026-4471 again</div></div><p class="why">Outcome first, cause second, the target's real state third — and a retry that re-asks rather than re-fires.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="ma ok">Work order cancelled</div><div class="ma bad">Error: request failed</div></div><p class="why">Two contradictory statements, and the optimistic one came first. The planner has already told the supervisor to clear the press.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The consequence is available before the commitment.</strong> The dialog is named by the question and described by the consequence, so both are read on open — not discovered by exploring the dialog after arriving on the confirm button.</li>
+      <li><strong>Focus follows the dialog's contract.</strong> It enters the dialog on open and is trapped there; where the action is destructive, initial focus lands on the cancel control or the dialog body, never on the destructive confirm button, which can then be triggered by a keypress already in flight.</li>
+      <li><strong>Focus returns to the initiating context on exit</strong> — cancel, dismiss or confirm — which the <code>Dialog</code> handles by restoring focus to the element that opened it. Where that element has since disappeared, focus goes to the region that replaced it, never to the document.</li>
+      <li><strong>The acknowledgement gate is perceivable as a gate.</strong> The confirm control's unavailability is explained in text next to it, not signalled only by colour.</li>
+      <li><strong>Asynchronous completion and failure are announced.</strong> The dialog is gone by then, so the announcement is the only way a non-sighted user learns the outcome: success politely, failure as an alert.</li>
+      <li><strong>Drift discovered at confirm is announced where the user is,</strong> inside the still-open dialog, with the refreshed figures — not as a page-level message behind a modal.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><span class="ml">Cancel work order WO-2026-4471?</span><span class="mn">Focus lands on "Keep running". Escape closes and returns focus to the Cancel work order button.</span><div style="display:flex;gap:6px"><div class="mb q">Keep running</div><div class="mb">Cancel 1,650 pieces and close WO-2026-4471</div></div></div><p class="why">A stray Enter or Space arriving with the dialog cannot destroy anything, and leaving puts the user back where they were.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><span class="ml">Confirm</span><span class="mn">Focus lands on the destructive button. Escape closes; focus goes to the top of the document.</span><div style="display:flex;gap:6px"><div class="mb">Yes, cancel</div></div></div><p class="why">The keypress that opened the dialog can confirm it, there is no visible way to decline, and a cancelled attempt costs the user their place on the page.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The question names the action and the target.</strong> "Cancel work order WO-2026-4471?" — a title that could belong to any record on the screen is not a confirmation.</li>
+      <li><strong>The consequence is stated in the plant's own units,</strong> not as a warning adjective: pieces stranded, rupees of material released, who goes short and by how much. "This action cannot be undone" is true of everything and informs nobody.</li>
+      <li><strong>The confirm label restates the action and its scope.</strong> "Cancel 1,650 pieces and close WO-2026-4471" — because the label is the last thing read, and often the only thing read.</li>
+      <li><strong>The decline label says what happens instead.</strong> "Keep running", not "No" — a pair of Yes/No buttons under a negatively phrased question is a coin toss.</li>
+      <li><strong>Never a generic confirmation where the consequence is computable.</strong> If the system knows the numbers, the dialog states them; if it does not, it says which figures it could not read rather than rounding the risk down to a shrug.</li>
+      <li><strong>The acknowledgement is a statement of fact the user can honestly affirm,</strong> naming the person or system affected: "I have told Sandeep Kulkarni that PR-03 is stopping." Not "I understand this is permanent."</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><span class="ml">Cancel work order WO-2026-4471?</span><span class="mn">3,150 pieces (₹58,275) stay in WIP for disposition. Assembly line 2 goes short by 1,650 pieces.</span><div style="display:flex;gap:6px"><div class="mb q">Keep running</div><div class="mb">Cancel 1,650 pieces and close WO-2026-4471</div></div></div><p class="why">Every number the decision needs is on screen, and both buttons say what they do.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><span class="ml">Delete?</span><span class="mn">This cannot be undone.</span><div style="display:flex;gap:6px"><div class="mb q">Cancel</div><div class="mb">OK</div></div></div><p class="why">"Delete" what — and note that "Cancel" here means <em>do not cancel the work order</em>. The two words in the dialog that matter both mean the opposite of what the planner is thinking.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§17</span><h2>Performance</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The single-shot guard sits at the state transition,</strong> not on the button's disabled attribute: a double press on a destructive confirm is faster than a frame, and two cancellations of one work order is a reconciliation job.</li>
+      <li><strong>The dialog closes on confirm and the pending state appears where the user's attention lands.</strong> Leaving the dialog open with a spinner in it makes the pending state modal for no reason and traps the user in a decision they have already made.</li>
+      <li><strong>The operation carries a request identity,</strong> and only the current one may write the outcome — a response arriving after the target changed or a newer attempt began writes nothing.</li>
+      <li><strong>The page stays usable while the operation runs,</strong> except for the action itself: the user may read the record, the schedule and the WIP they are about to inherit.</li>
+      <li><strong>A slow confirmation does not become an optimistic one.</strong> If the operation is slow enough that showing the result early is tempting, the answer is progress and a real outcome, not a guess — an optimistic destructive action has no honest failure story.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+      <tr><td class="k">Target's figures change while the dialog is open</td><td>Under <code>block</code>: the confirm is refused, the change is stated from-and-to, and the refreshed figures are presented for a second answer. Under <code>proceed</code>: the live target is used, and the outcome states the figures actually acted on.</td></tr>
+      <tr><td class="k">Target becomes invalid for the action</td><td>Refused under both policies, with the target's new state named. No substitute target, ever.</td></tr>
+      <tr><td class="k">Target disappears entirely</td><td>The confirmation closes with an explanation of what happened to it; nothing is sent, and the initiating control reflects that the action is no longer available.</td></tr>
+      <tr><td class="k">Repeated activation of confirm</td><td>The second activation is refused while the first is in flight. No queue, no second operation.</td></tr>
+      <tr><td class="k">Non-action dismissal (Escape, scrim, close)</td><td>Identical to cancel: no side effects, capture discarded, focus restored. Under <code>explicit</code> these paths do not exist and the two buttons are the only answers.</td></tr>
+      <tr><td class="k">Operation fails after confirmation</td><td>§10. The target's pre-operation state stands and the retry re-asks.</td></tr>
+      <tr><td class="k">Response never arrives</td><td>Reported as unknown, with where to verify. Never resolved optimistically in either direction.</td></tr>
+      <tr><td class="k">Permission lost between initiation and confirmation</td><td>Refused with the reason. A confirmation is not an authorisation that outlives the check.</td></tr>
+      <tr><td class="k">Acknowledgement given, then the target drifts</td><td>The acknowledgement is cleared with the refreshed figures: it was affirmed about the old numbers.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Capture the target when the confirmation opens</strong> — identity plus the figures shown — and hold it in the confirmation state: <code>{ action, snapshot }</code>. The dialog then renders from the capture, so nothing it says can drift mid-sentence.</li>
+      <li><strong>Keep confirmation state and operation state in separate fields.</strong> <code>confirm</code> is cleared when the dialog closes; <code>operation</code> lives until the response resolves. One field for both is how a dismissed dialog ends up owning an in-flight request.</li>
+      <li><strong>Compare the live target with the capture inside the confirm handler,</strong> before dispatching, and branch on the declared policy. This is the only place the comparison can be correct.</li>
+      <li><strong>Never write anything in the initiation handler.</strong> No lock, no soft-delete, no "pending cancellation" flag — the only legitimate side effect of opening a confirmation is the capture.</li>
+      <li><strong>Guard with the operation object itself:</strong> a truthy in-flight operation refuses a second confirm synchronously, before any re-render.</li>
+      <li><strong>Tag the request with a monotonic number</strong> and check it, plus the target's continued validity, before writing the outcome.</li>
+      <li><strong>Send the identity and the state the user confirmed against,</strong> so the service can refuse a stale intent itself: the client-side revalidation is a courtesy, not a guarantee.</li>
+      <li><strong>Route retry back through initiation,</strong> not into the executor. Retry is a new confirmation with a fresh capture, which keeps §10's promise that the user confirms current figures.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted"><strong>Omitted sections and why.</strong>
+§06 Variants — an inline confirmation, a two-step button and a modal differ in presentation; the behavioural choices that matter are declared properties (§05). A confirmation that types a reference is the <code>acknowledgement</code> property, not a variant.
+§07 Sizes — <code>Dialog</code> owns its widths; no coordinated sizing exists at the pattern level.
+§09 Validation — nothing is submitted and no input is judged. The acknowledgement gate is a precondition on the confirm control (§05), not validation of a value; a dialog that genuinely collects input is <a href="ValidatedSubmission.spec.html">validated submission</a>.
+§11 Input &amp; interaction modalities — <code>Dialog</code> and <code>Button</code> own keyboard, pointer and touch behaviour; the pattern's one modality-adjacent rule, that initial focus never lands on a destructive confirm, is in §12.
+§13 Motion — the dialog's entrance is component-owned and decorative; no motion carries pattern-owned meaning, and none may delay the outcome announcement.
+§15 Responsive — the dialog reflows and may become a full-screen sheet; the interaction contract is unchanged.
+§16 Internationalization — the pattern is direction-agnostic; the quantities, currency and dates in its messages are formatted by the product's locale rules.
+§19 Anti-patterns — the refusals in §01 (reversible actions, friction, permissions), the execution rules in §04 and the wording rules in §14 cover the recurring misuses.
+§21 Developer notes — the contract in §04, §05, §08, §10 and §20 is the whole contract; its one requirement of an API, that the confirmed state be sent so the service can refuse a stale intent, is stated in §20.</p>
+</div></body></html>

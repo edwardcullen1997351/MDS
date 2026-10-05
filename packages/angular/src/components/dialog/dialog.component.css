@@ -1,0 +1,152 @@
+.ds-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(2px);
+  z-index: var(--ds-global-zIndex-modal, 1300);
+  animation: ds-fade-in 150ms ease-out;
+}
+
+.ds-dialog-positioner {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--ds-global-zIndex-modal, 1300);
+  padding: var(--ds-global-space-4, 16px);
+  pointer-events: none;
+}
+
+.ds-dialog-content {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  background-color: var(--ds-semantic-color-surface-default, #FFFFFF);
+  border-radius: var(--ds-global-radius-lg, 8px);
+  box-shadow: var(--ds-global-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--ds-semantic-color-border-subtle, #E5E7EB);
+  pointer-events: auto;
+  font-family: var(--ds-global-fontFamily-sans, sans-serif);
+  animation: ds-scale-in 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-dialog-content--sm {
+  max-width: 400px;
+}
+
+.ds-dialog-content--lg {
+  max-width: 720px;
+}
+
+.ds-dialog-header {
+  padding: var(--ds-global-space-5, 20px) var(--ds-global-space-6, 24px) var(--ds-global-space-3, 12px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-global-space-1, 4px);
+}
+
+.ds-dialog-title {
+  font-size: var(--ds-global-fontSize-xl, 20px);
+  font-weight: var(--ds-global-fontWeight-semibold, 600);
+  color: var(--ds-semantic-color-text-primary, #111827);
+  margin: 0;
+}
+
+.ds-dialog-description {
+  font-size: var(--ds-global-fontSize-sm, 14px);
+  color: var(--ds-semantic-color-text-secondary, #4B5563);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ds-dialog-body {
+  padding: var(--ds-global-space-3, 12px) var(--ds-global-space-6, 24px);
+  font-size: var(--ds-global-fontSize-base, 16px);
+  color: var(--ds-semantic-color-text-primary, #111827);
+  overflow-y: auto;
+  max-height: calc(85vh - 160px);
+}
+
+.ds-dialog-footer {
+  padding: var(--ds-global-space-4, 16px) var(--ds-global-space-6, 24px) var(--ds-global-space-5, 20px);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ds-global-space-3, 12px);
+  border-top: 1px solid var(--ds-semantic-color-border-subtle, #E5E7EB);
+  background-color: var(--ds-semantic-color-surface-subtle, #F9FAFB);
+  border-bottom-left-radius: var(--ds-global-radius-lg, 8px);
+  border-bottom-right-radius: var(--ds-global-radius-lg, 8px);
+}
+
+.ds-dialog-close-trigger {
+  position: absolute;
+  top: var(--ds-global-space-4, 16px);
+  right: var(--ds-global-space-4, 16px);
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--ds-global-color-neutral-600, #4B5563);
+  padding: 4px 8px;
+  border-radius: var(--ds-global-radius-sm, 4px);
+  transition: color 150ms ease, background-color 150ms ease;
+}
+
+.ds-dialog-close-trigger:hover,
+.ds-dialog-close-trigger:focus-visible {
+  color: var(--ds-semantic-color-text-primary, #111827);
+  background-color: var(--ds-semantic-color-surface-muted, #F3F4F6);
+  outline: 2px solid var(--ds-global-color-brand-500, #3B82F6);
+  outline-offset: 1px;
+}
+
+/* --------------------------------------------------------------------------
+   CSS Container Queries (@container)
+   -------------------------------------------------------------------------- */
+@container (max-width: 480px) {
+  .ds-dialog-header {
+    padding: var(--ds-global-space-4, 16px) var(--ds-global-space-4, 16px) var(--ds-global-space-2, 8px);
+  }
+
+  .ds-dialog-title {
+    font-size: var(--ds-global-fontSize-lg, 18px);
+    padding-right: 28px;
+  }
+
+  .ds-dialog-body {
+    padding: var(--ds-global-space-2, 8px) var(--ds-global-space-4, 16px);
+  }
+
+  .ds-dialog-footer {
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--ds-global-space-3, 12px) var(--ds-global-space-4, 16px) var(--ds-global-space-4, 16px);
+    gap: var(--ds-global-space-2, 8px);
+  }
+
+  .ds-dialog-footer > * {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@keyframes ds-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ds-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

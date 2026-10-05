@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tree Diagram · 14-Section Specification Standard</title>
+  <link rel="stylesheet" href="../../tokens/tokens.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+    }
+    body {
+      margin: 0;
+      padding: 40px 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .spec-container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .spec-header {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 24px;
+      margin-bottom: 36px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #a7f3d0;
+      margin-top: 8px;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      color: #0f172a;
+    }
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+    p, li {
+      font-size: 14px;
+      color: #334155;
+    }
+    ul, ol {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      background: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 12px;
+      margin-bottom: 24px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: #eff6ff;
+      padding: 14px 18px;
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+      font-size: 13px;
+      color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="spec-container">
+    <header class="spec-header">
+      <div class="badge">Meridian Design System · Data Visualization Specification</div>
+      <h1>Tree Diagram Component Specification</h1>
+      <div style="font-size: 14px; color: var(--text-muted);">
+        Standard Specification Document for Explicit Parent-Child Topology & Lineage
+      </div>
+      <div class="status-tag">
+        <span>●</span> status: frozen 9 Sep 2026 · 0 open items
+      </div>
+    </header>
+
+    <!-- SECTION 01: PURPOSE -->
+    <section>
+      <h2>§01 Purpose & Structural Topology Intent</h2>
+      <p>
+        The <code>TreeDiagram</code> component communicates explicit parent-child topology, ancestry, branching structure, and hierarchical lineage. Unlike space-filling area charts (e.g. <code>Treemap</code>), its analytical grammar optimizes for structural comprehension, path traversal, and progressive disclosure of tree depths.
+      </p>
+      <ul>
+        <li><strong>Primary analytical questions:</strong> <em>"What is the upstream/downstream lineage of this asset?", "Which sub-assemblies compose this Bill of Materials?", "How does operational reporting escalate across shop leadership?"</em></li>
+        <li><strong>Contextual enterprise scenario:</strong> Shop-floor equipment topology, EV chassis engineering BOMs, and shift supervision matrices at <strong>Suryodaya Autocomp Ltd (Chakan plant PL-04, Pune)</strong>.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 02: DATA MODEL -->
+    <section>
+      <h2>§02 Data Model & Transformation</h2>
+      <p>
+        Data is modeled as a rooted acyclic tree with unique node IDs, labels, operational metadata (status, code, role), and optional child arrays:
+      </p>
+      <pre><code>// Hierarchy Node Model
+interface TreeNode {
+  id: string;              // Unique node ID
+  label: string;           // Display title (e.g. "800T Transfer Press")
+  code?: string;           // Asset code or Part number (e.g. "PS-800T-01")
+  role?: string;           // Functional designation
+  status?: 'operational' | 'maintenance' | 'alarm' | 'idle';
+  children?: TreeNode[];   // Ordered array of child nodes
+}</code></pre>
+      <p>
+        Multi-parent cycles or detached subgraphs are disallowed in pure tree diagrams.
+      </p>
+    </section>
+
+    <!-- SECTION 03: VISUAL ENCODING -->
+    <section>
+      <h2>§03 Visual Encoding & Anatomy</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Visual Channel</th>
+            <th>Data Attribute</th>
+            <th>Design & Layout Rule</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Spatial Position (X, Y)</strong></td>
+            <td>Hierarchy Depth & Sibling Index</td>
+            <td>Depth along major axis (X for horizontal, Y for vertical); sibling spacing along minor axis.</td>
+          </tr>
+          <tr>
+            <td><strong>Connecting Edges (Links)</strong></td>
+            <td>Parent-Child Lineage</td>
+            <td>Smooth cubic bezier curves, orthogonal step lines, or straight vectors. Highlighted in blue (<code>#2563eb</code>) on active path.</td>
+          </tr>
+          <tr>
+            <td><strong>Node Cards</strong></td>
+            <td>Entity Representation</td>
+            <td>Surfaces with primary title, code/role caption, status dot, and accent stripe.</td>
+          </tr>
+          <tr>
+            <td><strong>Expansion Badges</strong></td>
+            <td>Subtree Fold State</td>
+            <td>Circular badge with <code>+</code> (collapsed) or <code>&minus;</code> (expanded) showing branch interactivity.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SECTION 04: COMPONENT COMPOSITION -->
+    <section>
+      <h2>§04 Component Composition & Layer Stacking</h2>
+      <ol>
+        <li><code>Layer 0 (Canvas)</code>: SVG background viewport with pan & zoom transform matrix.</li>
+        <li><code>Layer 10 (Hierarchy Links)</code>: Background SVG paths connecting parent anchor to child anchor.</li>
+        <li><code>Layer 20 (Node Cards)</code>: Rectangular card surfaces with 6px border radius, border stroke, and drop shadow.</li>
+        <li><code>Layer 30 (Node Content)</code>: Text labels, subtitle codes, status indicators, and focus outlines.</li>
+        <li><code>Layer 40 (Expansion Badges)</code>: Interactive circular toggle badges positioned along edge intersection points.</li>
+        <li><code>Layer 50 (Modal Overlays)</code>: Accessible hierarchical tree table modal (<kbd>Alt+F11</kbd>).</li>
+      </ol>
+    </section>
+
+    <!-- SECTION 05: PROPERTIES & PROPS -->
+    <section>
+      <h2>§05 Properties, Props & Configuration</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>data</code></td>
+            <td><code>TreeNode</code></td>
+            <td><strong>Required</strong></td>
+            <td>Root hierarchical tree node object.</td>
+          </tr>
+          <tr>
+            <td><code>orientation</code></td>
+            <td><code>'horizontal' | 'vertical'</code></td>
+            <td><code>'horizontal'</code></td>
+            <td>Tree growth direction. Horizontal (Left-to-Right) or Vertical (Top-to-Bottom).</td>
+          </tr>
+          <tr>
+            <td><code>linkStyle</code></td>
+            <td><code>'smooth' | 'step' | 'straight'</code></td>
+            <td><code>'smooth'</code></td>
+            <td>Curve geometry for connecting edges.</td>
+          </tr>
+          <tr>
+            <td><code>collapsible</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Enables interactive expanding and collapsing of subtrees.</td>
+          </tr>
+          <tr>
+            <td><code>zoomable</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Enables viewport pan and zoom toolbar with reset controls.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SECTION 06: STATES & INTERACTIONS -->
+    <section>
+      <h2>§06 States & Interactions</h2>
+      <ul>
+        <li><strong>Expanded State:</strong> All children of the branch are measured and laid out. Link lines connect parent to each child.</li>
+        <li><strong>Collapsed State:</strong> Subtree nodes are hidden; circular badge displays <code>+</code> indicator.</li>
+        <li><strong>Ancestor Path Highlight:</strong> Hovering or selecting any node highlights the exact path of links and ancestor cards up to the root.</li>
+        <li><strong>Pan & Zoom State:</strong> Viewport supports continuous panning via mouse drag and zoom in/out with auto-fit reset.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 07: LAYOUT ALGORITHMS & GEOMETRY -->
+    <section>
+      <h2>§07 Layout Algorithms & Geometry</h2>
+      <p>
+        The <code>computeTreeTopology()</code> engine recursively measures subtree bounding breadths and centers parent nodes along the span of their visible children:
+      </p>
+      <pre><code>// Centered Parent Coordinate Formulation
+Breadth(Parent) = Sum(Breadth(Child_i)) for all Child_i in Parent.children
+Position(Parent) = SiblingOffset + (Breadth(Parent) - NodeSize) / 2</code></pre>
+    </section>
+
+    <!-- SECTION 08: LABELING & DENSITY RULES -->
+    <section>
+      <h2>§08 Labeling, Cards & Density Rules</h2>
+      <p>
+        Labels are contained inside structured cards with fixed dimensions (default 160x54px). Titles exceeding 18 characters are truncated with an ellipsis. Status dots provide immediate semantic awareness.
+      </p>
+    </section>
+
+    <!-- SECTION 09: RESPONSIVE BEHAVIOR -->
+    <section>
+      <h2>§09 Responsive & Viewport Scaling</h2>
+      <ul>
+        <li><strong>Pan & Zoom Viewport:</strong> Allows navigation across extensive trees without clipping.</li>
+        <li><strong>Initial Collapsing:</strong> Deep hierarchies (&gt;3 levels) can default to collapsed state for clean initial rendering.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 10: ACCESSIBILITY -->
+    <section>
+      <h2>§10 Accessibility & Dual-Encoding (WCAG 2.2 AA / AAA)</h2>
+      <ul>
+        <li><strong>Semantic Roles:</strong> <code>role="tree"</code> and <code>role="treeitem"</code> with <code>aria-expanded</code> on branch nodes.</li>
+        <li><strong>Keyboard Navigation:</strong> Full 2D traversal (<kbd>&larr;</kbd>/<kbd>&rarr;</kbd>/<kbd>&uarr;</kbd>/<kbd>&darr;</kbd>), toggle expansion with <kbd>Enter</kbd> / <kbd>Space</kbd>, and <kbd>Home</kbd>/<kbd>End</kbd>.</li>
+        <li><strong>Live Screen Reader Announcements:</strong> <code>aria-live="polite"</code> announces expansion and selection states.</li>
+        <li><strong>Non-Spatial Modal Alternative:</strong> <kbd>Alt+F11</kbd> accessible hierarchical data table.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 11: COLOR PALETTES & THEMES -->
+    <section>
+      <h2>§11 Color Palettes, Tokens & Themes</h2>
+      <p>
+        Adheres to Meridian status tokens: <code>--status-success-solid</code> (operational), <code>--status-warning-solid</code> (derated/maintenance), <code>--status-critical-solid</code> (alarm/stoppage), and <code>--action-solid</code> (path selection).
+      </p>
+    </section>
+
+    <!-- SECTION 12: MOTION & TRANSITIONS -->
+    <section>
+      <h2>§12 Motion & Transitions</h2>
+      <p>
+        Link paths and node cards transition at <code>150ms ease</code>. Fully respects <code>prefers-reduced-motion: reduce</code>.
+      </p>
+    </section>
+
+    <!-- SECTION 13: ANTI-PATTERNS -->
+    <section>
+      <h2>§13 Anti-Patterns & Error Handling</h2>
+      <ul>
+        <li>❌ <strong>Do NOT use for arbitrary graph topologies:</strong> Tree diagrams require a strict single-parent hierarchy.</li>
+        <li>❌ <strong>Do NOT encode quantitative share via area:</strong> Use <code>Treemap</code> for magnitude comparison.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 14: DEVELOPER NOTES -->
+    <section>
+      <h2>§14 Developer Notes & Sample Code</h2>
+      <pre><code>import React from 'react';
+import { TreeDiagram } from '@meridian/design-system';
+
+const plantTopology = {
+  id: 'root',
+  label: 'Chakan Plant (PL-04)',
+  code: 'PL-04-PUNE',
+  status: 'Operational',
+  children: [
+    {
+      id: 'press-shop',
+      label: 'Press Shop',
+      code: 'DIV-01',
+      status: 'Operational',
+      children: [
+        { id: 'press-1', label: '800T Press', code: 'PS-800T', status: 'Operational' }
+      ]
+    }
+  ]
+};
+
+export function AssetDashboard() {
+  return (
+    &lt;TreeDiagram
+      data={plantTopology}
+      orientation="horizontal"
+      linkStyle="smooth"
+      collapsible={true}
+      title="Asset Topology & Live Telemetry"
+      width={760}
+      height={420}
+    /&gt;
+  );
+}</code></pre>
+    </section>
+  </div>
+
+</body>
+</html>
+`;
+
+fs.writeFileSync(path.join(brainDir, 'TreeDiagram.spec.raw.html'), specHtml, 'utf8');
+console.log('TreeDiagram.spec.raw.html written.');

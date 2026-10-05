@@ -1,0 +1,359 @@
+<!-- @dsCard group="Specs · Core" viewport="1080x760" name="Fieldset" subtitle="Full specification — the group scaffold three components share: legend, messages, ARIA" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Fieldset — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section.sec{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section.sec:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:16px}
+.st{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+.st th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+.st td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+.st tr:last-child td{border-bottom:none}
+.st td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);display:block}
+.form{display:grid;gap:20px;max-width:440px}
+@media (max-width:860px){section.sec{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Fieldset, Field, Checkbox, Radio, RadioGroup, CheckboxGroup, ChipGroup, Chip, Input, Select, Switch, Button, Text, Alert, Link } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section className="sec">
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table className="st"><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+
+function Spec(){
+  const [err,setErr] = React.useState(false);
+  const [off,setOff] = React.useState(false);
+
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Core · Component specification</span>
+    <h1>Fieldset</h1>
+    <p className="lede">The group scaffold: a real <code>&lt;fieldset&gt;</code> with a <code>&lt;legend&gt;</code>, plus one hint and one error row beneath it. It exists because a <code>Field</code>'s <code>&lt;label for&gt;</code> names exactly one control and therefore cannot name a set — and because <code>RadioGroup</code>, <code>CheckboxGroup</code> and <code>ChipGroup</code> had each grown their own copy of the same twelve lines, already drifting apart. It is the system's clearest case of extraction being the right call and <em>not</em> being enough.</p>
+    <div className="meta">
+      <span>components/core/Fieldset.jsx</span><span>window.MeridianDesignSystem_962c43.Fieldset</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items</span><span>since: 1.9.1</span><span>tokens shared with Field · §13</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Name a set of controls, in markup the platform understands.">
+    <p>Use a Fieldset when <strong>several controls answer one question</strong> and that question has to be attached to all of them. <code>&lt;fieldset&gt;</code>/<code>&lt;legend&gt;</code> is the only grouping every screen reader announces without any ARIA at all — the legend is read with each control inside, so "Email" becomes "Notify on, Email".</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Name a set of loose controls','Fieldset','This component. Two related inputs, a handful of checkboxes you are laying out yourself.'],
+      ['Name ONE control','Field','A <label for> names one control; that is the whole division between the two (§04).'],
+      ['A one-of-N set','RadioGroup','It uses this scaffold and adds the shared name, the roving arrow keys and the value.'],
+      ['A many-of-N set','CheckboxGroup','Uses this scaffold, adds the array value and the select-all.'],
+      ['A set of offered options','ChipGroup','Uses this scaffold, adds the chips.'],
+      ['Group fields into a form section','A heading + Card','A fieldset is for controls answering ONE question, not for a page region.'],
+      ['Disable a whole form','<fieldset disabled> at the form level','Legitimate, and the one non-labelling reason the element exists (§06).'],
+    ]}/>
+    <p className="warn"><strong>Most products should never reach for this directly.</strong> Three components already wrap it, and using it <em>around</em> one of them nests a fieldset inside a fieldset and leaves the inner one unnamed — the exact defect the component exists to prevent. Reach for it when you are laying out loose controls yourself, or building a fourth grouped control.</p>
+    <div className="demo col">
+      <div className="form">
+        <Fieldset label="Notify on" hint="Pick at least one." error={err ? 'Pick at least one channel.' : null}>
+          <Checkbox label="Email" />
+          <Checkbox label="SMS" />
+          <Checkbox label="Plant display" />
+        </Fieldset>
+        <Button variant="secondary" size="sm" onClick={()=>setErr(v=>!v)}>{err?'Clear error':'Show group error'}</Button>
+      </div>
+      <Text size="xs" tone="tertiary">Loose <code>Checkbox</code> children — the case this component documents. Note the hint stays when the error appears (§06).</Text>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Legend, content, hint, error. No border.">
+    <div className="demo col">
+      <div style={{maxWidth:420}}>
+        <Fieldset label="Shift coverage" hint="At least one shift must be staffed." error="Nights has no lead assigned." required>
+          <Checkbox label="Days" defaultChecked />
+          <Checkbox label="Swing" defaultChecked />
+          <Checkbox label="Nights" />
+        </Fieldset>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        {[['1','<fieldset> — border, margin and padding all zeroed. The browser default is a legend-notched box, which is the one piece of native form chrome this system does not use.'],
+          ['2','minInlineSize: 0 AND minWidth: 0 — both deliberately. A fieldset\u2019s default min-inline-size is min-content, so without this it refuses to shrink inside a flex or grid parent however small its content is. It is the single most surprising thing about the element.'],
+          ['3','<legend> — the group\u2019s accessible name, --text-xs medium in --field-label-text, matching a Field\u2019s label exactly. float: none is set because a legend is not a normal flex child.'],
+          ['4','Required mark — an aria-hidden asterisk. Visual only: role="group" has no required state (§08).'],
+          ['5','Content — the caller\u2019s children, in a flex column with the gap prop.'],
+          ['6','Hint — id <group>-hint, --field-hint-text. Carries the rule, and survives the error.'],
+          ['7','Error — id <group>-err, in a permanently-mounted role="alert" region. Belongs to the SET, never to an individual control.']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+    </div>
+    <p>It renders <strong>identically to a Field</strong> — same label type, same message rows, same tokens — and that is the point of sharing the rendering rather than just the semantics: a form mixing single fields and groups should look like one form, not two.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Seven, and one of them is only visual.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['label','ReactNode','—','The question the set answers, rendered as the legend. Warns when absent unless aria-label or aria-labelledby is given (§08).'],
+      ['hint','ReactNode','—','The rule. Stays visible when error is set (§06).'],
+      ['error','ReactNode','—','Group-level failure. Announced by the always-mounted role="alert" region and tied to the group by aria-describedby.'],
+      ['required','boolean','false','Asterisk on the legend. VISUAL ONLY — see below.'],
+      ['disabled','boolean','false','The native fieldset attribute: blocks focus and submission for every descendant (§06).'],
+      ['gap','number | string','var(--space-2)','Vertical rhythm between legend, content and messages.'],
+      ['children','ReactNode','—','The controls. Any controls — this component makes no assumptions about them.'],
+    ]}/>
+    <p className="warn"><strong><code>required</code> draws a mark and sets no ARIA, deliberately.</strong> <code>role="group"</code> supports no required state — ARIA simply does not define one — and putting <code>aria-required</code> on each control inside would claim every option is individually required, which for "pick at least one of three" is false. So the requirement must be stated in words: <code>hint="Pick at least one"</code>. The asterisk is for people who can see it; the hint is for everyone.</p>
+    <p>The component sets <strong>no <code>aria-invalid</code></strong> either, for the same reason (§08). An explicit <code>aria-describedby</code> passed by a caller wins over the generated one, which is how <code>ChipGroup</code> supports an external label.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="None. The variation is which scaffold you need.">
+    <p>Fieldset has no variants at all — no tones, no sizes, no bordered mode. The only decision is <strong>Field or Fieldset</strong>, and it is settled by grammar rather than taste.</p>
+    <T cols={['','Field','Fieldset']} rows={[
+      ['Names','One control','A set of controls'],
+      ['Element','<div> + <label htmlFor>','<fieldset> + <legend>'],
+      ['Mechanism','Label association by id','Native containment — the legend is read with every control inside'],
+      ['aria-invalid / aria-required','On the control, via context','Neither. role="group" supports neither (§03)'],
+      ['Error belongs to','The control','The set'],
+      ['Consumed by','Input, Textarea, Select, Combobox, Autocomplete','RadioGroup, CheckboxGroup, ChipGroup — internally'],
+      ['Reach for it directly when','A control needs a label','You are laying out loose controls, or building a fourth grouped control'],
+    ]}/>
+    <div className="demo col">
+      <span className="lbl">The three components that already wrap it — use these, not a Fieldset around them</span>
+      <div className="form">
+        <RadioGroup label="Priority" hint="Applies to the whole order." options={[{value:'l',label:'Low'},{value:'n',label:'Normal'},{value:'h',label:'High'}]} defaultValue="n" />
+        <CheckboxGroup label="Areas" hint="Any number." options={[{value:'a',label:'Assembly'},{value:'p',label:'Paint'},{value:'t',label:'Trim'}]} />
+        <ChipGroup label="Shift" options={[{value:'d',label:'Days'},{value:'s',label:'Swing'},{value:'n',label:'Nights'}]} defaultValue="d" />
+      </div>
+      <Text size="xs" tone="tertiary">Each renders one <code>&lt;fieldset&gt;</code> with one <code>&lt;legend&gt;</code>. Wrapping any of them in another Fieldset produces a nested, unnamed group.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="One, matching Field.">
+    <T cols={['Piece','Value','Why']} rows={[
+      ['Legend','--text-xs medium, --field-label-text','Identical to a Field\u2019s label. A group question is not more important than a field label, and making it bigger was the drift the extraction fixed (§13).'],
+      ['Hint / error','--text-xs','Same as Field.'],
+      ['gap','var(--space-2) default, overridable','The one geometric prop, because content varies: three checkboxes want a tighter rhythm than three chip rows.'],
+      ['Padding / border','Zero','Not negotiable — the native notched box is the one piece of browser form chrome this system does not use.'],
+    ]}/>
+    <p>There is no <code>size</code> prop. The controls inside carry their own sizes, and a group's scaffolding should not compete with them — the same rule as Field (§05 there).</p>
+    <div className="demo col">
+      <div style={{display:'flex',gap:32,flexWrap:'wrap'}}>
+        <Fieldset label="Tight (gap 1)" gap="var(--space-1)"><Checkbox label="Days" /><Checkbox label="Swing" /></Fieldset>
+        <Fieldset label="Default (gap 2)"><Checkbox label="Days" /><Checkbox label="Swing" /></Fieldset>
+        <Fieldset label="Loose (gap 4)" gap="var(--space-4)"><Checkbox label="Days" /><Checkbox label="Swing" /></Fieldset>
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="06" title="States" note="Four, and disabled is the only one the element does itself.">
+    <T cols={['State','Treatment']} rows={[
+      ['Default','Legend, content, hint if there is one.'],
+      ['Required','Asterisk on the legend, and the rule stated in the hint. No ARIA (§03).'],
+      ['Invalid','The error appears BELOW the hint, which stays. No aria-invalid on the group — the announcement comes from the role="alert" region plus aria-describedby.'],
+      ['Disabled','The native fieldset attribute: every descendant control is unfocusable and excluded from submission, in one place, without touching the children.'],
+      ['Valid','Nothing. There is no group success state.'],
+    ]}/>
+    <p><strong><code>disabled</code> is the one piece of real behaviour in this component,</strong> and it is entirely the platform's: <code>&lt;fieldset disabled&gt;</code> makes every descendant unfocusable and drops them from form submission. No loop over children, no prop threading, and it cannot be got wrong. It is also why the consumers pass <code>disabled</code> to <em>both</em> the fieldset and each option — the attribute handles focus and submission, while the option still needs to look disabled, since inline styles do not inherit the fieldset cascade.</p>
+    <div className="demo col">
+      <div style={{maxWidth:420}}>
+        <Fieldset label="Notify on" hint="Disabled while the order is closed." disabled={off}>
+          <Checkbox label="Email" defaultChecked />
+          <Checkbox label="SMS" />
+        </Fieldset>
+      </div>
+      <Button variant="secondary" size="sm" onClick={()=>setOff(v=>!v)}>{off?'Enable set':'Disable set'}</Button>
+      <Text size="xs" tone="tertiary">Try tabbing into it while disabled — the native attribute removes the whole set from the tab order.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="None of its own. It shapes what the children do.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab','Reaches the controls inside, in document order. The fieldset itself is never a tab stop.'],
+      ['(disabled)','The whole set is skipped, natively.'],
+      ['Arrow keys','Nothing here. A radio set gets arrow navigation from the shared name — the platform\u2019s, not this component\u2019s — which is why RadioGroup exists on top of this scaffold rather than inside it.'],
+      ['(clicking the legend)','Nothing. A legend is not a label and focuses nothing; that is correct, since there is no single control to focus.'],
+    ]}/>
+    <p>Fieldset adds no handlers, no <code>tabIndex</code> and no roles. Everything keyboard-related is either the platform's (tab order, <code>disabled</code>, radio arrow keys via the shared name) or the consuming component's. Worth stating rather than omitting, because the temptation with a group scaffold is to add a roving <code>tabindex</code> — and <code>Chip</code>'s implementation notes make the argument against it: the native controls already ship every key, and re-implementing them is how a group stops matching the platform users know.</p>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="The component is one accessibility decision, and it had two bugs in it.">
+    <ul>
+      <li><strong><code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> is the whole mechanism.</strong> It is the only grouping every screen reader announces with no ARIA, and the legend is read <em>with each control</em> — "Notify on, Email" — which is what makes a set of three checkboxes comprehensible out of visual context.</li>
+      <li><strong>A missing legend warns,</strong> unless <code>aria-label</code> or <code>aria-labelledby</code> is supplied. That escape matters: <code>ChipGroup</code> accepts an external label, and without the check a correctly-labelled ChipGroup drew a false warning from its own scaffold.</li>
+      <li><strong>No <code>aria-required</code>, and no <code>aria-invalid</code>.</strong> <code>role="group"</code> supports neither — ARIA defines no required or invalid state for a group — so both were dead attributes, ignored at best and flagged by auditing tools at worst.</li>
+      <li><strong>The requirement is stated in words</strong> (<code>hint="Pick at least one"</code>), because the asterisk is <code>aria-hidden</code> and there is no ARIA state to carry it. This is not a workaround; it is the only correct way to communicate "one of these three" (§03).</li>
+      <li><strong>The error's live region is always mounted,</strong> with only its content conditional — a <code>role="alert"</code> node inserted together with its text announces unreliably.</li>
+      <li><strong>The error belongs to the set,</strong> never to an individual control. "Pick at least one" is not a property of any one checkbox, and marking one of them invalid says something false about it.</li>
+      <li><strong>The hint survives the error</strong> (§06), same as Field.</li>
+      <li><strong><code>disabled</code> uses the native attribute</strong>, so focus and submission are handled by the platform rather than by a loop the next contributor can forget.</li>
+      <li><strong>Contrast:</strong> legend <code>--field-label-text</code>, hint <code>--field-hint-text</code>, error <code>--field-error-text</code> — the same ramps as Field, so the two never disagree.</li>
+    </ul>
+    <p className="warn"><strong>The <code>aria-required</code> regression is the most instructive thing in this file.</strong> <code>CheckboxGroup</code>'s spec recorded the decision in 1.2.0 — "there is NO <code>aria-required</code>: ARIA defines no required state for a group" — and then the 1.9.1 extraction added it, silently reversing a documented decision. Because <code>CheckboxGroup</code> now routes through this scaffold, <strong>its own spec was left describing behaviour its component no longer had</strong>, and nothing flagged it: the attribute rendered, nothing broke, and the page looked right. A spec is only true while something checks it.</p>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="None.">
+    <T cols={['Moment','Motion','Why']} rows={[
+      ['Error appearing','None. The message renders in place.','A group that grows by a row with a transition pushes the rest of the form during the animation.'],
+      ['Error clearing','None.','—'],
+      ['Hint','Never moves — it is always there (§06).','Which is also why the group\u2019s height no longer changes by the difference between two different messages.'],
+      ['Disabling','None. The set is unfocusable immediately.','A fade would suggest the change is still settling when it is already done.'],
+      ['Reduced motion','Nothing to reduce.','There was never any motion.']
+    ]}/>
+    <p>Like Field, this component has genuinely no motion, and the section exists to say so deliberately rather than by omission. The only thing that moves is the form below it, when a message row appears — and keeping the hint visible is what stopped that movement from being a <em>shrink</em> on error, which is the more disorienting direction.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="The legend is a question. The hint is the rule.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Legend is the question, as a short noun phrase:</strong> "Notify on", "Areas", "Priority", "Shift coverage".</li>
+        <li><strong>Hint states the counting rule,</strong> because no ARIA can: "Pick at least one", "Up to three", "Any number".</li>
+        <li><strong>Error says what is wrong with the set:</strong> "Pick at least one channel."</li>
+        <li><strong>Keep option labels parallel</strong> — all nouns or all verbs, same tense, same capitalisation.</li>
+        <li><strong>Sentence case throughout</strong>, full stops on hints and errors, none on the legend.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>A legend that is a sentence</strong> or an instruction: "Please select the areas you want to be notified about".</li>
+        <li><strong>Rely on the asterisk</strong> to say "required". It is invisible to a screen reader by design (§08).</li>
+        <li><strong>An error that repeats the hint.</strong> Both are visible now.</li>
+        <li><strong>"Select one or more of the following"</strong> — the controls already say that; the hint should say <em>how many</em>.</li>
+        <li><strong>A legend that duplicates a heading</strong> directly above it.</li>
+        <li><strong>Per-option errors.</strong> The set is what is unanswered (§08).</li>
+      </ul></div>
+    </div>
+    <p>The division mirrors Field's: <strong>legend = what question this set answers · hint = how many answers count as valid · error = what is wrong with the answer given.</strong> The middle one carries more weight here than in a Field, because it is the only place the cardinality can live.</p>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="It shrinks — which took two properties to make true.">
+    <ul>
+      <li><strong><code>minInlineSize: 0</code> and <code>minWidth: 0</code> are both set,</strong> and both are needed. A <code>&lt;fieldset&gt;</code>'s default <code>min-inline-size</code> is <code>min-content</code>, not <code>auto</code> — so without this it will not shrink below its widest child inside a flex or grid parent, and a group with a long option label blows out the column it sits in. It is the single most surprising thing about the element and the reason this scaffold is worth having at all.</li>
+      <li><strong>The legend wraps</strong> rather than truncating — it is a question, and a truncated question is worse than a two-line one.</li>
+      <li><strong>Layout of the controls is the caller's</strong>. Fieldset gives a flex column with a gap; <code>CheckboxGroup</code>'s <code>columns</code> and <code>ChipGroup</code>'s wrapping row are their own.</li>
+      <li><strong>Hints and errors wrap</strong> — they are sentences.</li>
+      <li><strong>Keep a group in one column below about 600px.</strong> Two columns of checkboxes on a phone makes the reading order ambiguous, which is why <code>CheckboxGroup</code> refuses <code>columns &gt; 1</code> when options carry descriptions.</li>
+      <li><strong>Never set a fixed width.</strong> The element already fights shrinking; adding a width guarantees overflow somewhere.</li>
+    </ul>
+    <div className="demo col">
+      <span className="lbl">A long option label in a narrow track — shrinks instead of overflowing</span>
+      <div style={{maxWidth:260,border:'var(--border-hairline)',borderRadius:'var(--radius-sm)',padding:12}}>
+        <Fieldset label="Notify on" hint="Pick at least one.">
+          <Checkbox label="Plant-wide display board in Assembly" />
+          <Checkbox label="Email" />
+        </Fieldset>
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Six, and the first is the one this component invites.">
+    <div className="two">
+      <div className="pane dont"><h3>The two that matter</h3><ul>
+        <li><strong>A Fieldset around a RadioGroup, CheckboxGroup or ChipGroup.</strong> Those already <em>are</em> fieldsets, so you get a fieldset inside a fieldset with the inner one unnamed — the exact failure this component prevents, produced by using it. It looks completely correct on screen. This spec's own sibling page shipped it once.</li>
+        <li><strong>Using it as a form section.</strong> A fieldset means "these controls answer one question", so wrapping six unrelated fields in one tells a screen-reader user that "Work order", "Due date" and "Notify on" are one question. Use a heading and a Card.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Also don't</h3><ul>
+        <li><strong>A Fieldset with one control.</strong> That is a Field.</li>
+        <li><strong>No legend.</strong> An unnamed group is the one thing this component exists to prevent; it warns.</li>
+        <li><strong>Relying on <code>required</code> alone.</strong> No ARIA carries it — state the rule in the hint (§03).</li>
+        <li><strong>Per-option errors</strong> for a group-level rule.</li>
+        <li><strong>Re-adding the native border</strong> to "show the grouping". The legend is the grouping; the notched box is 1997.</li>
+        <li><strong>A roving <code>tabindex</code></strong> over the children. The platform already ships the keys (§07).</li>
+      </ul></div>
+    </div>
+    <p className="warn">The review test: <strong>count the <code>&lt;fieldset&gt;</code> elements and read every <code>&lt;legend&gt;</code>.</strong> One fieldset per question, and never a fieldset without a legend. Both failures are invisible on screen and take one DOM query to find.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="Why it was extracted, and what the extraction got wrong.">
+    <ul>
+      <li><strong>It was extracted in 1.9.1 for a good reason.</strong> <code>RadioGroup</code>, <code>CheckboxGroup</code> and the then-new <code>ChipGroup</code> each had their own copy of the same twelve lines, and they had already drifted: the newest legend was <code>--text-sm</code> on <code>--text-primary</code> while the other two were <code>--text-xs</code> on <code>--field-label-text</code>. Three copies of a labelling contract is three chances to get it wrong.</li>
+      <li><strong>And the extraction propagated a defect while fixing the drift.</strong> All three of Field's bugs came with it — the hint destroyed by the error, both messages sharing one <code>-msg</code> id, and <code>role="alert"</code> on a conditionally-rendered node — so every group in the system inherited them from one place instead of three. That is the lesson worth keeping: <strong>extraction fixes drift, not defects, and it makes the ones it copies harder to notice</strong>, because there is now one plausible-looking implementation instead of three suspicious ones.</li>
+      <li><strong>It also introduced one of its own: <code>aria-invalid</code> and <code>aria-required</code> on the <code>&lt;fieldset&gt;</code>.</strong> <code>role="group"</code> supports neither, so both were dead attributes — and <code>aria-required</code> reversed a decision <code>CheckboxGroup</code>'s spec had recorded in 1.2.0, leaving that spec false about its own component once it routed through here (§08). Both removed in 1.16.1.</li>
+      <li><strong>The <code>aria-label</code> escape in the warning</strong> was added at the same time: <code>ChipGroup</code> accepts an external label, and the naive check drew a false warning on a correctly-labelled group. A lint that cries wolf gets deleted.</li>
+      <li><strong><code>minInlineSize: 0</code> and <code>minWidth: 0</code>, both.</strong> A fieldset's default <code>min-inline-size</code> is <code>min-content</code>, which is a genuine platform oddity and the reason a hand-rolled fieldset usually breaks its layout (§11).</li>
+      <li><strong><code>float: none</code> on the legend,</strong> because a legend is not an ordinary flex child and browsers give it special rendering inside a flex container.</li>
+      <li><strong><code>disabled</code> is the native attribute,</strong> not a prop threaded to children — the platform handles focus and submission for the whole subtree. Consumers still pass <code>disabled</code> to each option as well, for appearance only, because inline styles do not inherit the fieldset cascade (§06).</li>
+      <li><strong>It shares Field's tokens rather than defining its own.</strong> Deliberate: the two must never disagree, and a <code>--fieldset-legend-text</code> that could drift from <code>--field-label-text</code> would recreate the exact problem the extraction solved.</li>
+      <li><strong>Not added, on purpose:</strong> a size prop, tones, a bordered variant, layout of the children (the caller's, or the consuming group's), a roving tabindex, and any per-option error mechanism.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--field-label-text','--field-hint-text','--field-error-text','--field-required-mark','--field-message-gap'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="When to reach for it, and when not to.">
+    <pre>{`import { Fieldset } from '@meridian/core';
+
+// The case this component is for: loose controls you are laying out
+// yourself, answering one question. Note the cardinality is in the HINT —
+// no ARIA can carry it (§03).
+<Fieldset
+  label="Notify on"
+  hint="Pick at least one."
+  error={errors.channels}
+  required
+  disabled={order.closed}
+>
+  <Checkbox label="Email"          checked={c.email} onChange={…} />
+  <Checkbox label="SMS"            checked={c.sms}   onChange={…} />
+  <Checkbox label="Plant display"  checked={c.board} onChange={…} />
+</Fieldset>
+
+// NOT this — CheckboxGroup is already a fieldset, so this nests one
+// inside another and leaves the inner one unnamed:
+//   <Fieldset label="Areas"><CheckboxGroup options={…} /></Fieldset>
+// Let the group label itself:
+<CheckboxGroup label="Areas" hint="Any number." options={areas} />
+
+// Building a fourth grouped control: wrap Fieldset, forward the four
+// message props, and add only the value logic.
+function DayPicker({ label, hint, error, required, value, onChange }) {
+  return (
+    <Fieldset label={label} hint={hint} error={error} required={required}>
+      {/* your controls */}
+    </Fieldset>
+  );
+}`}</pre>
+    <ul>
+      <li><strong>Check whether a group component already covers it</strong> before reaching for this. Three do, and wrapping one is the defect in §12.</li>
+      <li><strong>Put the cardinality in the hint,</strong> always — "at least one", "up to three". It is the only channel that carries it (§03).</li>
+      <li><strong>One fieldset per question.</strong> If the legend needs the word "and", it is two groups.</li>
+      <li><strong>Use <code>disabled</code> on the fieldset rather than on each child</strong> for focus and submission, and pass it to the children too for appearance (§06).</li>
+      <li><strong>Forward <code>label</code>, <code>hint</code>, <code>error</code> and <code>required</code></strong> when you wrap it — a grouped control that swallows any of the four forces its callers to rebuild the message row and the drift starts again.</li>
+      <li><strong>Errors are per-group <em>and</em> summarised</strong> after a failed submit: keep the group error and add one <code>Alert live="on"</code> above the form.</li>
+      <li><strong>Testing hooks:</strong> assert exactly one <code>&lt;fieldset&gt;</code> per question and that every one has a non-empty <code>&lt;legend&gt;</code>; that the group has <em>no</em> <code>aria-required</code> or <code>aria-invalid</code>; that <code>aria-describedby</code> contains both message ids when hint and error are set; that the error node exists before any error does; and that a <code>disabled</code> set has no focusable descendants. The nested-fieldset defect is one <code>querySelectorAll('fieldset fieldset').length</code> away and worth asserting is zero.</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

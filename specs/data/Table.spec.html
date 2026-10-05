@@ -1,0 +1,488 @@
+<!-- @dsCard group="Specs · Data" viewport="1080x760" name="Table" subtitle="Full specification — the densest surface: identity, sorting, selection, keyboard, a11y, loading" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Table — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:16px}
+.demo.flush{padding:0;overflow:hidden}
+.demo p{max-width:64ch;color:var(--text-primary)}
+.st{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+.st th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+.st td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+.st tr:last-child td{border-bottom:none}
+.st td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);padding-bottom:6px;display:block}
+.cap{max-height:230px;overflow:auto;border:var(--border-hairline);border-radius:var(--radius-md)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Table, Skeleton, Card, Badge, Button, IconButton, Text, Link, Alert, Pagination } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table className="st"><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+
+const LINES = [
+  {wo:'WO-88431',line:'Frame weld',status:'Running',tone:'success',qty:1240,oee:'91.6'},
+  {wo:'WO-88432',line:'Paint',status:'Changeover',tone:'neutral',qty:860,oee:'74.0'},
+  {wo:'WO-88433',line:'Trim',status:'Held',tone:'warning',qty:412,oee:'61.2'},
+  {wo:'WO-88434',line:'Final',status:'Down',tone:'danger',qty:0,oee:'38.2'},
+];
+/* Twelve DISTINCT identities. A demo on the one page arguing that a row is
+   a record and not a position must not ship duplicate row keys. */
+const MANY = Array.from({length:12},(_,i)=>{
+  const b = LINES[i%4];
+  return {...b, wo:'WO-884'+String(41+i), qty:b.qty+i*7};
+});
+const COLS = [
+  {key:'wo',header:'WO',mono:true,sortable:true,width:'120px'},
+  {key:'line',header:'Line',sortable:true},
+  {key:'status',header:'State',render:r=><Badge tone={r.tone} dot>{r.status}</Badge>},
+  {key:'qty',header:'Qty',align:'right',sortable:true,width:'80px'},
+  {key:'oee',header:'OEE %',align:'right',mono:true,width:'90px'},
+];
+
+function Spec(){
+  const [sel,setSel] = React.useState(['WO-88432']);
+  const [sort,setSort] = React.useState({key:'oee',direction:'desc'});
+  const [loading,setLoading] = React.useState(false);
+  const [empty,setEmpty] = React.useState(false);
+  const [dense,setDense] = React.useState('comfortable');
+  const [theme,setTheme] = React.useState('light');
+
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-density', dense);
+  }, [dense]);
+
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Data · Component specification</span>
+    <h1>Table</h1>
+    <p className="lede">The densest surface in the system and the one an operator reads for hours rather than glances at. Two facts shape every decision in it: <strong>a row is a record, not a position</strong> — which is why selection is keyed by identity and not by array index — and a console table is <strong>read far more often than it is clicked</strong>, so nothing in it moves, animates, or reflows while it is being scanned.</p>
+    <div className="meta" style={{alignItems:'center',justifyContent:'space-between'}}>
+      <div style={{display:'flex',flexWrap:'wrap',gap:'8px 20px',alignItems:'center'}}>
+        <span>components/data/Table.jsx</span><span>window.MeridianDesignSystem_962c43.Table</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items</span><span>since: 1.0.0</span><span>tokens listed in §13 · rides [data-density]</span>
+      </div>
+      <div style={{display:'flex',gap:12,alignItems:'center',paddingTop:4}}>
+        <div style={{display:'flex',gap:4}}>
+          {['light','dark'].map(t => (
+            <Button key={t} size="sm" variant={theme===t?'primary':'ghost'} onClick={()=>setTheme(t)}>
+              {t==='light'?'☀ Light':'🌙 Dark'}
+            </Button>
+          ))}
+        </div>
+        <div style={{display:'flex',gap:4}}>
+          {['compact','comfortable','expanded'].map(d => (
+            <Button key={d} size="sm" variant={dense===d?'secondary':'ghost'} onClick={()=>setDense(d)}>
+              {d}
+            </Button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Many records, compared across the same fields.">
+    <p>Use a table when the user needs to <strong>compare records field by field</strong>, and the fields are the same for every record. That is the whole test: alignment down a column is what a table buys, and it is the only thing it buys. If the reader will look at one record at a time, columns are working against them.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Compare many records across shared fields','Table','This component. Columns align, so the eye scans down.'],
+      ['Show one record\u2019s fields','DescriptionList','A two-column "table" of label/value is a layout, not data. Shipped 1.22.2, after this entry asked for it.'],
+      ['Show a handful of items with unlike shapes','Cards','If half the columns are empty for half the rows, they are not columns.'],
+      ['Show a hierarchy','A tree','A table with indented first cells loses the alignment it exists for.'],
+      ['Show a trend over time','A chart','A column of forty numbers is not a shape anyone can see.'],
+      ['Let the user pick one option','RadioGroup / Select','Selection is not a reason to build a table.'],
+      ['Lay out a page','Grid','Never a table. This is the oldest misuse there is.'],
+    ]}/>
+    <ul>
+      <li><strong>Five to seven columns is the working range.</strong> Past that, the operator scrolls horizontally to read one record, which defeats the alignment.</li>
+      <li><strong>Every column must earn its width.</strong> A column the reader never uses costs every other column's readability.</li>
+      <li><strong>Sort by what the reader ranks by</strong>, not by everything. Marking every column sortable is a way of not deciding.</li>
+      <li><strong>Tables live in <code>Card padding="none"</code></strong> with <code>Pagination</code> in the card footer, so the rules meet the card edge.</li>
+    </ul>
+    <div className="demo flush">
+      <Card padding="none">
+        <Table caption="Work orders" rowKey="wo" columns={COLS} rows={LINES} sort={sort} onSortChange={setSort} />
+      </Card>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A scroll region, a header, rows of cells.">
+    <div className="demo col">
+      <Card padding="none">
+        <Table caption="Work orders" rowKey="wo" columns={[...COLS,{key:'act',header:'',width:'44px',align:'right',render:()=><IconButton icon="ellipsis" label="Row actions" size="sm" />}]}
+          rows={LINES} selectable selectedKeys={sel} onSelectionChange={setSel} rowLabel={r=>`work order ${r.wo}`} sort={sort} onSortChange={setSort} />
+      </Card>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        {[['1','Scroll region — the outer div. Focusable and role="region" ONLY when it actually overflows, so a table that fits adds no Tab stop (§07).'],
+          ['2','Caption — the table\u2019s accessible name, visually hidden. Required in practice: the component warns without it or an aria-label (§08).'],
+          ['3','Header — --table-header-background, --header-h tall, --text-2xs uppercase with caps tracking in --table-header-text. Optionally sticky.'],
+          ['4','Sort control — a real <button> filling the header cell, with aria-sort on the <th>. The arrow shows direction on the active column and a neutral chevron elsewhere.'],
+          ['5','Select-all — a Checkbox with indeterminate when the selection is partial. Its label flips between "Select all rows" and "Deselect all rows".'],
+          ['6','Row — --row-h tall, a --table-row-border hairline beneath, --surface-selected when selected. Keyed by the record\u2019s identity, not its index (§03).'],
+          ['7','Cell — --text-sm in --table-cell-text, --cell-px inline padding. Truncates with an ellipsis by default; numeric columns are right-aligned with tabular figures.'],
+          ['8','Action column — a narrow trailing column with an empty header and an IconButton. Always last, always fixed width.']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+    </div>
+    <p>There is <strong>no vertical rule between columns</strong> and no zebra striping. Alignment and the horizontal hairline do the work; verticals turn a table into a grid of boxes and make every column look like a separate list. Striping is a workaround for rows that are too tall to track — at <code>--row-h</code> with a hairline, it is noise that halves the contrast of half the rows.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Rows identify themselves. Everything else is presentation.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['columns','TableColumn[]','[]','key, header, align, width, mono, sortable, wrap, render.'],
+      ['rows','any[]','[]','Already sorted, filtered and paged. The component does none of those (§13).'],
+      ['rowKey','string | (row, i) => key','\u2018id\u2019','How a row identifies itself. The most important prop in the component.'],
+      ['caption','ReactNode','—','The accessible name. Visually hidden; warns if absent (§08).'],
+      ['selectable','boolean','false','Adds the leading checkbox column and the select-all header.'],
+      ['selectedKeys','(string|number)[]','[]','Identities, NOT indices. See the note below.'],
+      ['onSelectionChange','(keys) => void','—','Receives identities.'],
+      ['rowLabel','(row, i) => string','—','Names each row\u2019s checkbox after the record: r => `work order ${r.wo}`.'],
+      ['sort','{ key, direction }','—','Which column is sorted, and which way. Presentation only.'],
+      ['onSortChange','(sort) => void','—','Requesting a sort. The product re-sorts the rows.'],
+      ['onRowClick','(row, i) => void','—','Whole-row target. Also put a real link on the primary column (§07).'],
+      ['loading','boolean','false','Skeleton rows at full geometry; sets aria-busy on the region (§06).'],
+      ['loadingRows','number','5','How many placeholders. Match the page size, not the viewport.'],
+      ['stickyHeader','boolean','false','Pins the header while the body scrolls.'],
+      ['minWidth','string','—','A floor for the table. Required for horizontal scrolling to happen at all (§11).'],
+      ['freezeLeading','boolean','false','Pins the selection column and the first data column together while the rest scrolls (§11). Requires minWidth.'],
+      ['emptyMessage','ReactNode','\u2018No results\u2019','Say why it is empty, not that it is (§10). A ReactNode, so an <EmptyState> goes in here when the empty needs an action \u2014 the headers stay and a filtered table stops being a dead end.'],
+    ]}/>
+    <p className="warn"><strong>Selection is keyed, not indexed — and this was a real defect until 1.14.0.</strong> The prop was <code>selectedRows: number[]</code> holding array positions, so selecting a row and then sorting or paging the table left the selection pointing at whatever record now occupied those positions. In a plant console that means holding the wrong line. <code>selectedKeys</code> holds identities and survives any reordering; passing the old prop warns.</p>
+    <p>The component is <strong>presentational about data</strong>: it does not sort, filter, page or fetch. Those belong to the product, usually to the server, and a table that sorted its own <code>rows</code> prop would silently disagree with the paginator underneath it.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Column variants, not table variants.">
+    <p>There is one table. What varies is the <strong>column</strong>, because that is where the data's type lives.</p>
+    <T cols={['Column option','Treatment','Use']} rows={[
+      ['default','--text-sm sans, left, truncating','Names, labels, free text.'],
+      ['align="right"','Right-aligned with tabular-nums','Every quantity and every measure. Digits must line up by place value or the column cannot be scanned.'],
+      ['mono','IBM Plex Mono','IDs, part numbers, hashes, versions — anything compared character by character.'],
+      ['sortable','A button in the header + aria-sort','Only what the reader actually ranks by.'],
+      ['wrap','Normal wrapping, top-aligned, --cell-py padding','A description or address column. Costs the fixed row height, so use it for at most one column.'],
+      ['render','Any node — Badge, Tag, Link, IconButton row','Status cells, primary-column links, row actions.'],
+      ['width','A fixed CSS width','Action columns and anything that must not resize as data changes.'],
+    ]}/>
+    <div className="demo col">
+      <Card padding="none">
+        <Table caption="Parts" rowKey="pn" columns={[
+          {key:'pn',header:'Part',mono:true,width:'110px'},
+          {key:'desc',header:'Description',wrap:true},
+          {key:'loc',header:'Bin',mono:true,width:'80px'},
+          {key:'qty',header:'On hand',align:'right',width:'90px'},
+        ]} rows={[
+          {pn:'BRK-4120',desc:'Brake pad, sintered, 12mm — supersedes BRK-4008 for all Frame weld tooling',loc:'A-14',qty:412},
+          {pn:'WLD-2207',desc:'Weld tip, copper',loc:'C-02',qty:38},
+        ]} />
+      </Card>
+      <Text size="xs" tone="tertiary">One wrapping column against three fixed ones. The wrapping column tops-aligns so the other cells stay on the first line where the eye expects them.</Text>
+    </div>
+    <ul>
+      <li><strong>No zebra striping, no vertical rules, no "bordered" variant</strong> (§02).</li>
+      <li><strong>No expandable rows.</strong> A row that opens to reveal a panel breaks the alignment the table exists for; use a drawer or a page.</li>
+      <li><strong>No column resizing or reordering.</strong> Both are product features with persistence requirements, not styling.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="No size prop. Density is the size.">
+    <p>The table has no <code>size</code> — it reads <code>[data-density]</code> from its surface, which is set once per screen rather than per component. That is why a compact table and a compact form agree without either being told about the other.</p>
+    <T cols={['Token','compact','comfortable','expanded']} rows={[
+      ['--row-h','36px','44px','56px'],
+      ['--header-h','30px','36px','44px'],
+      ['--cell-px','8px','12px','16px'],
+      ['--cell-py (wrap columns)','6px','10px','16px'],
+      ['Use','Pointer-only, monitoring walls, maximum records per screen.','Default.','Floor tablets and gloves \u2014 the 44px touch target lands inside the row.'],
+    ]}/>
+    <div className="demo col">
+      <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+        {['compact','comfortable','expanded'].map(d=>(
+          <Button key={d} variant={dense===d?'primary':'secondary'} size="sm" onClick={()=>setDense(d)}>{d}</Button>
+        ))}
+      </div>
+      <div data-density={dense}>
+        <Card padding="none">
+          <Table caption="Work orders" rowKey="wo" columns={COLS} rows={LINES} selectable selectedKeys={sel} onSelectionChange={setSel} rowLabel={r=>`work order ${r.wo}`} />
+        </Card>
+      </div>
+      <Text size="xs" tone="tertiary">Type size never changes with density — only geometry. A compact table with smaller text would be unreadable at exactly the moment it holds the most rows.</Text>
+    </div>
+    <p><strong>Type size is fixed at <code>--text-sm</code> for cells and <code>--text-2xs</code> for headers at every density.</strong> Density buys rows on screen by removing padding, never by shrinking the data — the whole point of a dense console is more records that are still legible.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Loading, empty, selected, sorted — and nothing else moves.">
+    <T cols={['State','Treatment']} rows={[
+      ['Resting','No hover tint until the pointer is over a row. Rows do not animate in — data never animates in.'],
+      ['Row hover','--table-row-background-hover. Instant (--duration-instant): a 140ms fade lags a pointer crossing forty rows.'],
+      ['Row selected','--table-row-background-selected, held by identity so it survives sorting and paging (§03).'],
+      ['Selection partial','The select-all checkbox is indeterminate, announced as "mixed".'],
+      ['Row focused','The row is a Tab stop only when onRowClick is set, and shows the focus ring (§07).'],
+      ['Sorted','aria-sort on the one sorted header; its label goes --table-header-text-active and the arrow shows direction.'],
+      ['Loading','Skeleton rows at full --row-h geometry, aria-busy on the region, aria-hidden placeholders (below).'],
+      ['Empty','One centred row, 96px tall, in --table-empty-text. Say why (§10).'],
+      ['Truncated cell','Ellipsis, plus a title attribute when the cell holds a plain string — not when it renders a node, where a title would announce twice.'],
+      ['Scrollable','The region becomes focusable and labelled (§07).'],
+    ]}/>
+    <div className="demo col">
+      <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+        <Button variant={loading?'primary':'secondary'} size="sm" onClick={()=>{setLoading(v=>!v);setEmpty(false)}}>{loading?'Loading: on':'Loading: off'}</Button>
+        <Button variant={empty?'primary':'secondary'} size="sm" onClick={()=>{setEmpty(v=>!v);setLoading(false)}}>{empty?'Empty: on':'Empty: off'}</Button>
+      </div>
+      <Card padding="none">
+        <Table caption="Work orders" rowKey="wo" columns={COLS} rows={empty?[]:LINES} loading={loading} loadingRows={4}
+          emptyMessage="No work orders match this filter" selectable selectedKeys={sel} onSelectionChange={setSel} rowLabel={r=>`work order ${r.wo}`} />
+      </Card>
+      <Text size="xs" tone="tertiary">The loading rows keep the real row height, so nothing resizes when the data lands. That stability is the point of a skeleton over a spinner here.</Text>
+    </div>
+    <p><strong>The loading state is why <code>Skeleton</code> exists.</strong> It was deferred at 1.8.1 for want of evidence about its shape, while <code>Badge</code> §06 recommended "a skeleton in the cell" and <code>Pagination</code> §06 said "the table owns the loading treatment" — two specs pointing at a component that did not exist. Table settled the API: placeholders are sized by the content they replace rather than by a size scale, they are <code>aria-hidden</code>, and the announcement comes once from <code>aria-busy</code> on the region — not forty times from forty cells.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Sorting and rows are operable without a pointer. They were not.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab','Reaches, in DOM order: the scroll region (only if it overflows), the select-all checkbox, each sortable header button, then each row\u2019s controls.'],
+      ['Enter · Space (header)','Sorts. The header is a real <button>, so this is native.'],
+      ['Enter · Space (row)','Activates onRowClick when the row itself has focus. Ignored when the event came from a control inside the row.'],
+      ['\u2190 \u2192 (scroll region)','Scrolls a wide table horizontally, once the region has focus. With freezeLeading the identity block holds still, so the user keeps their bearings while scrolling.'],
+      ['Space (checkbox)','Toggles that row\u2019s selection. Native.'],
+      ['(no arrow-key grid)','Cells are not individually navigable. This is a static table, not a role="grid" spreadsheet (below).'],
+    ]}/>
+    <p className="warn"><strong>Three keyboard failures were fixed in 1.14.0, none of them visible in a screenshot.</strong> Sortable headers were <code>&lt;th onClick&gt;</code> — not focusable, not operable by keyboard at all, so <strong>sorting was mouse-only</strong>. Clickable rows were <code>&lt;tr onClick&gt;</code>, equally unreachable. And the horizontal scroll container was not focusable, so on a table wider than its surface <strong>the off-screen columns could not be reached without a pointer</strong> — content that existed but could not be read.</p>
+    <p><strong>The row keeps <code>role="row"</code>.</strong> Putting <code>role="button"</code> on a <code>&lt;tr&gt;</code> destroys the table's semantics — the row stops being a row, and the column relationships go with it. So a clickable row is a focusable row that answers <kbd>Enter</kbd> and <kbd>Space</kbd>, and products should <strong>also put a real link on the primary column</strong>: the whole-row target is a convenience, never the only route in.</p>
+    <p><strong>There is deliberately no arrow-key cell navigation.</strong> That is <code>role="grid"</code>, and it is a different component with a different contract: a focus-managed cell cursor, <kbd>Home</kbd>/<kbd>End</kbd>/<kbd>PageUp</kbd>, and the requirement that every cell be reachable. Bolting it onto a static table gives keyboard users a cursor that half the rows do not respond to. If a product needs a spreadsheet, it needs a grid.</p>
+    <div className="demo col">
+      <Card padding="none">
+        <Table caption="Work orders" rowKey="wo" onRowClick={()=>{}} columns={[
+          {key:'wo',header:'WO',mono:true,width:'120px',render:r=><Link href="#/wo">{r.wo}</Link>},
+          ...COLS.slice(1),
+        ]} rows={LINES} sort={sort} onSortChange={setSort} />
+      </Card>
+      <Text size="xs" tone="tertiary">Tab through: the sortable headers are buttons, the rows are focusable, and the WO column is a real link — so the record is reachable three ways and mouse-only in none of them.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="A real table, named, with sort state announced.">
+    <ul>
+      <li><strong>Native <code>&lt;table&gt;</code>, <code>&lt;thead&gt;</code>, <code>&lt;th scope="col"&gt;</code>.</strong> No ARIA grid roles, no div soup: the semantics products need most here are the ones the element already has, and <code>scope="col"</code> is what lets a screen reader read "State: Held" instead of "Held".</li>
+      <li><strong>The caption is required in practice and warned about.</strong> A table is the one component whose accessible name cannot be inferred from its content — a user landing in it hears "table" and a column count. It is visually hidden because the name is usually already a heading above it.</li>
+      <li><strong><code>aria-sort</code> on the sorted header only.</strong> "None" on every other sortable column is noise; the button's own label plus the arrow carry the affordance.</li>
+      <li><strong>Row checkboxes are named after the record</strong> via <code>rowLabel</code>, not "Select row 3" — a position-based name tells the user nothing and becomes wrong the moment the table is sorted.</li>
+      <li><strong>Select-all announces its next action</strong>, flipping between "Select all rows" and "Deselect all rows", and reports <code>indeterminate</code> as "mixed" for a partial selection.</li>
+      <li><strong>The scroll region is focusable only when it overflows</strong>, with <code>role="region"</code> and a name. Always-focusable would add a Tab stop to every table that fits; never-focusable strands the off-screen columns (§07).</li>
+      <li><strong>Loading announces once.</strong> <code>aria-busy</code> on the region; every placeholder is <code>aria-hidden</code>. The alternative is forty announcements of nothing.</li>
+      <li><strong>Contrast:</strong> cells are <code>--text-primary</code> and headers <code>--text-tertiary</code> at <code>--text-2xs</code> — headers are labels, read once, and they sit on <code>--background-page</code> above the 4.5:1 floor. Selected rows tint the background only; the text never changes colour.</li>
+      <li><strong>Status is never colour alone.</strong> A state column renders a <code>Badge</code>, which always carries a word — the tone is redundant reinforcement, which is what makes the column survive a monochrome display.</li>
+      <li><strong>Nothing animates.</strong> No row entrance, no sort transition (§09) — a table that reflows while a screen reader is reading it loses the reader's place.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="One instant hover tint. That is the whole budget.">
+    <T cols={['Moment','Motion','Why']} rows={[
+      ['Row hover','background-color at --duration-instant','A pointer crosses forty rows in a second; anything slower trails behind the cursor as a smear.'],
+      ['Selection','None. The tint paints in one frame.','A fade on a checkbox press makes the click feel unregistered.'],
+      ['Sort','None. Rows re-render in their new order.','A reorder animation with forty rows is forty things moving, and the reader has to wait to find their record — the arrow already said what happened.'],
+      ['Rows arriving','None. Data never animates in.','A staggered fade makes a loaded table look broken, and it delays the first thing the operator wanted.'],
+      ['Loading','One skeleton sweep, 1.4s, low contrast','The third and last permitted loop in the system.'],
+      ['Sticky header','None. It is pinned, not animated.','—'],
+      ['Reduced motion','The sweep stops dead; the resting fill still reads as "not data".','—'],
+    ]}/>
+    <p>This is the least animated component in the system, and that is a considered position rather than an omission. A table is a surface someone reads for an entire shift: every transition is something that moves while they are trying to hold a place in a column. The one exception is the hover tint, which exists to answer "which row am I on" in a grid of forty near-identical lines — and it is instant for the same reason.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="Headers are labels, cells are values, empties explain.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Headers are short nouns:</strong> "WO", "Line", "State", "Qty". One or two words, no verbs.</li>
+        <li><strong>Put the unit in the header</strong>, not in every cell: "OEE %", "Qty (ea)" — then the column of numbers stays scannable.</li>
+        <li><strong>Empty message says why:</strong> "No work orders match this filter" beats "No results".</li>
+        <li><strong>Use a consistent zero:</strong> pick <code>0</code> or <code>—</code> for "none" and never mix them in a column.</li>
+        <li><strong>Format numbers identically down a column</strong> — same decimals, same thousands separator.</li>
+        <li><strong>Primary column first</strong>, and make it the thing the reader looks up by.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>Sentence-long headers</strong> or headers that repeat the table's name in every column.</li>
+        <li><strong>Units in every cell</strong> — "1240 ea", "860 ea". The repetition is what the header is for.</li>
+        <li><strong>Sentences in cells.</strong> A cell holds a value; if it needs a sentence, the column needs <code>wrap</code> or the record needs a page.</li>
+        <li><strong>"N/A", "null", "undefined", "-1"</strong>. Use an em dash and mean it.</li>
+        <li><strong>Raw timestamps</strong> where a shift-relative time is what the operator thinks in.</li>
+        <li><strong>Mixed capitalisation</strong> down a status column — the values are a closed set, so make them one.</li>
+      </ul></div>
+    </div>
+    <p>The column order is content, not layout: <strong>identity, then state, then measures, then actions.</strong> An operator looks up a record by its number, checks whether it is running, then reads the numbers — and the action column is last because it is the only thing they aim at rather than read.</p>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="A table does not become cards. It scrolls, or it loses columns.">
+    <ul>
+      <li><strong>Horizontal scroll needs <code>minWidth</code> — it is not automatic.</strong> With <code>tableLayout: auto</code> and truncating cells, a table at <code>width: 100%</code> shrinks to fit its container forever and never overflows: the columns get narrower and the ellipses get longer. Setting <code>minWidth</code> (or enough fixed column widths to exceed the container) is what makes the table overflow instead of truncate — and only then does the region become focusable so the hidden columns stay reachable (§07). A table with neither will silently truncate to unreadability on a narrow surface rather than scroll.</li>
+      <li><strong>Drop columns rather than shrink them.</strong> Below about 700px, render the two or three columns that matter and put the rest on the record's page — a table squeezed to five 60px columns is unreadable in a way scrolling is not.</li>
+      <li><strong>Never reflow rows into cards below a breakpoint.</strong> It is a popular pattern and it destroys the one thing a table does: the moment values stop aligning down a column, comparison is gone, and the user is left with a list of unlabelled fragments.</li>
+      <li><strong><code>stickyHeader</code> earns its keep past roughly fifteen rows</strong> — the point where a reader scrolls the header away and has to remember what column four was.</li>
+      <li><strong>Give action and numeric columns fixed widths</strong> so they do not resize as data changes; let the text column absorb the slack.</li>
+      <li><strong>Use <code>expanded</code> density on touch</strong> — the 44px target lands inside the row without any per-component change.</li>
+      <li><strong>At most one <code>wrap</code> column.</strong> Two wrapping columns produce rows of wildly different heights and the alignment goes with them.</li>
+      <li><strong>Freeze the leading block on any table wide enough to scroll.</strong> <code>freezeLeading</code> pins the selection column and the first data column <em>together</em> — they are one unit, because both answer "which record is this". Without it, a scrolled table shows a row of numbers with nothing naming the record; with only the checkbox frozen it shows a tick box beside numbers, which is worse.</li>
+    </ul>
+    <div className="demo col">
+      <span className="lbl">Narrow surface — genuinely overflows, so the region is focusable</span>
+      <div style={{maxWidth:420}}>
+        <Card padding="none">
+          <Table caption="Work orders" rowKey="wo" minWidth="720px" columns={COLS} rows={LINES} />
+        </Card>
+      </div>
+      <span className="lbl">Frozen leading block — scroll it sideways</span>
+      <div style={{maxWidth:460}}>
+        <Card padding="none">
+          <Table caption="Work orders" rowKey="wo" minWidth="820px" freezeLeading selectable
+            selectedKeys={sel} onSelectionChange={setSel} rowLabel={r=>`work order ${r.wo}`}
+            columns={[...COLS,{key:'due',header:'Due',width:'120px'},{key:'owner',header:'Owner',width:'150px'}]}
+            rows={LINES.map(r=>({...r,due:'18:00 CET',owner:'M. Okonkwo'}))} />
+        </Card>
+      </div>
+      <Text size="xs" tone="tertiary">The checkbox and the WO column hold still as the measures scroll past, carrying an opaque fill and a right-hand rule. Hover a row: the tint layers over the frozen fill rather than replacing it, so the frozen cells stay opaque.</Text>
+      <span className="lbl">Sticky header in a capped scroll box</span>
+      <div className="cap">
+        <Table caption="Work orders" rowKey="wo" stickyHeader columns={COLS} rows={MANY} />
+      </div>
+      <Text size="xs" tone="tertiary">Above: <code>minWidth</code> is what makes the table overflow instead of truncating, so the wrapper picks up <code>tabindex="0"</code> and <code>role="region"</code> — Tab to it and use ← →. Below: scroll it; the header stays, carrying an opaque fill and its own rule so rows pass cleanly beneath it.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Six, and two of them lose the user's data.">
+    <div className="two">
+      <div className="pane dont"><h3>The two that matter</h3><ul>
+        <li><strong>Selection by index.</strong> Hold positions instead of identities and a sort silently reassigns the selection to different records — the user then acts on rows they never picked. This was the component's own bug until 1.14.0, and it is invisible until someone acts on it.</li>
+        <li><strong>Rows as cards on mobile.</strong> Reflowing a table into stacked cards below a breakpoint removes column alignment, which is the entire reason the data was in a table. Drop columns instead (§11).</li>
+      </ul></div>
+      <div className="pane dont"><h3>Also don't</h3><ul>
+        <li><strong>Every column sortable.</strong> That is a way of not deciding what the reader ranks by, and it puts a button in every header.</li>
+        <li><strong>A table for one record.</strong> Label/value in two columns is a definition list wearing a table — and since 1.22.2 there is a <code>DescriptionList</code> to send it to.</li>
+        <li><strong>Sorting inside the component.</strong> It will disagree with the paginator, and with the server, on the first page-two.</li>
+        <li><strong>Twelve columns and a horizontal scrollbar as the plan.</strong> If reading one record needs two scroll positions, the table is a page.</li>
+        <li><strong>Actions that are only a hover-revealed icon.</strong> Invisible to touch and to keyboard until focused; keep the column visible.</li>
+        <li><strong>A spinner over the whole table on every poll.</strong> Refresh in place; a table that greys out every ten seconds cannot be read.</li>
+      </ul></div>
+    </div>
+    <p className="warn">The review test: <strong>ask what the reader compares.</strong> If the answer is "nothing — they read one row", it is not a table. And if the answer is "these three fields", the other nine columns are costing the three that matter.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="What was hardened on 5 Sep 2026, and why.">
+    <ul>
+      <li><strong>Selection is keyed by identity.</strong> <code>selectedRows: number[]</code> of array indices became <code>selectedKeys</code> plus <code>rowKey</code>. The old API silently reassigned the selection on any reorder — the single most consequential defect found in this system, because it produces wrong actions rather than wrong pixels. The old prop warns.</li>
+      <li><strong>Sortable headers are real buttons.</strong> They were <code>&lt;th onClick&gt;</code>: unfocusable, keyboard-inoperable, and carrying no <code>aria-sort</code>, so sorting was pointer-only and sort state was unannounced. Now a <code>&lt;button&gt;</code> fills the header cell and <code>aria-sort</code> sits on the <code>&lt;th&gt;</code>, on the sorted column only.</li>
+      <li><strong>Clickable rows are keyboard-operable</strong>, focusable with <kbd>Enter</kbd>/<kbd>Space</kbd>, and the handler ignores events bubbling from controls inside the row. The row keeps <code>role="row"</code> deliberately (§07).</li>
+      <li><strong>The table has an accessible name</strong>, via a visually-hidden <code>&lt;caption&gt;</code>, and warns without one. <code>scope="col"</code> added to every header.</li>
+      <li><strong>The scroll region is conditionally focusable,</strong> measured with a <code>ResizeObserver</code> rather than a media query, because whether a table overflows depends on its container and its own columns — not on the viewport.</li>
+      <li><strong>Loading state added, and <code>Skeleton</code> shipped from it</strong> (§06). Placeholders keep the real row geometry so the table does not resize when data lands.</li>
+      <li><strong><code>--cell-py</code> is finally used.</strong> Density defined it at three values and Table ignored it: rows were fixed-height with no wrapping option, so the token was dead. It now drives the <code>wrap</code> column's block padding.</li>
+      <li><strong>Truncated cells get a <code>title</code> only when they hold a plain string.</strong> A title on a rendered node — a Badge, a Link — announces twice and duplicates what is already readable.</li>
+      <li><strong><code>stickyHeader</code> carries its own opaque fill and rule</strong> (<code>--table-header-background-sticky</code>, <code>--table-header-shadow-sticky</code>): the page background alone lets the first row's descenders show through at sub-pixel scroll offsets.</li>
+      <li><strong>Row hover, selection and focus moved out of React into <code>base.css</code>.</strong> Hover was a <code>useState</code> per row, so every pointer move re-rendered a row — and none of the three can be expressed inline anyway, since an inline <code>background</code> outranks every selector that would set them. The row exposes <code>[data-table-row]</code> and the stylesheet owns the rules, the same hook pattern Badge uses for forced colours. Selection deliberately wins over hover: a selected row the pointer crosses must not stop looking selected.</li>
+      <li><strong>The row focus ring is an <code>outline</code>, not the system's <code>--ring-focus</code> box-shadow.</strong> A box-shadow on a <code>&lt;tr&gt;</code> inside <code>border-collapse</code> renders unreliably and is clipped by the neighbouring cells; the outline is inset so it sits inside the row instead of overlapping the hairline above it.</li>
+      <li><strong><code>freezeLeading</code> closes the gap <code>minWidth</code> opened</strong> (1.14.1). Making horizontal scroll real meant the identity column scrolled away with everything else. The question that had deferred it — freeze the checkbox, or the first data column? — was the wrong question: <strong>they are one unit</strong>, because both answer "which record is this", so they freeze together or not at all. Freezing a checkbox while its row's identity scrolls off is a worse version of the original problem. Only the first data column freezes; a second is a frozen <em>pane</em>, a different feature with its own width budget.</li>
+      <li><strong>Three implementation details the frozen block needs.</strong> (1) An <strong>opaque fill</strong> — a sticky cell with a transparent background has the scrolling cells pass visibly underneath it. (2) Because that fill is opaque, the row tints are <strong>layered on top as a gradient</strong> rather than set as the background: the dark scope's hover and selected tints are translucent, so using one as the background would let the scrolling content through. (3) The right edge is a <strong>box-shadow, not a border</strong> — a border on a sticky cell inside <code>border-collapse</code> renders inconsistently and is the first thing to vanish once the table scrolls. Frozen header cells are sticky on both axes and sit at <code>z-index: 3</code>, above the header row's 2 and the frozen body cells' 1.</li>
+      <li><strong><code>freezeLeading</code> without <code>minWidth</code> warns.</strong> There is no horizontal scroll for a frozen column to hold still against, so the prop would do nothing — silently, which is the failure mode this component has now been caught by twice.</li>
+      <li><strong>Closed same-day — one dead token.</strong> <code>--table-caption-text</code> was defined in this pass and never referenced, because the caption is visually hidden by contract and therefore has no colour. It is exactly the defect this pass fixed in <code>--cell-py</code>, reintroduced two hundred lines later, and it is the argument for the token lint running on every change rather than at freezes.</li>
+      <li><strong>Still not in the component, on purpose:</strong> sorting, filtering, paging, fetching, column resize, column reorder, expandable rows, arrow-key cell navigation. The first four belong to the product and the server; the last four are different components.</li>
+      <li><strong>22 tokens — 19 <code>--table-*</code> plus 3 <code>--skeleton-*</code>.</strong> New: <code>--table-frozen-background</code>, <code>--table-frozen-shadow</code>, <code>--table-cell-padding-y</code>, <code>--table-header-background-sticky</code>, <code>--table-header-shadow-sticky</code>, <code>--table-row-background-focus</code>, <code>--table-focus-ring</code>, plus three <code>--skeleton-*</code>.</li>
+      <li><strong><code>minWidth</code> added, because the scroll region was unreachable code without it.</strong> The conditional-focusable region shipped in this same pass, but nothing could trigger it: <code>width: 100%</code> plus <code>tableLayout: auto</code> plus <code>white-space: nowrap; text-overflow: ellipsis</code> means a table always shrinks to its container instead of exceeding it, so <code>scrollWidth</code> never exceeded <code>clientWidth</code> and the feature never fired. <code>minWidth</code> is the floor that makes horizontal overflow possible at all.</li>
+      <li><strong>The skeleton sheen is <code>--surface-raised</code>, not <code>--surface-hover</code></strong> — the first attempt used hover, and in the light scope <code>--surface-hover</code> and <code>--surface-sunken</code> are <em>both</em> <code>--grey-100</code>, so the sweep painted a <code>#edeff3</code> sheen over a <code>#edeff3</code> fill and the animation was invisible. It is the characteristic token bug: two names, one value, failing silently and looking like a static block. Any retarget must be checked in the light <em>and</em> dark scopes.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--table-header-background','--table-header-background-sticky','--table-header-shadow-sticky','--table-header-text','--table-header-text-active','--table-header-border','--table-header-height','--table-row-height','--table-row-background-hover','--table-row-background-selected','--table-row-background-focus','--table-row-border','--table-cell-text','--table-cell-padding-x','--table-cell-padding-y','--table-empty-text','--table-focus-ring','--table-frozen-background','--table-frozen-shadow','--skeleton-background','--skeleton-sheen','--skeleton-radius'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Wiring it to a server, and keeping selection honest.">
+    <pre>{`import { Table } from '@meridian/data';
+
+function WorkOrders() {
+  const [sort, setSort] = React.useState({ key: 'due', direction: 'asc' });
+  const [page, setPage] = React.useState(1);
+  const [selected, setSelected] = React.useState([]);   // WO numbers, not indices
+  const { rows, total, pending } = useWorkOrders({ sort, page });
+
+  return (
+    <Card padding="none" title="Work orders">
+      <Table
+        caption="Work orders"
+        rowKey="wo"                       // the record's identity
+        rows={rows}                       // already sorted and paged by the server
+        sort={sort} onSortChange={s => { setSort(s); setPage(1); }}
+        loading={pending} loadingRows={25}
+        selectable selectedKeys={selected} onSelectionChange={setSelected}
+        rowLabel={r => \`work order \${r.wo}\`}
+        stickyHeader
+        emptyMessage="No work orders match this filter"
+        columns={[
+          { key: 'wo',   header: 'WO', mono: true, width: '120px', sortable: true,
+            render: r => <Link href={\`/wo/\${r.wo}\`}>{r.wo}</Link> },
+          { key: 'line', header: 'Line', sortable: true },
+          { key: 'state', header: 'State',
+            render: r => <Badge tone={r.tone} dot>{r.state}</Badge> },
+          { key: 'qty',  header: 'Qty', align: 'right', width: '90px', sortable: true },
+        ]}
+      />
+      <div style={{ borderTop: '1px solid var(--table-row-border)', padding: 'var(--space-3) var(--space-4)' }}>
+        <Pagination page={page} totalItems={total} pageSize={25}
+                    onPageChange={setPage} itemLabel="work orders" />
+      </div>
+    </Card>
+  );
+}`}</pre>
+    <ul>
+      <li><strong>Set <code>rowKey</code> to something stable and server-issued.</strong> Not an index, not a display label, not a value the user can edit.</li>
+      <li><strong>Reset the page on a sort change,</strong> and never sort client-side over a paged set — you would be sorting one page of a larger order.</li>
+      <li><strong>Reconcile the selection when rows change.</strong> Filtering can leave identities selected that are no longer visible; decide deliberately whether that is a feature ("12 selected across filters") or a bug, and prune if it is a bug.</li>
+      <li><strong>Give <code>loadingRows</code> the page size</strong>, not a guess at the viewport, so the table is the same height loading and loaded.</li>
+      <li><strong>Set <code>minWidth</code> on any table with more than about four columns</strong>, and add <code>freezeLeading</code> at the same time. Without <code>minWidth</code> the table truncates to unreadability rather than scrolling; without <code>freezeLeading</code> it scrolls the record's own identity out of view (§11).</li>
+      <li><strong>Put a real link on the primary column</strong> even when the whole row is clickable (§07).</li>
+      <li><strong>Poll in place.</strong> Do not flip <code>loading</code> on every refresh — that replaces a readable table with placeholders every few seconds. Use <code>loading</code> for the first load and for a filter change only.</li>
+      <li><strong>Testing hooks:</strong> rows are <code>[data-table-row="selected"]</code> when selected, skeletons are <code>[data-skeleton]</code>. Worth asserting explicitly, since none of it shows in a screenshot: sort a table with a row selected and check the <em>same record</em> is still selected; check the sorted header carries <code>aria-sort</code> and is reachable by <kbd>Tab</kbd>; check the row checkbox's accessible name contains the record's identifier; and check the scroll region gains <code>tabindex</code> only when it overflows.</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

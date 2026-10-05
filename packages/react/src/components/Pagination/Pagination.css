@@ -1,0 +1,134 @@
+.ds-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-sans, system-ui, sans-serif);
+  width: 100%;
+  box-sizing: border-box;
+  container-type: inline-size;
+}
+
+.ds-pagination-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1, 4px);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ds-pagination-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ds-pagination-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 var(--spacing-2, 8px);
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-neutral-700, #374151);
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md, 6px);
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  transition: background-color var(--duration-fast, 150ms) ease, color var(--duration-fast, 150ms) ease, border-color var(--duration-fast, 150ms) ease;
+  box-sizing: border-box;
+}
+
+.ds-pagination-link:hover {
+  background-color: var(--color-neutral-100, #F3F4F6);
+  color: var(--color-neutral-900, #111827);
+}
+
+.ds-pagination-link:focus-visible {
+  outline: 2px solid var(--color-brand-500, #3B82F6);
+  outline-offset: 2px;
+}
+
+.ds-pagination-link--active {
+  background-color: var(--color-brand-600, #2563EB);
+  color: #FFFFFF;
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.ds-pagination-link--active:hover {
+  background-color: var(--color-brand-700, #1D4ED8);
+  color: #FFFFFF;
+}
+
+.ds-pagination-link:disabled,
+.ds-pagination-link[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.ds-pagination-nav-button {
+  gap: var(--spacing-1, 4px);
+  padding: 0 var(--spacing-3, 12px);
+  border: 1px solid var(--color-neutral-200, #E5E7EB);
+  background-color: var(--color-surface-card, #FFFFFF);
+}
+
+.ds-pagination-nav-button:hover {
+  background-color: var(--color-neutral-50, #F9FAFB);
+  border-color: var(--color-neutral-300, #D1D5DB);
+}
+
+.ds-pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-neutral-400, #9CA3AF);
+  font-size: 14px;
+  user-select: none;
+}
+
+/* Container Queries for Pagination */
+@container (max-width: 480px) {
+  .ds-pagination-content {
+    gap: 2px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ds-pagination-link {
+    min-width: 30px;
+    height: 30px;
+    padding: 0 6px;
+    font-size: 13px;
+  }
+
+  .ds-pagination-nav-button {
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  .ds-pagination-ellipsis {
+    width: 24px;
+    height: 30px;
+  }
+}
+
+@container (max-width: 320px) {
+  .ds-pagination-link {
+    min-width: 26px;
+    height: 28px;
+    padding: 0 4px;
+    font-size: 12px;
+  }
+
+  .ds-pagination-nav-button {
+    padding: 0 6px;
+    font-size: 11px;
+  }
+}

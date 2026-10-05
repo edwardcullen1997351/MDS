@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Layout · Single column" description="The default frame for content that reads as one vertical sequence — raising a maintenance work request against press line P-2" -->
+<helmet><script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary)}</style>
+</helmet>
+<div style="min-height:100vh">
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Container" size="{{ contentSize }}" center="{{ isCentered }}" py="{{ 7 }}" hint-size="100%,100%">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ sectionGap }}" hint-size="100%,100%">
+
+<sc-if value="{{ harnessNotes }}" hint-placeholder-val="{{ true }}">
+<div data-harness="remove-on-copy" style="border:var(--border-width) dashed var(--border-strong);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Harness · remove on copy</span>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty">Every dashed block and every <code style="font-family:var(--font-mono)">harness*</code> tweak is scaffolding for reading the frame, not part of the design — delete them when you copy this template. The five region labels below map to §02 Anatomy; the tweaks under <em>Layout properties</em> are §03. Commit semantics are deliberately absent: <a href="../../specs/patterns/ValidatedSubmission.spec.html">validated submission</a> and <a href="../../specs/patterns/ExplicitSave.spec.html">explicit save</a> own those, and this frame only says where the action region sits.</p>
+</div>
+</sc-if>
+
+<sc-if value="{{ showHeader }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 2 · header — optional</span>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Breadcrumb" items="{{ crumbs }}" size="sm" hint-size="100%,18px"></x-import>
+<h1 style="margin:0;font-size:var(--text-3xl);font-weight:var(--weight-light);letter-spacing:-0.02em;line-height:1.15">Raise a maintenance work request</h1>
+<p style="margin:0;font-size:var(--text-sm);color:var(--text-secondary);max-width:64ch;text-wrap:pretty">Press line P-2 has been running with a sticking die-change lift since B shift. Sandeep Kulkarni raises the request; maintenance planning at Chakan (PL-04) schedules it against the shift plan.</p>
+<div style="display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">
+<span>MWR-2026-0488</span><span>draft · raised 2026-09-08 09:20 (IST)</span><span>Sandeep Kulkarni · line supervisor · PL-04</span>
+</div>
+</div>
+</sc-if>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 3 · primary content — required</span>
+</sc-if>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ sectionGap }}" hint-size="100%,600px">
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Surface" tone="card" elevation="{{ 1 }}" padding="md" radius="md" border="{{ true }}" hint-size="100%,260px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 4 }}" hint-size="100%,100%">
+<h2 style="margin:0;font-size:var(--text-md);font-weight:var(--weight-semibold);letter-spacing:-0.006em">Asset and fault</h2>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Asset" hint="Equipment register entry the request is raised against." hint-size="100%,66px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ assetOptions }}" value="{{ asset }}" onChange="{{ onAsset }}" hint-size="100%,34px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Fault category" hint-size="100%,60px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ faultOptions }}" value="{{ fault }}" onChange="{{ onFault }}" hint-size="100%,34px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="What is happening" hint="What the operator sees, in the operator's words — not a diagnosis." hint-size="100%,120px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Textarea" rows="{{ 3 }}" value="{{ symptom }}" onChange="{{ onSymptom }}" hint-size="100%,76px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="First observed" hint="Shift and time (IST) the fault was first logged on the line." hint-size="100%,66px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ observed }}" onChange="{{ onObserved }}" hint-size="100%,34px"></x-import>
+</x-import>
+</x-import>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Surface" tone="card" elevation="{{ 1 }}" padding="md" radius="md" border="{{ true }}" hint-size="100%,300px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 4 }}" hint-size="100%,100%">
+<h2 style="margin:0;font-size:var(--text-md);font-weight:var(--weight-semibold);letter-spacing:-0.006em">Impact on production</h2>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.RadioGroup" label="Priority" hint="Priority sets the response target maintenance planning is measured against." options="{{ priorityOptions }}" value="{{ priority }}" onChange="{{ onPriority }}" hint-size="100%,150px"></x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Parts at risk this shift" hint="BRK-4820-A brake brackets, at 620 per shift on P-2." hint-size="100%,66px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ atRisk }}" onChange="{{ onAtRisk }}" hint-size="100%,34px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Shift" hint-size="100%,60px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ shiftOptions }}" value="{{ shift }}" onChange="{{ onShift }}" hint-size="100%,34px"></x-import>
+</x-import>
+</x-import>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Surface" tone="card" elevation="{{ 1 }}" padding="md" radius="md" border="{{ true }}" hint-size="100%,240px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 4 }}" hint-size="100%,100%">
+<h2 style="margin:0;font-size:var(--text-md);font-weight:var(--weight-semibold);letter-spacing:-0.006em">Routing and cost</h2>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Route to" hint-size="100%,60px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ routeOptions }}" value="{{ route }}" onChange="{{ onRoute }}" hint-size="100%,34px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Cost centre" hint="Spend above ₹2,00,000 needs the plant head's release." hint-size="100%,66px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ costCentre }}" onChange="{{ onCostCentre }}" hint-size="100%,34px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Estimated spend" hint="Tool room's rough order — Priya Iyer, if the lift cylinder is replaced." hint-size="100%,66px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ spend }}" onChange="{{ onSpend }}" hint-size="100%,34px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Checkbox" label="Line stoppage authorised by the press-shop head (Shalini Rao)" checked="{{ authorised }}" onChange="{{ onAuthorised }}" hint-size="100%,26px"></x-import>
+</x-import>
+</x-import>
+
+</x-import>
+</div>
+
+<sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="success" title="MWR-2026-0488 submitted to maintenance planning" hint-size="100%,72px">Vikram Bhosale is on shift until 18:00 (IST). Response target for a stop-line request is 4 hours.</x-import>
+</sc-if>
+
+<sc-if value="{{ terminalActions }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:10px;border-top:var(--border-hairline);padding-top:16px">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 4 · action — terminal</span>
+</sc-if>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="primary" onClick="{{ onSubmit }}" hint-size="150px,34px">Submit request</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="secondary" onClick="{{ onSaveDraft }}" hint-size="120px,34px">Save draft</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" onClick="{{ onDiscard }}" hint-size="90px,34px">Discard</x-import>
+<span style="font-size:var(--text-xs);color:var(--text-secondary)">{{ actionNote }}</span>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showSupplementary }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 5 · supplementary — optional, subordinate, same vertical flow</span>
+</sc-if>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Surface" tone="sunken" elevation="{{ 0 }}" padding="md" radius="md" border="{{ true }}" hint-size="100%,220px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 3 }}" hint-size="100%,100%">
+<h2 style="margin:0;font-size:var(--text-sm);font-weight:var(--weight-semibold)">Open requests already on P-2</h2>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary);max-width:62ch;text-wrap:pretty">Reference only. If this fault is the one already raised, add to that request instead of opening a second one.</p>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.DescriptionList" items="{{ openRequests }}" layout="columns" size="sm" divided="{{ true }}" term-width="150px" hint-size="100%,140px"></x-import>
+<p style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">Equipment register · PL-04 · updated 2026-09-08 08:55 (IST)</p>
+</x-import>
+</x-import>
+</div>
+</sc-if>
+
+<sc-if value="{{ harnessInspector }}" hint-placeholder-val="{{ true }}">
+<div data-harness="remove-on-copy" style="border:var(--border-width) dashed var(--border-strong);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Layout state · §03 properties as applied</span>
+<div style="display:flex;flex-direction:column;gap:5px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)">
+<span>content width&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ widthReadout }}</b></span>
+<span>alignment&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ alignReadout }}</b></span>
+<span>section spacing&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ spacingReadout }}</b></span>
+<span>regions present&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ regionReadout }}</b></span>
+<span>action region&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ actionReadout }}</b></span>
+<span>heading outline&nbsp;&nbsp;<b style="color:var(--text-primary)">h1 → h2 ×{{ headingCount }} (spacing does not set level)</b></span>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty">Set <em>Content width</em> to <code style="font-family:var(--font-mono)">full</code> to see the anti-pattern the spec names: reading-oriented content stretched across the viewport because the space was there. Nothing about the frame changes — only the measure gets worse.</p>
+</div>
+</sc-if>
+
+</x-import>
+</x-import>
+
+<sc-if value="{{ anchoredActions }}" hint-placeholder-val="{{ false }}">
+<div style="position:sticky;bottom:0;background:var(--surface-card);border-top:var(--border-width) solid var(--border-strong);box-shadow:var(--shadow-sm);padding:12px 0">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Container" size="{{ contentSize }}" center="{{ isCentered }}" hint-size="100%,50px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<sc-if value="{{ harnessLabels }}" hint-placeholder-val="{{ true }}">
+<span data-harness="remove-on-copy" style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-accent)">Region 4 · action — contextually anchored</span>
+</sc-if>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="primary" onClick="{{ onSubmit }}" hint-size="150px,34px">Submit request</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="secondary" onClick="{{ onSaveDraft }}" hint-size="120px,34px">Save draft</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" onClick="{{ onDiscard }}" hint-size="90px,34px">Discard</x-import>
+<span style="font-size:var(--text-xs);color:var(--text-secondary)">{{ actionNote }}</span>
+</div>
+</div>
+</x-import>
+</div>
+</sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:900},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Light theme&quot;,&quot;Dark theme&quot;],&quot;default&quot;:&quot;Light theme&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Harness · remove on copy&quot;,&quot;label&quot;:&quot;Color theme&quot;},&quot;contentWidth&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;sm — 640, form measure&quot;,&quot;md — 900, prose measure&quot;,&quot;lg — 1240, app default&quot;,&quot;full — fluid, no cap&quot;],&quot;default&quot;:&quot;md — 900, prose measure&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;alignment&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Centred in the outer container&quot;,&quot;Start-aligned in the outer container&quot;],&quot;default&quot;:&quot;Centred in the outer container&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;sectionSpacing&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Compact — 20px between sections&quot;,&quot;Default — 24px between sections&quot;,&quot;Relaxed — 32px between sections&quot;],&quot;default&quot;:&quot;Default — 24px between sections&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;actionRegion&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Terminal — at the end of the sequence&quot;,&quot;Contextually anchored — sticky to the viewport foot&quot;],&quot;default&quot;:&quot;Terminal — at the end of the sequence&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;headerRegion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;supplementaryRegion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Layout properties&quot;},&quot;harnessRegionLabels&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness · remove on copy&quot;},&quot;harnessNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness · remove on copy&quot;},&quot;harnessInspector&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness · remove on copy&quot;}}">
+class Component extends DCLogic {
+  state = {
+    asset: 'P-2 · 400 T press line · Chakan (PL-04)',
+    fault: 'Hydraulics — die-change lift',
+    symptom: 'Die-change lift sticks about 40 mm from the top of its travel. Operator has to jog it twice on every changeover; changeover is running 9 minutes over standard.',
+    observed: 'B shift, 2026-09-07 22:40 (IST)',
+    priority: 'degraded',
+    atRisk: '620 parts',
+    shift: 'A (06:00–14:30 IST)',
+    route: 'Vikram Bhosale · maintenance head',
+    costCentre: 'CC-PRESS-04',
+    spend: '₹1,85,000',
+    authorised: false,
+    submitted: false,
+  };
+
+  syncTheme() {
+    const isDark = String(this.prop('theme', 'Light theme')).indexOf('Dark') === 0;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }
+
+  componentDidMount() {
+    this.syncTheme();
+  }
+
+  componentDidUpdate(prev) {
+    if (this.props.theme !== prev.theme) {
+      this.syncTheme();
+    }
+  }
+
+  renderVals() {
+    const width = this.props.contentWidth ?? 'md — 900, prose measure';
+    const size = width.startsWith('sm') ? 'sm' : width.startsWith('lg') ? 'lg' : width.startsWith('full') ? 'full' : 'md';
+    const align = this.props.alignment ?? 'Centred in the outer container';
+    const spacing = this.props.sectionSpacing ?? 'Default — 24px between sections';
+    const gap = spacing.startsWith('Compact') ? 5 : spacing.startsWith('Relaxed') ? 8 : 6;
+    const actionMode = this.props.actionRegion ?? 'Terminal — at the end of the sequence';
+    const header = this.props.headerRegion ?? true;
+    const supp = this.props.supplementaryRegion ?? true;
+    const regions = ['1 page', header ? '2 header' : null, '3 primary', '4 action', supp ? '5 supplementary' : null].filter(Boolean).join(' · ');
+    const set = (k) => (e) => this.setState({ [k]: e.target.value, submitted: false });
+
+    return {
+      contentSize: size,
+      isCentered: align.startsWith('Centred'),
+      sectionGap: gap,
+      showHeader: header,
+      showSupplementary: supp,
+      terminalActions: actionMode.startsWith('Terminal'),
+      anchoredActions: !actionMode.startsWith('Terminal'),
+      harnessLabels: this.props.harnessRegionLabels ?? true,
+      harnessNotes: this.props.harnessNotes ?? true,
+      harnessInspector: this.props.harnessInspector ?? true,
+
+      widthReadout: width,
+      alignReadout: align,
+      spacingReadout: spacing + ' (gap step ' + gap + ')',
+      regionReadout: regions,
+      actionReadout: actionMode,
+      headingCount: 3 + (supp ? 1 : 0),
+
+      crumbs: [
+        { label: 'Maintenance', href: '#' },
+        { label: 'Work requests', href: '#' },
+        { label: 'MWR-2026-0488' },
+      ],
+      assetOptions: [
+        'P-2 · 400 T press line · Chakan (PL-04)',
+        'P-1 · 250 T press line · Chakan (PL-04)',
+        'WLD-07 · robot weld cell 7 · Chakan (PL-04)',
+        'CNC-12 · turning centre · Chakan (PL-04)',
+      ],
+      faultOptions: [
+        'Hydraulics — die-change lift',
+        'Electrical — drive fault',
+        'Mechanical — guides and bearings',
+        'Pneumatics — clamp circuit',
+        'Tooling — die damage',
+      ],
+      priorityOptions: [
+        { value: 'stop', label: 'Stop-line', description: 'P-2 is down now. Response target 4 hours; the shift plan is rebuilt around it.' },
+        { value: 'degraded', label: 'Degraded output', description: 'Line runs, output or changeover time is off standard. Response target 24 hours.' },
+        { value: 'watch', label: 'No impact yet', description: 'Raised so it is scheduled before it stops the line. Planned into the next maintenance window.' },
+      ],
+      shiftOptions: ['A (06:00–14:30 IST)', 'B (14:30–23:00 IST)', 'C (23:00–06:00 IST)'],
+      routeOptions: [
+        'Vikram Bhosale · maintenance head',
+        'Priya Iyer · tool room',
+        'Sahyadri Bearings Pvt Ltd · external service',
+        'Nashik Forge & Machine Works · external service',
+      ],
+      openRequests: [
+        { term: 'MWR-2026-0461', value: 'Coolant leak at the P-2 slide guard — assigned to Priya Iyer, tool room, since 2026-09-05 (IST)', mono: false },
+        { term: 'MWR-2026-0447', value: 'Changeover time above standard on P-2 — under investigation with maintenance planning', mono: false },
+        { term: 'MWR-2026-0402', value: 'Lift cylinder seal kit awaited from Sahyadri Bearings Pvt Ltd — ₹42,500, promised 2026-09-11 (IST)', mono: false },
+      ],
+
+      asset: this.state.asset, fault: this.state.fault, symptom: this.state.symptom,
+      observed: this.state.observed, priority: this.state.priority, atRisk: this.state.atRisk,
+      shift: this.state.shift, route: this.state.route, costCentre: this.state.costCentre,
+      spend: this.state.spend, authorised: this.state.authorised, submitted: this.state.submitted,
+      actionNote: this.state.priority === 'stop'
+        ? 'Stop-line: maintenance planning is paged as soon as this is submitted.'
+        : 'Routed to maintenance planning at PL-04. Response target 24 hours.',
+
+      onAsset: set('asset'), onFault: set('fault'), onSymptom: set('symptom'),
+      onObserved: set('observed'), onAtRisk: set('atRisk'), onShift: set('shift'),
+      onRoute: set('route'), onCostCentre: set('costCentre'), onSpend: set('spend'),
+      onPriority: (next) => this.setState({ priority: next, submitted: false }),
+      onAuthorised: (e) => this.setState({ authorised: e.target.checked, submitted: false }),
+      onSubmit: () => this.setState({ submitted: true }),
+      onSaveDraft: () => this.setState({ submitted: false }),
+      onDiscard: () => this.setState({ submitted: false }),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

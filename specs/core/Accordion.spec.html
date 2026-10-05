@@ -1,0 +1,405 @@
+<!-- @dsCard group="Specs · Core" viewport="1080x760" name="Accordion" subtitle="Full specification — the disclosure stack: purpose, anatomy, props, variants, keyboard, a11y, motion" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Accordion — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+.w340{width:340px;flex:none}
+.w300{width:300px;flex:none}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:7px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}.w340,.w300{width:100%}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Accordion, AccordionItem, Card, Button, IconButton, Badge, Tag, Text, Tabs, Field, Input, Switch, Divider } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const P = ({children}) => <Text size="sm" tone="secondary">{children}</Text>;
+
+const SETTINGS = [
+  {value:'thresholds',title:'Alert thresholds',description:'4 rules · last edited 12 Aug',icon:'gauge',
+   content:<P>Starve and blockage alarms fire after 90 seconds without movement. Cycle-time drift alarms at 8% over the rolling median.</P>},
+  {value:'window',title:'Maintenance window',icon:'calendar-clock',meta:<Badge tone="warning" dot>Overdue</Badge>,
+   content:<P>Sundays 02:00–06:00 CET. Two windows skipped since the last service.</P>},
+  {value:'routing',title:'Escalation routing',icon:'route',
+   content:<P>Unacknowledged criticals page the area lead after 5 minutes, then the plant duty phone.</P>},
+  {value:'audit',title:'Audit trail',description:'Requires admin',icon:'scroll-text',disabled:true},
+];
+
+function Spec(){
+const [one,setOne] = React.useState('thresholds');
+const [many,setMany] = React.useState(['calibration','parts']);
+const [ctl,setCtl] = React.useState(null);
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Core · Component specification</span>
+    <h1>Accordion</h1>
+    <p className="lede">A stack of disclosures: headers that stay visible, panels that open on demand. It is the only component in this system that hides content <em>in place</em> — Tabs replace one region with another, a Dialog covers the page, a Menu closes as soon as it is used. An accordion keeps the whole outline on screen and lets the operator choose which part to read. That is its value and its whole risk: an outline is useful, and content nobody expands may as well not exist.</p>
+    <div className="meta">
+      <span>components/core/Accordion.jsx</span><span>window.MeridianDesignSystem_962c43.Accordion</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items</span><span>since: 1.7.0</span><span>17 new tokens · 0 new layers</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="An outline you can open, not a place to put things you couldn't fit.">
+    <p>Use an accordion when a screen has more sections than fit at once, the section <strong>titles</strong> are enough to navigate by, and the operator needs only one or two of them on any given visit. Settings pages, per-asset detail, long reference material, grouped filters in a sidebar. The header row must be worth reading on its own — if the user has to open every panel to find what they want, you have built a list of doors instead of a list of answers.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Shorten a long page whose sections are independent','Accordion','This component.'],
+      ['Switch between sibling views of the same subject','Tabs','Tabs replace content; an accordion adds it. Tabs also imply one is always shown.'],
+      ['Reveal one optional extra under a control','AccordionItem · Field hint','A single disclosure is one item, not a stack of one.'],
+      ['Hide a secondary action or command','Menu','Commands are verbs and close on use. A panel stays open.'],
+      ['Show detail on hover or a light press','Tooltip · Popover','A panel that pushes the page is too heavy for a glance.'],
+      ['Force attention or a decision','Dialog','An accordion never demands to be opened.'],
+      ['Present rows of the same shape, comparably','Table','Expanding sixty identical rows is a table with a detail column.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> for 3–8 sections. Two sections do not need the machinery; past eight, the closed stack is itself a wall and wants grouping or a separate page.</li>
+      <li><strong>Do not use</strong> for anything the operator must not miss: a failure, an unsaved change, a required field. Nothing critical lives behind a chevron.</li>
+      <li><strong>Do not use</strong> to hide a step in a sequence. Sequential work is a wizard or a form, and the steps must be visible in order.</li>
+      <li><strong>Do not nest.</strong> One level, by decision (§12).</li>
+    </ul>
+    <div className="demo">
+      <div className="w340"><Accordion items={SETTINGS} value={one} onChange={setOne} /></div>
+      <div style={{minWidth:220,flex:1,display:'flex',flexDirection:'column',gap:10}}>
+        <Text size="xs" tone="tertiary">One open at a time — the default. <code>value</code> = <code>{one ? `"${one}"` : 'null'}</code></Text>
+        <Text size="xs" tone="tertiary">The fourth row is disabled and stays in the list: the section exists, the operator simply lacks the role for it.</Text>
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A header button inside a heading, and a labelled region below it.">
+    <div className="demo">
+      <div className="w340"><Accordion items={[
+        {value:'a',title:'Alert thresholds',description:'4 rules · last edited 12 Aug',icon:'gauge',meta:<Badge tone="warning" dot>Overdue</Badge>,content:<P>Panel content is authored by the product; the component supplies only the box and its padding.</P>},
+        {value:'b',title:'Escalation routing',icon:'route'},
+      ]} defaultValue="a" /></div>
+      <div style={{display:'flex',flexDirection:'column',gap:8,minWidth:280,flex:1}}>
+        {[['1','Container — bordered variant is one card: --accordion-background, --accordion-border, --accordion-radius. Rows are separated by --accordion-divider, never by a gap.'],
+          ['2','Header — a real <button>, full width, inside an h2–h6. The whole row is the hit area; nothing else in the row is clickable.'],
+          ['3','Leading icon — optional, --icon-xs / --icon-sm. All rows in a stack or none.'],
+          ['4','Title — one line, ellipsis-truncated. Sentence case, a noun phrase naming the section.'],
+          ['5','Description — one optional 2xs line: a count, a date, why the row is disabled. Never a sentence of body copy.'],
+          ['6','Meta — right-aligned Badge or count, immediately before the chevron. Display only.'],
+          ['7','Chevron — chevron-down, rotated 180° when open. The only state indicator, and it is a shape, not a colour.'],
+          ['8','Panel — role="region", labelled by its header, indented to the title\u2019s left edge so the outline reads as a hierarchy.']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+    </div>
+    <p>The panel's left padding aligns with the <em>title</em>, not the container: when a row has a leading icon the panel indents by the icon column too. A panel that starts under the icon while the title starts after it makes the stack read as two unrelated lists — the same alignment argument as Menu's indent column, applied vertically.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Accordion, AccordionItemData, AccordionItem.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['items','Array<string | AccordionItemData>','—','A bare string is a title-only row with no panel. Order is the tab order.'],
+      ['value','string | string[] | null','uncontrolled','The open set. A string for one-at-a-time, an array when multiple. null closes everything.'],
+      ['defaultValue','string | string[] | null','null','Uncontrolled initial open set. Open the section the visit is about, not "the first one" by reflex.'],
+      ['onChange','(value) => void','—','Fires with the whole new open set, not the row that was pressed.'],
+      ['multiple','boolean','false','Several panels open at once. Off by default — see §04.'],
+      ['size','\u2018sm\u2019 | \u2018md\u2019','md','34px or 44px minimum header height (§05).'],
+      ['variant','\u2018bordered\u2019 | \u2018divided\u2019 | \u2018flush\u2019','bordered','Chrome only. Behaviour is identical (§04).'],
+      ['headingLevel','1–6','3','The heading element wrapping each header button. Must continue the page outline.'],
+      ['keepMounted','boolean','false','Collapsed panels stay in the DOM with hidden. For forms, charts and media that must not reset.'],
+      ['style','CSSProperties','—','Merged onto the container. Width belongs here, not on the rows.'],
+    ]}/>
+    <T cols={['AccordionItemData','Type','Notes']} rows={[
+      ['value','string','Stable key and what onChange reports. Not the title — titles get rewritten.'],
+      ['title','ReactNode','Noun phrase, sentence case, one line. Truncated, never wrapped.'],
+      ['description','ReactNode','One qualifier line. On a disabled row, say what would enable it.'],
+      ['icon','string','Lucide 0.469.0 name. All rows or none.'],
+      ['meta','ReactNode','Badge or count before the chevron. Never a button — the header already has one press meaning.'],
+      ['disabled','boolean','Kept in the list, announced with aria-disabled, skipped by arrow keys.'],
+      ['content','ReactNode','The panel. Omit for a title-only row.'],
+    ]}/>
+    <p><code>AccordionItem</code> is the same row with its own open state and no siblings — <code>item</code>, <code>open</code>/<code>defaultOpen</code>, <code>onToggle</code>, <code>size</code>, <code>variant</code>, <code>headingLevel</code>, <code>keepMounted</code>, <code>children</code>. Use it for a lone disclosure ("Advanced options" under a form), where a one-item <code>Accordion</code> would advertise a stack that does not exist.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Three chromes and one behavioural switch.">
+    <div className="demo">
+      <div className="w300">
+        <span className="lbl" style={{minWidth:0,padding:'0 0 8px',display:'block'}}>bordered</span>
+        <Accordion items={SETTINGS.slice(0,3)} defaultValue="thresholds" />
+      </div>
+      <div className="w300">
+        <span className="lbl" style={{minWidth:0,padding:'0 0 8px',display:'block'}}>divided</span>
+        <Accordion variant="divided" items={SETTINGS.slice(0,3)} defaultValue="window" />
+      </div>
+      <div className="w300">
+        <span className="lbl" style={{minWidth:0,padding:'0 0 8px',display:'block'}}>flush · sm · multiple</span>
+        <Accordion variant="flush" size="sm" multiple value={many} onChange={setMany} items={[
+          {value:'calibration',title:'Calibration',content:<Text size="xs" tone="secondary">Torque head recalibrated 3 Sep.</Text>},
+          {value:'parts',title:'Consumable parts',content:<Text size="xs" tone="secondary">Filter PN-7749 due in 240 operating hours.</Text>},
+          {value:'notes',title:'Operator notes',content:<Text size="xs" tone="secondary">Nights shift reports intermittent vibration at station 3.</Text>},
+        ]} />
+      </div>
+    </div>
+    <T cols={['Variant','Chrome','Use']} rows={[
+      ['bordered','Card surface, 1px border, --radius-md, hairline dividers.','Default. A standalone stack on a page.'],
+      ['divided','No background or radius; hairlines above and below the stack and between rows.','Inside a Card that already draws the border — two nested borders is the most common misuse of this component.'],
+      ['flush','No chrome at all. Header padding drops to 0 so titles align with surrounding text.','Sidebars, filter panels, dense inspector columns.'],
+    ]}/>
+    <ul>
+      <li><strong><code>multiple</code> is off by default</strong> because one open panel keeps the outline short and the page height predictable. Turn it on when panels are genuinely comparable — checklists, per-shift notes, anything an operator reads side by side. Turn it off when panels are long: with three open, the headers scroll away and the stack loses the only thing it had over a plain page.</li>
+      <li><strong>There is no "open all" control</strong> and no <code>collapsible={false}</code>. If every panel should be open, the sections do not need an accordion; if one must always be open, that is <code>Tabs</code>.</li>
+      <li><strong>Variants never change behaviour.</strong> Keyboard, roles and motion are identical across all three, so a product can restyle a stack without re-testing it.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two, and the default is the touch-safe one.">
+    <T cols={['Size','Header min-height','Padding','Title','Icon','Panel type','Use']} rows={[
+      ['sm','34px','6px 0 / --space-3 inline','--text-xs','--icon-xs','--text-xs','Sidebars, inspector columns, anything already at sm density.'],
+      ['md','44px','8px 0 / --space-4 inline','--text-sm','--icon-sm','--text-sm','Default. Page-level stacks, settings, detail panes.'],
+    ]}/>
+    <div className="demo">
+      <div className="w300"><span className="lbl" style={{minWidth:0,padding:'0 0 8px',display:'block'}}>sm</span><Accordion size="sm" items={SETTINGS.slice(0,3)} defaultValue="thresholds" /></div>
+      <div className="w300"><span className="lbl" style={{minWidth:0,padding:'0 0 8px',display:'block'}}>md</span><Accordion size="md" items={SETTINGS.slice(0,3)} defaultValue="thresholds" /></div>
+    </div>
+    <p>Height is a <strong>minimum</strong>, not a fixed value: a row with a <code>description</code> grows, and a title long enough to truncate still occupies one line. <code>md</code> is the default because 44px is the touch target this system holds itself to, and an accordion is the component most likely to be shipped to a phone (§11). <code>sm</code> is for pointer-driven density only.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Expanded is a rotation, not a colour.">
+    <T cols={['State','Applies to','Treatment']} rows={[
+      ['Rest','Header','--accordion-header-text on the container surface. No tint.'],
+      ['Hover','Header','--accordion-header-background-hover across the full row, --transition-control. Suppressed in flush, where there is no row to tint.'],
+      ['Expanded','Header','Chevron rotated 180° over --duration-fast. The header background does NOT change: the open panel below is the state, and tinting the header repeats it.'],
+      ['Focus','Header','--accordion-header-focus-ring as a box-shadow, drawn above the divider (z-index 1) so it is never clipped by the next row.'],
+      ['Disabled','Header','--accordion-header-text-disabled, --accordion-marker-disabled, no hover, aria-disabled, skipped by arrow keys. Stays in the list.'],
+      ['Panel open','Panel','role="region", content faded in over --duration-base. Height is not animated.'],
+      ['Panel closed','Panel','Unmounted, or present with hidden when keepMounted.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="rest / hover"><div className="w300"><Accordion items={[{value:'a',title:'Alert thresholds',icon:'gauge'},{value:'b',title:'Escalation routing',icon:'route'}]} /></div></Row>
+      <Row label="expanded"><div className="w300"><Accordion items={[{value:'a',title:'Alert thresholds',icon:'gauge',content:<P>Two rules over threshold.</P>},{value:'b',title:'Escalation routing',icon:'route'}]} defaultValue="a" /></div></Row>
+      <Row label="focus"><div className="w300"><Accordion items={[{value:'a',title:'Tab into this stack',icon:'gauge',content:<P>The ring sits above the divider.</P>},{value:'b',title:'Then press ↓',icon:'route'}]} /></div></Row>
+      <Row label="disabled"><div className="w300"><Accordion items={[{value:'a',title:'Alert thresholds',icon:'gauge'},{value:'b',title:'Audit trail',description:'Requires admin',icon:'scroll-text',disabled:true}]} /></div></Row>
+    </div>
+    <p>There is no selected state and no active-row highlight. An accordion has no cursor: focus is real, one header at a time, and the browser shows it. Everything else about the component's state is readable from the geometry — which panel is open, and which chevron points down.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="APG accordion. Every header is a tab stop.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab · ⇧Tab','Moves through headers and into any open panel\u2019s own focusables, in document order. Headers are not a roving tabindex — each is a real stop, because a header is a button and there is no cursor to rove.'],
+      ['Enter · Space','Toggles the focused panel. Native button behaviour, not re-implemented.'],
+      ['↓ · ↑','Moves focus to the next · previous enabled header, wrapping. Never opens anything — arrow keys navigate the outline, Enter commits to reading it.'],
+      ['Home · End','First · last enabled header.'],
+      ['Escape','Nothing. An accordion is not a layer and does not dismiss; Escape here would fight the Dialog or Popover it sits inside.'],
+    ]}/>
+    <p>Arrow keys are additive, not a replacement for Tab: <kbd>↓</kbd> is the fast way down a twelve-row stack, <kbd>Tab</kbd> is the way into the panel you just opened. Because focus never moves on toggle, a keyboard user opens a panel and their next <kbd>Tab</kbd> lands on its first control — the reason this component takes no <code>autoFocus</code> prop.</p>
+    <div className="demo">
+      <div className="w340"><Accordion items={[
+        {value:'a',title:'Alert thresholds',icon:'gauge',content:<div style={{display:'flex',flexDirection:'column',gap:8}}><Field label="Starve delay" hint="Seconds without movement."><Input defaultValue="90" size="sm" /></Field></div>},
+        {value:'b',title:'Escalation routing',icon:'route',content:<Switch label="Page the duty phone" defaultChecked />},
+        {value:'c',title:'Audit trail',icon:'scroll-text',disabled:true,description:'Requires admin'},
+        {value:'d',title:'Retention',icon:'database',content:<P>Raw signals 90 days, aggregates 3 years.</P>},
+      ]} /></div>
+      <Text size="xs" tone="tertiary">Tab in, then <kbd>↓</kbd> <kbd>↑</kbd> <kbd>Home</kbd> <kbd>End</kbd>; <kbd>Enter</kbd> to open, <kbd>Tab</kbd> to step into the panel.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="Two elements, one relationship, no invented roles.">
+    <ul>
+      <li><strong>No <code>role="accordion"</code> exists</strong>, and none is faked. The pattern is expressed with what already means it: a heading containing a button, and a region labelled by that button. Screen-reader users navigate the stack by heading, which is faster than any custom role could be.</li>
+      <li><strong><code>aria-expanded</code></strong> on every header button, always present — <code>false</code> when closed, not omitted, so the header announces as a disclosure even before it is used.</li>
+      <li><strong><code>aria-controls</code></strong> points at the panel id; the panel carries <code>role="region"</code> and <code>aria-labelledby</code> back to the header. The relationship is stated from both ends because support for either direction alone is uneven.</li>
+      <li><strong><code>headingLevel</code> must continue the page outline.</strong> The default <code>3</code> assumes a page <code>h1</code> and a section <code>h2</code>. A stack of <code>h3</code>s under an <code>h1</code> with no <code>h2</code> is a broken outline, and this is the one accessibility property the component cannot infer for you.</li>
+      <li><strong>The chevron is decoration.</strong> It is <code>aria-hidden</code> and communicates nothing that <code>aria-expanded</code> does not already say. Rotation, not colour, so the open state survives greyscale and low vision.</li>
+      <li><strong>Disabled rows keep their meaning:</strong> <code>aria-disabled</code> rather than removal, with a <code>description</code> that says what would unlock them. A section that silently disappears for some roles cannot be asked about.</li>
+      <li><strong>Panels are not modal.</strong> No focus trap, no scrim, nothing hidden behind them.</li>
+      <li><strong>Collapsed content is genuinely absent</strong> unless <code>keepMounted</code> — which means browser find-in-page will not reach it. If the content must be findable (reference material, long documentation), pass <code>keepMounted</code> and accept the DOM weight, or do not use an accordion.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="The panel does not animate open. This is deliberate.">
+    <T cols={['Moment','Motion','Tokens']} rows={[
+      ['Chevron','Rotates 0° ⇄ 180°.','--duration-fast · --ease-out'],
+      ['Panel content','mer-fade-in as the region mounts.','--anim-fade-in (--duration-base)'],
+      ['Panel height','None. The row snaps to its new size in one frame.','—'],
+      ['Header hover','Background tint.','--transition-control'],
+      ['Close','None. The panel is removed and the chevron rotates back.','--duration-fast'],
+      ['Reduced motion','--duration-* collapse to 1ms; the chevron and the fade become instant.','prefers-reduced-motion'],
+    ]}/>
+    <p>The motion layer permits five animated properties — opacity, transform, background-color, border-color, box-shadow — and height is not among them, for this component above all. An animated accordion animates the position of <em>everything below it</em>: a 200ms height transition on the second of six rows drags four headers and the page footer through 200ms of motion, and a user opening three panels in a row spends more time watching the page settle than reading. Height transitions also cannot be done honestly without measuring content, which breaks on images, fonts and any panel that loads.</p>
+    <p>So the compromise is the one the eye actually needs: the chevron tells you the press registered, the content fades in so it does not appear mid-word, and the layout arrives immediately. Nothing waits on an animation.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="The header is a promise about the panel.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Noun phrases</strong> naming the section: "Alert thresholds", "Maintenance window", "Escalation routing".</li>
+        <li><strong>Sentence case</strong>, two to four words, no trailing punctuation, no question marks.</li>
+        <li><strong>Front-load the distinguishing word</strong> — headers truncate, and six rows starting "Configuration of…" are six identical rows.</li>
+        <li><strong>Use description for a count or a date</strong>, the thing that tells the operator whether to open it: "4 rules · last edited 12 Aug".</li>
+        <li><strong>Use meta for state</strong> — one Badge, the same tone vocabulary as the rest of the system.</li>
+        <li><strong>Open the section the visit is about</strong> via <code>defaultValue</code>, not the first row out of habit.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>Questions as headers.</strong> "How do I set thresholds?" is a support article, not a settings section.</li>
+        <li><strong>Verbs.</strong> "Configure thresholds" reads as a command and belongs on a button.</li>
+        <li><strong>Sentences in the description.</strong> Two lines maximum, and the second one is data, not prose.</li>
+        <li><strong>A control in meta.</strong> The whole row toggles; a button inside it gives one press two meanings.</li>
+        <li><strong>Panels of one line.</strong> If the content is shorter than its header, show it.</li>
+        <li><strong>"More"</strong>, "Details", "Other" — headers that describe nothing and get opened by everyone, every visit.</li>
+      </ul></div>
+    </div>
+    <p>A panel should hold one coherent thing: a set of related fields, a paragraph and a table, a list. When a panel needs its own headings and its own sections, it needs its own page — the accordion was hiding an information-architecture problem, not solving one.</p>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="It is the layout that adapts. The stack barely has to.">
+    <ul>
+      <li><strong>Full width by design.</strong> The container takes the width it is given; rows are a flex row with one flexible title column, so nothing needs a breakpoint. Set width on the container through <code>style</code>, never on rows.</li>
+      <li><strong>Titles truncate, descriptions wrap.</strong> A narrow column shortens the title with an ellipsis rather than growing the row — which is why the distinguishing word goes first.</li>
+      <li><strong>Phones are where this component earns its place.</strong> A settings page that is six cards on a desktop is six accordion rows on a 390px screen. Keep <code>md</code>: 44px headers, full-row targets, and the chevron far from the title so a thumb landing anywhere on the row still means "open this".</li>
+      <li><strong>Do not ship <code>sm</code> to touch.</strong> 34px is below the target minimum. If a phone layout feels loose at <code>md</code>, the answer is fewer rows, not smaller ones.</li>
+      <li><strong>Consider the inverse at desktop width.</strong> Where there is room for the panels to sit open side by side, a two-column layout of <code>Card</code>s tells the operator more than a stack of closed doors. An accordion is a response to <em>not enough room</em>.</li>
+      <li><strong>Anchors and deep links.</strong> If a section is linkable, control the stack (<code>value</code> + <code>onChange</code>) from the route so arriving at <code>#thresholds</code> opens that panel. An accordion whose state lives only in React loses the section on refresh.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{maxWidth:300}}><Accordion items={[
+        {value:'a',title:'Alert thresholds and escalation routing for line 4',description:'4 rules',icon:'gauge',content:<P>The title above is truncated, not wrapped.</P>},
+        {value:'b',title:'Maintenance window',icon:'calendar-clock'},
+      ]} defaultValue="a" /></div>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Five ways to break it, one of them by design.">
+    <div className="two">
+      <div className="pane dont"><h3>No nesting</h3><ul>
+        <li>A second level needs a second heading level, a second arrow-key scope and a second set of dividers, and the user cannot tell from a closed row whether it holds content or more rows.</li>
+        <li>Indentation is the only cue, and it is the first thing lost at 390px.</li>
+        <li><strong>Instead:</strong> flatten — one row per section — or give the child stack its own page or panel. If the outline is genuinely two levels deep, it is navigation, not disclosure.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Also don't</h3><ul>
+        <li><strong>An accordion as page navigation.</strong> Panels are content in place; a sidebar of links is not.</li>
+        <li><strong>Nested borders.</strong> <code>bordered</code> inside a <code>Card</code> draws two. Use <code>divided</code>, or <code>Card padding="none"</code>.</li>
+        <li><strong>Hiding required fields.</strong> A form that fails validation inside a collapsed panel is a dead end. If a panel can hold errors, open it on failure — or do not collapse it.</li>
+        <li><strong>Everything open on load.</strong> A stack with every panel expanded is a long page with extra chrome and a promise it did not keep.</li>
+        <li><strong>Twenty rows.</strong> Group them, split the page, or use a table.</li>
+        <li><strong>Toggling on hover.</strong> Panels move the page; only a press may do that.</li>
+      </ul></div>
+    </div>
+    <p className="warn">The tempting exception — "just one nested level, for the sub-settings" — is how this component becomes a tree view without a tree view's keyboard model. If the content has depth, it has a hierarchy the user should be able to see, not one they have to excavate.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="What the code does, and why it does it that way.">
+    <ul>
+      <li><strong>Native buttons, native activation.</strong> The header is a <code>&lt;button type="button"&gt;</code>; Enter and Space are the browser's. Only <code>ArrowUp/Down/Home/End</code> are handled, and they call <code>focus()</code> on a sibling — no roving <code>tabindex</code>, because every header is meant to be a tab stop.</li>
+      <li><strong>The open set is one value, normalised at the edge.</strong> <code>value</code> arrives as a string or an array and becomes a <code>Set</code>; <code>onChange</code> emits the same shape it was given. Products never diff row-level events to know what is open.</li>
+      <li><strong>Order is preserved on change.</strong> With <code>multiple</code>, the emitted array is filtered from <code>items</code> order, not appended in click order — so a serialised open set is stable and comparable between renders.</li>
+      <li><strong>Panels unmount when closed</strong> unless <code>keepMounted</code>. A settings page with eight panels of fields mounts one, which is the difference between one form and eight. <code>keepMounted</code> renders with the <code>hidden</code> attribute rather than <code>display:none</code>, so it is hidden from the a11y tree too and cannot be tabbed into.</li>
+      <li><strong>No height animation, no measurement, no ResizeObserver.</strong> Consequently no layout thrash, no wrong height on font load, and no jump when a panel's content loads late (§09).</li>
+      <li><strong>Focus ring is a box-shadow with <code>z-index:1</code></strong> on the focused header. Drawn without it, the ring is overlapped by the next row's divider and border and reads as broken on the top and bottom rows.</li>
+      <li><strong>The expanded header takes no tint,</strong> and <code>--accordion-header-background-expanded</code> exists anyway so a product can add one in one place rather than by overriding the component.</li>
+      <li><strong>Ids come from <code>useId</code></strong>, one base per row: <code>{'{id}-header'}</code> and <code>{'{id}-panel'}</code>. Assert on roles and accessible names in tests, not on ids.</li>
+      <li><strong><code>AccordionItem</code> is the same component the stack renders</strong> — not a second implementation. It manages its own state when <code>open</code> is not passed, which is why a lone disclosure behaves identically to a row in a stack.</li>
+      <li><strong>17 new tokens, no reference to <code>--card-*</code>.</strong> A bordered accordion looks like a card by intent; retargeting Card's border must not move the accordion's dividers.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--accordion-background','--accordion-border','--accordion-radius','--accordion-divider','--accordion-header-background','--accordion-header-background-hover','--accordion-header-background-expanded','--accordion-header-text','--accordion-header-text-hover','--accordion-header-text-disabled','--accordion-header-focus-ring','--accordion-description-text','--accordion-marker','--accordion-marker-expanded','--accordion-marker-disabled','--accordion-panel-text'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Wiring it into a product.">
+    <pre>{`import { Accordion, AccordionItem } from '@meridian/core';
+
+// Settings page — one open at a time, opened on what the visit is about.
+<Accordion
+  headingLevel={3}
+  defaultValue={section}                 // from the route, not "the first row"
+  items={[
+    { value: 'thresholds', title: 'Alert thresholds', icon: 'gauge',
+      description: \`\${rules.length} rules · edited \${fmt(editedAt)}\`,
+      content: <ThresholdFields lineId={line.id} /> },
+    { value: 'window', title: 'Maintenance window', icon: 'calendar-clock',
+      meta: overdue ? <Badge tone="warning" dot>Overdue</Badge> : undefined,
+      content: <WindowFields lineId={line.id} /> },
+    { value: 'audit', title: 'Audit trail', icon: 'scroll-text',
+      disabled: !isAdmin, description: isAdmin ? '3,481 entries' : 'Requires admin',
+      content: <AuditTable lineId={line.id} /> },
+  ]}
+/>
+
+// Deep-linkable: the route owns the open section.
+<Accordion value={hash} onChange={(v) => navigate(v ? '#' + v : '#')} items={items} />
+
+// Inside a Card that already draws the border.
+<Card title="Line 4 configuration" padding="none">
+  <Accordion variant="divided" items={items} />
+</Card>
+
+// A lone disclosure under a form — not a one-row stack.
+<AccordionItem item={{ value: 'advanced', title: 'Advanced options' }} variant="flush" size="sm">
+  <RetentionFields />
+</AccordionItem>`}</pre>
+    <ul>
+      <li><strong>Keep <code>value</code>s stable and meaningful.</strong> They end up in URLs, analytics and saved views. Never use the index or the title.</li>
+      <li><strong>Open the panel that failed.</strong> On a validation error inside a collapsed section, set <code>value</code> to it before showing the error summary — an error the user cannot see is worse than no error.</li>
+      <li><strong>Pass <code>keepMounted</code> for panels with unsaved input</strong> or an expensive chart. Without it, collapsing discards the panel's React state, which is usually what you want and occasionally catastrophic.</li>
+      <li><strong>Do not put the same field in two panels.</strong> Collapsed content is invisible, so a duplicated control makes the page's state unknowable.</li>
+      <li><strong>Set <code>headingLevel</code> to fit the page</strong>, and check it with a heading-outline tool once per screen rather than trusting the default.</li>
+      <li><strong>Testing hooks:</strong> headers are <code>[role="button"][aria-expanded]</code> with the title as accessible name; panels are <code>[role="region"]</code> named by their header. The container is <code>[data-accordion]</code> and each row <code>[data-accordion-item="&lt;value&gt;"][data-expanded]</code>.</li>
+    </ul>
+    <div className="demo">
+      <div className="w340"><Accordion value={ctl} onChange={setCtl} items={SETTINGS.slice(0,3)} /></div>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        <Text size="xs" tone="tertiary">Controlled — <code>{ctl ? `"${ctl}"` : 'null'}</code></Text>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+          <Button size="sm" variant="secondary" onClick={()=>setCtl('window')}>Open from elsewhere</Button>
+          <Button size="sm" variant="ghost" onClick={()=>setCtl(null)}>Collapse all</Button>
+        </div>
+      </div>
+    </div>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

@@ -1,0 +1,209 @@
+<!-- @dsCard group="Specs · Composite" viewport="1080x900" name="TelemetryConsole" subtitle="Full specification — plant station header, live pulse badge, 4-metric KPI summary strip, operational time/shift toolbar, dual chart/table views, and control limits footer" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>TelemetryConsole — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:68ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-direction:column;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+
+function Spec(){
+  const kpis = [
+    { label: 'Current Demand', value: '425.4 kVA', sub: 'Nominal Range', tone: 'success' },
+    { label: 'Shift Peak', value: '440.0 kVA', sub: '16:00 IST Peak', tone: 'warning' },
+    { label: 'Shift Average', value: '382.1 kVA', sub: 'Within Budget', tone: 'success' },
+    { label: 'Contract Cap', value: '450.0 kVA', sub: 'UCL Alert Limit', tone: 'critical' },
+  ];
+
+  return (
+    <div className="page">
+      <div className="masthead">
+        <span className="eyebrow">Tier 3 Composite · Component specification</span>
+        <h1>TelemetryConsole</h1>
+        <p className="lede">A standardized operational console shell that coordinates plant station metadata, live status pulsing badges, a 4-metric KPI summary strip, an operational time/shift toolbar, dual chart/table accessibility switching, and control limits governance footers.</p>
+        <div className="meta">
+          <span>Status · frozen 24 Sep 2026 · 0 open items</span>
+          <span>Primitives · Box, Stack, Text, Surface</span>
+          <span>Core · Badge, Button, Table, StatusTag</span>
+          <span>Data Visualizations · AreaChart, LineChart, BarChart</span>
+          <span>Follows · Composite spec standard</span>
+        </div>
+      </div>
+
+      <Sec n="§01" title="Purpose" note="Why the composite exists">
+        <p>TelemetryConsole standardizes the visual hierarchy and operational controls for telemetry and machine data streams. While Tier 2 Data Visualizations own graphical coordinate geometry, TelemetryConsole owns the operational instrument shell — station identity, live status, shift filters, KPI strips, accessible data table switching, and UCL/LCL control limits.</p>
+        <ul>
+          <li><strong>Why a composite rather than raw SVG charts:</strong> Isolated charts lack operational context. TelemetryConsole pairs data graphics with real plant station identity, supervisor shifts, and threshold alarms.</li>
+          <li><strong>Accessible Table Parity:</strong> Guarantees instantaneous, accessible keyboard-operable table view (<kbd>Alt+F11</kbd> or Toolbar toggle) across all dashboards.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="§02" title="Anatomy" note="Structural parts and slots">
+        <T cols={['Part','Role','Constituent Elements']} rows={[
+          ['1. Station Eyebrow','Declares company, plant code, and work center cell','Text, Mono typography, Live pulse dot'],
+          ['2. Title & Subtitle','Describes metric stream and active measurement window','Heading, Subtitle text'],
+          ['3. Operational Toolbar','Shift selector, time range filter, and dual view switcher','Pill buttons, Tab group'],
+          ['4. KPI Summary Strip','High-density 4-metric overview with status colors','Monospace numbers, Tabular alignment, Delta pills'],
+          ['5. Visualization Canvas','Hosts chart visualization or renders accessible table grid','SVG Chart Slot or High-Density Table'],
+          ['6. Control Limits Footer','Upper/Lower control limits and supervisor governance','Mono UCL/LCL values, Shift supervisor name']
+        ]} />
+      </Sec>
+
+      <Sec n="§03" title="Properties" note="Public API and inputs">
+        <T cols={['Prop','Type','Default','Description']} rows={[
+          ['title','string','required','Primary station or metric title.'],
+          ['subtitle','string','undefined','Contextual descriptive subtitle.'],
+          ['stationEyebrow','string','Suryodaya Autocomp...','Plant facility and plant code.'],
+          ['stationId','string','CELL-CNC-04','Work center or station identifier.'],
+          ['shift','string','Shift A...','Active shift timing and label.'],
+          ['supervisor','string','Sandeep Kulkarni','Active shift supervisor.'],
+          ['kpis','KPIItem[]','[]','Array of 4 summary metrics (label, value, sub, tone).'],
+          ['uclLimit','string','450 kVA','Upper Control Limit label and value.'],
+          ['lclLimit','string','120 kVA','Lower Control Limit label and value.'],
+          ['tableData','Record<string,any>[]','[]','Underlying telemetry records for data table.'],
+          ['tableColumns','TelemetryTableColumn[]','[]','Column definitions for data table.'],
+          ['defaultView','chart | table','chart','Initial view mode.'],
+          ['compact','boolean','false','Compact sizing for 3-column dashboard grids.']
+        ]} />
+      </Sec>
+
+      <Sec n="§04" title="Variants" note="Operational layout modes">
+        <p>TelemetryConsole supports two primary operational layout modes:</p>
+        <ul>
+          <li><strong>Standard Full Console (Default):</strong> Full 24px padding with complete 4-metric KPI summary strip and dual-view toggle.</li>
+          <li><strong>Compact Tile (<code>compact=true</code>):</strong> Tightened 16px padding and dense KPI cells for 3-column grid layouts.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="§05" title="Sizes" note="Density and spatial rhythms">
+        <p>Maintains consistent 8px space grid alignment across all internal controls, toolbar pills, and table cell heights (32px compact table rows, 40px standard rows).</p>
+      </Sec>
+
+      <Sec n="§06" title="States" note="Composite lifecycle states">
+        <T cols={['State','Visual Indication','Behavior']} rows={[
+          ['Live Nominal','Pulsing green dot, green KPI pills','Real-time telemetry streaming within normal tolerances.'],
+          ['Warning / Zone C','Amber pulsing indicator, warning KPI text','Telemetry approaching Upper/Lower control limits.'],
+          ['Critical Breach','Red live dot, critical KPI highlight','Telemetry exceeding UCL/LCL thresholds; alarm triggered.'],
+          ['Sensor Dropout / Empty','Stale badge, dashed lines, empty message','Sensor communication failure or offline work center.']
+        ]} />
+      </Sec>
+
+      <Sec n="§07" title="Keyboard" note="Spatial navigation and view toggling">
+        <ul>
+          <li><kbd>Tab</kbd> / <kbd>Shift+Tab</kbd>: Moves focus sequentially across Shift pills, Time range buttons, View toggle, and chart data points.</li>
+          <li><kbd>Alt + F11</kbd>: Global shortcut to immediately toggle between Chart Canvas and Accessible Data Table.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="§08" title="Accessibility" note="WCAG 2.2 AA compliance">
+        <ul>
+          <li><strong>Programmatic Parity:</strong> Full table view provides semantic <code>&lt;table&gt;</code> with <code>scope="col"</code> headers.</li>
+          <li><strong>Color Independence:</strong> Status badges pair background hues with explicit text labels and shape dots.</li>
+          <li><strong>Tabular Numerals:</strong> Monospace numerals with <code>font-variant-numeric: tabular-nums</code> meet 4.5:1 contrast.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="§09" title="Motion" note="State transitions and pulse animation">
+        <p>The live status dot utilizes a subtle 2s ease-in-out breathing pulse animation (<code>@keyframes mds-pulse</code>). View toggles cross-fade smoothly in 150ms.</p>
+      </Sec>
+
+      <Sec n="§10" title="Content Rules" note="Taxonomy and number formatting">
+        <ul>
+          <li>Always format Indian currency in <code>en-IN</code> (<code>₹2,50,000</code>, <code>₹1.5L</code>).</li>
+          <li>Always format 24-hr timestamps in IST (<code>14:30 IST</code>).</li>
+          <li>Use standard plant shift names: <code>Shift A (06:00–14:00 IST)</code>, <code>Shift B (14:00–22:00 IST)</code>, <code>Shift C (22:00–06:00 IST)</code>.</li>
+        </ul>
+      </Sec>
+
+      <Sec n="§11" title="Responsive" note="Breakpoints and reflow">
+        <p>At container widths below 768px, the toolbar wraps below the station title and the 4-metric KPI strip reflows from a 4-column row into a 2×2 grid.</p>
+      </Sec>
+
+      <Sec n="§12" title="Anti-patterns" note="Common misuses">
+        <div className="two">
+          <div className="pane do">
+            <h3>Do</h3>
+            <ul>
+              <li>Always provide <code>tableData</code> for complete WCAG tabular accessibility parity.</li>
+              <li>Always ground station IDs in the real plant master (e.g. <code>CELL-CNC-04</code>, <code>CELL-SUB-33KV</code>).</li>
+            </ul>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <ul>
+              <li>Don't omit Upper/Lower Control Limits on mission-critical machine telemetry streams.</li>
+              <li>Don't place more than 4 metrics in the summary KPI strip to prevent visual clutter.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      <Sec n="§13" title="Implementation Notes" note="Composition and DOM structure">
+        <p>TelemetryConsole wraps children in a relative container and manages active view state locally or controlled via callbacks. It consumes design tokens directly (<code>--surface-card</code>, <code>--border-hairline</code>, <code>--action-solid</code>, <code>--font-mono</code>).</p>
+      </Sec>
+
+      <Sec n="§14" title="Developer Notes" note="Integration and framework usage">
+        <pre><code>{`import { TelemetryConsole, LineChart } from '@ds/react';
+
+<TelemetryConsole
+  stationEyebrow="Suryodaya Autocomp Ltd · Chakan Plant PL-04, Pune"
+  stationId="CELL-CNC-04-VIB"
+  title="CNC Spindle Vibration Telemetry"
+  kpis={[
+    { label: 'Current RMS', value: '2.14 mm/s', tone: 'success' },
+    { label: 'Trip Limit', value: '4.50 mm/s', tone: 'critical' },
+  ]}
+  tableData={telemetryData}
+>
+  <LineChart data={telemetryData} xKey="time" yKey="val" unit=" mm/s" />
+</TelemetryConsole>`}</code></pre>
+      </Sec>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

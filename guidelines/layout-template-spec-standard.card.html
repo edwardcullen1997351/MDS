@@ -1,0 +1,218 @@
+<!-- @dsCard group="Governance" viewport="980x760" name="Layout template spec standard" subtitle="The fourteen sections a Layout Template specification may contain — six unconditional, eight admitted only on their own test" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Layout Template specification standard</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:32px}
+.wrap{max-width:1000px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0;max-width:76ch;color:var(--text-secondary);text-wrap:pretty}
+.rules{margin:24px 0 12px;padding:20px 22px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:10px}
+.rules.ships{margin:12px 0 32px;border-left:2px solid var(--status-info-solid)}
+.rules h2{margin:0 0 2px;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+p{margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:80ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:30px 0 12px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding:20px 0;border-bottom:var(--border-hairline)}
+.sec:last-child{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:7px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.badge{align-self:flex-start;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);padding:2px 8px;border-radius:var(--radius-full);white-space:nowrap}
+.req{background:var(--status-success-soft);color:var(--text-success)}
+.cond{background:var(--surface-sunken);color:var(--text-secondary)}
+.body{display:flex;flex-direction:column;gap:10px;min-width:0}
+.test{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:baseline}
+.test .t{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+.test p{color:var(--text-secondary)}
+.never{color:var(--text-tertiary)}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:2px}
+.pair div{padding:12px 14px;background:var(--surface-sunken);border-radius:var(--radius-sm)}
+.pair h4{margin:0 0 4px;font-size:var(--text-xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-regular)}
+.sig{margin-top:36px;padding-top:12px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:12px}.test{grid-template-columns:1fr;gap:2px}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Governance · Authoring standard</span>
+<h1>Layout Template specification standard</h1>
+<p class="lede">A Layout Template is a standardized arrangement of regions for a whole screen or a major area of one — a list-detail work queue, a record page, a plant dashboard, a focused task screen. It owns the frame: which regions exist, what each is for, how space is divided between them, which region scrolls, and how the arrangement restructures as space changes. It owns nothing that sits inside a region. Its specification documents layout-level responsibilities only; every contract a placed component already carries is read in that component's spec. This page fixes the sections a Layout Template specification may contain, their order and stable numbering, and the test for admitting or omitting each one.</p>
+
+<div class="rules">
+  <h2>How to apply it</h2>
+  <ul>
+    <li><strong>Six sections are unconditional; eight are conditional.</strong> Purpose, Anatomy, Accessibility, Responsive, Anti-patterns and Implementation notes appear in every accepted Layout Template specification — a layout that cannot say what its regions are, how they behave in less space, what reading and focus order it creates, how it is got wrong, or what an implementation must preserve is not specified. The other eight appear only when the layout itself defines them.</li>
+    <li><strong>Numbers are stable identifiers, not positions.</strong> A section keeps its number whether or not the sections before it are present, so <code>§11 Responsive</code> means the same thing in every layout spec. Sections appear in ascending numeric order and are never renumbered.</li>
+    <li><strong>Omit rather than stub.</strong> An omitted section is absent — no heading, no "n/a", no restatement of a child contract. State the omissions and their reasons in one line at the foot of the spec, so a reader can tell a considered omission from an oversight.</li>
+    <li><strong>The single test for every conditional: does the layout define this, or does its content?</strong> A layout is keyboard-accessible because a <code>Table</code> and a <code>Button</code> inside it are; that earns no Keyboard section. A layout that moves focus into the detail region when a row is selected defines keyboard behavior, and earns one.</li>
+    <li><strong>Never repeat a specification a child owns entirely.</strong> No child states aggregated into a States section, no child props listed as Properties, no child size scale reprinted as Sizes, no child motion re-timed as Motion. If deleting the sentence loses nothing a reader could not get from the component spec, delete the sentence.</li>
+    <li><strong>Frame, not content.</strong> A layout spec describes regions, space, order, scroll and restructuring. It does not describe what belongs in a region beyond that region's purpose, and it never prescribes a specific component where any component of the right role would do.</li>
+    <li><strong>Layout, not pattern, not composite.</strong> If the answer is a contract about sequencing, commit, or recovery over time, it is an <a href="interaction-pattern-spec-standard.card.html">Interaction Pattern</a>. If it is a fixed assembly with a public API that should ship as one installable unit, it is a <a href="composite-spec-standard.card.html">Composite Component</a>. Layouts are arrangements of regions that products fill.</li>
+    <li><strong>Borderline calls are logged, not silently resolved.</strong> Where it is genuinely unclear whether a responsibility is layout-owned, include the section and say so in it. A named open question is a decision the system can take later; an omission is invisible.</li>
+  </ul>
+</div>
+
+<div class="rules ships">
+  <h2>What every layout template ships</h2>
+  <p>A layout is not accepted on prose alone. Three artifacts, all three required:</p>
+  <ul>
+    <li><strong>1 · The specification.</strong> <code>specs/layouts/&lt;Layout&gt;.spec.html</code> — the sections below, in ascending order, with omissions and their reasons stated at the foot, and a status stamp in the masthead (<code>status: frozen &lt;date&gt; · N open items</code>). It may only read <code>0 open items</code> when all three artifacts exist and every §03 property and §04 variant it declares is reachable in the reference implementation.</li>
+    <li><strong>2 · A reference implementation.</strong> <code>templates/&lt;layout-slug&gt;/&lt;Layout&gt;.dc.html</code>, named <code>Layout · &lt;Label&gt;</code> — one working screen built from this system's real components, <strong>set in a manufacturing ERP scenario</strong> at the fixed plant: <strong>Suryodaya Autocomp Ltd, Chakan plant (PL-04), Pune</strong> — rupees formatted <code>en-IN</code>, IST, <code>@suryodaya.co.in</code>, Indian names in plant roles, Indian suppliers. Regions must be filled with plant-real content at realistic volume, never lorem-grade filler: a layout demonstrated with three short rows hides every overflow and truncation decision it is supposed to standardize. Every declared region configuration and responsive form must be reachable — expose the breakpoint form and any optional region as tweaks rather than asking the reader to resize a window and guess. Consuming projects copy it as a starting point, so <strong>the demo apparatus must be separable</strong>: mark explanatory notes and region outlines <code>data-harness="remove-on-copy"</code>, give them a dashed border so they read as scaffolding, and group their tweaks under a section named as a harness.</li>
+    <li><strong>3 · A reference card.</strong> <code>specs/layouts/&lt;slug&gt;-reference.card.html</code>, <code>@dsCard group="Specs · Layouts"</code> — frames the live implementation beside its spec in the Design System tab, with links to the spec and to the standalone file. Cards inside <code>templates/</code> are not compiled and the template picker is a flat list, so this card is where anyone browsing the system meets the layout. The <code>Layout · </code> name prefix does the same work inside that flat picker: without it, a team cannot tell a frame from a pattern demonstration and will copy one expecting the other.</li>
+  </ul>
+  <p><strong>Freezing a layout.</strong> <code>frozen</code> and <code>0 open items</code> are two separate facts, and a dependency's open items are not the layout's. A layout may not read <code>0 open items</code> while a component or pattern it names carries an open item that bears on the frame's own contract — a measure the frame promises but a child cannot hold, an overflow the frame delegates and the child leaves undecided. Open items that do not touch the frame stay where they are: they are named limits inside their own frozen spec, and a layout adopting that component neither inherits them nor closes them. Using something in a layout never freezes it, and never resolves its open items by decree.</p>
+  <p><strong>Do/don't pairs</strong> live inside the section whose rule they demonstrate — never collected into a gallery at the end, where they lose the rule they belong to. Two to five per spec, each with a one-line statement of <em>why</em> beneath it. A pair for every rule is a spec nobody reads.</p>
+  <p>A layout with a specification and no reference implementation is a proposal, not a standard. Do not add it to the <a href="../specs/layouts/layouts.card.html">layouts index</a> until all three exist.</p>
+</div>
+
+<div class="groupline"><h2>Unconditional</h2><span>Present in every accepted Layout Template specification</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§01</span><h3>Purpose</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the kind of screen the layout serves, the work it supports, the information hierarchy it asserts, when it is the right frame, and — where the boundary is easily crossed — when a different layout should be chosen instead.</p>
+    <div class="test"><span class="t">Include</span><p>Always. Every accepted layout requires an explicit reason to exist and an explicit scope, including a named neighbour it is confused with.</p></div>
+    <p><strong>One fixed element.</strong> §01 closes with an <em>applicable interaction patterns</em> statement — <code>Primary:</code> the pattern the frame exists to host, or <code>none</code>, and <code>Supported:</code> the patterns it is known to carry, each linked. It belongs here because it is scope, not anatomy: it tells a reader whether their problem is the one this frame answers. A frame with no primary pattern says so explicitly rather than omitting the line.</p>
+    <div class="test"><span class="t">Omit</span><p class="never">Never.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§02</span><h3>Anatomy</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the regions the layout is made of: each region's name and purpose, whether it is required or optional, its ordering and nesting, the space and alignment rules between regions, which region owns scroll and which is fixed, and what may and may not be placed in each.</p>
+    <div class="test"><span class="t">Include</span><p>Always. The region set <em>is</em> the layout; a layout without a documented anatomy cannot be adopted consistently.</p></div>
+    <div class="test"><span class="t">Omit</span><p class="never">Never.</p></div>
+    <p><strong>Note, from practice.</strong> Name regions by role, not by position or by the component expected in them — <code>record header</code>, not <code>top bar</code>; <code>primary work region</code>, not <code>the Table</code>. Positional names go stale the moment §11 restructures the frame, and component names quietly promote one implementation into the standard.</p>
+    <div class="pair">
+      <div><h4>Do</h4><p>"The detail region owns its own scroll; the list region scrolls independently and its header stays pinned."</p></div>
+      <div><h4>Don't</h4><p>"The detail region contains a Table with sortable columns." Scroll ownership is layout-owned and nothing else can decide it; the Table's sorting is already specified in <code>Table</code>.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§08</span><h3>Accessibility</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines the accessibility contract the frame creates: landmark roles and their region mapping, accessible names for repeated or ambiguous regions, document heading order across regions, DOM reading order against visual order, skip and bypass affordances, and where focus goes when a region is replaced, revealed or collapsed.</p>
+    <div class="test"><span class="t">Include</span><p>Always. Landmarks, reading order and heading hierarchy are layout-owned by definition — no component inside a region can see the others to decide them.</p></div>
+    <div class="test"><span class="t">Omit</span><p class="never">Never.</p></div>
+    <p><strong>Note, from practice.</strong> Do not restate what placed components guarantee. State the ordering, naming and focus-transfer rules that only the frame can guarantee, and state them for every responsive form in §11 — a reading order that is correct at desk width and wrong on a tablet is an unmet contract, not a detail.</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§11</span><h3>Responsive</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines behavior as available space changes: the breakpoints or container thresholds that matter, what each region does at each — reflow, collapse, stack, become an overlay, disappear — the priority order in which regions yield space, the reading order that results, and which behavior is normative versus permitted.</p>
+    <div class="test"><span class="t">Include</span><p>Always. A layout is a claim about space; unspecified behavior in less space is the most common source of divergence between products adopting the same frame.</p></div>
+    <div class="test"><span class="t">Omit</span><p class="never">Never.</p></div>
+    <div class="pair">
+      <div><h4>§05 Sizes</h4><p>Standardized size classes the layout offers by choice — a comfortable and a compact frame the adopting team picks between.</p></div>
+      <div><h4>§11 Responsive</h4><p>What the frame does when space forces it. Never merge the two: one is a decision, the other a consequence.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§12</span><h3>Anti-patterns</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines recurring misuses of the frame: regions repurposed for content they were not meant to hold, layouts nested inside themselves, competing scroll containers, primary actions stranded outside the region that owns them, a different layout being the correct answer.</p>
+    <div class="test"><span class="t">Include</span><p>Always. Layouts are copied far more often than they are read, so every accepted layout names the misuses its own shape invites.</p></div>
+    <div class="test"><span class="t">Omit</span><p class="never">Never — but do not restate §01 in the negative. Each entry must name a misuse a reader could plausibly commit after reading §01 correctly.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§13</span><h3>Implementation notes</h3><span class="badge req">Always</span></div>
+  <div class="body">
+    <p>Defines what preserving the frame requires: the structural technique the contract depends on (grid or flow, named areas, container queries), minimum and maximum measures, overflow and min-size behavior, scroll containment and sticky ownership, stacking and overlay context, where the layout's own state lives, and the constraints a region imposes on whatever is placed in it.</p>
+    <div class="test"><span class="t">Include</span><p>Always. Layout contracts are broken by implementation choices more than by misreading — a region that cannot shrink below its content, a nested scroll container, an overlay trapped in the wrong stacking context.</p></div>
+    <div class="test"><span class="t">Omit</span><p class="never">Never.</p></div>
+  </div>
+</div>
+
+<div class="groupline"><h2>Conditional</h2><span>Admitted only when the layout itself defines them — not its contents</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§03</span><h3>Properties</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines configuration exposed at the layout level — the choices an adopting team makes when applying the frame: which optional regions are present, split ratio and resizability, region pinning, density inheritance, scroll ownership where it is genuinely selectable.</p>
+    <div class="test"><span class="t">Include</span><p>The layout has configuration whose options change the frame's own contract, and each option has a stated default and effect.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Configuration lives entirely on the components placed in regions. Never list child props here, and never invent knobs to populate the section.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§04</span><h3>Variants</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines genuinely different structural forms of the same layout — a list-detail frame with the detail beside the list versus stacked beneath it as a standing choice, not as a breakpoint consequence.</p>
+    <div class="test"><span class="t">Include</span><p>Two or more recurring forms serve the same purpose with materially different region structure, and both belong to this layout rather than to separate layouts.</p></div>
+    <div class="test"><span class="t">Omit</span><p>The differences are the responsive forms of §11, cosmetic, or product-specific. If a form has a different purpose and a different anatomy, it is a different layout — split it.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§05</span><h3>Sizes</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines standardized size or density classes at the frame level and the coordinated measures they imply — region widths, gutters, content measure, the padding scale regions inherit.</p>
+    <div class="test"><span class="t">Include</span><p>The layout offers named size classes that a team selects between and that no single component could determine.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Default. Space comes from the spacing and density tokens and from §11; component size scales are already specified. Do not reprint a child size ladder, and do not describe responsive consequences here.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§06</span><h3>States</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines states the frame itself holds: a region collapsed or expanded, a detail region empty because nothing is selected, a whole-frame loading or unavailable condition, a persisted split position.</p>
+    <div class="test"><span class="t">Include</span><p>The frame holds a state no component inside it holds, and that state changes which regions exist or how space is divided.</p></div>
+    <div class="test"><span class="t">Omit</span><p>The section would aggregate the states of placed components. A list of children's states is not a layout state model — and a region simply containing a component in its own empty or loading state is that component's business.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§07</span><h3>Keyboard</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines keyboard behavior the frame introduces: tab order across regions where it must differ from DOM order, region-level bypass or jump affordances, shortcuts that move focus between regions, focus transfer when a region collapses or is replaced.</p>
+    <div class="test"><span class="t">Include</span><p>The layout creates a keyboard relationship <em>between</em> regions, or takes responsibility for focus at a region boundary.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Default, and the most frequently mis-added section. That every component inside the frame is keyboard-operable is not a layout contract; do not add this section to say so.</p></div>
+    <div class="pair">
+      <div><h4>Include</h4><p>"Activating a row moves focus to the detail region's heading; collapsing the filter region returns focus to its toggle."</p></div>
+      <div><h4>Omit</h4><p>"Users can Tab through the filters and arrow through the table rows." Both are owned by <code>Field</code> and <code>Table</code>; repeating them creates a second source of truth that will drift.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§09</span><h3>Motion</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines motion for structural change: a region collapsing or expanding, a panel entering as an overlay, a split resizing, continuity across a responsive restructure, and reduced-motion behavior for each.</p>
+    <div class="test"><span class="t">Include</span><p>The frame's structure changes and the change needs to be legible — motion tells the user where a region went or where it came from.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Motion inside the frame is component-owned or decorative. Never re-time a child's transitions here; specify exact durations and easing only where the value is genuinely normative, otherwise name the motion token.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§10</span><h3>Content rules</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines constraints the frame places on content across regions: what a region's title must identify, terminology shared between regions, ordering and grouping of content within a region, content measure and length limits, truncation and overflow policy where the frame decides it.</p>
+    <div class="test"><span class="t">Include</span><p>The frame only reads correctly if content follows a rule — a detail region whose heading must name the selected record, a region title that must not repeat the page title.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Content is unconstrained by the frame. This section is not general editorial guidance, and not a place to specify the copy inside components.</p></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§14</span><h3>Developer notes</h3><span class="badge cond">Conditional</span></div>
+  <div class="body">
+    <p>Defines technical and integration contracts beyond the structural ones: region slot or composition API, routing and URL responsibilities where the frame owns them, persistence of layout state, data-loading boundaries per region, analytics and telemetry hooks.</p>
+    <div class="test"><span class="t">Include</span><p>Adopting teams need a technical contract the sections above do not give them.</p></div>
+    <div class="test"><span class="t">Omit</span><p>Nothing technical remains unsaid once §13 is written. Do not split §13 across both sections: structure and its preservation belong to §13, integration surfaces to §14.</p></div>
+  </div>
+</div>
+
+<p class="sig">Applies to: Layout Template specifications · Unconditional: §01, §02, §08, §11, §12, §13 · Conditional: §03, §04, §05, §06, §07, §09, §10, §14 · Sections are numbered §01–§14 and never renumbered · <a href="navigation-spec-standard.card.html">Navigation Systems</a> keep their own section set · <a href="interaction-pattern-spec-standard.card.html">Interaction Patterns</a> keep theirs · <a href="composite-spec-standard.card.html">Composite Components</a> keep theirs · <a href="core-spec-standard.card.html">Core Components</a> keep theirs · Written layouts: <a href="../specs/layouts/layouts.card.html">layouts index</a></p>
+</div>
+</body></html>

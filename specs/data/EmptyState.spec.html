@@ -1,0 +1,339 @@
+<!-- @dsCard group="Specs · Data" viewport="1080x760" name="EmptyState" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content, responsive, anti-patterns" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>EmptyState — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo.plain{background:var(--background-page);border:none;box-shadow:none;padding:0}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:5px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.grid2{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { EmptyState, Card, Button, Text, Alert, Table, Skeleton, SegmentedControl } = window.MeridianDesignSystem_962c43;
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{flex:1,minWidth:0}}>{children}</div></div>;
+
+function Spec(){
+const [empty,setEmpty] = React.useState('no-results');
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Data · Component specification</span>
+    <h1>EmptyState</h1>
+    <p className="lede">The absence of data, explained. Its premise, and the reason it takes a <code>variant</code> rather than just a message: <strong>"empty" is four unrelated situations</strong>, and treating them as one is the defect the component exists to prevent. It sits in <code>components/data/</code> beside <code>Skeleton</code> and <code>Table</code> because "no data" is the same question as "data loading", one step later.</p>
+    <div className="meta">
+      <span>components/data/EmptyState.jsx</span><span>window.MeridianDesignSystem_962c43.EmptyState</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 1 open item</span><span>revised: 1.20.1 — §12 after first real use</span><span>since: 1.20.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Four situations, one component, and the variant is load-bearing.">
+    <p>An EmptyState renders <em>after</em> data has arrived and turned out to hold nothing. That single sentence rules out its two most common misuses — it is not a loading state and it is not an error — and everything else in this spec follows from the observation that the remaining cases are not one case.</p>
+    <T cols={['Variant','The situation','What the user needs']} rows={[
+      ['first-run','Nothing exists yet, because nobody has made one.','A way to make the first one. Optimistic, and the only variant where a primary action is right.'],
+      ['no-results','Data EXISTS. The current query excludes it.','A way BACK — clear the filter, widen the range. Never "create your first": they have dozens and cannot see them.'],
+      ['cleared','Nothing here because the work is done.','Confirmation, and to be left alone. This is a success.'],
+      ['restricted','Nothing shown because this user may not see it.','An explanation, and at most a way to ask someone. There is nothing to create and nothing to clear.'],
+    ]}/>
+    <p className="warn"><strong>The <code>no-results</code> case is the one worth building a prop for.</strong> Showing "Create your first work order" to an operator who has just filtered to line 3 on a quiet shift is the single most common empty-state bug in any console, and it is a <em>content</em> bug — which means a component that takes only a message cannot prevent it. Naming the situation in the API makes the wrong copy visible in review, and the component warns when <code>no-results</code> ships without an action.</p>
+    <div className="demo plain grid2">
+      <Card title="Work orders" headingLevel={2} padding="none">
+        <EmptyState variant="first-run" title="No work orders yet" headingLevel={3}
+          actions={<Button variant="primary" iconLeft="plus">New work order</Button>}>
+          Orders scheduled for this line appear here as soon as planning releases them.
+        </EmptyState>
+      </Card>
+      <Card title="Work orders" headingLevel={2} padding="none">
+        <EmptyState variant="no-results" title="No work orders match this filter" headingLevel={3}
+          actions={<Button variant="secondary" iconLeft="x">Clear filters</Button>}>
+          Nothing on line 3 between 06:00 and 14:00.
+        </EmptyState>
+      </Card>
+    </div>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Explain that a region holds no data','EmptyState','This component.'],
+      ['Say that loading FAILED','Alert tone="danger"','An error has a cause and a retry. Routing it through here loses the tone, the retry and the assertive announcement — the component warns when the title reads like an error.'],
+      ['Show that data is on its way','Skeleton','A skeleton that never resolves is the commonest cause of an apparently hung console (Skeleton §12).'],
+      ['Say a list is empty inside a Table','Table’s own emptyMessage','One centred row that keeps the columns intact. Reach for EmptyState when the whole region is empty, not one table body (§11).'],
+      ['Say a search box matched nothing','Combobox / MultiCombobox emptyMessage','A row inside the popover. A 200px empty state inside a dropdown is absurd.'],
+      ['Onboard a user through several steps','A real onboarding flow','An empty state is one screen with one action, not a checklist.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Five parts, four optional, and no surface of its own.">
+    <div className="demo plain">
+      <Card title="Alarms" headingLevel={2} padding="none" style={{maxWidth:520}}>
+        <EmptyState variant="first-run" title="No alarms configured" headingLevel={3}
+          actions={<><Button variant="primary" iconLeft="plus">Add alarm</Button><Button variant="secondary">Import</Button></>}
+          hint="Alarms can also be defined in the line’s YAML profile.">
+          An alarm watches one tag and raises a notice when it crosses a threshold.
+        </EmptyState>
+      </Card>
+    </div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Glyph</strong> — the variant's own, at <code>--icon-lg</code> (22px), in <code>--empty-state-icon</code>. <code>aria-hidden</code>, always: the title says the same thing in words. <strong>There is no illustration slot</strong> (§12).</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Title</strong> — a real heading at <code>headingLevel</code>, <code>text-wrap: balance</code>. The one part that is always read, and the only required prop.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Body</strong> — one or two sentences, capped at <code>--empty-state-measure</code> (46ch). The cap is a token because centred prose past ~50ch stops being scannable however wide the region is.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Actions</strong> — Buttons, wrapping rather than shrinking. One primary at most.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Hint</strong> — a shortcut or a doc link, <em>below</em> the actions. Above them it pushes the thing the user came for further down the box.</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>No background and no border</strong> by default. It is almost always inside a <code>Card</code> or a <code>Table</code> region that has both, and a bordered box inside a bordered box is how this component is most often got wrong. <code>bordered</code> is opt-in.</span></div>
+    </div>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Twelve. The first one carries the design.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['variant','first-run | no-results | cleared | restricted','first-run','Names the SITUATION, not the styling. Sets the glyph and the warnings (§13).'],
+      ['title','ReactNode','—','Required in practice — omitting it warns. A glyph over a sentence gives nothing to scan.'],
+      ['children','ReactNode','—','One or two sentences, capped at 46ch.'],
+      ['hint','ReactNode','—','Shortcut or doc link, rendered BELOW the actions.'],
+      ['icon','string | false','the variant’s','Overrides the glyph; false removes it. Capped at 22px.'],
+      ['actions','ReactNode','—','Buttons. One primary at most. cleared with actions warns.'],
+      ['headingLevel','1–6','3','Match the surrounding outline — a card body under an h2 wants 3.'],
+      ['size','sm | md | lg','md','Padding, min-height and type. sm inside a card, lg for a full page.'],
+      ['align','center | start','center','start for a narrow panel or drawer, where centred text reads as an error page.'],
+      ['bordered','boolean','false','Sunken surface + hairline. Only when NOT already inside a bordered container.'],
+      ['live','off | polite','off','polite ONLY when this replaces content because of something the user just did (§08).'],
+      ['style','CSSProperties','—','On the wrapper.'],
+    ]}/>
+    <p><strong><code>variant</code> is not a tone.</strong> It does not choose a colour ramp — three of the four render identically apart from the glyph. What it changes is what the component <em>expects</em>: <code>no-results</code> without actions warns, <code>cleared</code> with actions warns, <code>restricted</code> with <code>live</code> warns. The prop exists to make the content decision reviewable, not to paint.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Four situations. One of them is a success.">
+    <div className="demo plain grid2">
+      <Card padding="none" title="first-run" headingLevel={2}>
+        <EmptyState variant="first-run" size="sm" title="No saved views" actions={<Button variant="primary" size="sm" iconLeft="plus">New view</Button>}>A saved view remembers a filter and a sort.</EmptyState>
+      </Card>
+      <Card padding="none" title="no-results" headingLevel={2}>
+        <EmptyState variant="no-results" size="sm" title="No matches for “changeover”" actions={<Button variant="secondary" size="sm">Clear search</Button>}>Try a tag or a work-order number.</EmptyState>
+      </Card>
+      <Card padding="none" title="cleared" headingLevel={2}>
+        <EmptyState variant="cleared" size="sm" title="No open alarms">Everything acknowledged this shift.</EmptyState>
+      </Card>
+      <Card padding="none" title="restricted" headingLevel={2}>
+        <EmptyState variant="restricted" size="sm" title="You cannot view the audit log" actions={<Button variant="link" size="sm">Request access</Button>}>It needs the Compliance role.</EmptyState>
+      </Card>
+    </div>
+    <ul>
+      <li><strong><code>cleared</code> is the one that gets designed wrong.</strong> An operator looking at "No open alarms" has achieved something. It takes the system's only coloured glyph — <code>--empty-state-icon-positive</code>, a success tick — because without it the layout is indistinguishable from a failure, and the tick is decorative because the title already says it. It takes <em>no actions</em>: a call to action turns an achievement into a task, and the component warns.</li>
+      <li><strong><code>restricted</code> is not an error either.</strong> The user is not blocked by a fault, so there is nothing to retry. It is also the one variant that must never announce (§08) — a permission boundary is a fact about the page, not an event.</li>
+      <li><strong>There is no <code>error</code> variant,</strong> deliberately. A failure needs a cause, a retry and an assertive announcement; that is <code>Alert tone="danger"</code>, and offering the variant here would guarantee errors shipped as silent grey boxes.</li>
+    </ul>
+    <div className="demo plain">
+      <Alert tone="danger" title="Could not load work orders" action={<Button variant="secondary" size="sm" iconLeft="refresh-cw">Retry</Button>} live="polite">The scheduling service did not respond. This is an Alert, not an EmptyState.</Alert>
+    </div>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Three, chosen by the region rather than by taste.">
+    <div className="demo plain col">
+      <Row label="sm · 120px"><Card padding="none"><EmptyState variant="cleared" size="sm" title="No open alarms" /></Card></Row>
+      <Row label="md · 200px"><Card padding="none"><EmptyState variant="no-results" size="md" title="No work orders match this filter" actions={<Button variant="secondary" size="sm">Clear filters</Button>}>Nothing on line 3 in this range.</EmptyState></Card></Row>
+      <Row label="lg · 280px"><Card padding="none"><EmptyState variant="first-run" size="lg" title="Nothing scheduled yet" actions={<Button variant="primary">Create a schedule</Button>}>Releases from planning appear here.</EmptyState></Card></Row>
+    </div>
+    <T cols={['Size','Min height','Use it for']} rows={[
+      ['sm','120px','A card body, a panel, a sidebar section, a dashboard tile. Glyph drops to 16px and the title to --text-sm.'],
+      ['md','200px','A page region: a table’s container, a tab panel. The default.'],
+      ['lg','280px','A full page or a genuine first run, where the empty state IS the screen.'],
+    ]}/>
+    <p><strong><code>min-height</code>, never <code>height</code>, and never a viewport unit.</strong> The region decides how tall it is; a <code>vh</code> floor breaks the moment the same component appears inside a Card, a Drawer or a 200px dashboard tile — and on a phone in landscape it produces an empty state taller than the screen.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="It has almost none, and that is the point.">
+    <p>An EmptyState is not a control. It has no hover, no focus, no selected, no disabled — the only interactive things in it are the Buttons, which carry their own states. What it <em>does</em> have is a position in a sequence of region states, and getting that sequence wrong is what makes consoles look broken.</p>
+    <T cols={['Region state','What renders','Note']} rows={[
+      ['Loading','Skeleton rows in the real geometry; aria-busy on the region.','NOT an empty state. Skeleton §06.'],
+      ['Loaded, has data','The content.','—'],
+      ['Loaded, empty, nothing ever existed','EmptyState variant="first-run"','live="off" — it was there when the region first rendered.'],
+      ['Loaded, empty, a filter excludes it','EmptyState variant="no-results" live="polite"','The one case that announces: content the user was looking at has been replaced by this.'],
+      ['Loaded, empty because the work is done','EmptyState variant="cleared"','A success. No actions.'],
+      ['Loaded, empty because of permissions','EmptyState variant="restricted"','Never announces.'],
+      ['Failed','Alert tone="danger" with a retry','Not this component (§04).'],
+    ]}/>
+    <div className="demo col">
+      <div style={{display:'flex',gap:10,flexWrap:'wrap',alignItems:'center'}}>
+        <SegmentedControl label="Region state" labelVisible size="sm" value={empty} onChange={setEmpty}
+          options={[{value:'loading',label:'Loading'},{value:'no-results',label:'Filtered'},{value:'cleared',label:'Cleared'},{value:'failed',label:'Failed'}]} />
+      </div>
+      <Card title="Work orders" headingLevel={2} padding="none">
+        {empty==='loading' && <div style={{padding:'var(--space-4)'}}><Skeleton lines={4} /></div>}
+        {empty==='no-results' && <EmptyState variant="no-results" title="No work orders match this filter" live="polite" actions={<Button variant="secondary" size="sm" iconLeft="x">Clear filters</Button>}>Nothing on line 3 between 06:00 and 14:00.</EmptyState>}
+        {empty==='cleared' && <EmptyState variant="cleared" title="All work orders closed">Nothing open on this line for the current shift.</EmptyState>}
+        {empty==='failed' && <div style={{padding:'var(--space-4)'}}><Alert tone="danger" title="Could not load work orders" action={<Button variant="secondary" size="sm" iconLeft="refresh-cw">Retry</Button>}>The scheduling service did not respond.</Alert></div>}
+      </Card>
+      <Text size="xs" tone="tertiary">Four states, four components. The failure mode this sequence prevents is a skeleton or an empty state standing in for an error.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="None of its own — and that is a decision, not an omission.">
+    <T cols={['Key','Does','Why']} rows={[
+      ['Tab','Reaches the actions in DOM order, and nothing else.','The glyph, title, body and hint are static content. Nothing else in the box is focusable, because nothing else does anything.'],
+      ['Enter · Space','Activate whichever Button has focus.','Button’s contract, not this component’s.'],
+      ['—','The container is NOT focusable and has no tabindex.','A tabindex="0" on a decorative box adds a stop that announces a group and offers no action — pure friction for keyboard users.'],
+    ]}/>
+    <p className="warn"><strong>The real keyboard question is focus after a filter empties the region, and the answer is: do not move it.</strong> The operator's focus is in the filter control they just changed, which is exactly where they need it to change it back. Moving focus to the empty state — or to its "Clear filters" button — steals the caret mid-task and makes the next keystroke go somewhere unexpected. The announcement (§08) is what tells them the region changed; focus stays put.</p>
+    <p>The corollary matters when the empty state <em>replaces</em> a focused element: if focus was inside the region that just emptied — a row, a checkbox in a table body — the browser drops it to <code>&lt;body&gt;</code> and the next Tab restarts from the top of the document. Move focus to the region's container, or to the filter that caused it, before rendering the empty state.</p>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="A heading, a hidden glyph, and one announcement rule.">
+    <ul>
+      <li><strong>The title is a real heading</strong> at <code>headingLevel</code>, so it appears in a screen reader's heading list and an operator can jump to it. It defaults to <code>3</code> — a card body under an <code>h2</code> — and it must be set to match the outline. Card had exactly this defect until 1.15.0: a hard-wired <code>h3</code> with no way to correct it.</li>
+      <li><strong>The glyph is always <code>aria-hidden</code>.</strong> It is decorative in every variant, including <code>cleared</code>, because the title states the same fact in words. An icon with a label here would announce the meaning twice.</li>
+      <li><strong><code>live</code> is off by default,</strong> and the rule is Alert's exactly: an empty state present when the region first rendered <em>has already been read in document order</em>, and announcing it interrupts to repeat what the user just heard. Only one that APPEARS in response to a user action needs <code>polite</code>.</li>
+      <li><strong>Polite, never assertive, and never <code>role="alert"</code>.</strong> Nothing here is urgent. An assertive interruption to say a filter matched nothing is the noise the live-region rules exist to prevent.</li>
+      <li><strong><code>restricted</code> must not announce.</strong> A permission boundary is a fact about the page rather than an event, so the component warns when it is given <code>live</code>.</li>
+      <li><strong>Contrast.</strong> Title at <code>--text-primary</code>, body at <code>--text-secondary</code>, hint at <code>--text-tertiary</code> — all cleared against both <code>--surface-card</code> and <code>--surface-sunken</code>, which is the pair <code>bordered</code> switches between. The glyph is decorative and exempt, but it is still <code>--text-tertiary</code> rather than lighter, because an invisible glyph is a layout hole.</li>
+      <li><strong>The container is a plain <code>group</code></strong> when not live, not a <code>region</code>: an unnamed region buys nothing and some screen readers announce it as "region" with no indication of what it holds — the Card §1.15.0 finding, applied a second time.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="None. Not a stylistic preference — a legibility one.">
+    <T cols={['Moment','Motion','Why']} rows={[
+      ['Appearing after a filter change','NONE.','It is the result of a query, and data never animates in — Table §06. A box that fades in after every keystroke turns a filter into a strobe.'],
+      ['Appearing on first load','NONE.','It was there before the user looked.'],
+      ['Replacing a skeleton','NONE.','A cross-fade between a placeholder and "there is nothing here" reads as content that failed to arrive.'],
+      ['Leaving, when data arrives','NONE.','The content replaces it. Animating the exit delays the thing the user wanted.'],
+      ['The glyph','NONE. No pulse, no float, no bounce.','A moving glyph in a region that holds nothing is the most decorative pixel in the system, and it never stops.'],
+    ]}/>
+    <p><strong>One of two components in Meridian with an empty motion table</strong> — <code>Avatar</code> is the other, added 1.21.0 — and the shared reason is worth stating once: <em>a component that renders in bulk cannot afford motion.</em> An empty state appears <em>because</em> a query returned nothing, which in a filter-as-you-type field is once per keystroke; an avatar appears once per row. Any animation multiplies by the number of instances, and the system has no transition that survives being multiplied by forty. The transition tokens are available and none of them is used here. <em>Corrected 1.21.0: this section claimed to be the only such table.</em></p>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="The title says what is true; the body says what to do about it.">
+    <T cols={['Do','Not','Why']} rows={[
+      ['“No work orders match this filter”','“No results”','Name the noun and the cause. "No results" is true of every empty region in the product.'],
+      ['“No work orders yet”','“It’s empty in here!”','A console is a place of work. Whimsy in a plant interface reads as a system that is not serious about a stopped line.'],
+      ['“No open alarms”','“Nothing to see here”','The second one hides the good news it is delivering.'],
+      ['“Try widening the date range.”','“Adjust your search criteria to see results.”','Name the specific thing to change. Generic advice is the same as no advice.'],
+      ['“You cannot view the audit log”','“Access denied”','Say what the thing is. "Denied" describes the system’s decision, not the user’s situation.'],
+      ['“It needs the Compliance role.”','“Contact your administrator.”','Say the requirement, so they can ask for the right thing.'],
+    ]}/>
+    <ul>
+      <li><strong>Title: sentence case, no full stop, no exclamation mark.</strong> Body: complete sentences with full stops. Same rule as the rest of the system.</li>
+      <li><strong>Never "your first" outside <code>first-run</code>.</strong> "Create your first work order" on a filtered view tells an operator with four hundred orders that the system has lost them.</li>
+      <li><strong>The action label repeats the noun:</strong> "New work order", not "Create" or "Get started". A button that says "Get started" in a console is a button whose outcome nobody can predict.</li>
+      <li><strong>No emoji, no exclamation, no "Oops".</strong> The brand is Swiss-technical; an empty state is the one screen where product teams most often forget that.</li>
+      <li><strong>Say what will fill it,</strong> in the first-run body: "Orders scheduled for this line appear here as soon as planning releases them." That sentence is the only thing on the screen that teaches the user what the region is for.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="It reflows because it never sets a width. Three rules keep that true.">
+    <ul>
+      <li><strong>No width, ever — only a measure on the prose.</strong> The component is <code>display: flex; flex-direction: column</code> with <code>min-width: 0</code>, so it is as wide as its region and no wider. The 46ch cap applies to the body and hint only, and it is a <code>ch</code> unit so it tracks the font rather than the viewport.</li>
+      <li><strong>Actions wrap; they never shrink.</strong> The action row is <code>flex-wrap: wrap</code>, so two buttons in a 280px drawer become two rows at full label width rather than two ellipses. This is the same rule MultiCombobox's tokens follow, and for the same reason: a control that shrinks below its label has stopped being a control.</li>
+      <li><strong><code>min-height</code> only, and no viewport units</strong> (§05). The commonest responsive break in an empty state is <code>min-height: 60vh</code>, which is fine on the design's laptop and taller than the screen on a phone in landscape.</li>
+      <li><strong><code>align="start"</code> below roughly 360px of region width.</strong> Centred text needs symmetric slack to read as centred; in a narrow panel it reads as an error page. The component does not switch automatically — a container query would be the honest mechanism and the system does not use them yet (§14) — so the caller passes it, and a Drawer or a sidebar section should pass it as a matter of course.</li>
+      <li><strong>Density-aware without doing anything.</strong> The padding, gap and type all resolve through density-scoped tokens, so a compact console gets a tighter empty state with no prop change.</li>
+    </ul>
+    <div className="demo plain col">
+      <Row label="360px · start"><div style={{width:300,border:'var(--border-hairline)',borderRadius:'var(--radius-md)',background:'var(--surface-card)'}}><EmptyState variant="no-results" size="sm" align="start" title="No matches" actions={<><Button variant="secondary" size="sm">Clear filters</Button><Button variant="ghost" size="sm">Widen range</Button></>}>Nothing on line 3 in this range.</EmptyState></div></Row>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns" note="Nine, and the first is the reason the component has no illustration slot.">
+    <div className="two">
+      <div className="pane dont"><h3>Structural</h3><ul>
+        <li><strong>A 120px illustration.</strong> There is no slot for one and the glyph is capped at 22px, the system’s ceiling for an icon on a surface (Icon §05). A drawing needs an asset pipeline this project does not have, and it would put a different design language on the emptiest screen in the product.</li>
+        <li><strong><code>bordered</code> inside a Card.</strong> A bordered box inside a bordered box, with a sunken fill inside a card fill. The default is transparent precisely so the common case is correct without a prop.</li>
+        <li><strong>An empty state rendered <em>beside</em> a Table instead of inside its <code>emptyMessage</code>.</strong> Replacing the whole table destroys the column headers the operator was reading. <code>emptyMessage</code> takes a ReactNode, so the two compose: the slot keeps the table’s chrome, and the EmptyState in it supplies the heading, the sentence and the way back that a plain string cannot carry. Use <code>size="sm"</code> and leave <code>bordered</code> off — it is inside a Card and a table body already. <em>Corrected 1.20.1 after first real use in <code>templates/console</code>; the original wording read as either/or.</em></li>
+        <li><strong>Inside a Combobox, a Menu or a Toast.</strong> All three have their own empty rows, and none has 200px to give.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Behavioural &amp; content</h3><ul>
+        <li><strong>“Create your first…” on a filtered view.</strong> The defect the <code>variant</code> prop exists to make visible (§01).</li>
+        <li><strong>An error rendered as an empty state.</strong> Loses the cause, the retry and the announcement. The component warns on titles that begin “Error”, “Failed” or “Could not”.</li>
+        <li><strong>A spinner or a skeleton inside it.</strong> It renders only once loading is over; a placeholder here says something is still coming.</li>
+        <li><strong>A dismissible empty state.</strong> Dismissing it leaves a blank region — the condition has not changed, so there is nothing to dismiss.</li>
+        <li><strong>Focus moved to it on appearance.</strong> Steals the caret out of the filter the operator is using (§07).</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="Six decisions in the file, and the tokens.">
+    <ul>
+      <li><strong>Transparent by default is the whole layout decision.</strong> No background, no border, no radius unless <code>bordered</code>. It makes the common case — inside a Card or a Table region — correct with no props, and it is why the component owns a <code>--empty-state-background</code> token whose value is <code>transparent</code> rather than owning no token at all: a consumer retargeting it needs a name to retarget.</li>
+      <li><strong>Five console warnings, all about the SITUATION rather than the styling:</strong> no title; <code>no-results</code> with no actions (a dead end); <code>cleared</code> with actions (an achievement turned into a task); <code>restricted</code> with <code>live</code> (announcing a non-event); and a title matching <code>/^(error|failed|could not|couldn)/i</code>, which is an Alert wearing this component’s clothes.</li>
+      <li><strong><code>headingLevel</code> from the start,</strong> because Card shipped without it and produced invalid heading hierarchies for fifteen minors. Clamped 1–6.</li>
+      <li><strong>The <code>live</code> contract is Alert’s, verbatim</strong> — <code>role="group"</code> and no <code>aria-live</code> when off, <code>role="status"</code> and <code>aria-live="polite"</code> when on. Two components with the same announcement question should not have two answers.</li>
+      <li><strong>The measure is a <code>ch</code> token, not a pixel max-width,</strong> so it tracks the font size through density scopes instead of getting tighter as the type gets smaller.</li>
+      <li><strong>The hint renders after the actions in DOM order,</strong> which is also the tab and reading order: the doc link is genuinely the last thing, and putting it above the buttons in source would announce it before the action it qualifies.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--empty-state-background','--empty-state-background-bordered','--empty-state-border','--empty-state-radius','--empty-state-padding-sm','--empty-state-padding-md','--empty-state-padding-lg','--empty-state-gap','--empty-state-gap-actions','--empty-state-min-height-sm','--empty-state-min-height-md','--empty-state-min-height-lg','--empty-state-measure','--empty-state-icon','--empty-state-icon-positive','--empty-state-title-text','--empty-state-body-text','--empty-state-hint-text'].map(t=><span key={t}>{t}</span>)}
+    </div>
+    <p><strong>Eighteen tokens, and two are unusual enough to name.</strong> <code>--empty-state-measure</code> is the only <code>ch</code>-valued token in the system — justified because the thing being constrained is a line of prose, which is what <code>ch</code> measures. <code>--empty-state-icon-positive</code> is the only place a component tints a glyph by meaning rather than by state; it exists so <code>cleared</code> does not read as a failure, and it is safe because the tick is decorative and the title carries the message.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { EmptyState, Button } from '@meridian/ds';
+
+// The full region sequence — four states, four components
+if (loading)      return <Skeleton lines={4} />;
+if (error)        return <Alert tone="danger" title="Could not load work orders"
+                           action={<Button size="sm" iconLeft="refresh-cw" onClick={retry}>Retry</Button>} />;
+if (!rows.length) return filtered
+  ? <EmptyState variant="no-results" live="polite"
+      title="No work orders match this filter"
+      actions={<Button variant="secondary" onClick={clearFilters}>Clear filters</Button>}>
+      Try widening the date range.
+    </EmptyState>
+  : <EmptyState variant="first-run"
+      title="No work orders yet"
+      actions={<Button variant="primary" iconLeft="plus" onClick={create}>New work order</Button>}>
+      Orders scheduled for this line appear here.
+    </EmptyState>;
+return <Table rows={rows} columns={cols} />;`}</pre>
+    <ul>
+      <li><strong>Testing.</strong> Assert the heading first: <code>getByRole('heading', {'{ level: 3, name: /no work orders/i }'})</code> — that is the component’s accessibility contract. Then that the glyph is not in the accessible tree; that <code>live="polite"</code> yields <code>role="status"</code> and the default yields no <code>aria-live</code>; that <code>variant="no-results"</code> renders a way back; and that the filtered and unfiltered empties render <em>different</em> copy — a snapshot test that passes for both has tested nothing.</li>
+      <li><strong>Lint.</strong> Flag <code>bordered</code> on an EmptyState inside a <code>Card</code>; a <code>variant="no-results"</code> with no <code>actions</code>; a title matching <code>/first/i</code> on any variant but <code>first-run</code>; an <code>img</code> or <code>svg</code> child (the illustration anti-pattern, §12); <code>onDismiss</code> or <code>tabIndex</code> passed through the spread; and any <code>minHeight</code> in <code>style</code> using <code>vh</code>.</li>
+      <li><strong>Frozen 5 Sep 2026.</strong> API closed: <code>variant</code>, <code>title</code>, <code>children</code>, <code>hint</code>, <code>icon</code>, <code>actions</code>, <code>headingLevel</code>, <code>size</code>, <code>align</code>, <code>bordered</code>, <code>live</code>, <code>style</code>, plus native div attributes.</li>
+      <li><strong>Additive.</strong> Nothing changes for existing call sites. The two comboboxes keep their own inline empties — one row inside a popover is not a region. <code>Table</code> is different: its <code>emptyMessage</code> is a ReactNode slot, and the intended pattern is an EmptyState <em>inside</em> it (§12). <code>Skeleton</code> §14 has referenced <code>&lt;EmptyState&gt;</code> in its example since 1.12.0; that reference now resolves.</li>
+      <li><strong>Open — <code>align</code> should be automatic below ~360px.</strong> The honest mechanism is a container query, and no component in the system uses one yet; adding the first is a system-wide decision about a browser-support floor, not an EmptyState decision. Until then the caller passes <code>align="start"</code> in narrow panels, and the lint rule cannot catch a missing one.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

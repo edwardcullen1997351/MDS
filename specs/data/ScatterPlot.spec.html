@@ -1,0 +1,499 @@
+<!-- @dsCard group="Specs · Data" viewport="1080x760" name="ScatterPlot" subtitle="Full specification — purpose, anatomy, props, true area sqrt scaling, WCAG 1.4.1 glyphs, regression overlays, keyboard, a11y, anti-patterns" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ScatterPlot Specification — Meridian Design System</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <style>
+    body {
+      margin: 0;
+      background: var(--background-page);
+      padding: 32px;
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+    .spec-container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .spec-header {
+      border-bottom: 2px solid var(--border-strong);
+      padding-bottom: 20px;
+      margin-bottom: 32px;
+    }
+    .spec-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: var(--weight-bold);
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: var(--radius-xs);
+      background: var(--surface-sunken);
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .spec-badge--frozen {
+      background: var(--status-success-bg, #ecfdf5);
+      color: var(--status-success-text, #065f46);
+      border: 1px solid var(--status-success-border, #a7f3d0);
+    }
+    .spec-title {
+      font-size: var(--text-3xl);
+      font-weight: var(--weight-bold);
+      margin: 0 0 8px 0;
+      letter-spacing: var(--tracking-tight);
+    }
+    .spec-meta {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .spec-section {
+      margin-bottom: 48px;
+    }
+    .spec-section-title {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      border-bottom: 1px solid var(--border-hairline);
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-xs);
+      margin: 16px 0;
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .spec-table th, .spec-table td {
+      padding: 10px 14px;
+      border-bottom: var(--border-hairline);
+      text-align: left;
+    }
+    .spec-table th {
+      background: var(--surface-sunken);
+      color: var(--text-secondary);
+      font-weight: var(--weight-semibold);
+    }
+    .spec-table code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--surface-sunken);
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    .spec-callout {
+      background: var(--surface-card);
+      border-left: 3px solid var(--action-solid);
+      padding: 14px 18px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 16px 0;
+      font-size: var(--text-sm);
+    }
+    .spec-callout--critical {
+      border-left-color: var(--status-critical-solid, #ef4444);
+      background: var(--status-critical-bg, #fef2f2);
+    }
+    .spec-callout--warning {
+      border-left-color: var(--status-warning-solid, #f59e0b);
+      background: var(--status-warning-bg, #fffbeb);
+    }
+    .anatomy-diagram {
+      background: var(--surface-sunken);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="spec-container">
+
+    <!-- Spec Header -->
+    <header class="spec-header">
+      <div class="spec-badge spec-badge--frozen">Status: Frozen · 0 Open Items</div>
+      <h1 class="spec-title">ScatterPlot Specification</h1>
+      <div class="spec-meta">
+        <span>Component: <code>ScatterPlot</code></span>
+        <span>Package: <code>components/data/ScatterPlot.jsx</code></span>
+        <span>Infrastructure: <code>components/data/viz-core.js</code></span>
+        <span>Standard: <code>guidelines/data-visualization-spec-standard.card.html</code></span>
+        <span>WCAG: Level AA Compliant</span>
+      </div>
+    </header>
+
+    <!-- §01 Purpose & Domain Contract -->
+    <section class="spec-section" id="purpose">
+      <h2 class="spec-section-title">§01 Purpose & Domain Contract</h2>
+      <p>
+        <strong>ScatterPlot</strong> reveals observation-level relationships, distributions, associations, clustering, outliers, and multivariate structures between two or more quantitative/ordinal variables.
+      </p>
+      <div class="spec-callout">
+        <strong>Domain Contract:</strong>
+        <ul>
+          <li><strong>Observation-Level Records:</strong> Represents discrete records containing at least two continuous or ordinal dimensions ($x, y$).</li>
+          <li><strong>When to Use:</strong> Use when detecting correlation strength, clustering anomalies (e.g. bearing wear vibration clusters), multivariate distributions (stroke rate vs pressure vs temperature), or sequential process phase cycles (connected trajectory).</li>
+          <li><strong>When NOT to Use:</strong> Do NOT use for single aggregated category comparisons (use <strong>BarChart</strong>) or pure continuous time-series trajectories where individual observations are not the primary analytical entity (use <strong>LineChart</strong>).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- §02 Anatomy & Layer Stacking -->
+    <section class="spec-section" id="anatomy">
+      <h2 class="spec-section-title">§02 Anatomy & Layer Stacking</h2>
+      <div class="anatomy-diagram">
++-----------------------------------------------------------------------------------+
+|  ScatterPlot Container (role="region", aria-roledescription="scatter plot")       |
+|                                                                                   |
+|  [Header]: Title, Subtitle, [Table Modal Trigger (Alt+F11)]                       |
+|  [Legend]: Category Isolation Swatches (Color Hue + Shape Glyph)                  |
+|                                                                                   |
+|  +-- SVG Plot Region (Layer 0: Background) ------------------------------------+  |
+|  |  +-- Layer 1: Statistical Quadrant Dividers & Tolerance Gridlines ------+   |  |
+|  |  |   Reference Thresholds, Upper/Lower Control Limits (UCL/LCL)         |   |  |
+|  |  +----------------------------------------------------------------------+   |  |
+|  |  +-- Layer 1b: 2D Density Bins (Binned-Density Mode) -------------------+   |  |
+|  |  +-- Layer 2: Trajectory Line (Connected Scatter Mode) -----------------+   |  |
+|  |  +-- Layer 2b: Linear Regression Trendline ($y = mx + c$, $R^2$ label) -+   |  |
+|  |  +-- Layer 3: Observation Point Marks (renderPointSymbol) --------------+   |  |
+|  |  |   [Glyph Shapes: circle, square, diamond, triangle, cross, star]     |   |  |
+|  |  |   [Mark Size Scaling: True Sqrt Area Proportionality createAreaScale]|   |  |
+|  |  +----------------------------------------------------------------------+   |  |
+|  |  +-- Layer 4: Active Observation Focus Halo Ring -----------------------+   |  |
+|  |  +-- Layer 5: Formatted X and Y Numerical / Logarithmic / Band Axes ----+   |  |
+|  +-----------------------------------------------------------------------------+  |
+|                                                                                   |
+|  [Layer 5 (HTML)]: Pinned Observation Inspection Tooltip (X, Y, Size, Category)   |
+|  [Accessible Modal]: Semantic HTML Observation Records Table (Alt+F11)            |
+|  [Screen Reader Live Region]: aria-live="polite" Speech Announcement Output       |
++-----------------------------------------------------------------------------------+
+      </div>
+    </section>
+
+    <!-- §03 Properties & Data Model -->
+    <section class="spec-section" id="props">
+      <h2 class="spec-section-title">§03 Properties & Data Model</h2>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>data</code></td>
+            <td><code>Array&lt;Record&lt;string, any&gt;&gt;</code></td>
+            <td><code>[]</code></td>
+            <td>Array of observation records containing $x$, $y$, and optional size/category fields.</td>
+          </tr>
+          <tr>
+            <td><code>xKey</code></td>
+            <td><code>string</code></td>
+            <td><code>'x'</code></td>
+            <td>Data field mapped to horizontal position.</td>
+          </tr>
+          <tr>
+            <td><code>yKey</code></td>
+            <td><code>string</code></td>
+            <td><code>'y'</code></td>
+            <td>Data field mapped to vertical position.</td>
+          </tr>
+          <tr>
+            <td><code>sizeKey</code></td>
+            <td><code>string | null</code></td>
+            <td><code>null</code></td>
+            <td>Quantitative field mapped to point mark area using square-root scaling (Bubble mode).</td>
+          </tr>
+          <tr>
+            <td><code>categoryKey</code></td>
+            <td><code>string | null</code></td>
+            <td><code>null</code></td>
+            <td>Categorical field mapped to color hues and shape glyphs.</td>
+          </tr>
+          <tr>
+            <td><code>variant</code></td>
+            <td><code>'scatter' | 'bubble' | 'connected' | 'jittered' | 'binned-density'</code></td>
+            <td><code>'scatter'</code></td>
+            <td>Rendering variant governing mark layout and aggregation behavior.</td>
+          </tr>
+          <tr>
+            <td><code>showTrendline</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>Calculates and renders ordinary least squares linear regression line and $R^2$ fit value.</td>
+          </tr>
+          <tr>
+            <td><code>quadrantLines</code></td>
+            <td><code>ScatterQuadrantLines | null</code></td>
+            <td><code>null</code></td>
+            <td>Renders orthogonal quadrant reference crosshairs across plot space.</td>
+          </tr>
+          <tr>
+            <td><code>minRadius</code></td>
+            <td><code>number</code></td>
+            <td><code>4</code></td>
+            <td>Minimum mark radius in pixels for lowest $z$ magnitude.</td>
+          </tr>
+          <tr>
+            <td><code>maxRadius</code></td>
+            <td><code>number</code></td>
+            <td><code>22</code></td>
+            <td>Maximum mark radius in pixels for highest $z$ magnitude.</td>
+          </tr>
+          <tr>
+            <td><code>pointOpacity</code></td>
+            <td><code>number</code></td>
+            <td><code>0.75</code></td>
+            <td>Fill opacity for point marks to resolve moderate overplotting.</td>
+          </tr>
+          <tr>
+            <td><code>jitterAmount</code></td>
+            <td><code>number</code></td>
+            <td><code>14</code></td>
+            <td>Maximum spatial displacement pixel spread for categorical/ordinal X axes.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §04 Included Variants -->
+    <section class="spec-section" id="variants">
+      <h2 class="spec-section-title">§04 Included Variants</h2>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Variant</th>
+            <th>Visual Encoding</th>
+            <th>Primary Manufacturing Scenario</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Standard Scatter</strong></td>
+            <td>2D quantitative points with categorical color and distinct shape glyphs.</td>
+            <td>CNC Spindle Speed (RPM) vs Vibration Amplitude (mm/s), isolating bearing degradation anomalies.</td>
+          </tr>
+          <tr>
+            <td><strong>Bubble Plot</strong></td>
+            <td>3-variable multivariate plot with true square-root area scaling.</td>
+            <td>Press Stroke Rate (SPM) vs Hydraulic Pressure (bar) with Die Temperature as Bubble Size.</td>
+          </tr>
+          <tr>
+            <td><strong>Connected Scatter</strong></td>
+            <td>Directed trajectory line connecting sequential observations across time or process steps.</td>
+            <td>Continuous Carburizing Furnace cycle: Chamber Temperature (°C) vs Carbon Potential (%CP).</td>
+          </tr>
+          <tr>
+            <td><strong>Jittered Scatter</strong></td>
+            <td>Categorical/ordinal axis with deterministic pseudorandom spatial displacement.</td>
+            <td>Final Quality Inspection: Surface Roughness (Ra µm) clustered across 4 discrete Machining Cells.</td>
+          </tr>
+          <tr>
+            <td><strong>Binned Density</strong></td>
+            <td>2D grid of rectangular or hexagonal cells aggregating high-density observation counts.</td>
+            <td>High-volume stamping telemetry (5,000+ parts) analyzing cycle time vs press tonnage clusters.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §05 Sizes & Density Modes -->
+    <section class="spec-section" id="sizes">
+      <h2 class="spec-section-title">§05 Sizes & Density Modes</h2>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Density / Size</th>
+            <th>Default Dimensions</th>
+            <th>Tick Density</th>
+            <th>Use Case</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Compact (Dense)</strong></td>
+            <td>Width: 340–480px, Height: 220–260px</td>
+            <td>3–4 ticks per axis</td>
+            <td>Multi-metric correlation matrices, machine health tiles, sidebar telemetry cards.</td>
+          </tr>
+          <tr>
+            <td><strong>Standard (Comfortable)</strong></td>
+            <td>Width: 640–780px, Height: 340–400px</td>
+            <td>5–7 ticks per axis</td>
+            <td>Primary statistical inspection views and quality assurance analysis dashboards.</td>
+          </tr>
+          <tr>
+            <td><strong>Expanded</strong></td>
+            <td>Width: 900–1200px, Height: 480–560px</td>
+            <td>8–12 ticks per axis</td>
+            <td>Detailed engineering root-cause analysis and multivariate parameter optimization reports.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §06 Interactive & Visual States -->
+    <section class="spec-section" id="states">
+      <h2 class="spec-section-title">§06 Interactive & Visual States</h2>
+      <ul>
+        <li><strong>Resting:</strong> Points rendered with 0.75 opacity + 1.2px white border for overlapping mark separation.</li>
+        <li><strong>Hover / Pointer Over:</strong> Active point expands by 3px with dashed focus halo ring and pinned observation tooltip.</li>
+        <li><strong>Selection:</strong> Clicking an observation locks selection ring (2.5px dark border) and emits <code>onPointSelect</code> callback.</li>
+        <li><strong>Category Isolation:</strong> Clicking a legend item dims non-selected categories to 0.15 opacity.</li>
+        <li><strong>Keyboard Active:</strong> Focused point displays high-contrast ring and live screen reader announcement.</li>
+        <li><strong>Loading Skeleton:</strong> Shimmering sweep placeholder maintains chart coordinate frame during data loading.</li>
+      </ul>
+    </section>
+
+    <!-- §07 Area Scaling Mathematics & Jitter Policies -->
+    <section class="spec-section" id="math">
+      <h2 class="spec-section-title">§07 Area Scaling Mathematics & Jitter Policies</h2>
+      <div class="spec-callout">
+        <strong>True Area Square-Root Proportionality:</strong>
+        <p>
+          In bubble charts, the human visual system perceives mark magnitude by <em>area</em> ($\pi r^2$), not radius ($r$). Scaling radius linearly causes a value of 4 to appear 16 times larger than a value of 1.
+        </p>
+        <p>
+          <code>ScatterPlot</code> strictly enforces square-root scaling via <code>createAreaScale()</code>:
+          $$r(z) = r_{min} + \sqrt{\frac{z - z_{min}}{z_{max} - z_{min}}} \cdot (r_{max} - r_{min})$$
+        </p>
+      </div>
+      <div class="spec-callout">
+        <strong>Deterministic Jittering:</strong>
+        <p>
+          Jittering uses a seeded linear congruential PRNG: $seed_{i+1} = (seed_i \times 9301 + 49297) \pmod{233280}$. This guarantees identical point spatial placement across re-renders and avoids disorienting layout shifts.
+        </p>
+      </div>
+    </section>
+
+    <!-- §08 Keyboard Navigation & Focus Interactions -->
+    <section class="spec-section" id="keyboard">
+      <h2 class="spec-section-title">§08 Keyboard Navigation & Focus Interactions</h2>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Key Combination</th>
+            <th>Target</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><kbd>Tab</kbd></td>
+            <td>ScatterPlot Container</td>
+            <td>Focuses the visualization container (<code>tabindex="0"</code>) and highlights the leftmost observation.</td>
+          </tr>
+          <tr>
+            <td><kbd>→</kbd> / <kbd>←</kbd></td>
+            <td>Sorted Observations</td>
+            <td>Traverses forward / backward along observations sorted by horizontal X position.</td>
+          </tr>
+          <tr>
+            <td><kbd>Home</kbd> / <kbd>End</kbd></td>
+            <td>Boundary Observations</td>
+            <td>Snaps immediately to the minimum or maximum X observation.</td>
+          </tr>
+          <tr>
+            <td><kbd>Enter</kbd> / <kbd>Space</kbd></td>
+            <td>Active Observation</td>
+            <td>Selects the active observation and triggers <code>onPointSelect</code> callback.</td>
+          </tr>
+          <tr>
+            <td><kbd>Alt</kbd> + <kbd>F11</kbd></td>
+            <td>Accessible Data Table</td>
+            <td>Opens modal dialog with complete tabular observation records.</td>
+          </tr>
+          <tr>
+            <td><kbd>Escape</kbd></td>
+            <td>Active Tooltip / Modal</td>
+            <td>Dismisses active inspection tooltip or closes data table modal.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §09 Accessibility & Assistive Technology -->
+    <section class="spec-section" id="a11y">
+      <h2 class="spec-section-title">§09 Accessibility & Assistive Technology (WCAG 2.2 AA)</h2>
+      <div class="spec-callout spec-callout--critical">
+        <strong>WCAG 1.4.1 (Non-Color Differentiation) Strict Compliance:</strong>
+        <p>
+          Categorical series must never be distinguished by color alone. <code>ScatterPlot</code> assigns distinct geometric shape glyphs (<code>circle</code>, <code>square</code>, <code>diamond</code>, <code>triangle</code>, <code>cross</code>, <code>star</code>) to each category, ensuring immediate readability for red-green and monochromatic color-blind operators.
+        </p>
+      </div>
+      <ul>
+        <li><strong>ARIA Landmark:</strong> <code>role="region"</code>, <code>aria-roledescription="scatter plot"</code>, with descriptive <code>aria-label</code>.</li>
+        <li><strong>Live Screen Reader Region:</strong> <code>aria-live="polite"</code> announces: <em>"Observation 4 of 15: Bearing Alert. Spindle Speed: 2100 RPM, Vibration: 4.1 mm/s."</em></li>
+        <li><strong>Full Tabular Parity:</strong> Built-in <kbd>Alt+F11</kbd> semantic data table guarantees 100% information parity for non-visual assistive technology users.</li>
+      </ul>
+    </section>
+
+    <!-- §10 Motion & Transition Guidelines -->
+    <section class="spec-section" id="motion">
+      <h2 class="spec-section-title">§10 Motion & Transition Guidelines</h2>
+      <ul>
+        <li><strong>Point Highlight Transitions:</strong> Hover scale and halo expansions execute within <strong>150ms</strong> using <code>cubic-bezier(0.16, 1, 0.3, 1)</code>.</li>
+        <li><strong>Prefers Reduced Motion:</strong> When <code>@media (prefers-reduced-motion: reduce)</code> is active, point transitions and skeleton sweeps render instantly with <strong>0ms duration</strong>.</li>
+      </ul>
+    </section>
+
+    <!-- §11 Content Rules & Number Formatting -->
+    <section class="spec-section" id="content-rules">
+      <h2 class="spec-section-title">§11 Content Rules & Number Formatting</h2>
+      <ul>
+        <li><strong>Locale Convention:</strong> Default to Indian numbering system (<code>en-IN</code>, e.g. <code>2,400 RPM</code>, <code>4.5 mm/s</code>).</li>
+        <li><strong>Regression Metrics:</strong> Slope, intercept, and $R^2$ correlation metrics formatted to <strong>2–3 decimal places</strong> (e.g. $R^2 = 0.892$).</li>
+        <li><strong>Axis & Tooltip Units:</strong> Explicit engineering telemetry units must be displayed on axis titles and in tooltip observation cards (<code>RPM</code>, <code>mm/s</code>, <code>SPM</code>, <code>bar</code>, <code>°C</code>, <code>µm</code>).</li>
+      </ul>
+    </section>
+
+    <!-- §12 Responsive Behavior & Container Constraints -->
+    <section class="spec-section" id="responsive">
+      <h2 class="spec-section-title">§12 Responsive Behavior & Container Constraints</h2>
+      <ul>
+        <li><strong>Minimum Plot Bounds:</strong> Never compress plot area below $240 \times 160\text{px}$ to prevent extreme point clustering.</li>
+        <li><strong>High-Volume Aggregation:</strong> For datasets with &gt;1,000 observations on mobile viewports, automatically switch to <code>variant="binned-density"</code>.</li>
+      </ul>
+    </section>
+
+    <!-- §13 Anti-Patterns & Misconfigurations -->
+    <section class="spec-section" id="anti-patterns">
+      <h2 class="spec-section-title">§13 Anti-Patterns & Misconfigurations</h2>
+      <div class="spec-callout spec-callout--critical">
+        <strong>Strictly Prohibited Anti-Patterns:</strong>
+        <ol>
+          <li><strong>Radius-Linear Bubble Scaling:</strong> Scaling bubble radius proportional to value quadruples perceived visual area. Always use square-root area scaling.</li>
+          <li><strong>Color-Only Category Coding:</strong> Differentiating 3+ categories solely by color hue without shape glyphs violates WCAG 1.4.1.</li>
+          <li><strong>Non-Deterministic Jitter:</strong> Using <code>Math.random()</code> inside render loops causes points to jump erratically on every state change.</li>
+          <li><strong>Connecting Unordered Points:</strong> Never render lines between scatter points unless observations represent a true sequential trajectory cycle (Connected Scatter).</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- §14 Implementation & Developer Notes -->
+    <section class="spec-section" id="dev-notes">
+      <h2 class="spec-section-title">§14 Implementation & Developer Notes</h2>
+      <ul>
+        <li><strong>Native React SVG:</strong> Implemented purely in React SVG without heavy external dependencies, importing shared math from <code>viz-core.js</code>.</li>
+        <li><strong>ClipPath Bounding:</strong> All point marks and trendlines are contained within an SVG `<clipPath>` matching the plot dimensions.</li>
+      </ul>
+    </section>
+
+  </div>
+</body>
+</html>

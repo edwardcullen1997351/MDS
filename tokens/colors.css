@@ -1,0 +1,116 @@
+:root{
+/* ── PRIMITIVE PALETTE ────────────────────────────────────────────────
+   Eight ramps. Grey and blue do the work; the rest exist so that state,
+   severity and series identity each have a hue that means one thing.
+   Product code never touches these — use the semantic layer. */
+
+/* Gray — cool-leaning, the backbone of every surface, border and label */
+--grey-0:#ffffff;
+--grey-50:#f7f8fa;
+--grey-100:#edeff3;
+--grey-200:#dfe3e9;
+--grey-300:#c7cdd6;
+--grey-400:#98a1ae;
+--grey-500:#656e7b;
+--grey-600:#4b535e;
+--grey-700:#343a43;
+--grey-800:#22272e;
+--grey-900:#14181d;
+--grey-950:#0b0e12;
+
+/* Blue — Meridian Blue, the single saturated brand hue. 600 is action. */
+--blue-50:#eef2ff;
+--blue-100:#dde4ff;
+--blue-200:#bbc9ff;
+--blue-300:#8fa6ff;
+--blue-400:#5c7bff;
+--blue-500:#2e52f5;
+--blue-600:#2143e6;
+--blue-700:#1a34b8;
+--blue-800:#152a91;
+--blue-900:#111f6b;
+
+/* Green — carries Success and Running. Never a category colour. */
+--green-50:#e8f6f0;
+--green-100:#cdece0;
+--green-200:#a3ddc9;
+--green-300:#6bc9ab;
+--green-400:#2fb389;
+--green-500:#12a06e;
+--green-600:#0f8a5f;
+--green-700:#0b6a49;
+--green-800:#085237;
+--green-900:#063b28;
+
+/* Red — carries Critical, Fault and Down. */
+--red-50:#fdecea;
+--red-100:#fad5d1;
+--red-200:#f4b0a8;
+--red-300:#ec8478;
+--red-400:#e46052;
+--red-500:#dc4436;
+--red-600:#c2352a;
+--red-700:#97271e;
+--red-800:#741d17;
+--red-900:#551511;
+
+/* Orange — carries Warning. Reads as caution at 13px where yellow does not. */
+--orange-50:#fdf1e8;
+--orange-100:#f9dfcc;
+--orange-200:#f2c09d;
+--orange-300:#e79c68;
+--orange-400:#da7c3c;
+--orange-500:#c96620;
+--orange-600:#ab5316;
+--orange-700:#853f10;
+--orange-800:#66300c;
+--orange-900:#492208;
+
+/* Yellow — Changeover and scheduled stops only. Too low-contrast for text;
+   never used for Warning, never on a light surface below step 600. */
+--yellow-50:#fbf7dd;
+--yellow-100:#f6edb6;
+--yellow-200:#ecd977;
+--yellow-300:#dcc138;
+--yellow-400:#c9ac14;
+--yellow-500:#b39708;
+--yellow-600:#997f06;
+--yellow-700:#766104;
+--yellow-800:#5a4a03;
+--yellow-900:#403402;
+
+/* Purple — series identity only (viz-4). No semantic meaning; deliberately
+   the one ramp with no state attached, so charts can use it freely. */
+--purple-50:#f2eefc;
+--purple-100:#e5ddf9;
+--purple-200:#cbbcf2;
+--purple-300:#ab94e8;
+--purple-400:#8f6ede;
+--purple-500:#7b4bd6;
+--purple-600:#6838c1;
+--purple-700:#522a99;
+--purple-800:#3e2076;
+--purple-900:#2c1755;
+
+/* Teal — carries Info. Chosen over blue so an informational surface can
+   never be mistaken for an action. */
+--teal-50:#e6f5f7;
+--teal-100:#c7e9ee;
+--teal-200:#94d3dd;
+--teal-300:#5bb8c8;
+--teal-400:#229fb3;
+--teal-500:#0e8ba0;
+--teal-600:#0b7688;
+--teal-700:#085b6a;
+--teal-800:#064551;
+--teal-900:#04313a;
+
+/* Data-visualisation series — ordered, distinguishable at 2px stroke and
+   in greyscale. Series identity, never state. */
+--viz-1:var(--blue-600);
+--viz-2:var(--green-600);
+--viz-3:var(--orange-600);
+--viz-4:var(--purple-500);
+--viz-5:var(--teal-500);
+--viz-6:var(--red-600);
+}

@@ -1,0 +1,268 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Evidence attachment" subtitle="Full specification — a record that cannot be trusted without its evidence: when files gate a commit, what survives a failure, and who may remove them afterwards" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Evidence attachment — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.mn{font-size:10px;color:var(--text-secondary);line-height:1.5}
+.mb{align-self:flex-start;height:26px;padding:0 10px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:10px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.mb.q{background:var(--surface-sunken);color:var(--text-primary);border:var(--border-hairline)}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-warning-soft);color:var(--text-warning)}
+.ma.bad{background:var(--status-critical-soft);color:var(--text-critical)}
+.ma.ok{background:var(--status-success-soft);color:var(--text-success)}
+.split{display:grid;grid-template-columns:118px minmax(0,1fr);gap:8px}
+.rows{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-card)}
+.rows div{display:flex;align-items:center;gap:7px;padding:5px 7px;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);border-bottom:var(--border-subtle)}
+.rows div:last-child{border-bottom:none}
+.rows div.on{background:var(--surface-sunken);color:var(--text-primary)}
+.dot{width:9px;height:9px;border:1px solid var(--border-strong);border-radius:50%;flex:none}
+.dot.on{border:3px solid var(--action-solid)}
+.panel{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:8px 9px;display:flex;flex-direction:column;gap:5px}
+.panel .t{font-family:var(--font-mono);font-size:10px;color:var(--text-primary)}
+.panel .f{display:flex;justify-content:space-between;gap:8px;font-size:9.5px;color:var(--text-secondary);font-family:var(--font-mono)}
+.sk{height:7px;border-radius:3px;background:var(--surface-sunken)}
+.mcount{font-size:10px;font-family:var(--font-mono);color:var(--text-tertiary)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Evidence attachment</h1>
+  <p class="lede">Some records are only as good as the files behind them. A calibration without its certificate, a nonconformance without its photographs, a receipt without its test report — the record can be saved, and it should not be, because downstream the reading will be trusted as if the evidence were there. This pattern specifies the relationship between an attachment set and the commit it gates: when the files go up, what the commit is allowed to do while they are moving, what survives a failure, and who may take evidence away once the record is closed.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: FileUpload, Button</span><span>Reference implementation: <a href="evidence-attachment-reference.card.html">card</a> · <a href="../../templates/evidence-attachment/EvidenceAttachment.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — returning a calibrated bore gauge to service</span><span>Sections included: 13 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>Bore gauge GG-2214 comes back from Pune Metrology Services on 2026-09-07 (IST) with a certificate. Meera Nair opens CAL-2026-0912, types the certificate number, drops the PDF and the readings CSV, and presses <em>Return GG-2214 to service</em> — and at that instant the certificate is at 64%. If the record posts anyway, the gauge is back on final inspection with a certificate number that points at nothing, and the next forty lots are measured on the strength of a file that never arrived. The gate is the pattern.</p>
+    <p><strong>Use it when</strong> a record's validity depends on files the user supplies, and committing without them would be believed.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>Evidence that substantiates a claim on the record — a calibration certificate, an inspection photograph, a material test report, a signed deviation.</li><li>A commit that must wait for, or account for, files still in flight.</li><li>Records that are later read by someone who was not there, and who will treat the record as complete.</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>A file that IS the transaction.</strong> A supplier catalogue whose rows become item-master records is <a href="BulkDataImport.spec.html">bulk data import</a>: the file is consumed rather than kept, and the contract is a column mapping and a dry-run verdict rather than a gate on a set’s status.</li><li><strong>Optional decoration.</strong> A profile photo, a nice-to-have diagram. If the record means the same thing without the file, there is no gate and no pattern — just a <code>FileUpload</code> in a form.</li><li><strong>Importing a file to be processed.</strong> A BOM CSV that becomes rows is <a href="AsynchronousAction.spec.html">asynchronous action</a> with a result: the file is an input, not evidence, and nobody keeps it.</li><li><strong>The set's own mechanics.</strong> Which files are allowed, how one row shows progress, what "finished" means for the set — all owned by <a href="../composite/FileUpload.spec.html">FileUpload</a> and its parts. This pattern starts where that contract ends: at the commit.</li><li><strong>A document library.</strong> Browsing, versioning and retention of files that outlive any one record is a different problem with a different shape.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">The evidence set</td><td><code>FileUpload</code></td><td>Required, exactly one per record. It owns selection, validation, per-file state and the set's aggregate status; this pattern consumes that status and never reimplements it. Two sets on one record are two records' worth of evidence, or a table.</td></tr>
+      <tr><td class="k">The commit</td><td><code>Button</code></td><td>Required. Its label names the consequence on the record ("Return GG-2214 to service"), never the file operation ("Upload"). It is gated by §04 and states its blocking reason in text beside itself.</td></tr>
+      <tr><td class="k">The record's own fields</td><td><code>Field</code> + controls</td><td>Required where the evidence substantiates a value — a certificate number, a disposition, a measured result. The gate is the conjunction of these and the set: either alone is not a complete record.</td></tr>
+      <tr><td class="k">Failure of the commit</td><td><code>Alert</code></td><td>Required when the post can fail. Persistent, placed with the record, and distinct from any per-file error — see §10.</td></tr>
+      <tr><td class="k">Retention notice</td><td><code>Field</code> hint, or text</td><td>Required once the record is committed and removal is closed: the interface must say why the evidence can no longer be taken away.</td></tr>
+    </tbody></table>
+    <p>Nothing else is part of the pattern. In particular there is no count badge, no total-size readout and no separate "evidence complete" indicator: the set's rows are the count, and the commit button's state is the indicator.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>Enter.</strong> The record opens in draft. If evidence is required, the commit is blocked from this moment — but the interface does not yet complain, because nobody has done anything (§09).</li>
+      <li><strong>Attach.</strong> Files are picked or dropped. Refusals are reported by the set, naming the file; accepted files enter the set as <code>queued</code>.</li>
+      <li><strong>Upload.</strong> Either immediately (<code>onArrival</code>) or deferred to the commit (<code>onSave</code>) — the choice is §05, and it changes what the operator is waiting for and what they may close the tab on.</li>
+      <li><strong>Fill the record.</strong> Runs concurrently with uploading; the two never block each other. Typing a certificate number while a PDF uploads is the normal case, not an edge one.</li>
+      <li><strong>Commit.</strong> Permitted only when the set is settled and the record's own fields are valid. Under <code>onSave</code> the first press starts the uploads and does <em>not</em> post; the post follows when the set settles, and the button says so.</li>
+      <li><strong>Resolve.</strong> Committed, failed, or unknown (§10). A committed record moves removal into whatever §05 allows, and the evidence stops being editable by default.</li>
+      <li><strong>Leave early.</strong> Navigating away mid-upload abandons the set, and the pattern must have said so before it happened — see §18.</li>
+    </ol>
+    <p><strong>Branch that matters:</strong> a failed file. The set reports <code>failed</code>, the commit stays blocked, and the operator has two ways out — retry the file, or remove it and commit without it, which is only a route if evidence is optional. A pattern that offers neither has stranded the record.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Contract</th><th>Rule</th></tr></thead><tbody>
+      <tr><td class="k">Commit gate</td><td>The commit is enabled only when the set's status is <code>idle</code> and the record's own validation passes. <code>busy</code> and <code>failed</code> both block; <code>invalid</code> blocks when evidence is required. This conjunction is the pattern's central guarantee.</td></tr>
+      <tr><td class="k">Blocked, with a reason</td><td>A disabled commit always carries its reason in adjacent text — "Waiting for the evidence to finish uploading", "One file did not upload" — never a tooltip, never silence.</td></tr>
+      <tr><td class="k">One commit at a time</td><td>The commit guards against a second activation while in flight. Two posts of one calibration double-book the gauge.</td></tr>
+      <tr><td class="k">Evidence and fields are independent</td><td>Uploading never disables the record's fields, and editing a field never interrupts an upload.</td></tr>
+      <tr><td class="k">Commit does not re-upload</td><td>Files already <code>complete</code> are referenced by id at commit. A retry of a failed <em>commit</em> re-posts the record, not the evidence.</td></tr>
+      <tr><td class="k">Removal after commit</td><td>Closed by default. Where a role may still remove, the removal is itself a recorded event on the record — evidence that vanishes without a trace is worse than evidence that was never attached.</td></tr>
+    </tbody></table>
+    <div class="two">
+      <div class="pane do"><h3>Do</h3><ul><li>Block the commit while the set is <code>busy</code>, and say what is being waited for.</li></ul><p class="why">The operator can see the bar; what they cannot see is whether the button will wait for it.</p></div>
+      <div class="pane dont"><h3>Don't</h3><ul><li>Let the commit fire at 64% and let the server sort it out.</li></ul><p class="why">The record posts, the reference dangles, and the gauge is trusted. This is the failure the pattern exists to prevent.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Options</th><th>What it changes</th></tr></thead><tbody>
+      <tr><td class="k">uploadTiming</td><td><code>onArrival</code> · <code>onSave</code></td><td><code>onArrival</code>: bytes move as files are picked, so the commit is usually instant and an abandoned draft leaves orphaned files to reap. <code>onSave</code>: nothing leaves the browser until the operator commits, so the record and its evidence succeed or fail together — at the cost of a commit that is now slow, and a first press that starts uploads instead of posting. Choose by whether an orphan or a slow commit is the worse problem on that surface.</td></tr>
+      <tr><td class="k">removalAfterCommit</td><td><code>never</code> · <code>roleGated</code></td><td><code>never</code>: once posted, the evidence is part of the record. <code>roleGated</code>: a named role may remove, and the removal is recorded. Nothing else is offered — an unrecorded post-commit removal is not a supported option.</td></tr>
+      <tr><td class="k">evidenceRequired</td><td><code>required</code> · <code>optional</code></td><td><code>required</code>: an empty set blocks the commit, with the message deferred until the set is touched or a submit is attempted. <code>optional</code>: an empty set commits, but a <code>failed</code> or in-flight file still blocks — a file the operator tried to attach is never silently dropped just because evidence was optional.</td></tr>
+    </tbody></table>
+    <p><strong>All three are reachable as tweaks in the reference implementation</strong>, every §08 state is reachable there, and so are the two §18 boundaries — leaving with an uncommitted set, and a record closed elsewhere. That is what lets this spec claim zero open items: the standard's rule is that a declared policy with no way to see it behave is an open item, not a footnote, and every policy declared here has a button or a tweak behind it.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Pattern state</th><th>Held by</th><th>Commit</th></tr></thead><tbody>
+      <tr><td class="k">Draft, no evidence</td><td>Record + empty set</td><td>Blocked when required — message deferred (§09)</td></tr>
+      <tr><td class="k">Attaching</td><td>Set status <code>busy</code></td><td>Blocked, reason stated</td></tr>
+      <tr><td class="k">Evidence failed</td><td>Set status <code>failed</code></td><td>Blocked until retried or removed</td></tr>
+      <tr><td class="k">Attached, uncommitted</td><td>Set <code>idle</code>, record dirty</td><td>Allowed — and this is the state a user may close the tab on, so §18 applies</td></tr>
+      <tr><td class="k">Committing</td><td>Pattern</td><td>Guarded against a second activation</td></tr>
+      <tr><td class="k">Committed</td><td>Record</td><td>Done; removal moves to §05's policy</td></tr>
+      <tr><td class="k">Commit failed</td><td>Pattern</td><td>Everything preserved; commit offered again</td></tr>
+      <tr><td class="k">Outcome unknown</td><td>Pattern</td><td>Neither success nor failure — see §10</td></tr>
+    </tbody></table>
+    <p><strong>The set's status and the record's state are two different things</strong>, and conflating them is the most common implementation error here: a set that is <code>idle</code> says the files are settled, not that the record is posted. The commit reads both.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§09</span><h2>Validation</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Required-evidence status is immediate; its message is not.</strong> An empty required set makes the commit invalid from the moment the record opens — the button must never look pressable when it is not — but the sentence "A calibration certificate is required" waits until the operator has touched the set or attempted a submit. A record that reddens on arrival teaches people that red means nothing.</li>
+      <li><strong>Set-level and file-level messages never duplicate.</strong> Why <em>that</em> file failed belongs on its row; that the set as a whole is unsatisfied belongs in the field error.</li>
+      <li><strong>Refusals are always named.</strong> Three dropped, one refused, and the message says which one and which rule.</li>
+      <li><strong>The record's own validation is independent.</strong> A missing certificate number and a missing certificate are two failures with two messages, in two places, and fixing one must not clear the other.</li>
+    </ul>
+    <div class="two">
+      <div class="pane do"><h3>Do</h3><ul><li>Defer the required message until the set is touched, or a submit is attempted.</li></ul><p class="why">The gate is honest from the first render; the accusation waits until there is something to accuse.</p></div>
+      <div class="pane dont"><h3>Don't</h3><ul><li>Render "A certificate is required" on an untouched record.</li></ul><p class="why">This was a real defect: the composite shipped doing exactly this, and its first consumer found it (FileUpload §06).</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§10</span><h2>Error handling</h2></div>
+  <div class="body">
+    <p>Three failures, deliberately separated. Merging any two of them is how an operator ends up re-posting a record that already exists.</p>
+    <table><thead><tr><th>Failure</th><th>Where it shows</th><th>What is guaranteed</th></tr></thead><tbody>
+      <tr><td class="k">A file did not upload</td><td>The row, with the reason</td><td>The rest of the set is untouched; the row offers Retry; the commit stays blocked. Removing the file is a legitimate resolution only where evidence is optional.</td></tr>
+      <tr><td class="k">The commit failed</td><td><code>Alert</code> with the record</td><td>Nothing is lost: field values, the set, and every uploaded file's state all remain. The commit is offered again, and it does not re-upload what already arrived.</td></tr>
+      <tr><td class="k">The outcome is unknown</td><td><code>Alert</code>, <code>warning</code></td><td>The post left and nothing came back. The interface must claim neither success nor failure, must not offer a blind retry, and must tell the operator where to check — a second post of one calibration double-books the gauge.</td></tr>
+    </tbody></table>
+    <div class="two">
+      <div class="pane do"><h3>Do</h3><ul><li>Say "Outcome unknown — check CAL-2026-0912 before posting again."</li></ul><p class="why">It names the record and the next action, which is the only useful thing an interface can do when it does not know.</p></div>
+      <div class="pane dont"><h3>Don't</h3><ul><li>Show "Something went wrong" with a Retry button.</li></ul><p class="why">A retry on an unknown outcome is a coin flip between a duplicate record and nothing.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Blocked commits announce their reason.</strong> The reason sits in text next to the button, in the DOM next to the button — not in a <code>title</code> and not in a tooltip, both of which are unreachable to a keyboard user and inconsistent on touch.</li>
+      <li><strong>Arrivals and refusals are announced once.</strong> The set owns a polite live region ("2 files added, 1 refused"); the pattern must not add a second one for the same event.</li>
+      <li><strong>The outcome is announced where it happened.</strong> A commit failure is an <code>Alert</code> adjacent to the record, and focus moves to it — the operator pressed a button and something must answer at the button, not at the top of a scrolled page.</li>
+      <li><strong>Removal does not strand focus.</strong> Owned by <code>FileUpload</code>; the pattern's duty is not to remount the set around it, which would throw focus to the body anyway.</li>
+      <li><strong>The retention notice is text, not a disabled control's implication.</strong> "The record is posted; its evidence cannot be removed" is a sentence. A greyed-out remove button is a guess.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Slot</th><th>Write</th><th>Not</th></tr></thead><tbody>
+      <tr><td class="k">Commit label</td><td>Return GG-2214 to service</td><td>Upload · Submit · Save files</td></tr>
+      <tr><td class="k">Blocked reason</td><td>Waiting for the evidence to finish uploading</td><td>(a disabled button with nothing beside it)</td></tr>
+      <tr><td class="k">Required evidence</td><td>A calibration certificate is required before GG-2214 returns to service.</td><td>This field is required</td></tr>
+      <tr><td class="k">Deferred upload</td><td>PDF or CSV · up to 20 MB each · uploaded when you post</td><td>(silence about when bytes move)</td></tr>
+      <tr><td class="k">Commit failed</td><td>The record was not posted. Nothing was lost — post again when the network is back.</td><td>Error 500</td></tr>
+      <tr><td class="k">Retention</td><td>GG-2214 is back in service. Its certificate is part of the record.</td><td>Locked</td></tr>
+    </tbody></table>
+    <p><strong>The commit names its effect on the record, never on the files.</strong> "Upload" promises the wrong thing twice: it suggests the files are the point, and it suggests pressing it is what moves them.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Leaving mid-upload.</strong> Under <code>onArrival</code> the bytes are already gone but the record is not saved, so the files are orphans; under <code>onSave</code> nothing has left. Either way the surface warns before unload while the set is non-empty and uncommitted, and the copy says which of the two is true — the wording changes with the policy, because “you will lose your files” and “you will leave files nobody owns” are different warnings. <em>Reachable in the reference implementation:</em> a <code>beforeunload</code> guard while the set is dirty, plus a harness button that shows the same decision inline, since an iframe cannot raise the browser's own dialog.</li>
+      <li><strong>Double commit.</strong> Guarded in the pattern, not on the server alone. A double-posted calibration is visible to the operator as one press.</li>
+      <li><strong>The same file twice.</strong> Not refused — a two-page certificate legitimately arrives as two identically named scans from some devices. The set shows both; deduplication is a product decision, not an interface reflex.</li>
+      <li><strong>Evidence for a record someone else has closed.</strong> The gauge came back to service while the tab was open. On commit the record is refused as <em>stale</em> — not merged, not silently overwritten — and the refusal says who closed it and when, keeps the operator's evidence and certificate number, and sends them to reload and check what is already attached before posting again. A blind second post here is the double-booking of §04 by another route. <em>Reachable in the reference implementation</em> via the harness.</li>
+      <li><strong>Every file failed.</strong> A set of four failures is not four problems: the field error says one thing ("No evidence uploaded. Retry, or attach it after the network is back") and each row keeps its own reason.</li>
+      <li><strong>More than about eight files.</strong> The set stops being a stack and becomes a table; the gate in §04 is unchanged, and that is the point — the contract is not a property of the layout.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§19</span><h2>Anti-patterns</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Committing on the strength of a filename.</strong> A row that exists is not a file that arrived. Read the set's status, never its length.</li>
+      <li><strong>Uploading on select and calling it saved.</strong> The evidence being in the store does not make the record true; only the commit does, and until it happens the files are orphans waiting to be reaped.</li>
+      <li><strong>A set-level spinner in place of per-file bars.</strong> One spinner over four files hides which one is stuck.</li>
+      <li><strong>Silently dropping a failed file when evidence is optional.</strong> Optional means the operator may choose not to attach — not that the system may discard what they tried to attach.</li>
+      <li><strong>Removing evidence after commit with no record of it.</strong> Worse than never attaching it: the record now claims a certificate that someone quietly deleted.</li>
+      <li><strong>Using this for file imports.</strong> An import's file is consumed and forgotten; evidence is kept and re-read. Different lifetimes, different pattern.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The queue lives in the surface, at record level.</strong> Not inside the set, and not inside a row: the commit needs to read every entry's state, and a queue held lower cannot be read by the button that depends on it.</li>
+      <li><strong>Entry ids must survive re-render and be the thing the commit posts.</strong> The record references uploaded files by id; an id regenerated on every render turns a retry into a new file.</li>
+      <li><strong>One <code>AbortController</code> per entry.</strong> Cancel must stop the bytes, not just the row — see <a href="../forms/FileItem.spec.html">FileItem §14</a>.</li>
+      <li><strong>Derive the gate; never mirror it.</strong> Keep the set's status as a derived value (<code>deriveStatus</code>), not a second copy in state that can disagree with the rows the operator is looking at.</li>
+      <li><strong>Under <code>onSave</code>, the first press is not the post.</strong> It starts the uploads and returns; the post fires when the set settles. Say so on the button, or the operator presses it twice.</li>
+      <li><strong>Progress comes from bytes.</strong> <code>XMLHttpRequest.upload.onprogress</code> or a progress-reporting stream. A timer-driven bar reports 100% for an upload that died, which defeats the gate this whole pattern is built on.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted">Omitted, per the interaction pattern spec standard — the numbers never renumber. §06 Variants: <code>onArrival</code> and <code>onSave</code> are §05 policies of one pattern, not two behavioural forms. §07 Sizes: <code>FileUpload</code> coordinates the one size that matters. §11 Input &amp; modalities: the set owns picker-versus-drop and its targets; the pattern adds nothing. §13 Motion: the only motion is a progress fill, owned by <code>FileItem</code>. §15 Responsive: one column at every width; the gate does not change with space. §16 Internationalization: file names are opaque, and the record's own dates and figures follow the system's locale rules, not this pattern's. §17 Performance: how the set waits is <code>FileUpload</code>'s and <a href="AsynchronousAction.spec.html">asynchronous action</a>'s; what this pattern owns is whether the commit waits at all, which is §04. §21 Developer notes: §20 covers the technical contract; nothing further is unsaid.</p>
+</div>
+</body></html>

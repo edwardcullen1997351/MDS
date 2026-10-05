@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Evidence attachment" description="A record that cannot be trusted without its evidence — attaching a calibration certificate before a gauge returns to service" -->
+<helmet><script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary)}</style>
+</helmet>
+<div style="min-height:100vh;padding:28px 22px;display:flex;justify-content:center">
+<div style="width:100%;max-width:1060px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:22px;align-items:start">
+
+<div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+
+<div style="display:flex;flex-direction:column;gap:6px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Quality · calibration record CAL-2026-0912</span>
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:var(--weight-light);letter-spacing:-0.018em">Bore gauge GG-2214 — return to service</h1>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary);max-width:62ch;text-wrap:pretty">Calibrated externally by Pune Metrology Services · received back 2026-09-07 (IST) · Meera Nair, quality manager, Chakan plant (PL-04). The gauge may not go back to final inspection until its certificate is on the record: the reading is only as good as the evidence behind it.</p>
+</div>
+
+<div style="background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px 22px;display:flex;flex-direction:column;gap:16px;min-width:0">
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field"
+  label="Certificate number" hint="As printed on the certificate — e.g. PMS/CAL/26-4471" hint-size="100%,64px">
+  <x-import component-from-global-scope="MeridianDesignSystem_962c43.Input"
+    value="{{ certNo }}" onChange="{{ onCertNo }}" placeholder="PMS/CAL/26-4471"
+    disabled="{{ locked }}" hint-size="100%,34px"></x-import>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.FileUpload"
+  label="Calibration evidence"
+  target-label="{{ targetLabel }}"
+  hint="{{ evidenceHint }}"
+  accept=".pdf,.csv"
+  max-size="{{ maxSize }}"
+  max-files="{{ 4 }}"
+  required="{{ evidenceIsRequired }}"
+  required-message="A calibration certificate is required before GG-2214 returns to service."
+  show-required="{{ attempted }}"
+  disabled="{{ setDisabled }}"
+  value="{{ files }}"
+  onChange="{{ onFiles }}"
+  onStatusChange="{{ onStatus }}"
+  hint-size="100%,280px"></x-import>
+
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-top:var(--border-hairline);padding-top:14px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button"
+  size="sm" disabled="{{ commitDisabled }}" loading="{{ committing }}" onClick="{{ onCommit }}" hint-size="180px,28px">{{ commitLabel }}</x-import>
+<span style="font-size:var(--text-xs);color:var(--text-secondary);min-width:0">{{ commitNote }}</span>
+</div>
+
+<sc-if value="{{ showOutcome }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert"
+  tone="{{ outcomeTone }}" title="{{ outcomeTitle }}" hint-size="100%,80px">{{ outcomeBody }}</x-import>
+</sc-if>
+
+</div>
+</div>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:14px;min-width:0">
+
+<div style="border:var(--border-width) dashed var(--border-strong);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Harness · remove on copy</span>
+<p style="margin:0;font-size:var(--text-xs);color:var(--text-secondary);text-wrap:pretty">Everything in this dashed column is scaffolding for reading the contract, not part of the design. Delete this block and the <code style="font-family:var(--font-mono)">harness*</code> tweaks when you copy the template; keep the card on the left.</p>
+</div>
+
+<div style="border:var(--border-width) dashed var(--border-strong);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Pattern state</span>
+<div style="display:flex;flex-direction:column;gap:5px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)">
+<span>evidence set&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ status }}</b></span>
+<span>record&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ recordState }}</b></span>
+<span>files&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ fileSummary }}</b></span>
+<span>upload timing&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ uploadTiming }}</b></span>
+<span>removal after commit&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ removalAfterCommit }}</b></span>
+<span>evidence&nbsp;&nbsp;<b style="color:var(--text-primary)">{{ evidencePolicy }}</b></span>
+</div>
+</div>
+
+<div style="border:var(--border-width) dashed var(--border-strong);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Force a state the happy path never reaches</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="secondary" onClick="{{ onSeed }}" hint-size="130px,28px">Seed two files</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="secondary" onClick="{{ onFailUpload }}" hint-size="130px,28px">Fail an upload</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="secondary" onClick="{{ onFailCommit }}" hint-size="130px,28px">Fail the commit</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="secondary" onClick="{{ onLoseCommit }}" hint-size="150px,28px">Lose the response</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="secondary" onClick="{{ onLeave }}" hint-size="150px,28px">Leave mid-upload</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="secondary" onClick="{{ onStale }}" hint-size="170px,28px">Close it elsewhere</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="ghost" onClick="{{ onReset }}" hint-size="80px,28px">Reset</x-import>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);text-wrap:pretty">“Lose the response” is the unknown outcome of §10: the post left, nothing came back. The record must not claim success and must not invite a blind retry. The last two are §18: leaving with an uncommitted set (the warning says which of the two orphan situations applies, and it changes with <code style="font-family:var(--font-mono)">uploadTiming</code>), and a record someone else closed while this tab was open.</p>
+<sc-if value="{{ leaveWarning }}" hint-placeholder-val="{{ false }}">
+<div style="border:var(--border-width) solid var(--status-warning-border);background:var(--status-warning-soft);border-radius:var(--radius-sm);padding:10px 12px;display:flex;flex-direction:column;gap:8px">
+<span style="font-size:var(--text-xs);font-weight:var(--weight-medium);color:var(--text-warning)">Leave CAL-2026-0912?</span>
+<span style="font-size:var(--text-2xs);color:var(--text-secondary)">{{ leaveBody }}</span>
+<div style="display:flex;gap:8px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="secondary" onClick="{{ onLeaveStay }}" hint-size="70px,28px">Stay</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" size="sm" variant="danger" onClick="{{ onLeaveGo }}" hint-size="120px,28px">Discard and leave</x-import>
+</div>
+</div>
+</sc-if>
+</div>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1100,&quot;height&quot;:760},&quot;uploadTiming&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;onArrival&quot;,&quot;onSave&quot;],&quot;default&quot;:&quot;onArrival&quot;,&quot;tsType&quot;:&quot;'onArrival' | 'onSave'&quot;,&quot;section&quot;:&quot;Pattern policy (§05)&quot;},&quot;removalAfterCommit&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;never&quot;,&quot;roleGated&quot;],&quot;default&quot;:&quot;never&quot;,&quot;tsType&quot;:&quot;'never' | 'roleGated'&quot;,&quot;section&quot;:&quot;Pattern policy (§05)&quot;},&quot;evidenceRequired&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;required&quot;,&quot;optional&quot;],&quot;default&quot;:&quot;required&quot;,&quot;tsType&quot;:&quot;'required' | 'optional'&quot;,&quot;section&quot;:&quot;Pattern policy (§05)&quot;},&quot;harnessRemovalRight&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Harness — remove on copy&quot;}}">
+class Component extends DCLogic {
+  state = {
+    files: [],
+    status: 'invalid',
+    certNo: '',
+    record: 'draft',        // draft · committing · in-service · failed · unknown
+    attempted: false,
+    failUpload: false,
+    commitFault: null,      // 'fail' | 'lose' | 'stale'
+    leaveWarning: false,
+  };
+
+  /* The real policy of §18: an uncommitted set must not be abandoned
+     silently. beforeunload is the production mechanism; the harness button
+     shows the same decision inline, because an iframe cannot demonstrate the
+     browser's own dialog. */
+  componentDidMount() {
+    this.onBeforeUnload = (e) => {
+      const dirty = this.state.files.length > 0 && this.state.record !== 'in-service';
+      if (!dirty) return;
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', this.onBeforeUnload);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    window.removeEventListener('beforeunload', this.onBeforeUnload);
+  }
+
+  /* ── Simulated transport. REPLACE with your own upload:
+        XMLHttpRequest with upload.onprogress, or a fetch whose body is a
+        progress-reporting stream. Never advance progress on a timer in real
+        code — see FileItem §14. ── */
+  runUploads() {
+    clearInterval(this.timer);
+    this.timer = setInterval(() => {
+      this.setState((s) => {
+        if (s.files.every((f) => f.state !== 'uploading' && f.state !== 'queued')) {
+          clearInterval(this.timer);
+          return null;
+        }
+        let started = false;
+        const files = s.files.map((f) => {
+          if (f.state === 'uploading') {
+            if (s.failUpload) return { ...f, state: 'failed', progress: undefined, error: 'Certificate store did not answer.' };
+            const next = (f.progress ?? 0) + 14;
+            return next >= 100 ? { ...f, state: 'complete', progress: undefined } : { ...f, progress: next };
+          }
+          if (f.state === 'queued' && !started && !s.files.some((x) => x.state === 'uploading')) {
+            started = true;
+            return { ...f, state: 'uploading', progress: 0 };
+          }
+          return f;
+        });
+        return { files, failUpload: false };
+      });
+    }, 240);
+  }
+
+  /* ── Simulated commit. REPLACE with your own POST. ── */
+  commit() {
+    this.setState({ record: 'committing', attempted: true });
+    window.setTimeout(() => {
+      const fault = this.state.commitFault;
+      if (fault === 'fail') this.setState({ record: 'failed', commitFault: null });
+      else if (fault === 'lose') this.setState({ record: 'unknown', commitFault: null });
+      else if (fault === 'stale') this.setState({ record: 'stale', commitFault: null });
+      else this.setState({ record: 'in-service' });
+    }, 900);
+  }
+
+  renderVals() {
+    const p = this.props;
+    const uploadTiming = p.uploadTiming ?? 'onArrival';
+    const removalAfterCommit = p.removalAfterCommit ?? 'never';
+    const evidencePolicy = p.evidenceRequired ?? 'required';
+    const canRemove = p.harnessRemovalRight ?? false;
+
+    const { files, status, certNo, record, attempted } = this.state;
+    const committed = record === 'in-service';
+    const evidenceIsRequired = evidencePolicy === 'required';
+    const removalAllowed = !committed || (removalAfterCommit === 'roleGated' && canRemove);
+
+    /* The pattern's own gate: evidence status AND the record's own fields. */
+    const missingCert = certNo.trim() === '';
+    const evidenceBlocks = evidenceIsRequired
+      ? status !== 'idle'
+      : status === 'busy' || status === 'failed';
+    const commitDisabled = committed || record === 'committing' || missingCert || evidenceBlocks;
+
+    const note = committed
+      ? 'GG-2214 is back in service. Its certificate is part of the record.'
+      : record === 'committing' ? 'Posting the calibration record…'
+      : record === 'failed' ? 'The post failed. Nothing was lost — try again.'
+      : record === 'unknown' ? 'Outcome unknown. Check CAL-2026-0912 before posting again.'
+      : record === 'stale' ? 'The record changed underneath you. Reload it before posting again.'
+      : missingCert ? 'Enter the certificate number.'
+      : status === 'busy' ? 'Waiting for the evidence to finish uploading.'
+      : status === 'failed' ? 'One file did not upload. Retry it, or remove it.'
+      : status === 'invalid' && evidenceIsRequired ? 'Attach the certificate.'
+      : uploadTiming === 'onSave' ? 'Evidence uploads with the record when you post.'
+      : 'Ready to post.';
+
+    return {
+      files, status, certNo, attempted,
+      uploadTiming, removalAfterCommit, evidencePolicy,
+      recordState: record,
+      evidenceIsRequired,
+      maxSize: 20 * 1024 * 1024,
+      targetLabel: committed && !removalAllowed
+        ? 'Evidence locked — the record is posted'
+        : 'Drop the certificate and measurement data here, or browse',
+      evidenceHint: 'PDF or CSV · up to 20 MB each · 4 files'
+        + (uploadTiming === 'onSave' ? ' · uploaded when you post' : ''),
+      setDisabled: committed && !removalAllowed,
+      commitDisabled,
+      committing: record === 'committing',
+      commitLabel: committed ? 'Returned to service' : 'Return GG-2214 to service',
+      commitNote: note,
+      fileSummary: files.length
+        ? files.map((f) => f.state ?? 'complete').join(', ')
+        : 'none',
+
+      showOutcome: record === 'failed' || record === 'unknown' || record === 'stale',
+      outcomeTone: record === 'failed' ? 'danger' : 'warning',
+      outcomeTitle: record === 'unknown' ? 'Outcome unknown'
+        : record === 'stale' ? 'CAL-2026-0912 has moved on'
+        : 'The record was not posted',
+      outcomeBody: record === 'unknown'
+        ? 'The post left this terminal and nothing came back. CAL-2026-0912 may or may not exist. Open the calibration register and check before posting again — a second post would double-book the gauge.'
+        : record === 'stale'
+          ? 'Someone closed this calibration record at 14:20 (IST) while this tab was open, so the post was refused rather than merged into it. Your evidence and certificate number are untouched — reload the record and check what is already attached before posting again.'
+          : 'Nothing was lost: the certificate number, the files and their uploaded state are all still here. Post again when the network is back.',
+
+      leaveWarning: this.state.leaveWarning,
+      leaveBody: uploadTiming === 'onArrival'
+        ? files.filter((f) => f.state === 'complete').length + ' file(s) have already reached the certificate store, but CAL-2026-0912 is not posted — leaving now orphans them, and the gauge stays out of service.'
+        : 'Nothing has left this terminal yet. Leaving now discards the evidence entirely, and the gauge stays out of service.',
+      onLeave: () => this.setState({ leaveWarning: true }),
+      onLeaveStay: () => this.setState({ leaveWarning: false }),
+      onLeaveGo: () => { clearInterval(this.timer); this.setState({ files: [], certNo: '', record: 'draft', status: 'invalid', attempted: false, leaveWarning: false }); },
+      onStale: () => this.setState({ commitFault: 'stale' }),
+
+      onCertNo: (e) => this.setState({ certNo: e.target.value }),
+      onFiles: (next) => {
+        this.setState({ files: next, record: (record === 'failed' || record === 'unknown' || record === 'stale') ? 'draft' : record });
+        if (uploadTiming === 'onArrival' && next.some((f) => f.state === 'queued')) {
+          window.setTimeout(() => this.runUploads(), 0);
+        }
+      },
+      onStatus: (s) => this.setState({ status: s }),
+      onCommit: () => {
+        if (uploadTiming === 'onSave' && this.state.files.some((f) => f.state === 'queued')) {
+          this.runUploads();
+          this.setState({ attempted: true });
+          return;
+        }
+        this.commit();
+      },
+
+      onSeed: () => {
+        this.setState({
+          files: [
+            { id: 's1', name: 'PMS-CAL-26-4471_GG-2214.pdf', size: 1841152, state: 'complete', meta: 'Pune Metrology Services' },
+            { id: 's2', name: 'GG-2214_readings.csv', size: 24576, state: 'queued' },
+          ],
+        });
+        if (uploadTiming === 'onArrival') window.setTimeout(() => this.runUploads(), 0);
+      },
+      onFailUpload: () => { this.setState({ failUpload: true }); this.runUploads(); },
+      onFailCommit: () => this.setState({ commitFault: 'fail' }),
+      onLoseCommit: () => this.setState({ commitFault: 'lose' }),
+      onReset: () => { clearInterval(this.timer); this.setState({ files: [], certNo: '', record: 'draft', status: 'invalid', attempted: false, failUpload: false, commitFault: null }); },
+      locked: committed,
+    };
+  }
+}
+</script>
+</body>
+</html>

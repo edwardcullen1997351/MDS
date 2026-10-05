@@ -1,0 +1,318 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="MultiCombobox" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>MultiCombobox — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:5px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.rows{display:flex;flex-direction:column;gap:14px}
+.w280{width:280px}
+.w360{width:360px}
+
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+const Do = ({children}) => <div className="pane do"><h3>Do</h3><ul>{children}</ul></div>;
+const Dont = ({children}) => <div className="pane dont"><h3>Don't</h3><ul>{children}</ul></div>;
+const { MultiCombobox, Combobox, Field, Tag, Text, Button, Badge } = window.MeridianDesignSystem_962c43;
+
+const CUISINES = [
+  {value:'basque',label:'Basque'},{value:'ethiopian',label:'Ethiopian'},
+  {value:'georgian',label:'Georgian',description:'Khachapuri, walnut sauces'},
+  {value:'levantine',label:'Levantine'},{value:'oaxacan',label:'Oaxacan',description:'Mole, tlayudas, mezcal'},
+  {value:'sichuan',label:'Sichuan'},{value:'thai',label:'Thai'},
+];
+function Demo({initial=['georgian','sichuan','thai','basque'],label='Cuisines',...p}){
+  const [v,setV] = React.useState(initial);
+  /* aria-label, not just a placeholder. §14 of this very spec says to lint "a
+     MultiCombobox with no Field ancestor and no aria-label", and this helper
+     backs ten of the demos below — so the spec was tripping its own
+     component's warning ten times per load and prescribing a rule against
+     itself. It went unseen because a literal \n in this script had blanked the
+     whole page; the warnings only surfaced once it rendered. */
+  return <div className="w360"><MultiCombobox aria-label={label} value={v} onChange={setV} options={CUISINES} placeholder="Search cuisines" {...p} /></div>;
+}
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>MultiCombobox</h1>
+    <p className="lede">Several values from a list the system knows: tokens in the box, a searchable list beneath it, and a list that stays open while you pick. It is not <code>Combobox</code> with a flag — going from one value to several changes the box, the commit model, the removal routes, the overflow rule and the announcement contract, which is five components' worth of decisions and exactly why both specs that wanted it refused to grow their own.</p>
+    <div className="meta">
+      <span>components/forms/MultiCombobox.jsx · core/anchor.js</span><span>window.MeridianDesignSystem_962c43.MultiCombobox</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 2 open items</span><span>since: 1.19.0</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Several values, a known list, and a box that grows.">
+    <p>Use a MultiCombobox when the answer is <em>zero or more</em> values, the set is <em>authored by the system</em> rather than typed by the user, and it is long enough or unfamiliar enough that searching beats reading — permissions on a share link, tags on an article, ingredients to exclude, regions in a report filter.</p>
+    <p><strong>Two components asked for this one and neither absorbed it.</strong> <code>Combobox</code> §14 logged "multi-select" and <code>Autocomplete</code> §14 logged "a tag input"; both said the same thing — it should compose them, not arrive as a <code>multiple</code> prop. The reason is that plurality is not a flag. The box loses its fixed height, the press stops closing the list, removal needs two routes, overflow becomes a rule, and the announcement becomes a count.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Pick several from a known list','MultiCombobox','This component.'],
+      ['Pick exactly one from a known list','Combobox','Committing and closing is its entire interaction model.'],
+      ['Let the user type values you do not know','Autocomplete + Tag list','Here the typed text can never be a value; there, it is the point.'],
+      ['Offer a short closed set that filters data','ChipGroup','Up to seven, all visible, no search, no popover. Cheaper in every way when it fits.'],
+      ['Ask a set of independent yes/no questions','CheckboxGroup','Twelve or fewer booleans under one question — no search, no tokens.'],
+      ['Pick several from hundreds, with structure','MultiCombobox + server search','Pass onSearch with filter={false} and cap results (§13).'],
+      ['Show values the system chose','Tag list, read-only','A control the user cannot change is not an input.'],
+    ]}/>
+    <div className="demo col"><Demo /><Text size="xs" tone="tertiary">Four selected, collapsed to three at rest. Focus the box to see them all.</Text></div>
+    <ul>
+      <li><strong>Do not use</strong> under about seven fixed options — that is a <code>ChipGroup</code>, and it needs no popover, no search field and no overflow rule.</li>
+      <li><strong>Do not use</strong> where order matters to the user. Values are emitted in option order (§13); a control whose output is a ranked list is a different component.</li>
+      <li><strong>Do not use</strong> in a table cell. The box changes height as tokens wrap, which re-flows the row under the cursor.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A growing box, tokens, a counter, and Combobox's list.">
+    <div className="demo col"><Demo initial={['georgian','thai']} /></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Box</strong> — <code>--multi-combobox-background</code> on <code>--multi-combobox-min-height-*</code>, NOT <code>--control-h-*</code>. It starts at one control height and grows as tokens wrap; a fixed height cannot express that.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>Tokens</strong> — real <code>Tag</code>s, <code>font="sans"</code>, each with its own ×. Sans rather than mono because these labels are prose the design authored, not identifiers out of the data.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Overflow counter</strong> — "+3", typographic, <code>--multi-combobox-overflow-text</code>. Not a <code>Badge</code>: a Badge states a condition the system determined, and this is a count of what the user selected.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Query input</strong> — <code>role="combobox"</code>, flexes to fill the last row, minimum 60 px so it is always clickable. The placeholder disappears behind the first token.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>List</strong> — the anchored surface from <code>anchor.js</code>, <code>role="listbox"</code> with <code>aria-multiselectable</code>. Fixed-position, so an ancestor's <code>overflow: hidden</code> cannot clip it.</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>Checkbox gutter</strong> — a square / square-check glyph on every row, reserved at all times. Combobox uses a trailing tick because its rows commit; these rows toggle, and a gutter that appears on selection would re-flow the list under the cursor.</span></div>
+      <div className="callout"><span className="cnum">7</span><span><strong>Count region</strong> — a visually hidden, always-mounted <code>role="status"</code> reading "3 selected" (§08).</span></div>
+    </div>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Fifteen, and two of them carry the plural rules.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['options','(Option | string)[]','[]','{ value, label, description?, disabled? }. A bare string is shorthand for both fields.'],
+      ['value','string[]','—','Always an array. Keep selected values IN options or their tokens cannot render (§13).'],
+      ['onChange','(next: string[]) => void','—','Emits the next array in OPTION order — not an event, never a delta.'],
+      ['onSearch','(query) => void','—','Server-side search. Pass filter={false} with it or results are filtered twice.'],
+      ['filter','false | (option, query) => boolean','label + description','Case-insensitive substring by default.'],
+      ['placeholder','string','—','Shown only while nothing is selected.'],
+      ['collapseAfter','number | false','3','Tokens shown at rest before collapsing to “+N”. Focused, everything shows.'],
+      ['max','number','—','Selection ceiling. Unselected rows go aria-disabled and the list says why.'],
+      ['emptyMessage','ReactNode','\u2018No matches\u2019','Shown in place of the list.'],
+      ['loading','boolean','false','Spinner in the chevron slot, “Searching…” in the list.'],
+      ['size','\u2018sm\u2019 | \u2018md\u2019 | \u2018lg\u2019','md','Minimum height and type size; tokens step down one size from the box.'],
+      ['invalid','boolean','false','Set by Field when it carries an error. The message must come with it.'],
+      ['disabled','boolean','false','No tokens are removable and the list cannot open.'],
+      ['style','CSSProperties','—','Applied to the wrapper. Width belongs here or on the Field.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Not variants so much as four rules you can set.">
+    <div className="demo col">
+      <Row label="collapseAfter=3"><Demo /></Row>
+      <Row label="collapseAfter={false}"><Demo collapseAfter={false} /></Row>
+      <Row label="max={2}"><Demo initial={['thai','sichuan']} max={2} /></Row>
+      <Row label="empty · sm"><Demo initial={[]} size="sm" /></Row>
+      <Row label="disabled"><Demo initial={['thai','basque']} disabled /></Row>
+    </div>
+    <p><strong>Collapsing is a rest state, never a focused one.</strong> A user reading a form sees a stable box of three tokens and a count; the moment they focus it, every token is present and every × is reachable. Hiding a value behind a counter that the keyboard cannot expand is the failure mode this rule exists to prevent — so the counter is <code>aria-hidden</code> and the count region carries the real total.</p>
+    <p><strong><code>max</code> disables rows, it does not hide them.</strong> A list that silently shortens at the ceiling looks broken; a list whose unselected rows are dimmed with "Limit of 2 reached" explains itself. Already-selected rows stay live so the user can swap.</p>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Three, and the token steps down one.">
+    <div className="demo col">
+      <Row label="sm"><Demo initial={['thai','georgian']} size="sm" /></Row>
+      <Row label="md"><Demo initial={['thai','georgian']} size="md" /></Row>
+      <Row label="lg"><Demo initial={['thai','georgian']} size="lg" /></Row>
+    </div>
+    <p>The size sets the box's <em>minimum</em> height and the type; it never caps the height, because the box's job is to grow. Tokens render one rung smaller than the box (<code>sm</code> tags in an <code>sm</code>/<code>md</code> box, <code>md</code> tags at <code>lg</code>) so a full row of them still clears the box's padding.</p>
+    <p><code>lg</code> exists for the same reason it does on <code>Input</code>: 16 px is the largest type iOS Safari will not zoom to on focus, and this control focuses its input on every open.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Nine, and three of them only exist because of plurality.">
+    <T cols={['State','What shows','Note']} rows={[
+      ['Empty','Placeholder, chevron.','The placeholder is not a label — it disappears behind the first token.'],
+      ['Filled','Tokens, then the query input on the same row if it fits.','The box has grown; nothing scrolls.'],
+      ['Collapsed','collapseAfter tokens and “+N”.','At rest only. Never while focused or open.'],
+      ['Focused / open','Focus ring on the box, every token shown, list anchored beneath.','The ring is on the BOX, not the input: the box is the control.'],
+      ['Searching','“Searching…” and a spinning chevron.','loading — the list is not rendered underneath it.'],
+      ['No matches','emptyMessage in place of the list.','The list stays open: the next keystroke may match.'],
+      ['At the ceiling','“Limit of N reached”; unselected rows dimmed and aria-disabled.','Selected rows stay live so a user can swap one out.'],
+      ['Invalid','Critical border and ring, through Field.','Colour is never the only cue — the message is required (§13).'],
+      ['Disabled','Greyed box, no × on any token, list cannot open.','A disabled multi-select still SHOWS its values; that is the point of tokens.'],
+    ]}/>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Combobox's keys, plus the one every tag input needs.">
+    <T cols={['Key','Where','Does']} rows={[
+      ['Type','the box','Filters the list and opens it. Typed text is never a value.'],
+      ['\u2193 \u2191','the box','Opens the list; moves the active row, wrapping.'],
+      ['Enter','an active row','TOGGLES it. The list stays open and the query clears.'],
+      ['Backspace','empty query','Removes the LAST token. Only when the query is empty, or it eats the text being edited.'],
+      ['Escape','open','Closes the list. Selection is untouched — there is nothing to revert, every change already committed.'],
+      ['Tab','anywhere','Closes the list and leaves. Nothing is committed on the way out: with several values there is no single “pending” one to guess at.'],
+      ['Home · End','open','First / last row.'],
+      ['\u2190 \u2192','the box','Ordinary caret movement in the query. Tokens are not arrow-navigable — see below.'],
+    ]}/>
+    <p><strong>Tokens are not in the tab order and arrows do not walk them.</strong> Each × is a real button inside a <code>Tag</code>, so it is reachable, but a roving cursor across tokens is a second navigation model inside a control that already has one, and it competes with the caret in the query field. Backspace is the keyboard route, and it is the one users try first.</p>
+    <p><strong>Tab does not commit,</strong> which is the one place this diverges from <code>Combobox</code>. There, Tab commits the highlighted row because there is exactly one pending value; here, highlighting is just a cursor.</p>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="The plural announcement contract, which is the hard part.">
+    <ul>
+      <li><strong>Roles.</strong> <code>role="combobox"</code> on the input with <code>aria-expanded</code>, <code>aria-controls</code>, <code>aria-autocomplete="list"</code> and <code>aria-activedescendant</code>; <code>role="listbox"</code> with <code>aria-multiselectable="true"</code> on the list; <code>aria-selected</code> on every row, including the unselected ones — an option that never reports <code>false</code> gives the user no way to hear what is off.</li>
+      <li><strong>The count, not the list.</strong> One visually hidden, always-mounted <code>role="status"</code> reads "3 selected" after every change. Re-reading four labels on every keystroke is how these controls become unusable; the labels are already available on demand as tokens and as <code>aria-selected</code> rows.</li>
+      <li><strong>The count region is also <code>aria-describedby</code></strong> on the input, so arriving at the control announces the current total before the user types anything.</li>
+      <li><strong>Every token's × has a name</strong> from <code>Tag</code>'s <code>removeLabel</code> ("Remove Thai"), so the buttons are distinguishable in a rotor listing.</li>
+      <li><strong>The name comes from <code>Field</code>.</strong> With no <code>Field</code> and no <code>aria-label</code> the control warns; the placeholder is not a label and vanishes behind the first token.</li>
+      <li><strong>Invalid is never colour alone</strong> (1.4.1): <code>aria-invalid</code> plus a message through <code>Field</code>, which the input references.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="One drop-in. Tokens do not animate.">
+    <T cols={['Moment','Motion','Token']} rows={[
+      ['List opening','8px down plus a fade, at --duration-fast.','--anim-drop-in'],
+      ['List closing','None — it unmounts. Dismissal is instant everywhere in this system.','—'],
+      ['Token added or removed','NOTHING.','—'],
+      ['Box growing a row','NOTHING.','—'],
+      ['Hover, focus, border','Cross-fade in place.','--transition-control'],
+    ]}/>
+    <p><strong>Tokens appear and disappear instantly, and the box jumps a row without easing.</strong> Animating either one puts motion directly under the pointer at the moment the user is aiming at the next row — and a height transition on a wrapping container mis-measures during a font swap. The user's own press is the feedback; nothing needs to be dramatised.</p>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="Labels, limits, and how to write the plural.">
+    <T cols={['Do','Not','Why']} rows={[
+      ['Label: “Cuisines”','Label: “Select cuisines”','The control already announces its role. Verbs in labels read as buttons.'],
+      ['Placeholder: “Search cuisines”','Placeholder: “Cuisines”','The placeholder\u2019s job is to say the box is searchable — the label already named it.'],
+      ['Hint: “Two at most on a shared link.”','Silence, then a blocked click','A ceiling is a rule; state it before it bites.'],
+      ['Empty: “No matches”','“No results found for your query.”','Two words at the top of a list that is about to change again.'],
+      ['Option labels in sentence case','ALL CAPS or Title Case','They sit inside tokens; caps double the width.'],
+    ]}/>
+    <ul>
+      <li><strong>Plural labels for plural controls.</strong> "Cuisines", "Permissions", "Regions" — a singular label on a multi-select is a promise the control breaks.</li>
+      <li><strong>Keep option labels short enough to be tokens.</strong> Anything past roughly 24 characters truncates in the box; put the detail in <code>description</code>, which the list shows and the token does not.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Composition" note="Inside Field, and how wide.">
+    <div className="demo col">
+      <div style={{maxWidth:420}}>
+        <Field label="Permissions" hint="Two at most on a shared link.">
+          <MultiCombobox value={['read','comment']} onChange={()=>{}} max={2}
+            options={[{value:'read',label:'Read'},{value:'comment',label:'Comment'},{value:'edit',label:'Edit'},{value:'share',label:'Share',description:'Includes external links'}]} />
+        </Field>
+      </div>
+    </div>
+    <ul>
+      <li><strong>Always inside a <code>Field</code></strong> in a form — it supplies the label, the hint, the error and the wiring between them. Outside one (a filter bar), pass <code>aria-label</code>.</li>
+      <li><strong>Give it a width.</strong> A multi-select with no width is as wide as its container and wraps unpredictably; 320–480 px holds three or four tokens on one row at <code>md</code>.</li>
+      <li><strong>In a filter bar,</strong> pair it with <code>collapseAfter={2}</code> so the bar's height is stable, and put the full set behind focus.</li>
+      <li><strong>Not inside a Table cell,</strong> a Menu row, or a Toast. The box grows; those three cannot.</li>
+      <li><strong>Inside a Dialog or Drawer it is fine</strong> — the list is fixed-position and measured by <code>anchor.js</code>, so a scrolling panel cannot clip it.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="12" title="Do and don't" note="What review catches.">
+    <div className="two">
+      <Do>
+        <li>Keep <strong>selected values in <code>options</code></strong>, even outside the current search.</li>
+        <li>Pass <strong><code>filter={'{false}'}</code></strong> whenever the server searches.</li>
+        <li>State a <strong><code>max</code></strong> in the hint before it blocks anyone.</li>
+        <li>Use <strong>ChipGroup</strong> when the set fits in seven.</li>
+        <li>Give the control an <strong>explicit width</strong>.</li>
+      </Do>
+      <Dont>
+        <li>Pass a <strong>string</strong> where an array belongs.</li>
+        <li>Animate <strong>tokens</strong> in or out.</li>
+        <li>Announce <strong>every label</strong> on every change.</li>
+        <li>Put one in a <strong>table cell</strong>.</li>
+        <li>Rely on the <strong>placeholder</strong> as the label.</li>
+      </Dont>
+    </div>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="Seven decisions in the file, and the tokens.">
+    <ul>
+      <li><strong>Values are emitted in OPTION order, never click order,</strong> so a saved value round-trips identically however the user built it. Same rule as ChipGroup; it is the reason <code>onChange</code> hands back a whole array rather than a delta.</li>
+      <li><strong>One emit path.</strong> The ×, Backspace, a row press and Enter all funnel through the same function, so a product only ever handles "here is the next array".</li>
+      <li><strong>The list does not close on select</strong> and the query clears instead. Re-opening between each pick is the defect this component exists to remove.</li>
+      <li><strong>Backspace is guarded on an empty query.</strong> Unguarded, it deletes a token while the user is mid-word — the single most common bug in hand-rolled tag inputs.</li>
+      <li><strong>The surface is <code>anchor.js</code>'s</strong> — the sixth consumer of <code>useAnchor</code> after Combobox, Autocomplete, Tooltip, Popover, Menu and DatePicker: <code>position: fixed</code>, measured, flips once, width matched to the box.</li>
+      <li><strong>A selected value missing from <code>options</code> warns</strong> rather than rendering nothing, because the failure is invisible: the user sees fewer tokens than they picked and cannot remove what they cannot see.</li>
+      <li><strong>Five console warnings:</strong> no accessible name, <code>invalid</code> with no description, <code>onSearch</code> without <code>filter={'{false}'}</code>, a non-array <code>value</code>, and selected values missing from the list.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--multi-combobox-background','--multi-combobox-background-disabled','--multi-combobox-border','--multi-combobox-border-hover','--multi-combobox-border-focus','--multi-combobox-border-invalid','--multi-combobox-radius','--multi-combobox-focus-ring','--multi-combobox-focus-ring-invalid','--multi-combobox-text','--multi-combobox-text-disabled','--multi-combobox-placeholder','--multi-combobox-icon','--multi-combobox-overflow-text','--multi-combobox-min-height-sm','--multi-combobox-min-height-md','--multi-combobox-min-height-lg','--multi-combobox-list-background','--multi-combobox-list-border','--multi-combobox-list-radius','--multi-combobox-list-shadow','--multi-combobox-option-text','--multi-combobox-option-description-text','--multi-combobox-option-match-text','--multi-combobox-option-check','--multi-combobox-option-background-active','--multi-combobox-option-background-selected','--multi-combobox-status-text'].map(t=><span key={t}>{t}</span>)}
+    </div>
+    <p><strong>Twenty-eight tokens, most of which resolve to the same semantics as Combobox's.</strong> That is intended — one list appearance across the system — and they are separate names because a component token may never reference another component's. The genuinely new ones are the box: a min-height family instead of <code>--control-h-*</code>, and the overflow counter's colour.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { Field, MultiCombobox } from '@meridian/ds';
+
+const [tags, setTags] = useState([]);
+
+<Field label="Tags" hint="Up to five.">
+  <MultiCombobox
+    value={tags} onChange={setTags} max={5}
+    placeholder="Search tags"
+    options={allTags} />
+</Field>
+
+// Server-side search — BOTH props, always
+<MultiCombobox
+  value={people} onChange={setPeople}
+  options={results} onSearch={runQuery} filter={false}
+  loading={pending} placeholder="Search people" />`}</pre>
+    <ul>
+      <li><strong>Testing.</strong> <code>getByRole('combobox', {'{ name: /tags/i }'})</code>; assert <code>aria-multiselectable</code> on the listbox, that a row press leaves <code>aria-expanded="true"</code>, that Backspace on an empty query removes the last token and on a non-empty one does not, and that <code>onChange</code> returns option order rather than click order.</li>
+      <li><strong>Lint.</strong> Flag <code>onSearch</code> without <code>filter={'{false}'}</code>; a <code>MultiCombobox</code> with no <code>Field</code> ancestor and no <code>aria-label</code>; a string <code>value</code>; one inside a <code>Table</code>; and fewer than eight <code>options</code> (that is a <code>ChipGroup</code>).</li>
+      <li><strong>Frozen 5 Sep 2026.</strong> API closed: <code>options</code>, <code>value</code>, <code>onChange</code>, <code>onSearch</code>, <code>filter</code>, <code>placeholder</code>, <code>collapseAfter</code>, <code>max</code>, <code>emptyMessage</code>, <code>loading</code>, <code>size</code>, <code>invalid</code>, <code>disabled</code>, <code>style</code>, plus native input attributes.</li>
+      <li><strong>Closed — the two entries that asked for this.</strong> <code>Combobox</code> §14 ("multi-select") and <code>Autocomplete</code> §14 ("a tag input") are both answered here; neither grew a <code>multiple</code> prop, which was the condition both set.</li>
+      <li><strong>Open — creatable values.</strong> A user typing a tag that does not exist currently gets "No matches". Allowing an "Add ‘foo’" row is a genuinely different contract: the value has no id until the server gives it one, so <code>onChange</code> would have to emit something that is not yet an option. It needs an API decision (a separate <code>onCreate</code>, not a boolean) before it ships.</li>
+      <li><strong>Open — grouped and virtualised results,</strong> inherited from <code>Combobox</code> §14 and now doubled: this control keeps its list open across many selections, so long lists are hit harder here. Cap server results until both land.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

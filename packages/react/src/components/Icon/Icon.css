@@ -1,0 +1,45 @@
+.ds-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+  vertical-align: middle;
+  color: inherit;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  box-sizing: border-box;
+}
+
+/* Sizing Tiers */
+.ds-icon--sm {
+  width: 16px;
+  height: 16px;
+}
+
+.ds-icon--md {
+  width: 20px;
+  height: 20px;
+}
+
+.ds-icon--lg {
+  width: 24px;
+  height: 24px;
+}
+
+.ds-icon--xl {
+  width: 32px;
+  height: 32px;
+}
+
+/* Animation utilities */
+.ds-icon--spin {
+  animation: ds-icon-spin 1s linear infinite;
+}
+
+@keyframes ds-icon-spin {
+  to { transform: rotate(360deg); }
+}

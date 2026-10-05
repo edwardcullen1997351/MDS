@@ -1,0 +1,61 @@
+.ds-searchfield-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.ds-searchfield-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ds-color-neutral-500, #6b7280);
+  border-radius: var(--ds-radii-full, 9999px);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  transition: color var(--ds-motion-duration-fast, 150ms) ease, background-color var(--ds-motion-duration-fast, 150ms) ease;
+}
+
+.ds-searchfield-clear-btn:hover {
+  color: var(--ds-color-neutral-900, #111827);
+  background-color: var(--ds-color-neutral-100, #f3f4f6);
+}
+
+.ds-searchfield-clear-btn:focus-visible {
+  outline: 2px solid var(--ds-color-brand-500, #2563eb);
+  outline-offset: 1px;
+}
+
+.ds-searchfield-kbd {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-family: monospace;
+  font-weight: 600;
+  color: var(--ds-color-neutral-600, #4b5563);
+  background-color: var(--ds-color-neutral-100, #f3f4f6);
+  border: 1px solid var(--ds-color-neutral-300, #d1d5db);
+  border-radius: var(--ds-radii-xs, 2px);
+  user-select: none;
+}
+
+.ds-searchfield-spinner {
+  display: inline-block;
+  animation: ds-spin 1s linear infinite;
+  color: var(--ds-color-brand-600, #2563eb);
+  font-size: 14px;
+}
+
+@keyframes ds-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

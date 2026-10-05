@@ -1,0 +1,112 @@
+<!-- @dsCard group="Components" viewport="780x380" name="Navigation — tree" subtitle="Recursive hierarchy tree: in-place expand/collapse, deep asset traversal, and treeitem semantics" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Tree Navigation</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--surface-card);padding:20px;font-family:var(--font-sans)}
+.row{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap}
+.col{display:flex;flex-direction:column;gap:8px}
+.lbl{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold)}
+.tree-box{width:250px;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card);display:flex;flex-direction:column;padding:8px 6px;max-height:300px;overflow-y:auto}
+.tree-item{display:flex;align-items:center;justify-content:space-between;padding:4px 6px;font-size:var(--text-xs);color:var(--text-secondary);border-radius:var(--radius-xs);cursor:pointer}
+.tree-item:hover{background:var(--surface-sunken);color:var(--text-primary)}
+.tree-item.active{background:var(--status-info-soft);color:var(--text-link);font-weight:var(--weight-medium)}
+.tree-chev{width:14px;height:14px;display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);cursor:pointer;flex-shrink:0}
+.tree-badge{font-size:9px;padding:1px 5px;border-radius:8px;background:var(--surface-sunken);font-family:var(--font-mono)}
+.tree-item.active .tree-badge{background:var(--action-solid);color:#fff}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Text, Button } = window.MeridianDesignSystem_962c43;
+
+const MOCK_DATA = [
+  {
+    id: 'press-shop',
+    label: 'Press Shop (Shop 02)',
+    badge: 6,
+    children: [
+      {
+        id: 'line-03',
+        label: 'Tandem Press Line 03',
+        children: [
+          { id: 'st-01', label: 'Station 01 (De-coiler)' },
+          { id: 'st-04', label: 'Station 04 (Deep Draw)', children: [
+            { id: 'die-4820', label: 'Die Set DIE-BRK-4820-A' },
+            { id: 'sensor-02', label: 'Lube Sensor FL-02' }
+          ]}
+        ]
+      }
+    ]
+  },
+  {
+    id: 'weld-shop',
+    label: 'Weld Shop (Shop 04)',
+    children: [
+      { id: 'spot-cell', label: 'Robotic Spot Weld Cell' }
+    ]
+  }
+];
+
+function Demo(){
+  const [exp, setExp] = React.useState({ 'press-shop': true, 'line-03': true, 'st-04': true });
+  const [active, setActive] = React.useState('die-4820');
+
+  const toggle = (id, e) => {
+    e.stopPropagation();
+    setExp(p => ({ ...p, [id]: !p[id] }));
+  };
+
+  const renderNodes = (nodes, level = 1) => {
+    return nodes.map(n => {
+      const has = n.children && n.children.length > 0;
+      const isOpen = !!exp[n.id];
+      const isAct = active === n.id;
+
+      return (
+        <div key={n.id} style={{display:'flex',flexDirection:'column'}}>
+          <div
+            className={`tree-item ${isAct?'active':''}`}
+            style={{paddingLeft: (level - 1) * 12 + 4}}
+            onClick={() => setActive(n.id)}
+          >
+            <div style={{display:'flex',alignItems:'center',gap:4}}>
+              {has ? (
+                <span className="tree-chev" onClick={(e)=>toggle(n.id, e)}>
+                  {isOpen ? '▾' : '▸'}
+                </span>
+              ) : <span style={{width:14}} />}
+              <span>{n.label}</span>
+            </div>
+            {n.badge ? <span className="tree-badge">{n.badge}</span> : null}
+          </div>
+          {has && isOpen && renderNodes(n.children, level + 1)}
+        </div>
+      );
+    });
+  };
+
+  return (
+    <div className="row">
+      <div className="col">
+        <span className="lbl">Plant Asset Tree</span>
+        <div className="tree-box">
+          {renderNodes(MOCK_DATA)}
+        </div>
+      </div>
+
+      <div className="col" style={{flex:1,minWidth:240}}>
+        <span className="lbl">Selected Asset Context</span>
+        <div style={{background:'var(--surface-sunken)',border:'var(--border-hairline)',borderRadius:'var(--radius-md)',padding:14,fontSize:'var(--text-xs)'}}>
+          <div style={{fontFamily:'var(--font-mono)',marginBottom:6}}>Selected: <strong>{active}</strong></div>
+          <div style={{color:'var(--text-secondary)',lineHeight:1.4}}>
+            Tree Navigation manages recursive multi-level containment for complex plant assets and Bill of Materials (BOM) without losing branch context.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

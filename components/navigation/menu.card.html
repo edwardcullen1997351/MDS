@@ -1,0 +1,45 @@
+<!-- @dsCard group="Components" viewport="700x300" name="Navigation — menu" subtitle="Anchored command list: icons, shortcuts, groups, checkable rows, one critical action" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Menu</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--surface-card);padding:20px;font-family:var(--font-sans)}.row{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap}.lbl{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold)}.col{display:flex;flex-direction:column;gap:8px}.surface{background:var(--menu-background);border:var(--border-width) solid var(--menu-border);border-radius:var(--menu-radius);box-shadow:var(--menu-shadow);width:232px}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Menu, MenuList, Button, IconButton } = window.MeridianDesignSystem_962c43;
+function Demo(){
+  const [dense,setDense]=React.useState(true);
+  const [cursor,setCursor]=React.useState(4);
+  return (
+  <div className="row">
+    <div className="col">
+      <span className="lbl">Trigger</span>
+      <div className="row" style={{gap:10}}>
+        <Menu label="Row actions" trigger={<IconButton icon="ellipsis" label="Row actions" variant="ghost" />} items={[
+          {label:'Open line',icon:'external-link',shortcut:'⏎'},
+          {label:'Duplicate',icon:'copy',shortcut:'⌘D'},
+          'divider',
+          {label:'Stop line',icon:'octagon-x',tone:'critical'}]} />
+        <Menu label="Export" size="sm" trigger={<Button variant="secondary" size="sm" iconRight="chevron-down">Export</Button>} items={[
+          {label:'CSV',icon:'file-text'},{label:'Parquet',icon:'file-box'},'divider',
+          {label:'Scheduled report',icon:'calendar-clock',disabled:true,description:'Needs an owner'}]} />
+      </div>
+    </div>
+    <div className="col">
+      <span className="lbl">Surface</span>
+      <div className="surface">
+        <MenuList cursor={cursor} onCursorChange={setCursor} onSelect={(it)=>it.label==='Compact rows'&&setDense(!dense)} items={[
+          {group:'View',items:[
+            {label:'Compact rows',checked:dense},
+            {label:'Show scrap column',checked:false}]},
+          'divider',
+          {group:'Line',items:[
+            {label:'Assign owner',icon:'user-plus'},
+            {label:'Rename',icon:'pencil',shortcut:'F2'},
+            {label:'Stop line',icon:'octagon-x',tone:'critical',shortcut:'⌘⌫'}]}]} />
+      </div>
+    </div>
+  </div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

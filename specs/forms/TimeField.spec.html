@@ -1,0 +1,344 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="TimeField" subtitle="Full specification — a wall-clock time as a string: 24-hour, typed, no AM/PM, no list, and why it is not part of DatePicker" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>TimeField — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px 28px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:118px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.val{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { TimeField, DatePicker, Field, Select, Input, Text, Button, Alert } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{flex:1,minWidth:0}}>{children}</div></div>;
+
+function Spec(){
+if (!TimeField) return <div className="page"><div className="masthead"><span className="eyebrow">Forms · Component specification</span><h1>TimeField</h1><p className="lede">The design-system bundle has not been recompiled with <code>components/forms/TimeField.jsx</code> yet — reload once it has.</p></div></div>;
+const [t,setT] = React.useState('04:12');
+const [shift,setShift] = React.useState('06:00');
+const [date,setDate] = React.useState('2026-09-05');
+const [time,setTime] = React.useState('04:12');
+const [err,setErr] = React.useState('');
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>TimeField</h1>
+    <p className="lede">A wall-clock time as two integers, in an <code>'HH:mm'</code> string. It is deliberately <em>not</em> part of <code>DatePicker</code>: fusing them would have changed that component's value <strong>type</strong> on a boolean, and half the real cases need only one of the two. Kept apart, both halves stay honest strings and the product builds the instant from them plus the record's Site timezone — the only place that decision can correctly be made. 24-hour always, typed rather than picked, and normalised only when you stop typing.</p>
+    <div className="meta">
+      <span>components/forms/TimeField.jsx · time.js</span><span>window.MeridianDesignSystem_962c43.TimeField</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items</span><span>since: 1.22.0</span><span>0 own tokens · borrows --input-*</span><span>policy: Design Principles → Dates, times and timezones</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="One time on the clock, typed by someone who already knows it.">
+    <p>Use it wherever a record carries a time of day: a planned stop, a shift boundary, a cutoff, or — composed with <code>DatePicker</code> — the moment a line went down. The operator entering it knows the number; the job of the field is to accept it in the shape they will type and to stop being clever about the rest.</p>
+    <T cols={['You need…','Component','Why']} rows={[
+      ['A time of day in a record','TimeField','This component.'],
+      ['A date and a time (an instant)','DatePicker + TimeField','Two strings; the product combines them with the Site zone (§13). There is no fused control, by decision.'],
+      ['A duration','Input with a unit suffix','"14 min" is not a clock time, and a time field cannot express 90 minutes.'],
+      ['One of a fixed set of shift starts','Select','Three known values are a list. A calendar-style time control for 06:00 / 14:00 / 22:00 is three keystrokes too many.'],
+      ['A relative window for a chart','ChipGroup','"Last 24 hours" has no clock time in it.'],
+      ['Seconds, or sub-minute precision','Not this component (§12)','Nothing in an operations UI is entered to the second by hand; if a machine reports it, display it, do not offer to type it.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="alone"><div style={{maxWidth:200}}><Field label="Planned stop" hint="Site time."><TimeField value={t} onChange={setT} zone="CET" /></Field></div></Row>
+      <Row label="stepped"><div style={{maxWidth:200}}><Field label="Shift start" hint="Quarter hours."><TimeField value={shift} onChange={setShift} step={15} zone="CET" /></Field></div></Row>
+      <Row label="value"><span className="val">{JSON.stringify(t)} · {JSON.stringify(shift)}</span></Row>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Four parts, and one of them is a label that never converts.">
+    <div className="demo col">
+      <div style={{display:'flex',flexDirection:'column',gap:10}}>
+        {[['1','The box — the --input-* control, borrowed wholesale as Select, Combobox and DatePicker do, so a time field cannot drift from the text field beside it.'],
+          ['2','The input — mono, tabular, 24-hour. The typed text IS the value; nothing rewrites it while the caret is in it.'],
+          ['3','Zone label (optional) — "CET" at --text-2xs. It LABELS, it never converts: a time with no date has no offset to convert with. Its value comes from the record’s Site.'],
+          ['4','Clear (×) — an IconButton at its own 28px sm box, present only when there is a value.'],
+          ['5','A visually-hidden live region — announces the spoken time when the ARROWS change it, because a nudge moves the text with no keystroke a screen-reader user could infer.']].map(([n,t2])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t2}</Text></div>
+        ))}
+      </div>
+      <Row label="rendered"><div style={{maxWidth:200}}><TimeField aria-label="Anatomy example" value={t} onChange={setT} zone="CET" /></div></Row>
+    </div>
+    <p>There are no stacked spinner buttons, and their absence is a measurement rather than a preference: two arrows inside a 34px control are about 16px each, which is the 2.5.8 failure <code>DatePicker</code>'s clear button shipped with at 1.21.0. The keyboard does the same job better, and <code>step</code> makes it precise.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Twelve, and `zone` is the one to read carefully.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['value','string','—','“HH:mm”, 24-hour. Controlled. Never a Date, never minutes-since-midnight — both warn (§13).'],
+      ['onChange','(next) => void','—','Emits the next “HH:mm”, or undefined when cleared. Not an event.'],
+      ['step','number','1','Minutes the arrows move by, SNAPPED to that grid: ↑ from 04:07 with step 15 gives 04:15, not 04:22.'],
+      ['min · max','string','—','Inclusive “HH:mm” bounds. Steps clamp at them and never wrap past midnight (§13). min after max warns.'],
+      ['zone','string','—','A LABEL — "CET". It never converts. Take it from the record’s Site, never from the browser.'],
+      ['size','\u2018sm\u2019 | \u2018md\u2019 | \u2018lg\u2019','md','Matched to Input: 28 / 34 / 40px.'],
+      ['disabled · readOnly','boolean','false','readOnly keeps full text contrast on a sunken fill; the arrows do nothing.'],
+      ['clearable','boolean','true','The × that empties the field.'],
+      ['label','ReactNode','—','Only when NOT wrapped in a Field. Warns when neither is present.'],
+      ['placeholder','string','HH:MM','The format IS the hint.'],
+    ]}/>
+    <p className="warn">There is no <code>format</code>, no <code>use12Hour</code>, no <code>seconds</code>, no <code>options</code>, no <code>timezone</code> converter and no <code>defaultValue</code>. Each is refused in §04, §12 or §13 — and <code>use12Hour</code> hardest: a field that sometimes needs a suffix to be unambiguous is a field that is sometimes ambiguous.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="None. Two configuration props get mistaken for variants.">
+    <p>One appearance, one behaviour. <code>step</code> and <code>zone</code> change what the field <em>accepts</em> and what it <em>says</em>, not what it is, and neither adds a second interaction model. What was considered and refused:</p>
+    <T cols={['Rejected','Instead','Why']} rows={[
+      ['A dropdown of times','Typing, or a Select for a fixed set','96 rows to reach 04:15 is slower than four keystrokes, and a listbox of every quarter hour is a scrollbar pretending to be a choice. Where the set really is fixed (three shift starts), Select is the honest control.'],
+      ['12-hour with AM/PM','24-hour, always','12:00 am is midnight to some readers and noon to others. A plant whose shifts turn at 06:00, 14:00 and 22:00 gains nothing from a convention that needs a suffix to be unambiguous — the same argument that makes dates ISO.'],
+      ['Spinner buttons','Arrow keys + step','~16px targets in a 34px control (§02).'],
+      ['A masked input (HH:MM skeleton)','A plain text input with a parser','A mask fights every paste, every backspace and every operator who types 412. The parser accepts what people actually type and normalises on blur.'],
+      ['A seconds field','Nothing','Nobody hand-enters seconds in an operations UI. If a machine reports them, display them.'],
+      ['A timezone SELECTOR','The zone label + the Site','A per-field zone picker invites two records on one screen to disagree about their clock. The Site owns the zone (Design Principles).'],
+    ]}/>
+    <div className="demo col">
+      <Row label="step 1"><div style={{maxWidth:200}}><TimeField aria-label="Step one" value={t} onChange={setT} /></div></Row>
+      <Row label="step 15"><div style={{maxWidth:200}}><TimeField aria-label="Step fifteen" value={shift} onChange={setShift} step={15} /></div></Row>
+      <Row label="fixed set is a Select"><div style={{maxWidth:200}}><Select aria-label="Shift" options={[{value:'06:00',label:'Days · 06:00'},{value:'14:00',label:'Swing · 14:00'},{value:'22:00',label:'Nights · 22:00'}]} /></div></Row>
+    </div>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Three, matched to Input, and the field is narrower than one.">
+    <T cols={['Size','Height','Type','Use']} rows={[
+      ['sm','28px','--text-xs','Table filter rows, toolbars, drawer headers.'],
+      ['md','34px','--text-sm','Default. Forms and detail panels.'],
+      ['lg','40px','--text-lg','Touch — and the same iOS reason Input, Select and DatePicker carry lg: 16px type does not zoom the viewport on focus.'],
+    ]}/>
+    <div className="demo col">
+      {['sm','md','lg'].map(s=>(
+        <Row key={s} label={s}><div style={{maxWidth:200}}><TimeField size={s} aria-label={`Size ${s}`} value={t} onChange={setT} zone="CET" /></div></Row>
+      ))}
+    </div>
+    <p>The field takes its width from its container and needs little of it — but not <em>nothing</em>: five mono characters, plus a zone label and a clear button if they are on. Budget <strong>~150px</strong> beside a <code>DatePicker</code> (about 120px without a <code>zone</code>), rather than an equal share of the row: a time field stretched to 300px reads as a field expecting more than a time. The input carries a <code>5ch</code> minimum width so it can never shrink below the value it is showing — a control may shrink to its content, never below it (§13).</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Input's states, plus the one that matters: mid-edit.">
+    <T cols={['State','Treatment']} rows={[
+      ['Rest · focus','--input-* exactly as Input; the ring is on the box, not the text node.'],
+      ['Typing, unparsed','The text stays EXACTLY as typed and the value is not cleared. "04:" mid-edit must not wipe the time being edited.'],
+      ['Blur','Normalised: 412 → 04:12, 14 → 14:00, now → the current time. On blur only — rewriting under a caret still inside a number moves the caret and fights the typist.'],
+      ['Unparseable on blur','Left as typed, and the FORM says what is wrong. The component does not silently discard input it could not read (§10).'],
+      ['Invalid','Through Field: --input-border-invalid plus --input-focus-ring-invalid.'],
+      ['Disabled · readOnly','Disabled greys the box; readOnly keeps full text contrast on a sunken fill and the arrows do nothing.'],
+      ['At a bound','Steps clamp: ↑ at max stays at max. Never wraps to 00:00 (§13).'],
+    ]}/>
+    <div className="demo col">
+      <Row label="invalid"><div style={{maxWidth:220}}><Field label="Planned stop" error={!err ? 'Enter the time as HH:MM.' : undefined}><TimeField value={err} onChange={setErr} /></Field></div></Row>
+      <Row label="readOnly"><div style={{maxWidth:200}}><TimeField aria-label="Logged at" value="04:12" zone="CET" readOnly /></div></Row>
+      <Row label="disabled"><div style={{maxWidth:200}}><TimeField aria-label="Locked" value="04:12" disabled /></div></Row>
+      <Row label="clamped"><div style={{maxWidth:200}}><TimeField aria-label="Bounded" value={t} onChange={setT} min="06:00" max="14:00" step={30} zone="CET" /></div></Row>
+    </div>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Typing first, arrows as an accelerator — and two keys deliberately left alone.">
+    <T cols={['Key','Does']} rows={[
+      ['Type','04:12 · 4:12 · 412 · 1412 · 14 · 4.12 · now. Commits the moment it parses; normalises on blur.'],
+      ['\u2191 \u2193','+/− one step, snapped to the step grid. Clamped at min/max, never wrapping past midnight.'],
+      ['PageUp · PageDown','+/− one hour, same clamping.'],
+      ['Home · End','NOT bound — in a text input they move the caret, and hijacking them to jump to 00:00 would break editing to save a keystroke. DatePicker binds them because a grid cell has no caret.'],
+      ['Backspace to empty','Clears the value (emits undefined) — the same as the × button.'],
+      ['Tab','One stop for the field. The × is a second stop only while there is a value to clear.'],
+    ]}/>
+    <p>The arrows are an <em>accelerator</em>, not a spinbutton contract — which is why the element stays a plain textbox and does not claim <code>role="spinbutton"</code> (§08). Typing is the fast path for anyone who knows the number, and the field exists mainly to accept it in the shape they will type it.</p>
+    <div className="demo col">
+      <Row label="try it"><div style={{maxWidth:200}}><TimeField aria-label="Keyboard example" value={t} onChange={setT} step={15} zone="CET" /></div></Row>
+      <Text size="xs" tone="tertiary">Type <code>412</code> and Tab. Then <kbd>↑</kbd> to the next quarter hour, <kbd>PageUp</kbd> for an hour, or type <code>now</code>.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="A named text box that tells the truth about its own value.">
+    <ul>
+      <li><strong>It is a real text input,</strong> typable, announced with its <code>Field</code> label, and carrying <code>aria-invalid</code>/<code>aria-required</code>/<code>aria-describedby</code> through <code>FieldContext</code> exactly as <code>Input</code> does.</li>
+      <li><strong>A missing name warns.</strong> "HH:MM" is a format, not a question, and a placeholder is not a label — the rule <code>Select</code> §08 and <code>DatePicker</code> §08 both carry.</li>
+      <li><strong>No <code>role="spinbutton"</code>, deliberately.</strong> That role requires <code>aria-valuenow</code> as a <em>number</em>, and a time is not one: publishing minutes-since-midnight would announce "252" for 04:12 and make the field claim a value type it does not have. The arrows are an accelerator on a textbox, which is what it is.</li>
+      <li><strong>A live region announces arrow changes.</strong> When <kbd>↑</kbd> moves the text, no keystroke tells a screen-reader user what it became — so the spoken form ("4 12") is announced politely. Typed changes are not announced: the user typed them.</li>
+      <li><strong>The zone is inside the field, in text.</strong> It is part of what the field reads out, because a time without its zone is exactly the ambiguity the principles forbid — not a decoration beside the control.</li>
+      <li><strong>The format is stated once, in the hint,</strong> not repeated per keystroke. Errors say what to do ("Enter the time as HH:MM"), never "Invalid time".</li>
+      <li><strong>Targets:</strong> the box is a full control height at every size, and the × is an <code>IconButton</code> at its own 28px <code>sm</code> box — no size override, which is the 2.5.8 lesson from <code>DatePicker</code> 1.21.1.</li>
+      <li><strong>Mono with tabular figures,</strong> so 11:11 and 04:12 are the same width and a column of times does not jitter.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="None. There is nothing here that should move.">
+    <T cols={['Moment','Motion']} rows={[
+      ['Focus · hover · invalid','--transition-control on border and shadow, as every control in the system.'],
+      ['Arrow nudge','None. The digits change; they do not roll, slide or count.'],
+      ['Normalisation on blur','None. 412 becomes 04:12 instantly — an animated correction draws attention to the user having typed it "wrong", which they did not.'],
+      ['Reduced motion','Nothing to stop.'],
+    ]}/>
+    <p>The pattern to refuse is the rolling-digit or drum-roll time control borrowed from phone pickers. It is slower than typing, impossible to hit precisely with a pointer, and on a shop-floor tablet it turns a four-keystroke entry into a dexterity test.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="24-hour digits, a zone, and errors that say what to type.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>24-hour, zero-padded:</strong> <code>04:12</code>, <code>14:00</code>, <code>22:30</code>.</li>
+        <li><strong>Keep <code>HH:MM</code> as the placeholder.</strong></li>
+        <li><strong>Name the event:</strong> "Planned stop", "Stopped at", "Shift start" — never "Time".</li>
+        <li><strong>Say the zone,</strong> in the field or in the hint: "Site time (CET)".</li>
+        <li><strong>Name shifts, not numbers,</strong> where a shift is the real subject: <em>Days</em>, <em>Swing</em>, <em>Nights</em> (Design Principles §9).</li>
+        <li><strong>Errors that instruct:</strong> "Enter the time as HH:MM", "Must be within the Days shift".</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>AM/PM,</strong> in the value or the hint. §04.</li>
+        <li><strong>Seconds,</strong> or <code>04:12:00</code> in a field a person types.</li>
+        <li><strong>"Time"</strong> as the label. Which time?</li>
+        <li><strong>A bare absolute time with no zone</strong> in a detail view — the principles forbid it.</li>
+        <li><strong>Relative phrasing in the value:</strong> "4 min ago" is a display for a list, not something typed here.</li>
+        <li><strong>"Invalid time".</strong> Say the format.</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="It is the narrowest control in the system, and it stays narrow.">
+    <ul>
+      <li><strong>Width comes from the container,</strong> and it needs about 150px with a <code>zone</code> label — 120px bare. Five mono characters, plus the zone and the clear button if they are on. There is no width prop.</li>
+      <li><strong>Beside a <code>DatePicker</code>, do not split the row evenly.</strong> Give the date the space and the time a fixed <strong>~150px</strong> with a zone label, ~120px without: a stretched time field promises more input than it takes. Both controls floor their input at the width of their own value, so a container too narrow for the pair overflows visibly instead of quietly truncating a date.</li>
+      <li><strong>Below ~320px the pair stacks,</strong> which is the product's layout call (a flex column), not a prop.</li>
+      <li><strong>Touch: <code>lg</code>,</strong> for the 16px type that stops iOS zooming on focus — and because a gloved thumb on a shop-floor tablet is typing digits, not aiming at a picker.</li>
+      <li><strong><code>inputMode="numeric"</code></strong> brings up the digit keypad on a phone, which is the whole mobile story: no drum roll, no wheel, just numbers.</li>
+      <li><strong>Density rides <code>--control-h-*</code></strong> like every control, so a time field lines up with the inputs around it at 24 / 34 / 44px.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{maxWidth:400,border:'var(--border-hairline)',borderRadius:'var(--radius-sm)',padding:12}}>
+        <Field label="Stopped at" hint="Site time (CET).">
+          <div style={{display:'flex',gap:8,minWidth:0}}>
+            <div style={{flex:1,minWidth:0}}><DatePicker value={date} onChange={setDate} /></div>
+            <div style={{width:150,flex:'none'}}><TimeField aria-label="Stopped at, time" value={time} onChange={setTime} step={5} zone="CET" /></div>
+          </div>
+        </Field>
+      </div>
+      <Text size="xs" tone="tertiary">400px: the date takes the slack, the time keeps its 150px, and neither value is clipped. The product owns this row — and owns turning the two strings into one instant.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Most of them are a picker where a keyboard would do.">
+    <div className="two">
+      <div className="pane dont"><h3>Wrong control</h3><ul>
+        <li><strong>A dropdown of every quarter hour.</strong> §04 — a scrollbar pretending to be a choice.</li>
+        <li><strong>A drum roll or wheel.</strong> §09.</li>
+        <li><strong>Three fields for hours, minutes, AM/PM.</strong> Three controls, three ways to be wrong, and no way to type a time.</li>
+        <li><strong>A masked input.</strong> It fights paste, backspace and anyone who types 412.</li>
+        <li><strong>A duration in a time field.</strong> 90 minutes is not a clock time; it is an <code>Input</code> with a unit.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Wrong data</h3><ul>
+        <li><strong>A <code>Date</code> as the value.</strong> It warns. A wall-clock time has no date and therefore no timezone (§13).</li>
+        <li><strong>Minutes since midnight.</strong> Also warns — it is an encoding, not a value a person or an API reads.</li>
+        <li><strong>Assuming the browser's timezone</strong> for anything. The Site owns the zone.</li>
+        <li><strong>A window that crosses midnight</strong> expressed as min/max. 22:00–06:00 is two days; validate the pair in the form.</li>
+        <li><strong>Wrapping steps.</strong> 23:50 + 20 min is tomorrow, and this field cannot say so.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The request to expect: "just add a time to the DatePicker".</strong> It sounds smaller than a second component and is larger. <code>DatePicker</code>'s value is <code>'2026-09-05'</code>; an instant is <code>'2026-09-05T04:12:00Z'</code> <em>plus</em> a zone to render it in — so a <code>time</code> flag would change the type of <code>value</code> on a boolean, and every consumer's form model, validation and API call with it. It would also make the dates that <em>don't</em> carry a time look as though they might. Two fields, two strings, one product-owned join (§14) — and where a genuine single-input instant is needed, that is the deferred <code>DateTimePicker</code>, which shares both helper modules.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="New in 1.22.0 — the small piece that unblocked a deferred large one.">
+    <ul>
+      <li><strong>It exists because a flag would have lied about a type.</strong> <code>DatePicker</code> §13 deferred date-and-time, and the first instinct — a <code>time</code> prop — was refused: it changes the value type on a boolean. This is the smallest honest thing that unblocks time entry, and it is a fraction of <code>DatePicker</code>'s size precisely because it has no calendar: no grid, no panel, no anchoring, no roving tabindex, none of the hard parts.</li>
+      <li><strong><code>'HH:mm'</code> strings, and <code>time.js</code> beside <code>date.js</code>.</strong> Two integers, no date, therefore no timezone — which is exactly why it composes with a date instead of being fused to one. The product joins the two halves with the Site's zone (Design Principles → Dates, times and timezones, written at 1.21.2 for this decision).</li>
+      <li><strong>Steps CLAMP, they never wrap.</strong> 23:50 + 20 minutes is 00:10 <em>tomorrow</em>, and a field with no date cannot say so — a wrapping time field silently files a shift-log entry on the wrong day. The same reasoning as the ISO-string decision: refuse the operation you cannot represent.</li>
+      <li><strong>Steps snap to the step grid.</strong> <kbd>↑</kbd> from 04:07 with <code>step={'{15}'}</code> gives 04:15, not 04:22 — landing on the grid is the point of having one.</li>
+      <li><strong>Normalisation happens on blur, never mid-keystroke</strong> — and the first cut got this wrong in a way that broke the primary path. The value is synced back into the display when it changes externally (a preset, a reset, a saved view), and that sync was allowed to run <em>while the field had focus</em>: commit-on-parse changed the value, the effect rewrote the input, React reset the caret to the end, and the next digit appended to the normalised string. Typing <code>1400</code> produced <code>01:00400</code> on screen and committed <code>01:00</code>. The sync now fires only when <code>value</code> differs from the last value the field saw, with the focus guard in a <em>ref</em> — while the user is typing, the text is theirs. Guarding on <code>focus</code> as a <em>dependency</em> was an intermediate fix that moved the bug instead of closing it: the effect re-ran on the blur transition and overwrote the text with <code>value</code>, so unparseable input was silently discarded — typing <code>9999</code> for 09:59 emptied the field with no error and nothing for the form to validate, since <code>value</code> had never changed. <strong>A sync effect must be keyed on the thing it syncs, not on the state that gates it.</strong></li>
+      <li><strong>A bare one- or two-digit entry is deferred to blur.</strong> It parses as a whole hour, so the first keystroke of <code>1400</code> would otherwise commit 01:00 and hand the form a time nobody meant to enter. Two digits and no separator is an unfinished entry, not an hour — and blur commits as well as normalises, so the deferral delays the entry rather than swallowing it.</li>
+      <li><strong>The parser accepts what people type,</strong> not what a mask allows: <code>412</code>, <code>1412</code>, <code>14</code>, <code>4.12</code>, <code>4h12</code>, <code>now</code>. Digits without a separator are read the way a time is written on a shift sheet.</li>
+      <li><strong>No <code>role="spinbutton"</code>.</strong> It demands a numeric <code>aria-valuenow</code>, and minutes-since-midnight would have the field announce "252" for 04:12 — a value type it does not have (§08).</li>
+      <li><strong>No stacked spinner buttons,</strong> and that is a measurement: two arrows in a 34px box are ~16px targets, the exact 2.5.8 failure <code>DatePicker</code>'s clear button shipped with at 1.21.0 and had fixed at 1.21.1. A component whose sibling just paid for that lesson does not re-buy it.</li>
+      <li><strong>Zero new tokens.</strong> The field borrows <code>--input-*</code> wholesale, as <code>Select</code>, <code>Combobox</code>, <code>Autocomplete</code> and <code>DatePicker</code>'s field do, so the five cannot drift. A <code>--timefield-*</code> group would have been a second name for values four components already share.</li>
+      <li><strong>The input floors at its own value's width (<code>5ch</code>), not at zero.</strong> It shipped as a zero-basis flex item with <code>min-width: 0</code>, so in this spec's own 320px composed demo the zone label and clear button took 98px of a 120px box and the input shrank to 28px for a 43px value — <em>the field clipped the time it exists to show</em>, and the neighbouring <code>DatePicker</code> clipped its date for the same reason (both now floor at their value: 5ch and 10ch). The guidance was wrong with it: 120px is right for a bare field and about 150px for one carrying a zone. <strong>A control may shrink to its content; never below it.</strong></li>
+      <li><strong>Helper exports must not collide.</strong> <code>time.js</code> shipped its own <code>pad</code> and <code>parseTyped</code> beside <code>date.js</code>'s — and two sibling modules exporting one name collide on import, with only one surviving and the loser's callers silently getting the wrong function. <code>pad</code> is now re-exported from <code>date.js</code> (one definition), and the time parser is <code>parseTypedTime</code>. The lesson generalises past this component: a second helper module in one directory needs its names checked against the first, because the failure is a wrong <em>implementation</em>, not a missing import.</li>
+      <li><strong>Three warnings:</strong> no accessible name, a <code>value</code> that is not <code>'HH:mm'</code> (which catches both a <code>Date</code> and minutes-since-midnight), and <code>min</code> after <code>max</code> — which is also the honest place to say that a midnight-crossing window cannot be expressed here.</li>
+    </ul>
+    <p className="warn"><strong>Still deferred, and now genuinely only waiting on a consumer: <code>DateTimePicker</code>.</strong> With this component shipped, a product needing date + time has a correct route today — two fields and one join it already has the Site for. The fused single-input control remains deferred for the case where one instant must be one input; it would take and emit UTC ISO-8601, edit in the record's Site zone, and share <code>date.js</code> and <code>time.js</code> rather than re-deriving either. Nothing about it is undecided any more; nothing about it is needed yet.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Two strings, and the one join the product owns.">
+    <pre>{`import { TimeField, DatePicker } from '@meridian/forms';
+
+// Alone: a planned stop, a cutoff, a shift boundary.
+const [time, setTime] = React.useState('');          // 'HH:mm' or ''
+<Field label="Planned stop" hint="Site time (CET).">
+  <TimeField value={time} onChange={setTime} step={15} zone={site.zoneAbbr} />
+</Field>
+
+// Composed for an instant. The JOIN is the product's, because only the
+// product knows the Site — and the Site owns the timezone.
+<Field label="Stopped at" hint={\`Site time (\${site.zoneAbbr}).\`}>
+  <div style={{ display: 'flex', gap: 8 }}>
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <DatePicker value={date} onChange={setDate} max={todayIso()} />
+    </div>
+    <div style={{ width: 120, flex: 'none' }}>
+      <TimeField aria-label="Stopped at, time" value={time} onChange={setTime}
+                 step={5} zone={site.zoneAbbr} />
+    </div>
+  </div>
+</Field>
+
+// One instant, built once, in the Site's zone — never the browser's.
+const stoppedAt = date && time
+  ? zonedToUtc(\`\${date}T\${time}:00\`, site.timezone)   // → '2026-09-05T02:12:00Z'
+  : undefined;
+
+// Within a shift window: validate the PAIR, not the field.
+error={time && !shift.contains(date, time) ? 'Must be within the Days shift.' : undefined}`}</pre>
+    <ul>
+      <li><strong>Never build the instant in the browser's zone.</strong> <code>new Date('2026-09-05T04:12')</code> is local-midnight's cousin and carries the same defect class as the <code>Date</code> bug <code>DatePicker</code> exists to avoid.</li>
+      <li><strong>Compare with string comparison.</strong> <code>'HH:mm'</code> sorts lexicographically, so <code>from &lt;= to</code> is correct — within one day.</li>
+      <li><strong>A window that crosses midnight is two dates.</strong> Do not model it with <code>min</code>/<code>max</code>; validate the date-and-time pair.</li>
+      <li><strong>Always controlled.</strong> There is no <code>defaultValue</code>: a field that owns its value cannot be reset by "clear filters" or restored from a saved view.</li>
+      <li><strong>Take <code>zone</code> from the record's Site,</strong> not from <code>Intl.DateTimeFormat().resolvedOptions()</code>. The browser's zone is a property of the reader; the record's is a property of the Site.</li>
+      <li><strong>Give it ~120px,</strong> not an equal share of the row (§11).</li>
+      <li><strong>Testing hooks:</strong> <code>getByRole('textbox', {'{ name: \'Planned stop\' }'})</code> — type into it, which is what users do; assert the emitted <code>'HH:mm'</code> string, and assert clamping at <code>min</code>/<code>max</code> rather than wrapping.</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

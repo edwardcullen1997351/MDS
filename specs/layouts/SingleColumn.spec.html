@@ -1,0 +1,163 @@
+<!-- @dsCard group="Specs · Layouts" viewport="1080x760" name="Single column" subtitle="Full specification — the default frame for content whose hierarchy is one vertical sequence: what the five regions own, and when lateral content means a different layout" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Single column — layout template specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+.mock{padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--background-page);min-height:150px}
+.mock.row{flex-direction:row;gap:10px}
+.col{display:flex;flex-direction:column;gap:7px}
+.ml{font-size:10px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+.bar{height:8px;border-radius:3px;background:var(--surface-sunken);border:var(--border-hairline)}
+.bar.h{height:14px;background:var(--surface-card)}
+.blk{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:8px;display:flex;flex-direction:column;gap:5px}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:96ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Layout template</span>
+  <h1>Single column</h1>
+  <p class="lede">Most screens in a plant system are one thing after another: read the request, fill the request, submit the request. A single column is the frame for exactly that — content whose hierarchy is a vertical reading or task sequence, with no lateral region because none is needed. It is the system's default frame, and the discipline in it is negative: what it refuses to add when the viewport gets wide, and the moment at which persistent side content means a different layout has been adopted rather than this one stretched.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/layout-template-spec-standard.card.html">Layout template spec standard §01–§14</a></span><span>Regions: 5 (2 required, 3 optional)</span><span>Reference implementation: <a href="single-column-reference.card.html">card</a> · <a href="../../templates/single-column/SingleColumn.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — raising a maintenance work request on press line P-2</span><span>Sections included: 7 of 14</span><span style="color:var(--text-primary)">status: frozen 8 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <p>Provide the default structure for content whose hierarchy can be expressed as a single vertical reading or task sequence. Sandeep Kulkarni raises MWR-2026-0488 against press line P-2: he identifies the asset, describes the fault, states the impact on this shift, routes it, submits it. There is nothing he must hold in view while doing it, and no second body of content he moves between — so a lateral region would assert a hierarchy the work does not have. The layout is appropriate precisely when that is true.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>A task completed in order: raise, edit, review, submit.</li><li>Reading-oriented content — a specification, a procedure, a shift report.</li><li>A record whose fields are read top to bottom, with reference material that may sit subordinate in the same flow.</li><li>Any screen where a second region would be filled only because the space exists.</li></ul></div>
+      <div class="pane dont"><h3>Not this layout</h3><ul><li><strong>Continuous lateral reference.</strong> If the inspector must keep the drawing tolerances in view while typing measurements, that is a sidebar frame, not a taller column.</li><li><strong>Two bodies of content moved between.</strong> A queue and the record it selects is list–detail.</li><li><strong>Parallel figures compared at a glance.</strong> Shift output across four lines is a dashboard grid.</li></ul></div>
+    </div>
+    <p><strong>Applicable interaction patterns.</strong> <em>Primary:</em> none — this frame hosts patterns, it does not imply one. <em>Supported:</em> <a href="../patterns/ValidatedSubmission.spec.html">validated submission</a>, <a href="../patterns/ExplicitSave.spec.html">explicit save</a>, <a href="../patterns/RecoverableFailure.spec.html">recoverable failure</a>, <a href="../patterns/EvidenceAttachment.spec.html">evidence attachment</a>. Each brings its own contract; the layout adds only a place to put the commit (§02, region 4) and one for the failure to be stated where the user is looking.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <table><thead><tr><th>#</th><th>Region</th><th>Requirement</th><th>What it owns</th></tr></thead><tbody>
+      <tr><td class="k">1</td><td class="k">Page region</td><td>Required</td><td>The outer <code>Container</code> or <code>Surface</code>. Owns content width, alignment and the page gutter — see §03. Exactly one; never nested inside another page region.</td></tr>
+      <tr><td class="k">2</td><td class="k">Header region</td><td>Optional</td><td>What the page is and where it sits: <code>Heading</code> level 1, supporting <code>Text</code>, record metadata, <code>Breadcrumb</code>, and header-level actions that act on the page rather than complete the task. Absent on a screen reached with its subject already stated.</td></tr>
+      <tr><td class="k">3</td><td class="k">Primary content region</td><td>Required</td><td>A vertical <code>Stack</code> of sections. Owns section order, the vertical rhythm between sections, and the heading level each section takes. The frame does not care what a section contains.</td></tr>
+      <tr><td class="k">4</td><td class="k">Action region</td><td>Optional</td><td>Terminal actions that complete or abandon the sequence, or the same actions contextually anchored to the viewport foot. Owns their position and grouping only — availability, commit and failure belong to the pattern in play.</td></tr>
+      <tr><td class="k">5</td><td class="k">Supplementary region</td><td>Optional</td><td>Content that stays subordinate <em>in the same vertical flow</em>: related records, reference notes, history. Its subordination is the contract — the moment it must be seen at the same time as region 3, it is not this region.</td></tr>
+    </tbody></table>
+    <p>Regions appear in this order and nothing sits between them. Name them by role, not position: on the reference implementation the action region moves to the viewport foot under one property and it is still region 4.</p>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — subordinate, in the flow</div><div class="mock"><div class="col"><span class="ml">3 · primary</span><div class="blk"><div class="bar h"></div><div class="bar"></div><div class="bar"></div></div><span class="ml">4 · action</span><div class="bar h" style="width:120px"></div><span class="ml">5 · supplementary</span><div class="blk" style="opacity:.7"><div class="bar"></div><div class="bar"></div></div></div></div><div class="why">Open requests already on P-2 are reference: useful before submitting, never needed at the same instant as the field being typed. Below the flow, they stay reference.</div></div>
+      <div class="no"><div class="cap">Don't — lateral, so no longer subordinate</div><div class="mock row"><div class="col" style="flex:1.4"><span class="ml">3 · primary</span><div class="blk"><div class="bar h"></div><div class="bar"></div><div class="bar"></div></div></div><div class="col" style="flex:.9"><span class="ml">5 · beside it</span><div class="blk"><div class="bar"></div><div class="bar"></div></div></div></div><div class="why">Put it beside the form and it is co-equal, permanently in view, and competing for the reading order. That is a sidebar frame — adopt one, do not widen this.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Properties</h2><span class="sec-note">Conditional — included: the frame has three real choices</span></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Values</th><th>Default</th><th>Effect</th></tr></thead><tbody>
+      <tr><td class="k">contentWidth</td><td><code>sm</code> 640 · <code>md</code> 900 · <code>lg</code> 1240 · <code>full</code></td><td><code>md</code> for reading and form screens; <code>lg</code> for screens carrying a wide table</td><td>Bounded or fluid. Bounded caps the measure and lets the gutter absorb the rest. <code>full</code> is legitimate only where a section's own content genuinely needs the width — a wide table — and never for prose.</td></tr>
+      <tr><td class="k">alignment</td><td><code>centered</code> · <code>start</code></td><td><code>centered</code></td><td>Where the bounded column sits in the outer container. <code>start</code> exists for screens that already have a fixed lateral chrome outside this layout; one choice per product, not per screen.</td></tr>
+      <tr><td class="k">sectionSpacing</td><td>space step 5 · 6 · 7-8</td><td>step 6 (24px)</td><td>One rhythm applied to every gap in region 3, so section boundaries read as equal. Spacing never encodes hierarchy — that is the heading level's job (§08).</td></tr>
+    </tbody></table>
+    <p>Presence of regions 2, 4 and 5 is a composition decision rather than a property: they are either in the markup or not. Anything else an adopting team wants to vary — density, tone, elevation — is a token or a component choice and is not exposed here.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>Accessibility</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>DOM order is the reading order, and matches the visual order.</strong> This frame makes that cheap — there is one axis and no lateral region to reorder. Nothing in it may use visual order to reposition a region against its place in the document.</li>
+      <li><strong>Heading levels express the section hierarchy, independent of spacing.</strong> Region 2 carries the single <code>h1</code>; each section in region 3 takes <code>h2</code>; nesting continues from there without skipping. A section given more air is not thereby more important, and a visually small heading keeps its level — <code>Heading</code> separates <code>level</code> from <code>size</code> for exactly this.</li>
+      <li><strong>Landmarks only where they are semantically warranted.</strong> One <code>main</code> around regions 3 and 4. Region 2 is a <code>header</code> only if it is the page header rather than the first block of content; region 5 takes <code>aside</code> only when it is genuinely tangential, and then it carries an accessible name. Landmarks on every region make the landmark list useless.</li>
+      <li><strong>The anchored action region must not obscure content.</strong> When region 4 is anchored to the viewport foot, the page reserves its height at the end of the flow, so the last section and the focus ring of the last control are reachable and visible.</li>
+      <li><strong>Focus order crosses no region boundary the frame invented.</strong> Focus proceeds through regions in document order; the layout moves focus nowhere and traps it nowhere. Anything that does — a dialog, a failure summary taking focus — is the pattern's contract, not this frame's.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§11</span><h2>Responsive</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <p>The fundamental relationship does not change at constrained widths, because the template already follows one axis. There is no stacking transition to specify: the frame is already stacked. What changes is measure and gutter.</p>
+    <ul>
+      <li><strong>Narrow.</strong> The gutter reduces to the smallest step and the bounded width becomes the available width. Sections keep their order and their rhythm. Nothing collapses, nothing becomes an overlay.</li>
+      <li><strong>Expanded.</strong> Increase the margins, or increase the bounded content width by one step where the content earns it. Do not introduce columns at a breakpoint: a second column that exists only above 1200px is content the product does not have a hierarchy for.</li>
+      <li><strong>Adoption boundary.</strong> A transition to persistent lateral content is the adoption of a sidebar layout, not a single-column breakpoint. If wide viewports get a side region and narrow ones do not, two layouts are in play and the responsive rules belong to the one that has the side region.</li>
+      <li><strong>The anchored action region</strong> (§03 has it as a composition choice) is the one behavior that may legitimately differ by space: anchored where the sequence is long enough that the actions leave the viewport, terminal where it is not. Whichever is chosen, it is the same region with the same contents.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — margins absorb the width</div><div class="mock"><div class="col" style="align-items:center"><div class="col" style="width:62%"><div class="bar h"></div><div class="bar"></div><div class="bar"></div><div class="bar" style="width:70%"></div></div></div></div><div class="why">At 1600px the measure stays readable and the space becomes margin. The frame is unchanged, so nothing has to be re-learned between a desk and a tablet on the shop floor.</div></div>
+      <div class="no"><div class="cap">Don't — stretch because the space is there</div><div class="mock"><div class="col"><div class="bar h"></div><div class="bar"></div><div class="bar"></div><div class="bar" style="width:96%"></div></div></div><div class="why">A 150-character line of fault description is a scan, not a read. Width is not a resource that must be spent; <code>contentWidth: full</code> is for a wide table, not for prose.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Anti-patterns</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Using it where reference material must stay in view.</strong> If the user is expected to consult supporting content continuously while working in the primary region, use a sidebar frame. Pushing that content to the foot of a single column means it is read once, or never.</li>
+      <li><strong>Stretching reading-oriented content across an arbitrarily wide viewport</strong> merely because the space is available.</li>
+      <li><strong>A second column introduced at a breakpoint.</strong> Content that appears beside the primary region above some width, and below it otherwise, has two hierarchies and belongs to a layout that owns one.</li>
+      <li><strong>Spacing used as hierarchy.</strong> A section separated by more air but sitting at the same heading level reads as more important to sighted users and identical to everyone else.</li>
+      <li><strong>More than one page region.</strong> A <code>Container</code> inside a <code>Container</code> gutters twice and quietly narrows the measure by two steps.</li>
+      <li><strong>The supplementary region carrying required content.</strong> Anything the user must act on is a section of region 3. Subordinate placement is a claim that it can be skipped.</li>
+      <li><strong>An anchored action region that overlaps the last section</strong> instead of reserving its height — the commit covers the field the user is trying to fix.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§13</span><h2>Implementation notes</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Build it from <code>Container</code>, <code>Stack</code>, <code>Box</code>, <code>Surface</code>, <code>Spacer</code>, <code>Divider</code>, <code>Heading</code> and <code>Text</code>.</strong> Any core or composite component may occupy a section without changing the template — the frame has no knowledge of what is inside a section, and adding one must never require touching it.</li>
+      <li><strong>Space comes from the parent gap, never from margins on children.</strong> One <code>Stack</code> owns region 3's rhythm; a section that sets its own top margin breaks the single rhythm §03 promises and cannot be reordered safely.</li>
+      <li><strong>One page region, gutter applied once.</strong> <code>Container</code> owns the gutter and the cap; sections inside it use padding, not their own container.</li>
+      <li><strong>No scroll container of its own.</strong> The page scrolls; the frame introduces no nested scroll region. A section whose content overflows either paginates internally (its component's contract) or the section grows.</li>
+      <li><strong>Sections must survive <code>min-width: 0</code>.</strong> Any grid or flex track inside a section needs <code>minmax(0, 1fr)</code>, or a wide table inside it will push the column past the bounded measure and defeat <code>contentWidth</code>.</li>
+      <li><strong>The anchored action region is <code>position: sticky</code> at the foot of the page flow</strong>, inside the page region so it inherits the same width and alignment, with its height reserved at the end of region 3. It is not fixed positioning, and it does not leave the document order.</li>
+      <li><strong>The frame holds no state.</strong> Nothing in this layout persists, collapses or remembers. If a screen needs a region to collapse and stay collapsed, it has outgrown this template.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted">Omitted, with reasons — §04 Variants: the frame has one structural form; the bounded/fluid and terminal/anchored choices are properties and composition, not variants. · §05 Sizes: there are no frame-level size classes; measure is <code>contentWidth</code> in §03 and everything else comes from the spacing and density tokens. · §06 States: the frame holds no state — no region collapses, nothing is remembered, and a section's own loading or empty state belongs to the component in it. · §07 Keyboard: the layout creates no keyboard relationship between regions and moves focus nowhere; every control in it is operated under its own component's contract. · §09 Motion: no structural change occurs, so there is nothing to make legible. · §10 Content rules: the frame constrains no content beyond each region's stated purpose in §02; measure is a property, not an editorial rule. · §14 Developer notes: nothing technical remains once §13 is written — no slot API, no routing or persistence responsibility, no per-region data boundary.</p>
+<p class="omitted">Applies to: this layout template · Section set and include/omit tests: <a href="../../guidelines/layout-template-spec-standard.card.html">layout template spec standard</a> · Register: <a href="layouts.card.html">layouts index</a></p>
+</div>
+</body></html>

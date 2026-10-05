@@ -1,0 +1,61 @@
+<!-- @dsCard group="Feedback boundaries" viewport="1000x1270" name="Toast vs Snackbar vs Alert" subtitle="Two questions decide it — is it an event or a condition, and does its surface still own the screen?" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Toast vs Snackbar vs Alert</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;padding:24px 26px;background:var(--surface-card);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+h1{margin:0 0 4px;font-size:var(--text-xl);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.lede{margin:0 0 18px;max-width:88ch;color:var(--text-secondary);font-size:var(--text-xs);text-wrap:pretty}
+.rule{display:block;padding:12px 14px;border-left:2px solid var(--action-solid);background:var(--surface-sunken);border-radius:var(--radius-sm);margin:0 0 18px;max-width:96ch;text-wrap:pretty}
+.rule b{font-weight:var(--weight-semibold)}
+table{width:100%;border-collapse:collapse;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs);margin-bottom:16px}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:8px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:8px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td:first-child{color:var(--text-primary);font-weight:var(--weight-medium);white-space:nowrap}
+.mono{font-family:var(--font-mono);color:var(--text-primary)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pane{border:var(--border-hairline);border-radius:var(--radius-md);padding:12px 14px}
+.pane h2{margin:0 0 8px;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold);color:var(--text-tertiary)}
+ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:5px;font-size:var(--text-xs);color:var(--text-secondary)}
+li b{color:var(--text-primary);font-weight:var(--weight-medium)}
+a,a:hover{color:var(--text-link)}
+</style></head><body>
+<h1>Toast vs Snackbar vs Alert</h1>
+<p class="lede">Three transient-looking notices, one family, no interchangeability. The deciding factors are not the length of the copy or the severity of the message — they are <b>duration</b> (is this an event or a condition?) and <b>ownership</b> (who holds the notice?). Everything else in the three components follows from those two.</p>
+<div class="rule"><b>First: event or condition?</b> Something happened once → <span class="mono">Toast</span> or <span class="mono">Snackbar</span>. Something <i>is</i> true and stays true → <span class="mono">Alert</span>, in the page flow, where its position states its scope. <b>Then, for events: is the surface that raised it still on screen and still the thing the user is working in?</b> Yes → <span class="mono">Snackbar</span>, mounted in that surface. No → <span class="mono">Toast</span>, raised imperatively. Never decide by tone, by length, or by which one “feels lighter”.</div>
+<table>
+<thead><tr><th>Behaviour</th><th>Snackbar</th><th>Toast</th><th>Alert</th></tr></thead>
+<tbody>
+<tr><td>What it reports</td><td>An event, on the surface in view</td><td>An event, off-screen or after navigation</td><td>A condition that persists</td></tr>
+<tr><td>Owner</td><td>The surface — a panel, table or editor holds <span class="mono">open</span></td><td>The app — one <span class="mono">Toaster</span> at the root holds the queue</td><td>The page — a conditional on real state</td></tr>
+<tr><td>How it is raised</td><td>Declarative prop, from the component that changed something</td><td><span class="mono">Toaster.show()</span>, from a mutation handler, socket or route guard</td><td>Rendered while the condition is true; no <span class="mono">open</span> prop at all</td></tr>
+<tr><td>Multiplicity</td><td>Exactly one per scope; a new message replaces it in place</td><td>Up to <span class="mono">maxVisible</span> (3) stacked, the rest queued behind “+N more”</td><td>One per region, always — stacking is how alert fatigue ships</td></tr>
+<tr><td>Position</td><td>Bottom of its own surface (or bottom-centre of the page at <span class="mono">--z-snackbar</span> 690)</td><td>Fixed viewport corner at <span class="mono">--z-toast</span> (700), above any snackbar</td><td>In normal flow — no z-index, and its position states its scope</td></tr>
+<tr><td>Tone</td><td>None. No icon, no tint, no title</td><td>Four tones, each with an icon and a lifetime</td><td>Five tones, carried by tint + border + icon + a word</td></tr>
+<tr><td>Content</td><td>One clause, truncated — never wraps</td><td>Title plus an optional sentence of detail</td><td>Title plus up to three sentences, and up to two actions</td></tr>
+<tr><td>Lifetime</td><td>6s default; <span class="mono">duration: null</span> for consequential reversals</td><td>5s info/success, 8s warning, <b>never</b> for danger</td><td>Until the condition ends. No timer exists</td></tr>
+<tr><td>Survives unmount</td><td>No — it dies with its surface</td><td>Yes — the queue outlives the screen that filled it</td><td>N/A — it <i>is</i> the screen</td></tr>
+<tr><td>Live region</td><td>One permanent <span class="mono">role="status"</span> per scope, polite, atomic</td><td>One <span class="mono">role="region"</span> viewport, polite, with danger as <span class="mono">role="alert"</span></td><td><b>None by default</b> — read in document order; <span class="mono">live="on"</span> only when it appears</td></tr>
+<tr><td>Tab order</td><td>Local — its action sits a few tabs from the row that raised it</td><td>End of the document, after all page content</td><td>Exactly its position on the page</td></tr>
+<tr><td>Entrance</td><td><span class="mono">mer-rise-in</span> — 8px up out of the surface edge</td><td><span class="mono">mer-slide-in-right</span> — 16px in from the viewport edge</td><td>None, or opacity only — it changes layout by existing</td></tr>
+</tbody>
+</table>
+<div class="cols">
+<div class="pane"><h2>Consequences of the boundary</h2><ul>
+<li><b>A drawer that closes on save cannot confirm the save.</b> The surface unmounts, so the notice belongs to what remains — a Toast.</li>
+<li><b>A failure of an <i>action</i> is a Toast; a failure of a <i>system</i> is an Alert.</b> “Export failed” expires; “Historian unreachable” does not.</li>
+<li><b>Undo is almost always a Snackbar</b> when the record is still in view: reachability of the action is the whole reason the component exists.</li>
+<li><b>“Saved” is never an Alert.</b> A green in-flow block that never leaves reflows the page and outlives the event — the most common misuse in review.</li>
+<li><b>Bulk results follow the screen.</b> Still on the list that changed → Snackbar with a count. Navigated away → one Toast with a count.</li>
+<li><b>Never two at the same bottom edge.</b> A page-scope Snackbar plus a bottom-right Toaster is the collision to catch; move the toaster to the top.</li>
+</ul></div>
+<div class="pane"><h2>None of the three</h2><ul>
+<li><b>A decision</b> the user must take before continuing, or any message with two competing actions. <span class="mono">Dialog</span>.</li>
+<li><b>A field-level problem.</b> Errors live beside their input, permanently. <span class="mono">Field</span> error — an Alert may summarise them, never replace them.</li>
+<li><b>A selection’s actions.</b> Several actions, held as long as the selection is — a toolbar, not a bar that expires.</li>
+<li><b>An empty region.</b> “No work orders match” is content, not a warning. Empty state.</li>
+<li><b>Field help.</b> A hint is not an alert, however small the alert.</li>
+<li><b>Something the user can see happen.</b> A row that visibly disappears needs no notice at all.</li>
+<li><b>The only record of an operational event.</b> All three are courtesies; the audit trail is the record.</li>
+</ul></div>
+</div>
+</body></html>

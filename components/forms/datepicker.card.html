@@ -1,0 +1,50 @@
+<!-- @dsCard group="Components" viewport="880x820" name="DatePicker — single, range, bounded" subtitle="Each input names itself from the field it belongs to" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>DatePicker</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--background-page);padding:22px;font-family:var(--font-sans)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { DatePicker, Field, Card, Text } = window.MeridianDesignSystem_962c43;
+function Demo(){
+  const [d,setD] = React.useState('2026-09-04');
+  const [r,setR] = React.useState(['2026-09-01','2026-09-07']);
+  return (
+  <div style={{display:'flex',flexDirection:'column',gap:18}}>
+    <div className="grid">
+      <Card title="In a Field" headingLevel={2} padding="md">
+        <Field label="Downtime date" hint="Local plant time." htmlFor="dt">
+          <DatePicker id="dt" value={d} onChange={setD} />
+        </Field>
+      </Card>
+      <Card title="Standalone, named by `label`" headingLevel={2} padding="md">
+        <DatePicker label="Downtime date" value={d} onChange={setD} />
+      </Card>
+    </div>
+    <Card title="Range · each input qualifies the field's name" headingLevel={2} padding="md">
+      <Field label="Shift window" htmlFor="sw">
+        <DatePicker id="sw" label="Shift window" range value={r} onChange={setR} />
+      </Field>
+      <Text size="xs" tone="tertiary" style={{display:'block',marginTop:8}}>
+        The two inputs announce as “Shift window Start date” and “Shift window End date” — composed, not replaced.
+        An <code>aria-label</code> outranks the Field association, so a bare “Start date” would discard the subject.
+      </Text>
+    </Card>
+    <div className="grid">
+      <Card title="Bounded" headingLevel={2} padding="md">
+        <Field label="Reschedule to" htmlFor="rb">
+          <DatePicker id="rb" min="2026-09-01" max="2026-09-30" defaultValue="2026-09-15" />
+        </Field>
+      </Card>
+      <Card title="Disabled" headingLevel={2} padding="md">
+        <Field label="Locked date" htmlFor="ld">
+          <DatePicker id="ld" defaultValue="2026-09-04" disabled />
+        </Field>
+      </Card>
+    </div>
+    <Text size="xs" tone="tertiary">Open a picker and check the calendar button: its name is the field plus its job (“Shift window — Choose a date”), so two pickers on one form are never two identical “Choose a date” buttons.</Text>
+  </div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

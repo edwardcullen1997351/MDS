@@ -1,0 +1,59 @@
+<!-- @dsCard group="Components" viewport="820x420" name="Toolbar — the action surface" subtitle="Composite: one tab stop, coordinated arrows, overflow relationship, aggregate disabled" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Toolbar</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--surface-card);padding:20px;font-family:var(--font-sans)}.col{display:flex;flex-direction:column;gap:18px}.lbl{font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);margin-bottom:6px}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Toolbar, Button, IconButton, ButtonGroup, SegmentedControl, Divider, Menu, Text } = window.MeridianDesignSystem_962c43;
+function Demo(){
+  if (!Toolbar) return <Text tone="secondary">The bundle has not been recompiled with <code>components/composite/Toolbar.jsx</code> yet — reload once it has.</Text>;
+  const [view,setView]=React.useState('edit');
+  return (
+  <div className="col">
+    <div>
+      <div className="lbl">Document actions</div>
+      <Toolbar label="Document actions" size="sm">
+        <Button variant="ghost" iconLeft="save">Save</Button>
+        <ButtonGroup label="History" variant="ghost">
+          <IconButton icon="undo-2" label="Undo" />
+          <IconButton icon="redo-2" label="Redo" />
+        </ButtonGroup>
+        <Divider />
+        <SegmentedControl label="View" value={view} onChange={setView}
+          options={[{value:'edit',label:'Edit'},{value:'read',label:'Read'}]} />
+        <Divider />
+        <Button variant="ghost" iconLeft="share-2">Share</Button>
+        <Menu label="More document actions"
+          items={['Duplicate','Version history','divider',{label:'Delete',icon:'trash-2',tone:'critical'}]}
+          trigger={<IconButton icon="ellipsis" label="More document actions" />} />
+      </Toolbar>
+    </div>
+    <div>
+      <div className="lbl">Overflow — 248px container, trailing actions collapse</div>
+      <div style={{width:248}}>
+        <Toolbar label="Chart actions" size="sm" overflow="menu">
+          <IconButton icon="refresh-cw" label="Refresh" data-priority="high" />
+          <IconButton icon="download" label="Export" data-priority="high" />
+          <Divider />
+          <Button variant="ghost" iconLeft="filter">Filter</Button>
+          <Button variant="ghost" iconLeft="columns-3">Columns</Button>
+          <Button variant="ghost" iconLeft="settings-2">Settings</Button>
+        </Toolbar>
+      </div>
+    </div>
+    <div>
+      <div className="lbl">Aggregate disabled — the context itself is unavailable</div>
+      <Toolbar label="Selection actions" size="sm" disabled>
+        <Button variant="ghost" iconLeft="copy">Copy</Button>
+        <Button variant="ghost" iconLeft="scissors">Cut</Button>
+        <Divider />
+        <IconButton icon="trash-2" label="Delete" />
+      </Toolbar>
+    </div>
+    <Text size="xs" tone="tertiary">One tab stop for the whole surface; ← → move between controls and do not wrap (Home/End are the ends). Inside the segmented control, ↑ ↓ still change the value.</Text>
+  </div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

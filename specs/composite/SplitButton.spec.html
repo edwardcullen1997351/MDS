@@ -1,0 +1,285 @@
+<!-- @dsCard group="Specs · Composite" viewport="1080x900" name="SplitButton" subtitle="Full specification — one default action, its close alternatives, and the relationship between them" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>SplitButton — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px 28px}
+.demo.col{flex-direction:column;align-items:flex-start;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:118px;padding-top:8px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:14px 0 0}
+.log{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { SplitButton, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{minWidth:0}}>{children}</div></div>;
+
+const SAVE = [
+  { id:'draft', label:'Save as draft', icon:'file-pen' },
+  { id:'copy', label:'Save as a copy', icon:'copy', shortcut:'⇧⌘S' },
+  'divider',
+  { id:'template', label:'Save as template', description:'Reusable for future documents' },
+];
+const EXPORT = [
+  { id:'xlsx', label:'Export as XLSX' },
+  { id:'pdf', label:'Export as PDF' },
+  { id:'json', label:'Export as JSON', disabled:true },
+];
+
+function Spec(){
+/* The compiled bundle lags a same-turn component by one compile; without this
+   an undefined export throws inside render and blanks the whole document. */
+if (!SplitButton) return <div className="page"><div className="masthead"><span className="eyebrow">Composite · Component specification</span><h1>SplitButton</h1><p className="lede">The design-system bundle has not been recompiled with <code>components/composite/SplitButton.jsx</code> yet — reload once it has.</p></div></div>;
+const [log,setLog] = React.useState('nothing run yet');
+const [open,setOpen] = React.useState(false);
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Composite · Component specification</span>
+    <h1>SplitButton</h1>
+    <p className="lede">A standardized control where one action is the clear default and its closely related alternatives stay one press away.</p>
+    <div className="meta">
+      <span>Status · stable</span>
+      <span>Primitives · Box</span>
+      <span>Core · Button, IconButton, Menu, MenuList, Icon</span>
+      <span>Follows · Composite spec standard</span>
+    </div>
+  </div>
+
+  <Sec n="§01" title="Purpose" note="Why the composition exists at all">
+    <p>SplitButton standardizes a control that pairs one expected action with immediate access to a small set of alternatives to it. Committing to a default is the point: the user who wants the ordinary outcome presses once and never reads a list, and the user who wants a variant finds it beside the thing it is a variant of.</p>
+    <ul>
+      <li><strong>Why a composite rather than a ButtonGroup with a Menu in it.</strong> The composition establishes a relationship neither part carries alone: which action is primary, that the disclosure must <em>not</em> invoke it, one aggregate disabled state across both surfaces, two distinct accessible purposes with the disclosure named after the primary, matched geometry with a single seam, and the menu's ownership by the cap. <code>ButtonGroup</code> knows only that its children are joined; <code>Menu</code> knows only about commands.</li>
+      <li><strong>What it deliberately does not do.</strong> It owns no primary-action state (no result, no confirmation, no undo) and no routing between the alternatives. Selection is reported; consequences belong to the consumer.</li>
+    </ul>
+    <div className="demo col">
+      <SplitButton label="Save" onAction={()=>setLog('primary: Save')} actions={SAVE} onSelect={(a)=>setLog('alternative: '+a.id)} />
+      <span className="log">{log}</span>
+      <Text size="xs" tone="tertiary">Press the lettered half to save. Press the cap to see the variants of saving — it never saves.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="§02" title="Anatomy" note="Two required surfaces, one control">
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong><code>Box</code> — required.</strong> An <code>inline-flex</code> wrapper with <code>role="group"</code>, named by <code>label</code>, and <code>isolation: isolate</code> so a raised half stacks inside the control rather than against the page.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong><code>Button</code> — required.</strong> The primary action. Carries the visible wording, keeps every <code>Button</code> behaviour, and is rounded on the leading edge only.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong><code>IconButton</code> — required.</strong> The disclosure cap: a square the height of the control, rounded on the trailing edge only, named for the relationship ("More Save actions") rather than repeating the primary name.</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong><code>Menu</code> — required.</strong> Owns the alternatives, the surface, its positioning and its keyboard. Anchored to the cap, aligned to its trailing edge.</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong><code>MenuList</code></strong> structures the rows — icons, dividers, groups, descriptions and shortcuts are <code>Menu</code>'s item vocabulary, unchanged here.</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong><code>Icon</code> — optional.</strong> The chevron reinforcing the disclosure affordance, and any leading glyph on the primary half. Decorative: never part of either accessible name.</span></div>
+    </div>
+    <p>Relationship rules: exactly two interactive surfaces, never one and never three; nothing sits between them; the seam is drawn once (§13); and the cap is always on the trailing edge, because it discloses alternatives to the action beside it.</p>
+  </Sec>
+
+  <Sec n="§03" title="Properties" note="Composite-level API">
+    <T cols={['Prop','Type','Default','Meaning']} rows={[
+      ['label','string','—','Required. The primary wording, the group name, and the root of the disclosure and menu names (§08).'],
+      ['children','ReactNode','—','Richer visible content for the primary half; label stays the accessible name.'],
+      ['onAction','(e) => void','—','The primary action. Never fires when the menu opens (§06).'],
+      ['actions',"Array<Action | Group | 'divider'>",'[]','The alternatives, in Menu\u2019s item vocabulary. Each needs a stable id (§14).'],
+      ['onSelect','(action, index) => void','—','An alternative was chosen. Receives the object you passed, not a copy.'],
+      ['variant',"'primary' | 'secondary' | 'ghost' | 'danger'","'primary'",'See §04. link is refused with a warning.'],
+      ['size',"'sm' | 'md' | 'lg'","'md'",'One height for both halves at any density (§05).'],
+      ['iconLeft','string','—','Leading glyph on the primary half.'],
+      ['loading','boolean','false','Primary action in flight; the alternatives stay reachable.'],
+      ['disabled','boolean','false','Aggregate — both halves together (§06).'],
+      ['open / onOpenChange','boolean / (open) => void','—','Controlled menu state. The trigger relationship stays the composite\u2019s either way.'],
+      ['menuLabel','string','"<label> actions"','Overrides the menu\u2019s accessible name.'],
+      ['disclosureLabel','string','"More <label> actions"','Overrides the cap\u2019s accessible name.'],
+      ['disclosureIcon','string',"'chevron-down'",'The disclosure glyph.'],
+      ['side / align',"Menu\u2019s","'bottom' / 'end'",'Menu placement. end by default: the surface hangs from the cap it belongs to.'],
+      ['menuSize',"'sm' | 'md'",'follows size','Menu row height.'],
+    ]} />
+  </Sec>
+
+  <Sec n="§04" title="Variants" note="Four that hold a seam, one that cannot">
+    <div className="demo">
+      <SplitButton label="Save" onAction={()=>{}} actions={SAVE} onSelect={()=>{}} />
+      <SplitButton variant="secondary" label="Publish" onAction={()=>{}} actions={[{id:'schedule',label:'Schedule for later',icon:'clock'},{id:'preview',label:'Publish to preview'}]} onSelect={()=>{}} />
+      <SplitButton variant="ghost" label="Export" iconLeft="download" onAction={()=>{}} actions={EXPORT} onSelect={()=>{}} />
+      <SplitButton variant="danger" label="Delete" onAction={()=>{}} actions={[{id:'archive',label:'Delete and archive a copy',icon:'archive'},{id:'purge',label:'Delete permanently',description:'Cannot be undone',tone:'critical'}]} onSelect={()=>{}} />
+    </div>
+    <ul>
+      <li><strong>Emphasis is the whole variant axis.</strong> <code>primary</code> is the page's one committed action, <code>secondary</code> the ordinary one, <code>ghost</code> the one that lives in a toolbar or a table row, <code>danger</code> a destructive default whose alternatives are softer routes to the same intent. The contract does not change between them — only how loudly the pair is drawn.</li>
+      <li><strong><code>danger</code> required a change one tier down.</strong> <code>IconButton</code> had no critical fill, so the cap would have drawn in action blue beside a red primary — a two-tone control that reads as two controls. Rather than special-casing it here, <code>IconButton</code> gained a <code>danger</code> variant on the same ramp as <code>Button</code>'s (additive, 1.27.x): a destructive icon action is a Core-tier gap, not a composite's problem.</li>
+      <li><strong>Use it sparingly.</strong> A destructive default is only honest when deletion is genuinely the expected action — in a confirmation footer, or a row whose whole purpose is removal. If the alternatives are the safer routes, one of them probably belongs in the primary half.</li>
+      <li><strong><code>link</code> is refused.</strong> It has no height and no border, so there is nothing for the cap to join; one link half collapses the control's geometry. The refusal warns and renders as <code>secondary</code> rather than dropping the action.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§05" title="Sizes" note="Two controls, one height, three densities">
+    <Row label="sm"><SplitButton size="sm" variant="secondary" label="Export" onAction={()=>{}} actions={EXPORT} onSelect={()=>{}} /></Row>
+    <Row label="md"><SplitButton variant="secondary" label="Export" onAction={()=>{}} actions={EXPORT} onSelect={()=>{}} /></Row>
+    <Row label="lg"><SplitButton size="lg" variant="secondary" label="Export" onAction={()=>{}} actions={EXPORT} onSelect={()=>{}} /></Row>
+    <ul>
+      <li><strong>One prop sizes both halves and the menu.</strong> A cap one step off its primary is instantly visible as a broken control, and neither child can detect it — only the composite knows both.</li>
+      <li><strong>The cap is pinned to the control token.</strong> Both halves size from <code>--control-h-*</code>, so the seam holds at compact and expanded density (§13).</li>
+      <li><strong><code>sm</code> takes <code>sm</code> menu rows.</strong> A 32px row list hanging off a 28px control looks like it belongs to something else.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§06" title="States" note="Owned or coordinated by the composite">
+    <Row label="Enabled"><SplitButton variant="secondary" label="Save" onAction={()=>{}} actions={SAVE} onSelect={()=>{}} /></Row>
+    <Row label="Loading"><SplitButton variant="secondary" label="Saving" loading onAction={()=>{}} actions={SAVE} onSelect={()=>{}} /></Row>
+    <Row label="Disabled"><SplitButton variant="secondary" label="Save" disabled onAction={()=>{}} actions={SAVE} onSelect={()=>{}} /></Row>
+    <Row label="Menu open">
+      <div style={{display:'flex',alignItems:'center',gap:12}}>
+        <SplitButton variant="secondary" label="Save" open={open} onOpenChange={setOpen} onAction={()=>setLog('primary fired while controlled')} actions={SAVE} onSelect={(a)=>setLog('alternative: '+a.id)} />
+        <span className="log">open · {String(open)}</span>
+      </div>
+    </Row>
+    <ul>
+      <li><strong>Disabled is aggregate.</strong> One prop stops both surfaces. A live cap beside a dead primary offers alternatives to an action that cannot be taken, and a live primary beside a dead cap hides the alternatives without saying so.</li>
+      <li><strong>Opening the alternatives must not invoke the primary action.</strong> This is the composite's central guarantee, and the reason the two surfaces are separate elements rather than one button with a hot zone: a press near the chevron can never resolve as a save.</li>
+      <li><strong>Menu open and closed are the <code>Menu</code>'s states, surfaced here.</strong> The composite passes <code>open</code>/<code>onOpenChange</code> straight through; it does not mirror them into its own state, so there is one source of truth.</li>
+      <li><strong>Loading disables the primary half only.</strong> A save in flight does not make "save as a copy" meaningless, and the cap is how a user cancels into a different route.</li>
+      <li><strong>Hover, press and focus stay the children's.</strong> The composite only raises whichever half is hovered or focused so its border and focus ring draw over the seam instead of being clipped by it.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§07" title="Keyboard" note="Two tab stops, and the Menu contract untouched">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab','Primary half, then the disclosure. Two ordinary tab stops — not a roving tabindex, because these are not peer actions and the default must be reachable in one step.'],
+      ['Enter / Space on the primary','Button activation, unchanged. Never opens the menu.'],
+      ['Enter / Space / ArrowDown on the cap','Opens the menu with the cursor on the first row; ArrowUp opens it on the last. Menu\u2019s trigger contract, unchanged.'],
+      ['Arrows, Home / End, type-ahead','Menu\u2019s, once open. Focus is on the menu container and the cursor is published with aria-activedescendant.'],
+      ['Escape','Closes the menu and returns focus to the cap — the element that opened it, never the primary half.'],
+      ['Tab while open','Closes the menu without restoring focus, so the tab lands where the user aimed.'],
+    ]} />
+    <ul>
+      <li><strong>The composite adds no keys of its own.</strong> It guarantees only that both surfaces stay separately reachable and that the menu keys belong to the menu.</li>
+      <li><strong>No shortcut collapses the pair.</strong> There is deliberately no key that opens the alternatives from the primary half: a user tabbing to "Save" and pressing <kbd>↓</kbd> expects the page to scroll, and a control that swallowed it would be the only one on the screen that does.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§08" title="Accessibility" note="Relationships created by the composition">
+    <ul>
+      <li><strong>Two controls, two distinct purposes.</strong> The primary is named by <code>label</code> ("Save"); the cap is named for the relationship ("More Save actions"). A cap named "Save" or left as an unlabelled chevron produces two identically announced buttons, one of which does something else.</li>
+      <li><strong>The cap declares the menu.</strong> <code>aria-haspopup="menu"</code> and <code>aria-expanded</code> are on the disclosure and nowhere else — putting them on the primary half would advertise a popup that the primary half never opens.</li>
+      <li><strong>The group is named, and does not become the control.</strong> <code>role="group"</code> named by <code>label</code> states that the two buttons belong together; it is not focusable and adds no third interactive target.</li>
+      <li><strong>The visual grouping must not collapse into one target.</strong> One seam and shared corners are presentation only — never one <code>&lt;button&gt;</code> containing a nested chevron button, and never a click-region split inside a single control.</li>
+      <li><strong>Menu focus management is the Menu's.</strong> Focus moves into the surface on open and returns to the cap on close or selection; rows are not tab stops. The composite does not re-implement any of it, which is why the restore target is correct without extra work.</li>
+      <li><strong>The chevron is decorative</strong> — it must not be announced, and it is not the cap's accessible name.</li>
+      <li><strong>Outcome announcements are the consumer's.</strong> The composite reports that an action was chosen; whether the save succeeded is announced by whatever performs it.</li>
+    </ul>
+    <div className="warn"><p>The most common failure of this component is a disclosure with no name of its own — a chevron button announced as "button", or as a second "Save". Both make the alternatives unreachable in practice for a screen-reader user.</p></div>
+  </Sec>
+
+  <Sec n="§10" title="Content rules" note="What keeps the default legible as a default">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Make the primary the expected or most common action.</li>
+        <li>Word the primary explicitly — "Save", "Publish", "Export" — so it stands without the menu.</li>
+        <li>Keep the alternatives genuine variants: "Save as a copy", "Save as template".</li>
+        <li>Give every alternative a stable <code>id</code>, and keep the list short enough to scan.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li>Word the primary as "Actions", "More" or anything the menu has to explain.</li>
+        <li>Mix in unrelated commands — "Save" and "Delete" are not alternatives.</li>
+        <li>Repeat the primary action as a menu row without a stated requirement.</li>
+        <li>Bury the action users take most often in the menu.</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="§12" title="Anti-patterns" note="Recurring misuses">
+    <ul>
+      <li><strong>Using it to save horizontal space.</strong> A split button is a statement about which action is expected. Two peer actions squeezed into one are not clearer for being narrower — they are one action plus a hidden one.</li>
+      <li><strong>Using it when no action is clearly primary.</strong> If the choice genuinely has no default, the honest control is a <code>Menu</code> with a lettered trigger, where nothing is pre-selected.</li>
+      <li><strong>Using it in place of <code>ButtonGroup</code>.</strong> When actions are of comparable importance they stay visible and equal; demoting one behind a chevron makes it measurably harder to find.</li>
+      <li><strong>Unrelated commands in the menu.</strong> The cap says "more of <em>this</em>". A menu holding "Duplicate", "Move" and "Delete" beside a Save primary is a row-actions menu that has been attached to the wrong control.</li>
+      <li><strong>Duplicating the primary in the menu.</strong> Two routes to the same command make the menu look like the real control and the button like a shortcut nobody trusts.</li>
+      <li><strong>One button with a chevron hot zone.</strong> The single most damaging version: keyboard users can only reach the primary, and a mispressed pixel runs the action instead of opening the list.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§13" title="Implementation notes" note="Constraints not visible from the API">
+    <ul>
+      <li><strong>Two elements, never nested.</strong> The <code>Button</code> and the cap are siblings inside a <code>role="group"</code> <code>Box</code>. No interactive element contains another; the <code>Menu</code>'s own anchor wrapper is a plain <code>span</code> with no role and no tabindex.</li>
+      <li><strong>The seam is drawn once, and by the cap.</strong> The halves overlap by exactly one border width. An outlined pair overrides both borders to <code>--split-button-border</code> so the outline stays one colour while either half is hovered; a ghost pair draws <code>--split-button-divider</code> as the cap's left border, since it has no border of its own; a filled pair (<code>primary</code> or <code>danger</code>) can only be divided by the fill's inverse, <code>--split-button-seam-solid</code> — a grey line on action blue is invisible.</li>
+      <li><strong>The cap's box tracks <code>--control-h-*</code>.</strong> <code>IconButton</code> used to hard-code 28/34/40, which agrees with <code>Button</code> only at comfortable density — a compact split button drew a 34px cap on a 28px primary. Its own spec (§05) already said the box came from the control tokens, so the fix went there (additive, 1.27.x) rather than being patched over here; the composite still pins the cap's <em>width</em> to the same token, to keep it square.</li>
+      <li><strong>Raise listeners go on wrappers, not on the halves.</strong> <code>Button</code> and <code>IconButton</code> spread caller props <em>after</em> their own pointer and focus handlers, so passing <code>onMouseEnter</code> to either would silently replace its hover state. The composite listens on a wrapping <code>span</code> and uses <code>onFocusCapture</code>, leaving both children's own states intact.</li>
+      <li><strong>Menu state is not mirrored.</strong> <code>open</code>/<code>onOpenChange</code> pass straight through to <code>Menu</code>; the composite keeps no copy, so a controlled consumer never fights a second source of truth. Primary-action execution is not state at all — it is one event.</li>
+      <li><strong>Alternatives are passed through unchanged.</strong> The item list is <code>Menu</code>'s, including groups and dividers; selection is matched back to the caller's object by <code>id</code> so consumers get their own reference, not a flattened row.</li>
+      <li><strong>Development-time warnings</strong> cover a missing <code>label</code>, an empty <code>actions</code> list, actions without <code>id</code>, an action repeating the primary label, and the refused variants.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--split-button-radius','--split-button-border','--split-button-divider','--split-button-seam-solid','--control-h-sm / -md / -lg','--border-width'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="§14" title="Developer notes" note="Integration contract">
+    <pre>{`<SplitButton
+  label="Save"
+  onAction={save}
+  actions={[
+    { id: 'draft',    label: 'Save as draft',    icon: 'file-pen' },
+    { id: 'copy',     label: 'Save as a copy',   icon: 'copy', shortcut: '⇧⌘S' },
+    'divider',
+    { id: 'template', label: 'Save as template', description: 'Reusable for future documents' },
+  ]}
+  onSelect={(action) => run(action.id)}
+/>`}</pre>
+    <ul>
+      <li><strong>Two event channels that never merge.</strong> <code>onAction</code> is "run the default"; <code>onSelect(action)</code> is "run this variant". Nothing routes the primary through the menu handler, so no consumer has to test an id to find out which surface was pressed.</li>
+      <li><strong>Alternatives need stable identifiers.</strong> <code>id</code> is what comes back; an index changes the moment the list is reordered or filtered by permission. Per-action <code>onSelect</code> is also honoured — it is <code>Menu</code>'s, and fires first.</li>
+      <li><strong>Controlled or uncontrolled menu, same composite.</strong> Pass <code>open</code> and <code>onOpenChange</code> to drive the surface from outside (a tour, a keyboard shortcut, a test); the trigger relationship, naming and focus restoration stay the composite's either way, so a consumer never wires the cap to the menu by hand.</li>
+      <li><strong>Disabled is one prop, not two.</strong> There is deliberately no way to disable half of the control; per-action availability belongs on the action's own <code>disabled</code>, which keeps the row visible and skipped by the keyboard.</li>
+      <li><strong>Async is the consumer's.</strong> The composite does not hold the primary action open, retry it, or close the menu on its outcome — <code>loading</code> is the only affordance it offers, and it says nothing about what happens next.</li>
+    </ul>
+  </Sec>
+
+  <p className="omitted">Omitted, per the composite spec standard: §09 Motion (the only transition is the menu's own entrance, owned by <code>Menu</code>; the composite animates nothing) · §11 Responsive (the composition does not change at any width — a pair too wide for its container is a layout decision, not a variant).</p>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

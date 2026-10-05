@@ -1,0 +1,425 @@
+<!-- @dsCard group="Specs · Navigation" viewport="1080x760" name="Menu" subtitle="Full specification — the command surface: purpose, anatomy, props, variants, keyboard, a11y, motion" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Menu — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo.tall{min-height:210px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:7px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.surf{background:var(--menu-background);border:var(--border-width) solid var(--menu-border);border-radius:var(--menu-radius);box-shadow:var(--menu-shadow);width:236px;flex:none}
+.surf.w{width:280px}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Menu, MenuList, Popover, Dialog, Button, IconButton, Badge, Table, Divider, Text, Tabs } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+const Surface = ({items,size,cursor,width}) => {
+  const [c,setC] = React.useState(cursor ?? -1);
+  return <div className={'surf'+(width?' w':'')}><MenuList items={items} size={size} cursor={c} onCursorChange={setC} /></div>;
+};
+
+const ROW_ACTIONS = [
+  {label:'Open line',icon:'external-link',shortcut:'⏎'},
+  {label:'Assign owner',icon:'user-plus'},
+  {label:'Rename',icon:'pencil',shortcut:'F2'},
+  'divider',
+  {label:'Stop line',icon:'octagon-x',tone:'critical',shortcut:'⌘⌫'},
+];
+
+function Spec(){
+const [tone,setTone] = React.useState(null);
+const [dense,setDense] = React.useState(true);
+const [scrap,setScrap] = React.useState(false);
+const [shift,setShift] = React.useState('Days');
+const [ctl,setCtl] = React.useState(false);
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Navigation · Component specification</span>
+    <h1>Menu</h1>
+    <p className="lede">A list of commands anchored to a trigger. The fifth surface on <code>useAnchor</code> and the first whose rows are <em>verbs</em> — Combobox and Autocomplete offer values, Popover offers controls, Menu offers actions and then gets out of the way. That difference is the whole component: a row is chosen once and the surface closes, focus stays on the menu rather than walking the rows, and the one place destructive commands legitimately live in this system is here.</p>
+    <div className="meta">
+      <span>components/navigation/Menu.jsx</span><span>components/core/anchor.js</span><span>window.MeridianDesignSystem_962c43.Menu</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 0 open items</span><span>since: 1.6.0</span><span>16 new tokens · 0 new layers</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Commands on demand, one press away from done.">
+    <p>A menu collects commands that are real but not frequent enough to earn a button. It is the overflow valve of a dense console: a table row cannot carry six buttons, a page header cannot carry nine, so the two or three that matter stay visible and the rest move behind one trigger. Every row is something the product will <strong>do</strong>. Nothing in a menu is a setting you are filling in, a value you are choosing for a field, or a message you did not ask for.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Offer commands from a button or a row','Menu','This component.'],
+      ['Offer controls — fields, checkboxes, a small form','Popover','A menu row is a verb, not an input. Six filters are a panel.'],
+      ['Choose a value for a field','Select · Combobox','A field keeps focus in the control and commits a value. A menu fires and closes.'],
+      ['Show the 2–3 commands that matter','Button · ButtonGroup','If it is worth a click every time, it is worth being visible.'],
+      ['Force a decision before continuing','Dialog','Escape and an outside click dismiss a menu; neither is an answer.'],
+      ['Switch between sibling views','Tabs','A view is a place, not an action.'],
+      ['Run a command from anywhere by name','Command palette','Not in this system. A palette is search-first; a menu is a fixed, short list.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> for row and card overflow (<code>ellipsis</code> trigger), page-header secondary actions, export and download variants, view options that would crowd a toolbar.</li>
+      <li><strong>Use</strong> when the list is short and stable. Ten rows is the ceiling; past that the user is searching, not choosing — reach for <code>Combobox</code>.</li>
+      <li><strong>Do not use</strong> for a destructive confirmation. Put the destructive <em>command</em> in the menu and the confirmation in a <code>Dialog</code>.</li>
+      <li><strong>Do not use</strong> as navigation between pages unless the rows genuinely are links — and then give each a real <code>href</code> so middle-click and copy-link work.</li>
+      <li><strong>Do not nest.</strong> There are no submenus in this system, by decision (§12).</li>
+    </ul>
+    <div className="demo tall">
+      <Menu label="Row actions" trigger={<IconButton icon="ellipsis" label="Row actions" variant="ghost" />} items={ROW_ACTIONS} onSelect={(it)=>setTone(it.label)} />
+      <Menu label="Export" trigger={<Button variant="secondary" iconRight="chevron-down">Export</Button>} items={[
+        {label:'CSV',icon:'file-text',description:'Current filters, 1,204 rows'},
+        {label:'Parquet',icon:'file-box'},
+        {label:'Copy as JSON',icon:'clipboard',shortcut:'⌘⇧C'}]} onSelect={(it)=>setTone(it.label)} />
+      <Popover trigger={<Button variant="ghost" iconRight="chevron-down">Filters</Button>} title="Filters"><Text size="sm">Controls, not commands — that is a Popover.</Text></Popover>
+      {tone && <Text size="xs" tone="tertiary">last selected: <code>{tone}</code></Text>}
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A trigger, a surface, and one grid every row shares.">
+    <div className="demo tall">
+      <Surface width items={[
+        {group:'Line 4 · assembly',items:[
+          {label:'Open line',icon:'external-link',shortcut:'⏎'},
+          {label:'Assign owner',icon:'user-plus',description:'Currently unassigned'}]},
+        'divider',
+        {label:'Stop line',icon:'octagon-x',tone:'critical',shortcut:'⌘⌫'}]} cursor={1} />
+      <div style={{display:'flex',flexDirection:'column',gap:8,minWidth:280,flex:1}}>
+        {[['1','Trigger — any focusable control. Receives aria-haspopup="menu" and aria-expanded; keeps its own visual states.'],
+          ['2','Surface — fixed-position, --elevation-3, --radius-md, 4px inner padding so rows never touch the border.'],
+          ['3','Group heading — 2xs caps, --menu-group-text. Not focusable, not selectable.'],
+          ['4','Indent column — one 22px slot per row, present for every row as soon as any row has an icon or a tick. Icons and ticks share it, so labels always align.'],
+          ['5','Label — one line, truncated at --maxWidth. The row\u2019s hit area is the whole grid.'],
+          ['6','Description — optional single qualifier, 2xs tertiary. Two lines maximum.'],
+          ['7','Shortcut — mono 2xs, right-aligned, --menu-item-shortcut-text. Display only.'],
+          ['8','Divider — a separator between runs of rows, not decoration between every row.'],
+          ['9','Cursor — the active row, --menu-item-background-active. One per menu, pointer and keyboard alike.']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+    </div>
+    <p>The row is a three-column grid — indent, label stack, shortcut — and the indent column is decided <strong>per menu, not per row</strong>: if one row has an icon, every row reserves the slot. A menu whose labels step in and out by 22px depending on whether that particular command had an icon is the single most common way this component is got wrong.</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Menu, MenuItem, MenuList.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['trigger','ReactNode','—','The control that opens the menu. Cloned with aria-haspopup and aria-expanded when it is an element.'],
+      ['items','Array<MenuItem | MenuGroup | \u2018divider\u2019 | string>','—','A bare string is a label-only command. Groups and dividers are flattened into one keyboard order.'],
+      ['label','string','—','Accessible name of the menu — what the commands act on. Warns in the console when absent.'],
+      ['open · onOpenChange','boolean · (open) => void','uncontrolled','Controlled pair. onOpenChange also fires for Escape, outside pointer-down and Tab.'],
+      ['onSelect','(item, index) => void','—','Fires after the row\u2019s own onSelect. Both receive the item object.'],
+      ['side · align','\u2018top\u2019|\u2018bottom\u2019|\u2018left\u2019|\u2018right\u2019 · \u2018start\u2019|\u2018center\u2019|\u2018end\u2019','bottom · start','Preferred placement. Flips and shifts to stay in the viewport.'],
+      ['offset','number','4','Gap between trigger and surface, px.'],
+      ['size','\u2018sm\u2019 | \u2018md\u2019','md','28px or 32px rows (§05).'],
+      ['minWidth · maxWidth','number · number','180 · 320','Floor and truncation ceiling, px. The surface itself is max-content between them.'],
+      ['matchTriggerWidth','boolean','false','Take the trigger\u2019s width — for a menu belonging to a full-width control.'],
+    ]}/>
+    <T cols={['MenuItem','Type','Notes']} rows={[
+      ['label','ReactNode','A verb phrase. Sentence case, ideally two or three words.'],
+      ['icon','string | ReactNode','\u2014','A Lucide name, OR any node \u2014 an Avatar for a switch-account list, a colour swatch. A string routes to Icon; anything else renders as given (1.21.2, additive).'],
+      ['shortcut','string','Rendered right-aligned and published as aria-keyshortcuts. Display only — you own the handler.'],
+      ['description','ReactNode','One qualifier: what it will affect, why it is unavailable.'],
+      ['tone','\u2018default\u2019 | \u2018critical\u2019','critical for destructive commands. At most one or two per menu, last, after a divider.'],
+      ['disabled','boolean','Skipped by keyboard and pointer; kept in the list so its absence is not confusing. Pair with description.'],
+      ['checked','boolean','Present ⇒ checkable row: renders a tick, reports aria-checked, and keeps the menu open.'],
+      ['selection','\u2018single\u2019 | \u2018multiple\u2019','single marks the row menuitemradio for one-of groups. Default multiple.'],
+      ['keepOpen','boolean','Override the close-on-select default. Already true for checkable rows.'],
+      ['onSelect','(item) => void','Per-row handler.'],
+    ]}/>
+    <p><code>MenuList</code> is the same row list with no surface and no keyboard of its own — <code>items</code>, <code>size</code>, <code>cursor</code>/<code>onCursorChange</code>, <code>onSelect</code>, <code>idBase</code>, <code>domRef</code>. Use it to put commands inside a <code>Popover</code> with <code>padded={false}</code>, or inside a sheet on a phone (§11). Every surface in this specification is drawn with it.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="One surface, four shapes of content.">
+    <p>There is no <code>variant</code> prop. What a menu looks like is decided entirely by what is in <code>items</code> — which is the point: a product should not have to choose a variant name to add a tick to one row.</p>
+    <div className="demo">
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        <span className="lbl" style={{minWidth:0,padding:0}}>Commands</span>
+        <Surface items={ROW_ACTIONS} cursor={0} />
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        <span className="lbl" style={{minWidth:0,padding:0}}>Grouped</span>
+        <Surface items={[
+          {group:'View',items:[{label:'Compact rows'},{label:'Show scrap column'}]},
+          {group:'Line',items:[{label:'Assign owner'},{label:'Rename'}]}]} />
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        <span className="lbl" style={{minWidth:0,padding:0}}>Checkable</span>
+        <div className="surf"><MenuList items={[
+          {group:'Columns',items:[
+            {label:'Compact rows',checked:dense},
+            {label:'Scrap %',checked:scrap}]},
+          'divider',
+          {group:'Shift',items:['Days','Swing','Nights'].map(s=>({label:s,checked:shift===s,selection:'single'}))}]}
+          onSelect={(it)=>{
+            if(it.label==='Compact rows') setDense(!dense);
+            else if(it.label==='Scrap %') setScrap(!scrap);
+            else setShift(it.label);
+          }} /></div>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        <span className="lbl" style={{minWidth:0,padding:0}}>Mixed</span>
+        <Surface items={[
+          {label:'Compact rows',checked:dense,icon:undefined},
+          'divider',
+          {label:'Export CSV',icon:'file-text'},
+          {label:'Stop line',icon:'octagon-x',tone:'critical'}]} />
+      </div>
+    </div>
+    <ul>
+      <li><strong>Checkable rows keep the menu open</strong> and ticks live in the indent column, so a checkable menu and a command menu align identically.</li>
+      <li><strong>One-of groups</strong> set <code>selection="single"</code>, which changes the announced role to <code>menuitemradio</code>. The tick is the same glyph — the difference is exclusivity, and the group heading is what tells the user.</li>
+      <li><strong>Mixed menus are legal but risky.</strong> If half the rows toggle state and half fire commands, put the toggles first, under a heading, and divide them off.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two, and the smaller one is not for touch.">
+    <T cols={['Size','Row height','Padding','Label','Icon','Use']} rows={[
+      ['sm','28px','0 8px','--text-xs','--icon-xs','Table rows, toolbars, anything opened from a 28px control.'],
+      ['md','32px','0 10px','--text-sm','--icon-sm','Default. Page headers, cards, any standalone trigger.'],
+    ]}/>
+    <div className="demo">
+      <div style={{display:'flex',flexDirection:'column',gap:8}}><span className="lbl" style={{minWidth:0,padding:0}}>sm</span><Surface size="sm" items={ROW_ACTIONS} cursor={2} /></div>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}><span className="lbl" style={{minWidth:0,padding:0}}>md</span><Surface items={ROW_ACTIONS} cursor={2} /></div>
+    </div>
+    <p>Match the trigger, not the page: an <code>sm</code> <code>IconButton</code> in a table row opens an <code>sm</code> menu. A row with a <code>description</code> grows past the nominal height — that is expected, and it is why the token is a <em>minimum</em>. On a touch pointer neither size clears 44px; see §11.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="The row has one active state. Not two.">
+    <T cols={['State','Applies to','Treatment']} rows={[
+      ['Closed','Trigger','The trigger\u2019s own rest state, plus aria-expanded="false".'],
+      ['Open','Trigger','aria-expanded="true". The trigger does not gain a bespoke open style — it is already the thing that was pressed.'],
+      ['Rest','Row','Transparent. --menu-item-text on --menu-background.'],
+      ['Active','Row','--menu-item-background-active, --radius-sm. Set by hover AND by the keyboard cursor — one state, one appearance, so a mouse user and a keyboard user see the same menu.'],
+      ['Checked','Row','Tick in the indent column, --menu-item-check. aria-checked="true".'],
+      ['Disabled','Row','--menu-item-text-disabled, no active state, aria-disabled="true", pointer and keyboard both skip it. Stays in the list.'],
+      ['Critical','Row','--menu-item-text-critical at rest; --menu-item-background-critical-active when active. Tinted only when active — a red row sitting at rest in a list of six reads as an error, not an option.'],
+      ['Focus','Surface','The surface holds focus, without a visible ring — the cursor row IS the focus indicator, and it is what aria-activedescendant reports.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="rest / active"><Surface items={[{label:'Assign owner',icon:'user-plus'},{label:'Rename',icon:'pencil'},{label:'Duplicate',icon:'copy'}]} cursor={1} /></Row>
+      <Row label="checked"><Surface items={[{label:'Compact rows',checked:true},{label:'Scrap %',checked:false}]} /></Row>
+      <Row label="disabled"><Surface items={[{label:'Assign owner',icon:'user-plus'},{label:'Scheduled report',icon:'calendar-clock',disabled:true,description:'Needs an owner first'}]} /></Row>
+      <Row label="critical"><Surface items={[{label:'Rename',icon:'pencil'},'divider',{label:'Stop line',icon:'octagon-x',tone:'critical',shortcut:'⌘⌫'}]} cursor={2} /></Row>
+    </div>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="APG menu button, with the cursor published rather than focused.">
+    <T cols={['Key','On the trigger','In the menu']} rows={[
+      ['Enter · Space','Opens, cursor on the first enabled row.','Activates the cursor row.'],
+      ['↓','Opens, cursor on the first enabled row.','Next enabled row; wraps at the end. Headings and dividers are skipped.'],
+      ['↑','Opens, cursor on the last enabled row.','Previous enabled row; wraps at the start.'],
+      ['Home · End','—','First · last enabled row.'],
+      ['A–Z, 0–9','—','Typeahead: jumps to the next row whose label starts with what was typed. The buffer clears after 600ms, so repeated keys cycle matches and a fast string matches a prefix.'],
+      ['Escape','—','Closes and returns focus to the trigger. The event is stopped, so a Dialog behind the menu is not also dismissed.'],
+      ['Tab · ⇧Tab','Moves on normally.','Closes without restoring focus and lets the Tab through — the user is leaving, not coming back.'],
+    ]}/>
+    <p>Rows are not tab stops and never take DOM focus. Focus goes to the surface once, on open; the cursor is reported with <code>aria-activedescendant</code> and returns to the trigger on Escape or selection. A menu that moves real focus row to row has to re-implement restore for every row it ever focused, and gets it wrong the first time a row is removed while the menu is open.</p>
+    <div className="demo tall">
+      <Menu label="Row actions" trigger={<Button variant="secondary" iconRight="chevron-down">Focus me and press ↓</Button>} items={[
+        {label:'Open line',icon:'external-link',shortcut:'⏎'},
+        {label:'Assign owner',icon:'user-plus'},
+        {label:'Archive',icon:'archive'},
+        {label:'Rename',icon:'pencil',shortcut:'F2'},
+        {label:'Scheduled report',icon:'calendar-clock',disabled:true,description:'Needs an owner first'},
+        'divider',
+        {label:'Stop line',icon:'octagon-x',tone:'critical',shortcut:'⌘⌫'}]} />
+      <Text size="xs" tone="tertiary">Try <kbd>↓</kbd> <kbd>↑</kbd> <kbd>Home</kbd> <kbd>End</kbd>, then type <kbd>r</kbd> or <kbd>as</kbd>.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="Roles, naming, and the one thing that must not be a colour.">
+    <ul>
+      <li><strong>Roles.</strong> The surface is <code>role="menu"</code>; rows are <code>menuitem</code>, or <code>menuitemcheckbox</code> / <code>menuitemradio</code> when <code>checked</code> is present. Dividers are <code>role="separator"</code>; group headings are <code>role="presentation"</code> — decoration for the eye, skipped by the keyboard, and announced only through the rows they precede.</li>
+      <li><strong>Naming.</strong> <code>label</code> is the menu's accessible name and the component warns without one. "Row actions" tells a screen-reader user what the six verbs apply to; "menu, 6 items" does not.</li>
+      <li><strong>Trigger.</strong> Gets <code>aria-haspopup="menu"</code> and <code>aria-expanded</code>. An icon-only trigger must still carry its own label — <code>IconButton</code>'s <code>label</code> is not optional here.</li>
+      <li><strong>Cursor.</strong> <code>aria-activedescendant</code> on the surface, pointing at the active row's id. It is set only when a row is active, so an opened-by-click menu with no cursor announces nothing false.</li>
+      <li><strong>Shortcuts.</strong> <code>shortcut</code> is published as <code>aria-keyshortcuts</code>, so the announcement carries the accelerator instead of reading "⌘⌫" as punctuation.</li>
+      <li><strong>Critical rows are not identified by colour alone.</strong> The label is the signal — "Stop line", "Delete", "Revoke access" — and the colour agrees with it. A row that reads "Continue" in red communicates nothing to a user who cannot see red.</li>
+      <li><strong>Disabled rows keep their meaning.</strong> <code>aria-disabled</code> rather than removal, so the command's existence is discoverable, and a <code>description</code> should say what would make it available.</li>
+      <li><strong>Not modal.</strong> No scrim, no focus trap, nothing behind it is hidden — Tab out is a legitimate dismissal.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="90ms, or nothing.">
+    <T cols={['Moment','Motion','Tokens']} rows={[
+      ['Open, side bottom','mer-drop-in — 4px down and up to full opacity, from the trigger\u2019s edge.','--duration-instant · --ease-out'],
+      ['Open, side top','mer-rise-in — the same, upward.','--duration-instant · --ease-out'],
+      ['Open, side left/right','mer-fade-in only. Lateral menus have no honest direction to come from.','--duration-instant'],
+      ['Close','None. The surface is removed.','—'],
+      ['Cursor move','None. The active background switches instantly — an eased highlight lags behind held arrow keys.','—'],
+      ['Reduced motion','--duration-* collapse to 1ms and --motion-shift to 0, so the surface appears without transform.','prefers-reduced-motion'],
+    ]}/>
+    <p>90ms is the shortest duration in the system and this is what it is for: enough to show <em>where</em> the surface came from, not enough to be waited on. A menu is opened to be used immediately — anything slower puts an animation between the user's click and the row they were already reaching for. Nothing about a menu ever animates out; a chosen command should feel finished, not dismissed.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="Every row is a verb.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Start with a verb.</strong> "Assign owner", "Export CSV", "Stop line".</li>
+        <li><strong>Sentence case</strong>, two or three words, no trailing punctuation.</li>
+        <li><strong>Name the object</strong> when the menu is ambiguous: "Duplicate line", not "Duplicate", where rows and shifts both exist.</li>
+        <li><strong>Group past five rows</strong>, with a noun heading for the thing acted on: "View", "Line", "Export".</li>
+        <li><strong>Use a description only to disambiguate</strong> or to explain a disabled row.</li>
+        <li><strong>Put the destructive row last</strong>, after a divider.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>Noun-only labels</strong> — "Owner", "Settings" — which read as places, not actions.</li>
+        <li><strong>Title Case</strong>, ellipses on every row, or "…" as a promise of a dialog.</li>
+        <li><strong>Sentences.</strong> If the label needs a comma it needs a dialog.</li>
+        <li><strong>A divider between every row.</strong> Dividers separate <em>runs</em>; used everywhere they separate nothing.</li>
+        <li><strong>Shortcuts on rows that have none.</strong> An empty column is quieter than a fake one.</li>
+        <li><strong>More than ten rows.</strong> Split the menu, or admit the user is searching.</li>
+      </ul></div>
+    </div>
+    <p>Shortcut glyphs are written in platform order — <code>⌘⇧C</code>, never <code>⇧⌘C</code> — and the same command carries the same glyph everywhere it appears. <code>shortcut</code> renders and announces; it does not bind. If the accelerator is not also wired to a global handler, do not print it.</p>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="The surface adapts. The trigger is your problem.">
+    <ul>
+      <li><strong>Flip and shift.</strong> The engine picks the side at open from the room that exists, then holds it, and shifts alignment to keep the surface inside an 8px viewport gutter. A menu on the last row of a table opens upward without being told.</li>
+      <li><strong>Height is capped, not guessed.</strong> The surface is clamped to the room on its side and scrolls inside that; a ten-row menu near the bottom of a short window scrolls rather than running off-screen.</li>
+      <li><strong>Width is content-driven</strong> between <code>minWidth</code> and <code>maxWidth</code>. Labels truncate with an ellipsis at the ceiling — raise <code>maxWidth</code> rather than shortening the label to fit a number.</li>
+      <li><strong>Not clipped.</strong> Being fixed-position, the surface escapes an ancestor's <code>overflow: hidden</code> — so a menu works in a scrolling table cell with no portal.</li>
+      <li><strong>Touch.</strong> Neither size clears the 44px minimum target. On a coarse pointer, either render the commands in a bottom sheet with <code>MenuList</code> and your own 44px row heights, or make the trigger a <code>Dialog</code>. Do not ship <code>sm</code> to a phone.</li>
+      <li><strong>The trigger must survive the breakpoint.</strong> A label-and-chevron trigger in a header that collapses to icons becomes an <code>IconButton</code> with a <code>label</code> — the menu itself does not change.</li>
+    </ul>
+    <div className="demo tall" style={{alignItems:'flex-end',minHeight:150}}>
+      <Menu label="Row actions" side="top" trigger={<Button variant="secondary" size="sm" iconRight="chevron-up">side="top"</Button>} items={ROW_ACTIONS} />
+      <Menu label="Row actions" align="end" trigger={<Button variant="secondary" size="sm" iconRight="chevron-down">align="end"</Button>} items={ROW_ACTIONS} />
+      <Menu label="Long labels" maxWidth={220} trigger={<Button variant="ghost" size="sm" iconRight="chevron-down">maxWidth 220</Button>} items={[
+        {label:'Assign to the fabrication night shift',icon:'user-plus'},
+        {label:'Rename',icon:'pencil'}]} />
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Six ways to break it, one of them by design.">
+    <div className="two">
+      <div className="pane dont"><h3>No submenus</h3><ul>
+        <li>A menu opened from a menu inherits the parent's dismissal rules and contradicts them: the parent's outside-pointer-down fires on the child, and the pointer path to the child crosses rows that would move the cursor.</li>
+        <li>It is also the least accessible pattern in common use — the APG right-arrow model works only when every level is a real focus stop, which this component deliberately is not.</li>
+        <li><strong>Instead:</strong> flatten with groups, or let the row open a <code>Dialog</code>. "Export ▸ CSV / Parquet" is two rows, not a level.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Also don't</h3><ul>
+        <li><strong>A destructive confirm in a menu.</strong> Escape dismisses it and Escape is not "no, keep it". Menu row fires the intent; <code>Dialog</code> takes the answer.</li>
+        <li><strong>A form in a menu.</strong> Rows are not inputs. That is <code>Popover</code>.</li>
+        <li><strong>A field's options as a menu.</strong> No value is committed, no name is announced, and nothing shows the current choice. Use <code>Select</code> or <code>Combobox</code>.</li>
+        <li><strong>Twenty rows with a scrollbar.</strong> Group and cut, or move to a searchable surface.</li>
+        <li><strong>Hover-to-open.</strong> A menu opens on press. Hover-open menus fire on a pointer merely passing through, and do not exist for touch or keyboard at all.</li>
+        <li><strong>Removing disabled rows.</strong> A list that changes length between visits cannot be learned.</li>
+      </ul></div>
+    </div>
+    <p className="warn">The tempting exception — "just this one small submenu for export formats" — is how every menu system in this class of product ends up with three levels and no keyboard story. The answer is a group heading.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="What the code does, and why it does it that way.">
+    <ul>
+      <li><strong>Fifth consumer of <code>useAnchor</code>, no new positioning code.</strong> Side selection, the flip, the 8px gutter, the measured height clamp and the per-frame imperative <code>max-height</code> write are all the engine's, paid for by the Combobox and Autocomplete reviews. Menu passes <code>side</code>, <code>align</code>, <code>offset</code> and nothing else.</li>
+      <li><strong><code>flatten()</code> runs once per <code>items</code> change</strong> and turns groups, dividers, strings and objects into one flat row array. The keyboard walks that array by index, which is why headings and dividers cannot be landed on and why <code>aria-activedescendant</code> ids are stable per row position.</li>
+      <li><strong>Close-on-select is derived, not configured:</strong> <code>keepOpen ?? checked != null</code>. A command closes; a checkable row stays. Products should almost never need to set <code>keepOpen</code> explicitly — if they are, the row is probably a control and belongs in a <code>Popover</code>.</li>
+      <li><strong>The indent column is computed across all rows</strong> (<code>anyIndent</code>), not per row, so labels cannot step sideways.</li>
+      <li><strong>Layered at <code>--z-popover</code> (650), not <code>--z-dropdown</code> (300)</strong>, because menus open from dialog toolbars and 300 sits below <code>--z-overlay</code>. Deliberate reuse of Popover's rung: same class of surface, same stacking need, no new layer inserted.</li>
+      <li><strong>Focus is taken in the surface's ref callback</strong>, not in a deferred frame. A trigger's own press handling — a button re-focusing itself, a pointerup landing after the open — runs between commit and the next animation frame, so a deferred focus is silently undone and every key in §07 becomes unreachable. The frame after open only re-asserts focus if something else took it.</li>
+      <li><strong>Escape stops propagation</strong> — a menu inside a <code>Dialog</code> must not close the dialog too. Tab does not: closing and letting the browser move focus is the correct non-modal behaviour.</li>
+      <li><strong>Typeahead is a 600ms buffer</strong> with the search starting at <code>cursor + 1</code> for a single key and at <code>cursor</code> for a longer string, so a repeated letter cycles matches and a typed prefix does not skip the row it is already on.</li>
+      <li><strong>16 new tokens, no reference to <code>--popover-*</code>.</strong> The values coincide by intent, but a component token may never resolve through another component's — retargeting Popover's shadow must not silently move Menu's.</li>
+      <li><strong>The surface renders only while open.</strong> No hidden DOM, so a 40-row table carries 40 triggers and zero menus.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--menu-background','--menu-border','--menu-radius','--menu-shadow','--menu-divider','--menu-group-text','--menu-item-text','--menu-item-icon','--menu-item-description-text','--menu-item-shortcut-text','--menu-item-check','--menu-item-background-active','--menu-item-text-critical','--menu-item-background-critical-active','--menu-item-text-disabled'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Wiring it into a product.">
+    <pre>{`import { Menu, MenuList } from '@meridian/navigation';
+
+// Row overflow — the common case.
+<Menu
+  label="Row actions"
+  size="sm"
+  align="end"
+  trigger={<IconButton icon="ellipsis" label={\`Actions for \${line.name}\`} variant="ghost" size="sm" />}
+  items={[
+    { label: 'Open line', icon: 'external-link', shortcut: '⏎', onSelect: () => open(line) },
+    { label: 'Assign owner', icon: 'user-plus', onSelect: () => setAssigning(line) },
+    { label: 'Scheduled report', icon: 'calendar-clock', disabled: !line.owner,
+      description: line.owner ? undefined : 'Needs an owner first' },
+    'divider',
+    // The command lives here; the confirmation does not.
+    { label: 'Stop line', icon: 'octagon-x', tone: 'critical', shortcut: '⌘⌫',
+      onSelect: () => setConfirmStop(line) },
+  ]}
+/>
+
+// Checkable rows: the menu stays open, you own the state.
+<Menu label="Columns" trigger={<Button variant="ghost" iconLeft="columns">Columns</Button>}
+  items={[{ group: 'Columns', items: cols.map(c => ({
+    label: c.label, checked: shown.has(c.id), onSelect: () => toggle(c.id) })) }]} />
+
+// Commands inside another surface — no anchoring, no keyboard of its own.
+<Popover trigger={trigger} title="More" padded={false}>
+  <MenuList items={items} onSelect={run} />
+</Popover>`}</pre>
+    <ul>
+      <li><strong>Give the trigger a specific label.</strong> Forty rows of "Actions" are indistinguishable in a screen reader's element list; <code>Actions for Line 4</code> is not.</li>
+      <li><strong><code>shortcut</code> does not bind.</strong> Register the accelerator where the command lives — usually the same page-level handler the menu row calls — and pass the string here only to display it.</li>
+      <li><strong>Keep <code>items</code> referentially stable</strong> (<code>useMemo</code>) when the menu is open in a frequently re-rendering table. The flatten is cheap, but a new array each frame re-derives the row list under the cursor.</li>
+      <li><strong>Do not remove rows while the menu is open.</strong> The cursor is an index into the flattened list; a list that shrinks under an open menu moves the cursor to a different command. Disable instead.</li>
+      <li><strong>Controlled mode</strong> is for menus something else must close — a route change, a socket event that invalidates the row. Pass <code>open</code> + <code>onOpenChange</code>; the component still handles Escape, Tab and outside pointer-down and reports them through the same callback.</li>
+      <li><strong>Testing hooks:</strong> the surface is <code>[role="menu"]</code> with your <code>label</code> as its accessible name, rows are <code>[role="menuitem"]</code> / <code>[role="menuitemcheckbox"]</code>, and the active row is the target of <code>aria-activedescendant</code>. Assert on those, not on the ids — <code>idBase</code> comes from <code>useId</code> and is not stable across renders of a different tree.</li>
+    </ul>
+    <div className="demo">
+      <Menu label="Row actions" open={ctl} onOpenChange={setCtl} trigger={<Button variant="secondary" iconRight="chevron-down">Controlled — {ctl?'open':'closed'}</Button>} items={ROW_ACTIONS} />
+      <Button variant="ghost" onClick={()=>setCtl(true)}>Open from elsewhere</Button>
+    </div>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

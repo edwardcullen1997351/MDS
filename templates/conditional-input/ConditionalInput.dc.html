@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Conditional input" description="Interaction pattern reference implementation, set in a manufacturing ERP — dispositioning a nonconforming lot: explicit dependency rules, declared retention and unavailability policies, requiredness that follows applicability, and focus rescued out of content that goes away." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}fieldset{margin:0;min-width:0}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/ConditionalInput.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+</div>
+<p style="margin:0;max-width:78ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note and the dependency panel on the right — exists to make the contract visible. It is not part of the pattern. The three tweaks are not harness: <span style="font-family:var(--font-mono)">unavailability</span>, <span style="font-family:var(--font-mono)">retention</span> and <span style="font-family:var(--font-mono)">requiredness</span> are the §05 policies an adopting team must declare, and switching them changes the contract rather than the demo — under optional requiredness an applicable dependent still validates its format but never blocks the disposition.</p>
+<p style="margin:0;max-width:78ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Choose Scrap to see two dependents appear at once — the cost justification and the quality manager who must approve it. Set a 60-day hold under Use as-is, then switch to Scrap: a previously valid value becomes invalid under the shorter disposition window. Turn the supervisor notification off while focus sits in the mobile number to watch focus land back on the controller instead of nowhere. Post the disposition with Scrap selected and then without, and compare what reaches the snapshot.</p>
+</div>
+
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">Disposition nonconforming lot</h1>
+
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:28px;align-items:start">
+
+<form novalidate onSubmit="{{ onSubmit }}" style="display:flex;flex-direction:column;gap:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+<div style="padding:20px 22px 6px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Fieldset" label="Nonconformance NC-2026-0417" hint="Lot L-88213 · BRK-4820-A · 40 pcs held at final inspection, Chakan plant (PL-04) · weld porosity." error="{{ groupError }}" gap="18px" hint-size="100%,620px">
+
+<sc-if value="{{ posted }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="success" title="Disposition posted" live="on" size="sm" hint-size="100%,72px">{{ postedBody }}</x-import>
+</sc-if>
+
+<div data-ctl="disposition">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.RadioGroup" label="Disposition" hint="Scrap writes the lot off, so it asks for a cost justification and a quality manager." options="{{ dispositionOptions }}" value="{{ vDisposition }}" onChange="{{ onDisposition }}" required="{{ true }}" hint-size="100%,150px"></x-import>
+</div>
+
+<div role="status" aria-live="polite" style="min-height:19px;font-size:var(--text-xs);line-height:1.55;color:var(--text-secondary);text-wrap:pretty">{{ announcement }}</div>
+
+<sc-if value="{{ mScrap }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:14px;padding:14px 16px;border-left:2px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-sunken)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Fieldset" label="Scrap authorisation" hint="{{ scrapHint }}" gap="14px" hint-size="100%,240px">
+<div data-dep="justification">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Scrap justification" hint="{{ hintJustification }}" error="{{ errJustification }}" required="{{ reqJustification }}" hint-size="100%,120px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Textarea" rows="3" value="{{ vJustification }}" onChange="{{ onJustification }}" onBlur="{{ onBlurJustification }}" disabled="{{ dScrap }}" placeholder="Why the lot cannot be reworked and what the write-off covers" hint-size="100%,72px"></x-import>
+</x-import>
+</div>
+<div data-dep="approver">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Quality manager email" hint="{{ hintApprover }}" error="{{ errApprover }}" required="{{ reqApprover }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" type="email" value="{{ vApprover }}" onChange="{{ onApprover }}" onBlur="{{ onBlurApprover }}" disabled="{{ dScrap }}" placeholder="m.nair@suryodaya.co.in" hint-size="100%,34px"></x-import>
+</x-import>
+</div>
+</x-import>
+</div>
+</sc-if>
+
+<div data-ctl="hold" style="display:flex;flex-direction:column;gap:14px;padding-top:2px;border-top:var(--border-hairline)">
+<div style="padding-top:14px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Switch" label="Keep the lot on quality hold" description="{{ holdDescription }}" checked="{{ vHold }}" onChange="{{ onHold }}" hint-size="100%,40px"></x-import>
+</div>
+<sc-if value="{{ mHoldDays }}" hint-placeholder-val="{{ false }}">
+<div data-dep="holdDays" style="max-width:280px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Hold expires in" hint="{{ holdHint }}" error="{{ errHoldDays }}" required="{{ reqHoldDays }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" type="text" inputMode="numeric" mono="{{ true }}" suffix="days" value="{{ vHoldDays }}" onChange="{{ onHoldDays }}" onBlur="{{ onBlurHoldDays }}" disabled="{{ dHoldDays }}" placeholder="14" hint-size="100%,34px"></x-import>
+</x-import>
+</div>
+</sc-if>
+</div>
+
+<div data-ctl="notifyOn" style="display:flex;flex-direction:column;gap:14px;padding-top:2px;border-top:var(--border-hairline)">
+<div style="padding-top:14px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Switch" label="Tell the line supervisor" description="Off records the disposition on the NC only — the shift lead finds it at handover." checked="{{ vNotifyOn }}" onChange="{{ onNotifyOn }}" hint-size="100%,40px"></x-import>
+</div>
+<sc-if value="{{ mChannel }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+<div data-ctl="channel" data-dep="channel">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Notification channel" hint="SMS reaches the floor faster and asks for a mobile number." hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" options="{{ channelOptions }}" value="{{ vChannel }}" onChange="{{ onChannel }}" disabled="{{ dChannel }}" hint-size="100%,34px"></x-import>
+</x-import>
+</div>
+<sc-if value="{{ mMobile }}" hint-placeholder-val="{{ false }}">
+<div data-dep="mobile">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Mobile number" hint="{{ hintMobile }}" error="{{ errMobile }}" required="{{ reqMobile }}" hint-size="100%,74px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" type="tel" mono="{{ true }}" value="{{ vMobile }}" onChange="{{ onMobile }}" onBlur="{{ onBlurMobile }}" disabled="{{ dMobile }}" placeholder="+91 98230 41185" hint-size="100%,34px"></x-import>
+</x-import>
+</div>
+</sc-if>
+</div>
+</sc-if>
+</div>
+
+</x-import>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 22px;margin-top:8px;border-top:var(--border-hairline);background:var(--surface-sunken)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ stateLabel }}</span>
+<div style="display:flex;gap:8px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" type="button" onClick="{{ onReset }}" hint-size="80px,34px">Reset</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="primary" type="submit" hint-size="160px,34px">Post disposition</x-import>
+</div>
+</div>
+</form>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:14px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:16px 18px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Dependency table · remove on copy</span>
+<div style="display:flex;flex-direction:column;gap:11px">
+<sc-for list="{{ depRows }}" as="row" hint-placeholder-count="5">
+<div style="display:flex;flex-direction:column;gap:3px">
+<div style="display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<sc-if value="{{ row.isInactive }}" hint-placeholder-val="{{ true }}"><span style="width:7px;height:7px;border-radius:999px;flex:none;background:var(--border-strong)"></span></sc-if>
+<sc-if value="{{ row.isIncomplete }}" hint-placeholder-val="{{ false }}"><span style="width:7px;height:7px;border-radius:999px;flex:none;background:var(--status-info-solid)"></span></sc-if>
+<sc-if value="{{ row.isInvalid }}" hint-placeholder-val="{{ false }}"><span style="width:7px;height:7px;border-radius:999px;flex:none;background:var(--status-critical-solid)"></span></sc-if>
+<sc-if value="{{ row.isComplete }}" hint-placeholder-val="{{ false }}"><span style="width:7px;height:7px;border-radius:999px;flex:none;background:var(--status-success-solid)"></span></sc-if>
+<span style="color:var(--text-primary)">{{ row.name }}</span>
+<span style="color:var(--text-tertiary);margin-left:auto">{{ row.state }}</span>
+</div>
+<span style="padding-left:15px;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.5">{{ row.cond }}</span>
+</div>
+</sc-for>
+</div>
+<div style="border-top:var(--border-hairline);padding-top:12px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Snapshot — applicable values only</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ snapshotText }}</pre>
+</div>
+<div style="border-top:var(--border-hairline);padding-top:12px;display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Held out of the snapshot</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ retainedText }}</pre>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">Applicability, value and validity are three separate stores — §20. An inapplicable value is still a value; it is simply not on the NC record and cannot block the disposition.</p>
+</div>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1020,&quot;height&quot;:840},&quot;unavailability&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;hidden&quot;,&quot;disabled&quot;],&quot;default&quot;:&quot;hidden&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Inapplicable dependents&quot;},&quot;retention&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;preserve&quot;,&quot;clear&quot;],&quot;default&quot;:&quot;preserve&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Value retention&quot;},&quot;requiredness&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;required-when-applicable&quot;,&quot;optional&quot;],&quot;default&quot;:&quot;required-when-applicable&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Requiredness&quot;}}">
+// Maximum quality-hold window per disposition, from the QMS procedure.
+const CAP = { useasis: 90, rework: 45, scrap: 14 };
+const LABEL = { useasis: 'Use as-is', rework: 'Rework', scrap: 'Scrap' };
+const DEPS = ['justification', 'approver', 'holdDays', 'channel', 'mobile'];
+const DEP_LABEL = { justification: 'Scrap justification', approver: 'Quality manager email', holdDays: 'Hold expires in', channel: 'Notification channel', mobile: 'Mobile number' };
+const DEP_COND = {
+  justification: 'Applies when the disposition is Scrap.',
+  approver: 'Applies when the disposition is Scrap.',
+  holdDays: 'Applies while the lot stays on quality hold. Maximum follows the disposition.',
+  channel: 'Applies when the line supervisor is notified.',
+  mobile: 'Applies when the channel is SMS — chained behind notification.'
+};
+const EMPTY = { disposition: 'useasis', justification: '', approver: '', hold: false, holdDays: '', notifyOn: false, channel: 'email', mobile: '' };
+
+class Component extends DCLogic {
+  state = { values: { ...EMPTY }, touched: {}, committed: false, announcement: '', posted: null };
+
+  // ─── Dependency rules. Declared as a pure function of the value set, never
+  // derived from what happens to be on screen (§20). Chained rules restate
+  // their parent's condition so a contradictory state cannot be represented.
+  applicability(v) {
+    const notify = !!v.notifyOn;
+    return {
+      justification: v.disposition === 'scrap',
+      approver: v.disposition === 'scrap',
+      holdDays: !!v.hold,
+      channel: notify,
+      mobile: notify && v.channel === 'sms'
+    };
+  }
+
+  // Requiredness is a property of the applicable state (§05). Under `optional`
+  // becoming applicable does not make a dependent blocking — its format is
+  // still judged once there is something to judge.
+  blocking() { return (this.props.requiredness || 'required-when-applicable') === 'required-when-applicable'; }
+
+  // Validity of the applicable set only. An inapplicable value is never judged.
+  evaluate(v) {
+    const app = this.applicability(v);
+    const req = this.blocking();
+    const p = {};
+    if (app.justification) {
+      const t = (v.justification || '').trim();
+      if (!t) { if (req) p.justification = 'Scrap needs a written justification.'; }
+      else if (t.length < 20) p.justification = 'Give at least 20 characters — ' + t.length + ' so far.';
+    }
+    if (app.approver) {
+      const t = (v.approver || '').trim();
+      if (!t) { if (req) p.approver = 'Scrap needs a quality manager to approve the write-off.'; }
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)) p.approver = 'Enter a complete email address, like m.nair@suryodaya.co.in.';
+    }
+    if (app.holdDays) {
+      const raw = (v.holdDays || '').trim();
+      const n = raw === '' ? null : (/^\d+$/.test(raw) ? Number(raw) : NaN);
+      const cap = CAP[v.disposition];
+      if (n === null) { if (req) p.holdDays = 'Enter how many days the lot stays on hold.'; }
+      else if (!Number.isInteger(n) || n < 1) p.holdDays = 'Enter a whole number of days, 1 or more.';
+      else if (n > cap) p.holdDays = LABEL[v.disposition] + ' must clear the hold within ' + cap + ' days. Shorten the hold, or change the disposition.';
+    }
+    if (app.mobile) {
+      const t = (v.mobile || '').trim();
+      if (!t) { if (req) p.mobile = 'Enter the mobile number the SMS goes to.'; }
+      else if (!/^\+?[\d\s-]{8,}$/.test(t)) p.mobile = 'Enter a number with country code, like +91 98230 41185.';
+    }
+    return p;
+  }
+
+  visible(problems) {
+    if (this.state.committed) return problems;
+    const out = {};
+    for (const k in problems) if (this.state.touched[k]) out[k] = problems[k];
+    return out;
+  }
+
+  list(keys) {
+    const names = keys.map(k => DEP_LABEL[k]);
+    if (names.length < 2) return names.join('');
+    return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+  }
+
+  // Controlling values run through here so applicability, retention, the
+  // announcement and focus are all decided in one place.
+  setController(field, value) {
+    const prev = this.state.values;
+    const next = { ...prev, [field]: value };
+    const before = this.applicability(prev);
+    const after = this.applicability(next);
+    const dropped = DEPS.filter(d => before[d] && !after[d]);
+    const gained = DEPS.filter(d => !before[d] && after[d]);
+    const clearing = (this.props.retention || 'preserve') === 'clear';
+    const held = dropped.filter(d => String(next[d] ?? '') !== String(EMPTY[d]));
+    if (clearing) held.forEach(d => { next[d] = EMPTY[d]; });
+
+    // Focus must not be left inside content that becomes unavailable (§12).
+    const active = document.activeElement;
+    const stranded = dropped.some(d => {
+      const el = document.querySelector('[data-dep="' + d + '"]');
+      return el && active && el !== active && el.contains(active);
+    });
+
+    const parts = [];
+    if (gained.length) parts.push(this.list(gained) + (gained.length > 1 ? ' now apply.' : ' now applies.'));
+    if (dropped.length) parts.push(this.list(dropped) + (dropped.length > 1 ? ' no longer apply.' : ' no longer applies.'));
+    if (held.length) parts.push(clearing ? 'Cleared: ' + this.list(held) + '.' : 'Your entries are kept and return if the condition does.');
+
+    // Requiredness that just changed is re-judged rather than left as it was.
+    const touched = { ...this.state.touched };
+    gained.forEach(d => { if (String(next[d] ?? '') !== String(EMPTY[d])) touched[d] = true; });
+    if (field === 'disposition' && after.holdDays && String(next.holdDays) !== '') touched.holdDays = true;
+
+    this.setState({ values: next, touched, announcement: parts.join(' '), posted: null });
+    // Focus moves after the re-render, and only when the active element was
+    // actually stranded — focusEl waits a frame so the new content exists.
+    if (stranded) this.focusEl('[data-ctl="' + field + '"]');
+  }
+
+  set(field, raw) { this.setState(s => ({ values: { ...s.values, [field]: raw }, posted: null })); }
+  touch(field) { this.setState(s => ({ touched: { ...s.touched, [field]: true } })); }
+
+  // Focus lands only once the re-render has settled: the withdrawal of the
+  // stranded content is what took focus away, so a move made in the same
+  // frame can be undone by the commit that follows it. Attempt on the next
+  // frame, then confirm — if focus was reclaimed by the document, place it
+  // again.
+  focusEl(selector) {
+    const place = () => {
+      const host = document.querySelector(selector);
+      if (!host) return false;
+      const el = host.matches('input,textarea,select') ? host : host.querySelector('input:not([disabled]),textarea:not([disabled]),select:not([disabled])');
+      if (!el) return false;
+      el.focus();
+      return document.activeElement === el;
+    };
+    // The withdrawal re-renders the group, which can replace the node focus
+    // was just placed on. Re-place whenever focus has fallen back to the
+    // document, until it holds for two consecutive checks or the window ends.
+    clearInterval(this._focusTimer);
+    let held = 0;
+    let elapsed = 0;
+    const tick = () => {
+      const stray = !document.activeElement || document.activeElement === document.body;
+      if (stray) { held = 0; place(); } else { held += 1; }
+      elapsed += 40;
+      if (held >= 2 || elapsed > 800) clearInterval(this._focusTimer);
+    };
+    requestAnimationFrame(place);
+    this._focusTimer = setInterval(tick, 40);
+  }
+
+  componentWillUnmount() { clearInterval(this._focusTimer); }
+
+  snapshot(v) {
+    const app = this.applicability(v);
+    const out = { disposition: v.disposition, hold: !!v.hold, notify: !!v.notifyOn };
+    DEPS.forEach(d => { if (app[d]) out[d] = v[d]; });
+    return out;
+  }
+
+  submit = (e) => {
+    if (e) e.preventDefault();
+    const v = this.state.values;
+    const problems = this.evaluate(v);
+    const keys = Object.keys(problems);
+    if (keys.length) {
+      this.setState({ committed: true, posted: null });
+      const order = ['justification', 'approver', 'holdDays', 'mobile'];
+      const first = order.find(k => keys.includes(k));
+      if (first) this.focusEl('[data-dep="' + first + '"]');
+      return;
+    }
+    const snap = this.snapshot(v);
+    const bits = ['Lot L-88213 dispositioned ' + LABEL[snap.disposition]];
+    bits.push(snap.holdDays ? 'held for ' + snap.holdDays + ' days' : 'released from hold');
+    bits.push(snap.notify ? 'supervisor notified by ' + (snap.channel === 'sms' ? 'SMS to ' + snap.mobile : 'email') : 'no supervisor notification');
+    this.setState({ committed: true, posted: bits.join(', ') + '. Values from conditions that did not apply were not written to the NC record.' });
+  };
+
+  reset = () => this.setState({ values: { ...EMPTY }, touched: {}, committed: false, announcement: '', posted: null });
+
+  renderVals() {
+    const v = this.state.values;
+    const app = this.applicability(v);
+    const shown = this.visible(this.evaluate(v));
+    const req = this.blocking();
+    const mode = this.props.unavailability || 'hidden';
+    const disabledMode = mode === 'disabled';
+    const mounted = d => app[d] || disabledMode;
+    const n = Object.keys(shown).length;
+
+    const rows = DEPS.map(d => {
+      let state = 'inactive';
+      if (app[d]) {
+        if (shown[d]) state = 'active · invalid';
+        else if (String(v[d] ?? '') === String(EMPTY[d])) state = 'active · incomplete';
+        else state = 'active · complete';
+      }
+      return {
+        name: DEP_LABEL[d], cond: DEP_COND[d], state,
+        isInactive: state === 'inactive',
+        isIncomplete: state === 'active · incomplete',
+        isInvalid: state === 'active · invalid',
+        isComplete: state === 'active · complete'
+      };
+    });
+
+    const heldOut = {};
+    DEPS.forEach(d => { if (!app[d] && String(v[d] ?? '') !== String(EMPTY[d])) heldOut[DEP_LABEL[d]] = v[d]; });
+    const hasHeld = Object.keys(heldOut).length > 0;
+
+    return {
+      dispositionOptions: [
+        { value: 'useasis', label: 'Use as-is', description: 'Ship against a concession. No further input needed.' },
+        { value: 'rework', label: 'Rework', description: 'Return the lot to the cell for repair. No further input needed.' },
+        { value: 'scrap', label: 'Scrap', description: 'Write the lot off at standard cost — asks for a justification and a quality manager.' }
+      ],
+      channelOptions: [{ value: 'email', label: 'Email' }, { value: 'sms', label: 'SMS' }],
+      vDisposition: v.disposition, vJustification: v.justification, vApprover: v.approver,
+      vHold: !!v.hold, vHoldDays: v.holdDays, vNotifyOn: !!v.notifyOn, vChannel: v.channel, vMobile: v.mobile,
+      mScrap: mounted('justification'), mHoldDays: mounted('holdDays'), mChannel: mounted('channel'), mMobile: mounted('mobile'),
+      dScrap: !app.justification, dHoldDays: !app.holdDays, dChannel: !app.channel, dMobile: !app.mobile,
+      reqJustification: app.justification && req, reqApprover: app.approver && req, reqHoldDays: app.holdDays && req, reqMobile: app.mobile && req,
+      errJustification: shown.justification, errApprover: shown.approver, errHoldDays: shown.holdDays, errMobile: shown.mobile,
+      scrapHint: app.justification
+        ? (req ? 'Both values are required while Scrap is selected.' : 'Both values apply while Scrap is selected. Neither blocks the disposition — this pattern is applied with optional requiredness.')
+        : 'Not applicable — the disposition is not Scrap. Nothing here is required.',
+      hintJustification: (req ? 'Required for Scrap.' : 'Optional, and applies only for Scrap.') + ' At least 20 characters. Kept on the NC record and read at the material review board.',
+      hintApprover: (req ? 'Required for Scrap.' : 'Optional, and applies only for Scrap.') + ' Someone other than the inspector who raised the NC.',
+      hintMobile: req ? 'Required to notify by SMS. Include the country code.' : 'Optional. Applies while the channel is SMS. Include the country code.',
+      holdDescription: LABEL[v.disposition] + ' must clear within ' + CAP[v.disposition] + ' days of the disposition.',
+      holdHint: 'Between 1 and ' + CAP[v.disposition] + ' days for ' + LABEL[v.disposition] + '.' + (req ? '' : ' Optional — leaving it empty does not block the disposition.'),
+      onDisposition: next => this.setController('disposition', next),
+      onHold: e => this.setController('hold', e.target.checked),
+      onNotifyOn: e => this.setController('notifyOn', e.target.checked),
+      onChannel: e => this.setController('channel', e.target.value),
+      onJustification: e => this.set('justification', e.target.value),
+      onApprover: e => this.set('approver', e.target.value),
+      onHoldDays: e => this.set('holdDays', e.target.value),
+      onMobile: e => this.set('mobile', e.target.value),
+      onBlurJustification: () => this.touch('justification'),
+      onBlurApprover: () => this.touch('approver'),
+      onBlurHoldDays: () => this.touch('holdDays'),
+      onBlurMobile: () => this.touch('mobile'),
+      onSubmit: this.submit,
+      onReset: this.reset,
+      announcement: this.state.announcement,
+      posted: !!this.state.posted,
+      postedBody: this.state.posted || '',
+      groupError: (this.state.committed && n) ? 'Nothing was posted. ' + n + (n === 1 ? ' applicable value needs' : ' applicable values need') + ' attention below.' : undefined,
+      stateLabel: n ? 'dependency active · invalid' : (this.state.posted ? 'submitted' : 'editing · ' + Object.values(app).filter(Boolean).length + ' of 5 dependencies active'),
+      depRows: rows,
+      snapshotText: JSON.stringify(this.snapshot(v), null, 1),
+      retainedText: hasHeld ? JSON.stringify(heldOut, null, 1) + '\n\npolicy: ' + ((this.props.retention || 'preserve') === 'clear' ? 'clear — these are cleared as the condition ends' : 'preserve — restored, and revalidated, if the condition returns') : '— nothing held —'
+    };
+  }
+}
+</script>
+</body>
+</html>

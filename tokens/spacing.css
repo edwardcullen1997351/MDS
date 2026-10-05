@@ -1,0 +1,56 @@
+:root{
+/* 4px rhythm, with one 2px half-step for optical corrections only
+   (icon nudges, hairline offsets) — never as a layout gap.
+   --space-3 (12px) inside controls, --space-4 (16px) between fields,
+   --space-6 (24px) between card sections and as page padding. */
+--space-0:0px;
+--space-px:1px;
+--space-half:2px;
+--space-1:4px;
+--space-2:8px;
+--space-3:12px;
+--space-4:16px;
+--space-5:20px;
+--space-6:24px;
+--space-7:28px;
+--space-8:32px;
+--space-10:40px;
+--space-12:48px;
+--space-16:64px;
+--space-20:80px;
+--space-24:96px;
+
+/* Control geometry — console density: 34px is the standard control height */
+--control-h-sm:28px;
+--control-h-md:34px;
+--control-h-lg:40px;
+--control-px-sm:8px;
+--control-px-md:12px;
+--control-px-lg:16px;
+
+/* Layout frame */
+--sidebar-w:236px;
+--sidebar-w-collapsed:56px;
+--topbar-h:52px;
+--content-max:1240px;
+--row-h:44px;
+
+/* Default tracks and view bounds for the shipped layout compositions. */
+--layout-holy-grail-nav-w:240px;
+--layout-holy-grail-utility-w:300px;
+--layout-holy-grail-center-min-w:540px;
+--layout-sidebar-track-w:320px;
+--layout-sidebar-main-min-w:560px;
+--layout-master-detail-track-w:380px;
+--layout-master-detail-skeleton-short-h:120px;
+--layout-master-detail-skeleton-tall-h:200px;
+--layout-telemetry-canvas-min-h:320px;
+--layout-telemetry-table-max-h:380px;
+--layout-toolbar-leading-min-w:240px;
+
+/* Minimum hit area (WCAG 2.2 SC 2.5.8 AA >= 24px, SC 2.5.5 AAA >= 44px) */
+--target-touch:44px;
+--target-pointer:28px;
+--target-size-min:24px;
+--target-size-standard:44px;
+}

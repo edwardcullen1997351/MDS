@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><script src="./ds-base.js"></script></helmet>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 6 }}" hint-size="100%,100%">
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Surface" tone="card" elevation="{{ 1 }}" padding="md" radius="md" border="{{ true }}" hint-size="100%,340px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 4 }}" hint-size="100%,100%">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px">
+<h2 style="margin:0;font-size:var(--text-md);font-weight:var(--weight-semibold)">Measured values — sample of 5 pieces</h2>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">worst reading in the sample</span>
+</div>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Bore Ø (mm)" hint="48.00 +0.05 / −0.00 · air plug gauge AG-118 · critical" hint-size="100%,66px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ rec.bore }}" onChange="{{ on.bore }}" hint-size="100%,34px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Flange thickness (mm)" hint="6.00 ± 0.10 · micrometer MI-2207" hint-size="100%,66px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ rec.flange }}" onChange="{{ on.flange }}" hint-size="100%,34px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Surface finish Ra (µm)" hint="1.6 max · roughness tester RT-04" hint-size="100%,66px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ rec.ra }}" onChange="{{ on.ra }}" hint-size="100%,34px"></x-import>
+</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Hardness (HRB)" hint="92–96 · bench tester HB-09" hint-size="100%,66px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Input" value="{{ rec.hardness }}" onChange="{{ on.hardness }}" hint-size="100%,34px"></x-import>
+</x-import>
+</x-import>
+</x-import>
+
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Surface" tone="card" elevation="{{ 1 }}" padding="md" radius="md" border="{{ true }}" hint-size="100%,300px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Stack" gap="{{ 4 }}" hint-size="100%,100%">
+<h2 style="margin:0;font-size:var(--text-md);font-weight:var(--weight-semibold)">Disposition</h2>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.RadioGroup" label="Lot disposition" hint="A bore over 48.05 on any piece stops the lot — accept with deviation needs the quality manager's signature." options="{{ dispositions }}" value="{{ rec.disposition }}" onChange="{{ on.disposition }}" hint-size="100%,150px"></x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Field" label="Inspector remarks" hint="What the next reader needs — which piece, which gauge, what was seen." hint-size="100%,120px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Textarea" rows="{{ 3 }}" value="{{ rec.remarks }}" onChange="{{ on.remarks }}" hint-size="100%,76px"></x-import>
+</x-import>
+</x-import>
+</x-import>
+
+<sc-if value="{{ saved }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="success" title="Inspection saved against LOT-2609-118" hint-size="100%,64px">Goods receipt GR-2026-3391 is released to stores. Meera Nair is notified for the deviation signature.</x-import>
+</sc-if>
+
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;border-top:var(--border-hairline);padding-top:16px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="primary" onClick="{{ on.save }}" hint-size="150px,34px">Save inspection</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="secondary" onClick="{{ on.cancel }}" hint-size="90px,34px">Cancel</x-import>
+<span style="font-size:var(--text-xs);color:var(--text-secondary)">{{ saveNote }}</span>
+</div>
+
+</x-import>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:760,&quot;height&quot;:900},&quot;rec&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;Record&lt;string, string&gt;&quot;},&quot;on&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;Record&lt;string, Function&gt;&quot;},&quot;saved&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const rec = this.props.rec || {};
+    return {
+      rec,
+      on: this.props.on || {},
+      saved: !!this.props.saved,
+      dispositions: [
+        { value: 'accept', label: 'Accept', description: 'Every characteristic inside drawing rev C. Lot goes to stores.' },
+        { value: 'deviation', label: 'Accept with deviation', description: 'Out of tolerance but usable. Needs Meera Nair, quality manager, to sign before stores.' },
+        { value: 'reject', label: 'Reject to MRB', description: 'Lot is held. Debit note raised against Nashik Forge & Machine Works.' },
+      ],
+      saveNote: this.props.saved
+        ? 'Saved 2026-09-08 11:04 (IST) by Rohan Jadhav, incoming inspection.'
+        : 'Nothing is written until you save — readings stay in the draft, and Cancel discards them.',
+    };
+  }
+}
+
+</script>
+</body>
+</html>

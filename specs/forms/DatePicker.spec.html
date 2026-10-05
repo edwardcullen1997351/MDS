@@ -1,0 +1,362 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="DatePicker" subtitle="Full specification — a field with a calendar: ISO strings not Dates, the refused slash format, the APG grid, ranges and presets" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>DatePicker — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px 28px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:118px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.val{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { DatePicker, Field, Input, Select, Text, Button, Card, Alert, Badge, ChipGroup } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{flex:1,minWidth:0}}>{children}</div></div>;
+
+const TODAY = '2026-09-05';
+const iso = (y,m,d) => `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+const PRESETS = [
+  { label: 'Today', value: [TODAY, TODAY] },
+  { label: 'Last 7 days', value: ['2026-08-30', TODAY] },
+  { label: 'This month', value: ['2026-09-01', TODAY] },
+  { label: 'Last month', value: ['2026-08-01', '2026-08-31'] },
+];
+
+function Spec(){
+if (!DatePicker) return <div className="page"><div className="masthead"><span className="eyebrow">Forms · Component specification</span><h1>DatePicker</h1><p className="lede">The design-system bundle has not been recompiled with <code>components/forms/DatePicker.jsx</code> yet — reload once it has.</p></div></div>;
+const [one,setOne] = React.useState('2026-09-05');
+const [rng,setRng] = React.useState(['2026-08-31','2026-09-05']);
+const [bounded,setBounded] = React.useState('');
+const [err,setErr] = React.useState('');
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>DatePicker</h1>
+    <p className="lede">A <strong>text field with a calendar</strong> — not a calendar with a field. An operator entering a downtime date types it faster than any grid can be clicked, so typing is the primary path and the panel answers "which Tuesday was that". Two decisions carry the whole component: the value is an ISO <em>string</em>, never a <code>Date</code>, and the display and typed formats are ISO, because <code>05/09/2026</code> is two different days depending on who is reading it. Everything else — the grid keyboard, the range model, the presets — is the WAI-ARIA pattern implemented once so no product has to.</p>
+    <div className="meta">
+      <span>components/forms/DatePicker.jsx · date.js</span><span>window.MeridianDesignSystem_962c43.DatePicker</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items · 1 deferred</span><span>since: 1.21.0</span><span>20 tokens · borrows --input-*</span><span>engine: core/anchor.js</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="One date, or two, entered accurately by people in a hurry.">
+    <p>Use it wherever a calendar date is part of a record: a downtime entry, a work-order due date, an audit window, a shift report. It is not the right control for "how far back does this chart go" — that is a small closed set, and chips or a select answer it in one press.</p>
+    <T cols={['You need…','Component','Why']} rows={[
+      ['A calendar date in a form','DatePicker','This component.'],
+      ['A window between two dates','DatePicker range','Two fields, one panel, presets beside the grid.'],
+      ['A time range for a chart (1h / 24h / 7d)','ChipGroup, or Select','A closed set of relative windows, answered in one press. A calendar for "last 24 hours" is four interactions for a value with no calendar meaning.'],
+      ['A date AND a time','Not this component (§13)','A timestamp needs a time field and a timezone; deferred deliberately, with the evidence that would reopen it.'],
+      ['A month or a quarter','Select','Twelve options is a list, not a grid.'],
+      ['A year','Input, or Select','A grid of 42 days to pick 2026 is theatre.'],
+      ['Free text that happens to include a date','Input','If the product cannot parse it, do not pretend to.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="single"><div style={{maxWidth:240}}><Field label="Downtime date" hint="ISO, or type “today”."><DatePicker value={one} onChange={setOne} max="2026-12-31" /></Field></div></Row>
+      <Row label="range"><div style={{maxWidth:460}}><Field label="Shift window"><DatePicker range label="Shift window" value={rng} onChange={setRng} presets={PRESETS} /></Field></div></Row>
+      <Row label="value"><span className="val">{JSON.stringify(one)} · {JSON.stringify(rng)}</span></Row>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A field, a panel, and a grid that never changes height.">
+    <div className="demo col">
+      <div style={{display:'flex',flexDirection:'column',gap:10}}>
+        {[['1','Field — the --input-* box, borrowed wholesale as Select and Combobox do, so a date field cannot drift from the text field beside it. Mono, tabular, ISO.'],
+          ['2','Clear (×) — appears only when there is a value. Empties the field without opening the panel.'],
+          ['3','Calendar button — an IconButton carrying aria-expanded. The panel also opens with ↓ from the field, which is the keyboard route.'],
+          ['4','Panel — an anchored role="dialog" on the shared useAnchor engine: fixed, measured, flips once. Works in a table cell, a card or a drawer with no portal.'],
+          ['5','Month header — chevrons plus an aria-live month label, so a month changed by PageUp is announced rather than changing silently.'],
+          ['6','Grid — role="grid", always SIX rows, so the panel never changes height between months. A calendar that grows a row in March moves the day under the pointer about to click it.'],
+          ['7','Presets (range) — the column beside the grid. What makes a range picker usable in operations: nobody clicks twice for "last 7 days".'],
+          ['8','Footer — Today, plus the range picker saying which end it is picking. A two-press interaction has to say out loud which press it is on.']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+      <Row label="open it"><div style={{maxWidth:240}}><DatePicker aria-label="Anatomy example" value={one} onChange={setOne} /></div></Row>
+    </div>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Thirteen, and the value type is the one to read twice.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['value','string | [from, to]','—','ISO “YYYY-MM-DD”, or a pair when range. NEVER a Date (§13). Controlled.'],
+      ['onChange','(next) => void','—','Emits the next string or the next pair — not an event, not a Date.'],
+      ['range','boolean','false','Two fields, one panel. Ends swap if picked out of order (§04).'],
+      ['presets','DatePreset[]','—','{ label, value } — a single ISO date or a pair. Rendered beside the grid.'],
+      ['min · max','string','—','Inclusive ISO bounds. Out-of-range days are disabled, not hidden. min after max warns.'],
+      ['isDateDisabled','(iso) => boolean','—','Per-date veto for non-production days, closed periods, blackout windows.'],
+      ['weekStartsOn','0 | 1','1','Monday by default — ISO 8601 weeks. Moves the header with the grid.'],
+      ['size','\u2018sm\u2019 | \u2018md\u2019 | \u2018lg\u2019','md','Field height only; the panel is one size (§05).'],
+      ['disabled · readOnly','boolean','false','readOnly keeps full text contrast on a sunken fill and cannot open the panel.'],
+      ['clearable','boolean','true','The × that empties the field.'],
+      ['label','ReactNode','—','Only when NOT wrapped in a Field. Warns when neither is present.'],
+      ['placeholder','string','YYYY-MM-DD','The format IS the hint — do not replace it with “Pick a date”.'],
+    ]}/>
+    <p className="warn">There is no <code>format</code> prop, no <code>locale</code>, no <code>defaultValue</code>, no <code>showWeekNumbers</code>, no <code>numberOfMonths</code> and no <code>time</code>. Each is refused in §04, §12 or §13 with its reason — and <code>format</code> is refused hardest: a per-instance date format means two fields on one screen can disagree about what <code>05/09</code> means.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Single and range. The range model is the design work.">
+    <T cols={['Variant','Value','Interaction']} rows={[
+      ['single','one ISO string','One press in the grid commits and closes. Typing commits as soon as the text parses.'],
+      ['range','[from, to]','Two fields, each typable. The first grid press sets the START and the picker moves to the end; the second sets the END and closes. The footer says which press it is on.'],
+    ]}/>
+    <ul>
+      <li><strong>Ends swap rather than being refused.</strong> A user who clicks the later day first has expressed a range, not made an error — a picker that ignores that press makes them guess which order it wanted.</li>
+      <li><strong>The span between the ends is a tint, never the solid.</strong> The two ends are the choices; painting forty days in action blue makes the range read as forty selections.</li>
+      <li><strong>Presets set both ends at once and close.</strong> They are the reason a range picker is usable in operations, and they are also the honest home for the relative windows products fake with chips.</li>
+      <li><strong>One month, not two.</strong> A two-month panel is 620px wide and does not fit beside a table, in a drawer, or on a tablet — and it saves one chevron press for a range that spans a boundary. Presets cover the common spans; the chevron covers the rest.</li>
+      <li><strong>No inline (always-open) variant.</strong> A calendar permanently in the page is a layout decision, and a panel that is sometimes a panel and sometimes a block needs two focus models.</li>
+    </ul>
+    <div className="demo col">
+      <Row label="range + presets"><div style={{maxWidth:460}}><DatePicker range label="Report window" value={rng} onChange={setRng} presets={PRESETS} /></div></Row>
+      <Row label="bounded"><div style={{maxWidth:240}}><Field label="Due date" hint="Within this quarter."><DatePicker value={bounded} onChange={setBounded} min="2026-07-01" max="2026-09-30" /></Field></div></Row>
+      <Row label="blackout"><div style={{maxWidth:240}}><Field label="Maintenance date" hint="Weekends are non-production."><DatePicker aria-label="Maintenance date" value={''} onChange={()=>{}} isDateDisabled={(d)=>{const x=new Date(d+'T00:00:00Z').getUTCDay();return x===0||x===6;}} /></Field></div></Row>
+    </div>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Three for the field, one for the panel.">
+    <T cols={['Size','Field height','Type','Use']} rows={[
+      ['sm','28px','--text-xs','Table filter rows, toolbars, drawer headers.'],
+      ['md','34px','--text-sm','Default. Forms and filter panels.'],
+      ['lg','40px','--text-lg','Touch, and the same iOS-zoom reason Input and Select take lg: a 16px field does not zoom the viewport on focus.'],
+    ]}/>
+    <div className="demo col">
+      {['sm','md','lg'].map(s=>(
+        <Row key={s} label={s}><div style={{maxWidth:240}}><DatePicker size={s} aria-label={`Size ${s}`} value={one} onChange={setOne} /></div></Row>
+      ))}
+    </div>
+    <p><strong>The panel does not scale with the field.</strong> Its day cells are <code>--datepicker-day-size</code> (30px) at every size, because a calendar cell is a target before it is type: shrinking the grid with an <code>sm</code> field would produce 22px days that fail 2.5.8 in exactly the dense toolbar where <code>sm</code> is used. Field geometry rides <code>[data-density]</code> through <code>--control-h-*</code>; the grid deliberately does not.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Field states are Input's. The panel adds four of its own.">
+    <T cols={['State','Treatment']} rows={[
+      ['Rest · hover · focus','--input-* exactly as Input, so the two cannot drift. The focus ring is on the box, not the inner text node.'],
+      ['Typing, unparsed','The text stays exactly as typed and the value is NOT cleared. A half-typed “2026-0” must not wipe the date being edited (§13).'],
+      ['Invalid','Through Field: the box borders --input-border-invalid and the ring becomes --input-focus-ring-invalid. The panel is unaffected — nothing is wrong with the calendar.'],
+      ['Disabled · readOnly','Disabled greys the box and the buttons. readOnly keeps full text contrast on a sunken fill and refuses to open the panel — a date you may read but not change.'],
+      ['Day: selected','--datepicker-day-background-selected, solid. One or two days, never a span.'],
+      ['Day: in range','--datepicker-day-background-range tint with --datepicker-day-foreground-range.'],
+      ['Day: today','A --datepicker-today-border ring and aria-current="date". It is a reference point, not a selection, so it is never filled.'],
+      ['Day: disabled · outside month','--datepicker-day-disabled-text, unfocusable; outside days stay visible at --datepicker-day-outside-text because a grid that hides them loses its shape.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="invalid"><div style={{maxWidth:240}}><Field label="Downtime date" error={!err ? 'Enter the date the line stopped.' : undefined}><DatePicker value={err} onChange={setErr} /></Field></div></Row>
+      <Row label="readOnly"><div style={{maxWidth:240}}><DatePicker aria-label="Logged at" value="2026-09-01" readOnly /></div></Row>
+      <Row label="disabled"><div style={{maxWidth:240}}><DatePicker aria-label="Locked date" value="2026-09-01" disabled /></div></Row>
+    </div>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="The APG grid, and the reason this component exists at all.">
+    <T cols={['Key','Where','Does']} rows={[
+      ['Type','the field','ISO, compact ISO (20260905), today, yesterday. Commits the moment the text parses to a real date.'],
+      ['\u2193','the field','Opens the panel and moves focus into the grid, on the selected day or today.'],
+      ['\u2190 \u2192','the grid','A day back / forward, across month boundaries.'],
+      ['\u2191 \u2193','the grid','A week back / forward.'],
+      ['PageUp · PageDown','the grid','A month back / forward.'],
+      ['Shift+PageUp · PageDown','the grid','A year back / forward.'],
+      ['Home · End','the grid','First / last day of the displayed month.'],
+      ['Enter · Space','the grid','Selects the focused day. In a range, the first press sets the start and the second the end.'],
+      ['Escape','anywhere','Closes the panel and returns focus to the field it was opened from. Stops propagation, so one Escape closes one layer — a picker inside a Dialog does not close the dialog.'],
+      ['Tab','the grid','ONE stop for all 42 days (roving tabindex), so Tab leaves the calendar instead of walking a month.'],
+    ]}/>
+    <p>The roving tab index is the detail that decides whether this control is usable: a grid of 42 focusable buttons puts 42 tab stops between the field and the next control. Only the focused day is tabbable; the arrows move focus <em>and</em> the cursor together, and every move re-focuses the new day so the announcement follows the eye.</p>
+    <div className="demo col">
+      <Row label="try it"><div style={{maxWidth:240}}><DatePicker aria-label="Keyboard example" value={one} onChange={setOne} /></div></Row>
+      <Text size="xs" tone="tertiary">Focus the field, press <kbd>↓</kbd>, then <kbd>PageDown</kbd> and <kbd>Enter</kbd>. Then try typing <code>today</code>.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="A named text field, an announced grid, and no lies about what is focused.">
+    <ul>
+      <li><strong>The field is a real text input.</strong> It is typable, it announces as a text box with its Field label, and it carries <code>aria-invalid</code>/<code>aria-required</code>/<code>aria-describedby</code> through <code>FieldContext</code> exactly as <code>Input</code> does.</li>
+      <li><strong>A missing name warns.</strong> Wrap it in a <code>Field</code> or pass <code>label</code>: "YYYY-MM-DD" is a <em>format</em>, not a question, and a placeholder is not a label — the same rule <code>Select</code> §08 records.</li>
+      <li><strong>Each day cell is announced in full</strong> — "Saturday 5 September 2026" via <code>aria-label</code> — because the grid displays a bare number and "5" tells a screen-reader user nothing about which 5.</li>
+      <li><strong>Today carries <code>aria-current="date"</code></strong> and a border rather than a fill, so it is a reference point rather than a selection.</li>
+      <li><strong>Selection is <code>aria-selected</code> on the gridcell,</strong> so the announced state and the tint cannot drift.</li>
+      <li><strong>The month header is an <code>aria-live="polite"</code> region.</strong> Without it, a month changed by <code>PageUp</code> or the chevrons changes silently: the grid's own label updates but nothing is announced.</li>
+      <li><strong>The panel is <code>role="dialog"</code> with a name,</strong> and it is NOT modal: no scrim, no trap, no <code>aria-modal</code> — the field behind it is still the primary path, and claiming modality a component is not enforcing is the rule <code>Popover</code> set in 1.5.0 and <code>Drawer</code> follows.</li>
+      <li><strong>Escape returns focus to the field it came from,</strong> which for a range picker is the specific end being edited — not always the first.</li>
+      <li><strong>Range picking says which end it is on,</strong> in the footer, in words. A two-press interaction that looks identical on both presses is unusable by anyone who cannot see the tint arrive.</li>
+      <li><strong>Disabled days are real <code>disabled</code> buttons,</strong> so arrow keys pass over them and a screen reader reports them as unavailable rather than silently refusing the press.</li>
+      <li><strong>Every target clears 2.5.8:</strong> 30px day cells at every field size (§05), and the clear and calendar buttons are <code>IconButton</code>s at their own 28px <code>sm</code> box with real names — the component shipped with a 20px override on the clear button, which is the kind of claim a spec makes true only if something measures it (§13).</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="One drop-in. Nothing else, and no month slide.">
+    <T cols={['Moment','Motion','Tokens']} rows={[
+      ['Panel opening','--anim-drop-in: 8px down plus a fade, at --duration-fast.','--anim-drop-in'],
+      ['Panel closing','None — it unmounts. Dismissal is instant everywhere in this system.','—'],
+      ['Changing month','NOTHING. The grid re-renders in place.','—'],
+      ['Day hover · selection','--transition-control on background and border.','--duration-fast · --ease-out'],
+      ['Reduced motion','The drop-in collapses to 1ms; the panel simply appears.','prefers-reduced-motion'],
+    ]}/>
+    <p>The tempting animation is a horizontal slide between months, and it is refused for two reasons that compound: it needs two months rendered at once (so the panel is briefly twice its width, which is what causes the "calendar jumps" bug in every library that ships it), and it puts a moving target under a pointer that is on its way to a specific day. The grid is always six rows precisely so that <em>nothing</em> moves when the month changes — the height is identical in February and in a 31-day month starting on a Sunday.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="ISO everywhere, and never a format the reader has to guess.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>ISO in the field:</strong> <code>2026-09-05</code>, mono, tabular.</li>
+        <li><strong>Keep <code>YYYY-MM-DD</code> as the placeholder</strong> — the format is the most useful hint there is.</li>
+        <li><strong>Label with the event,</strong> not the widget: "Downtime date", "Due date", "Shift window".</li>
+        <li><strong>Say the rule in the hint:</strong> "Within this quarter", "Weekends are non-production".</li>
+        <li><strong>Name presets in the operator’s words:</strong> "This shift", "Last 7 days".</li>
+        <li><strong>Spell dates out in prose</strong> around the field ("5 September 2026") where a sentence, not a value, is being read.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>Slash formats.</strong> <code>05/09/2026</code> is two days. Refused on input and never displayed.</li>
+        <li><strong>Locale-formatted values</strong> in the field. A value the API stores as ISO should read as ISO.</li>
+        <li><strong>"Pick a date"</strong> as the placeholder. It replaces information with instruction.</li>
+        <li><strong>Relative windows in a calendar</strong> — "Last 24 hours" is a chip, not four clicks in a grid.</li>
+        <li><strong>Two-digit years,</strong> ever.</li>
+        <li><strong>"Invalid date"</strong> as the error. Say what is wrong: "Enter the date as YYYY-MM-DD" or "Must be on or before today".</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="The field reflows; the panel is a fixed 246px and stays on screen.">
+    <ul>
+      <li><strong>The field fills its container</strong> and has no width of its own. A range renders two fields with an arrow between them, both shrinking equally.</li>
+      <li><strong>Below ~380px, a range stacks</strong> — that is the product's layout call (a flex column), not a prop: the component lays out its two fields in a row and lets the container decide.</li>
+      <li><strong>The panel is one month wide at every breakpoint</strong> and is anchored by the shared engine, which clamps it to the viewport with an 8px gutter and flips it above the field when there is no room below. It cannot render off-screen, and it is not clipped by a scrolling ancestor because it is <code>position: fixed</code>.</li>
+      <li><strong>Day cells stay 30px</strong> — the grid does not shrink at any breakpoint or density (§05).</li>
+      <li><strong>Presets sit beside the grid,</strong> which makes the panel ~380px wide. Below that the product should pass fewer presets rather than expect a reflow: a preset column that wraps under the calendar puts the common choices below the fold.</li>
+      <li><strong>Touch: <code>lg</code></strong>, for the 16px type that stops iOS zooming the viewport on focus — the same reason <code>Input</code> and <code>Select</code> carry the size.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{maxWidth:300,border:'var(--border-hairline)',borderRadius:'var(--radius-sm)',padding:12}}>
+        <Field label="Shift window"><DatePicker range label="Shift window" value={rng} onChange={setRng} /></Field>
+      </div>
+      <Text size="xs" tone="tertiary">300px: both fields shrink together and the panel stays a full month wide.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Half of these are formats; the other half are calendars answering non-calendar questions.">
+    <div className="two">
+      <div className="pane dont"><h3>Dangerous</h3><ul>
+        <li><strong>A <code>Date</code> object as the value.</strong> §13 — the off-by-one that files a shift against the wrong day, silently, for half the world.</li>
+        <li><strong>Ambiguous formats.</strong> A US and a Dutch operator reading <code>05/09</code> disagree by four months, and nothing on screen tells them.</li>
+        <li><strong>Hiding out-of-range days</strong> instead of disabling them. A grid missing its first nine days is a grid the user does not trust.</li>
+        <li><strong>Silently clamping a typed date</strong> into range. Say it in the error; do not move what they typed.</li>
+        <li><strong>A picker for a timestamp.</strong> Without a time field and a timezone, "the 5th" is an 8-hour ambiguity in a plant that runs three shifts.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Misapplied</h3><ul>
+        <li><strong>A calendar for a relative window.</strong> "Last 24 hours" is a <code>ChipGroup</code>.</li>
+        <li><strong>A calendar for a month or a year.</strong> <code>Select</code>.</li>
+        <li><strong>Two months side by side</strong> as the default. §04.</li>
+        <li><strong>An always-open inline calendar</strong> in a form. It is 246px of chrome for one value.</li>
+        <li><strong>A grid with 42 tab stops.</strong> The single most common keyboard defect in this pattern (§07).</li>
+        <li><strong>Three separate day/month/year selects.</strong> Three controls, three chances to be wrong, and no way to type a date.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The one that will be requested: a native <code>&lt;input type="date"&gt;</code>, "for free accessibility".</strong> It is genuinely tempting — the platform's keyboard and announcement are good. It is refused because its picker cannot do ranges, presets or per-date vetoes; it cannot be styled at all, so it is the one control in the product that ignores the design system; and it formats to the OS locale, which reintroduces exactly the <code>05/09</code> ambiguity the ISO decision exists to remove. What this component keeps from the native control is the part that matters: a real, typable text input.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="New in 1.21.0 — and one decision worth more than the rest.">
+    <ul>
+      <li><strong>ISO strings, never <code>Date</code> objects, and this is the load-bearing decision.</strong> A <code>Date</code> is an instant; a calendar date is three integers. <code>new Date('2026-09-05')</code> parses as UTC midnight, <code>new Date(2026, 8, 5)</code> as local midnight, and <code>.toISOString()</code> on the second yields <code>2026-09-04</code> anywhere west of Greenwich — so a downtime logged on the 5th is filed against the 4th, silently, and only for some users. The value stays a <code>'YYYY-MM-DD'</code> string from the keystroke to the API, and <code>date.js</code> does all its arithmetic on strings; the one unavoidable <code>Date</code> — the weekday of a given day — is built <em>and</em> read in UTC so no local offset can enter.</li>
+      <li><strong>Slash formats are refused on input.</strong> Accepting <code>05/09/2026</code> would mean guessing an order, and a wrong guess is a four-month error that looks like a successful entry. ISO, compact ISO, <code>today</code> and <code>yesterday</code> are accepted — the last two because operators reach for them constantly and neither is ambiguous.</li>
+      <li><strong>Typing never clears the value mid-edit.</strong> The text is parsed on every keystroke but committed only when it resolves to a real date, so "2026-0" leaves the existing value alone. The naive version — commit or clear on every change — wipes the date the moment the user starts editing it.</li>
+      <li><strong>Six rows, always.</strong> The grid is 42 cells whatever the month, so the panel's height is identical in February and in a 31-day month starting on a Sunday. A calendar that grows a row moves the day under a pointer already travelling towards it.</li>
+      <li><strong>Roving tabindex, and it is not optional.</strong> One tab stop for the whole grid; arrows move focus and cursor together. 42 focusable days is the most common keyboard defect in this pattern (§07).</li>
+      <li><strong><code>addMonths</code> clamps rather than rolls over.</strong> 31 March minus one month is 28 February, not 3 March — rolling over skips a month in a chevron-stepped grid, which is the classic date-library bug.</li>
+      <li><strong>The panel rides <code>core/anchor.js</code></strong> — the same engine as the other six anchored surfaces (<code>Combobox</code>, <code>Autocomplete</code>, <code>MultiCombobox</code>, <code>Menu</code>, <code>Tooltip</code>, <code>Popover</code>), which is why it sits at tier 2 rather than beside any one of them: <code>fixed</code> so no ancestor <code>overflow: hidden</code> clips it, measured rather than predicted, side decided at open and held. A sixth surface reusing it is exactly why it was extracted at 1.5.0, and <code>clampHeight</code> is off here because a month grid has one correct height.</li>
+      <li><strong>The field borrows <code>--input-*</code> wholesale,</strong> as <code>Select</code>, <code>Combobox</code> and <code>Autocomplete</code> do, so a date field cannot drift from the text field beside it. The 20 <code>--datepicker-*</code> tokens are all panel and grid.</li>
+      <li><strong>Range ends swap instead of being refused,</strong> and the footer names which end the next press sets — the two halves of making a two-press interaction legible.</li>
+      <li><strong>Four warnings:</strong> no accessible name, <code>range</code> without an array value, an array value without <code>range</code>, and <code>min</code> after <code>max</code> (which disables every day and offers nothing).</li>
+      <li><strong>Programmatic focus runs in a post-commit effect, never in a <code>requestAnimationFrame</code>.</strong> The first cut focused the new day from an rAF, which fires <em>before</em> React commits — so it focused the day about to be replaced, and that button's <code>onFocus</code> handler wrote the stale date back into the cursor, cancelling the move: one arrow press took two presses, focus lagged a press behind, and <code>PageDown</code> left focus on <code>&lt;body&gt;</code> because the focused day had unmounted. Two causes, one shape: <strong>a timing hook standing in for a lifecycle, and two owners of one piece of state.</strong> Focus now follows the cursor in an effect keyed on it <em>and on the anchor position</em>, and the day buttons no longer write the cursor at all — the key handler and clicks own it. The position matters: the panel is gated on the measurement <code>useAnchor</code> makes in its own effect, so on the commit that opens the panel the grid does not exist yet — the first fix spent its focus flag on that pass and left the <em>first</em> open (the documented <kbd>↓</kbd> route) doing nothing at all. The flag is cleared only once the day node has actually been found.</li>
+      <li><strong>Date maths lives in <code>date.js</code></strong> rather than in the component: it is business logic, it is the part worth reading in isolation, and a second date control — should one ever be justified — must share it rather than re-derive the timezone rules.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--datepicker-panel-background','--datepicker-panel-border','--datepicker-panel-radius','--datepicker-panel-shadow','--datepicker-header-text','--datepicker-weekday-text','--datepicker-day-size','--datepicker-day-radius','--datepicker-day-text','--datepicker-day-outside-text','--datepicker-day-disabled-text','--datepicker-day-background-hover','--datepicker-day-background-selected','--datepicker-day-foreground-selected','--datepicker-day-background-range','--datepicker-day-foreground-range','--datepicker-today-border','--datepicker-footer-border'].map(t=><span key={t}>{t}</span>)}
+    </div>
+    <p className="warn"><strong>Deferred, with the evidence that would reopen it: date + time.</strong> A plant console genuinely has timestamped events — a fault at 04:12, a changeover boundary — and this component covers none of them. It is deferred rather than bolted on because a timestamp needs three things this control does not have: a time field, a <em>timezone</em> (a site in Tilburg reporting to a group in Chicago cannot use "local"), and a decision about what a range means when the ends are instants rather than days. Shipping a <code>time</code> flag would answer none of those and would quietly turn every existing date value into an ambiguous one. What reopens it: a product that needs to file an event to the minute, at which point the honest shape is a separate <code>DateTimePicker</code> sharing <code>date.js</code> and carrying an explicit timezone — not a prop on this one. <strong>The timezone half of that is now decided</strong> (1.21.2, <code>Design Principles.md</code> → Dates, times and timezones): instants are stored in UTC and displayed in the <em>Site's</em> timezone with the zone named, never the browser's, because the shift is the unit of work and the shift's clock wins. So the deferral is now waiting on a consumer, not on a decision.</p>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Wiring it into a form.">
+    <pre>{`import { DatePicker } from '@meridian/forms';
+
+// Single date, inside a Field — which supplies the label, hint and error.
+const [date, setDate] = React.useState('');       // ISO string, or ''
+<Field label="Downtime date" hint="ISO, or type “today”."
+       error={submitted && !date ? 'Enter the date the line stopped.' : undefined}>
+  <DatePicker value={date} onChange={setDate} max={todayIso()} />
+</Field>
+
+// Range with presets — the value is a pair, in order, always.
+const [win, setWin] = React.useState(['2026-08-30', '2026-09-05']);
+<DatePicker range value={win} onChange={setWin} label="Report window"
+  presets={[
+    { label: 'Today',       value: [today, today] },
+    { label: 'Last 7 days', value: [addDays(today, -6), today] },
+    { label: 'This month',  value: [monthStart(today), today] },
+  ]} />
+
+// Non-production days are vetoed per date, never hidden.
+<DatePicker value={date} onChange={setDate}
+  isDateDisabled={(iso) => !calendar.isProductionDay(iso)} />
+
+// Straight to the API. No serialisation step, because there is nothing
+// to serialise — and no timezone to get wrong.
+await api.post('/downtime', { line: id, date });   // { date: '2026-09-05' }`}</pre>
+    <ul>
+      <li><strong>Never convert to a <code>Date</code> to store or send it.</strong> If a backend wants a timestamp, build it there with an explicit timezone; the moment a date passes through a local <code>Date</code> it can move a day.</li>
+      <li><strong>Compare with string comparison.</strong> ISO dates sort and compare lexicographically — <code>from &lt;= to</code> is correct and needs no library.</li>
+      <li><strong>Always controlled.</strong> There is no <code>defaultValue</code>: a date field that owns its value cannot be reset by a "clear filters" button or restored from a saved view.</li>
+      <li><strong>Validate on submit, in the form,</strong> and say what is wrong in words. The component reports the bounds it was given; it does not decide policy.</li>
+      <li><strong>Presets belong to the product,</strong> because "this shift" is a business definition. Compute them from the site's shift calendar, not from the browser.</li>
+      <li><strong>In a table filter row, use <code>size="sm"</code></strong> and give it a name with <code>aria-label</code> — the column header is the visible question (the pattern <code>Field labelHidden</code> exists for).</li>
+      <li><strong>Testing hooks:</strong> the field is <code>getByRole('textbox', {'{ name: \'Downtime date\' }'})</code> — type into it rather than clicking the grid, which is what most users do. The panel is <code>getByRole('dialog', {'{ name: \'Choose a date\' }'})</code>, days are <code>getByRole('gridcell')</code>/buttons named "Saturday 5 September 2026", and selection is <code>aria-selected</code>. Assert the emitted string, never a Date.</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

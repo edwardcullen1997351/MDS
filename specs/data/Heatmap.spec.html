@@ -1,0 +1,478 @@
+<!-- @dsCard group="Specs · Data" viewport="1080x760" name="Heatmap" subtitle="Full specification — purpose, anatomy, props, sequential & diverging scales, text contrast inversion, 2D keyboard roving, a11y, anti-patterns" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Heatmap Specification — Meridian Design System</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <style>
+    body {
+      margin: 0;
+      background: var(--background-page);
+      padding: 32px;
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+    .spec-container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .spec-header {
+      border-bottom: 2px solid var(--border-strong);
+      padding-bottom: 20px;
+      margin-bottom: 32px;
+    }
+    .spec-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: var(--weight-bold);
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: var(--radius-xs);
+      background: var(--surface-sunken);
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .spec-badge--frozen {
+      background: var(--status-success-bg, #ecfdf5);
+      color: var(--status-success-text, #065f46);
+      border: 1px solid var(--status-success-border, #a7f3d0);
+    }
+    .spec-title {
+      font-size: var(--text-3xl);
+      font-weight: var(--weight-bold);
+      margin: 0 0 8px 0;
+      letter-spacing: var(--tracking-tight);
+    }
+    .spec-meta {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .spec-section {
+      margin-bottom: 48px;
+    }
+    .spec-section-title {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      border-bottom: 1px solid var(--border-hairline);
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-xs);
+      margin: 16px 0;
+      background: var(--surface-card);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .spec-table th, .spec-table td {
+      padding: 10px 14px;
+      border-bottom: var(--border-hairline);
+      text-align: left;
+    }
+    .spec-table th {
+      background: var(--surface-sunken);
+      color: var(--text-secondary);
+      font-weight: var(--weight-semibold);
+    }
+    .spec-table code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--surface-sunken);
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    .spec-callout {
+      background: var(--surface-card);
+      border-left: 3px solid var(--action-solid);
+      padding: 14px 18px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 16px 0;
+      font-size: var(--text-sm);
+    }
+    .spec-callout--critical {
+      border-left-color: var(--status-critical-solid, #ef4444);
+      background: var(--status-critical-bg, #fef2f2);
+    }
+    .spec-callout--warning {
+      border-left-color: var(--status-warning-solid, #f59e0b);
+      background: var(--status-warning-bg, #fffbeb);
+    }
+    .anatomy-diagram {
+      background: var(--surface-sunken);
+      border: var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="spec-container">
+
+    <!-- Spec Header -->
+    <header class="spec-header">
+      <div class="spec-badge spec-badge--frozen">Status: Frozen · 0 Open Items</div>
+      <h1 class="spec-title">Heatmap Specification</h1>
+      <div class="spec-meta">
+        <span>Component: <code>Heatmap</code></span>
+        <span>Package: <code>components/data/Heatmap.jsx</code></span>
+        <span>Infrastructure: <code>components/data/viz-core.js</code></span>
+        <span>Standard: <code>guidelines/data-visualization-spec-standard.card.html</code></span>
+        <span>WCAG: Level AA Compliant</span>
+      </div>
+    </header>
+
+    <!-- §01 Purpose & Domain Contract -->
+    <section class="spec-section" id="purpose">
+      <h2 class="spec-section-title">§01 Purpose & Domain Contract</h2>
+      <p>
+        <strong>Heatmap</strong> reveals patterns, anomalies, hotspots, correlations, and intensity gradients across two-dimensional categorical, ordinal, temporal, or discretized quantitative structures using cell fill intensity.
+      </p>
+      <div class="spec-callout">
+        <strong>Domain Contract:</strong>
+        <ul>
+          <li><strong>Two-Dimensional Grid:</strong> Evaluates bivariate discrete matrix structures (Row Category $\times$ Column Category) mapped to a third quantitative/categorical intensity measure.</li>
+          <li><strong>When to Use:</strong> Use for dense pattern recognition, hotspot detection, cross-channel correlation matrices, or temporal activity schedules where individual exact values are secondary or available upon inspection.</li>
+          <li><strong>When NOT to Use:</strong> Do NOT use for 1-dimensional categorical comparison against a single quantitative baseline (use <strong>BarChart</strong>) or continuous bivariate correlation between two independent quantitative variables (use <strong>ScatterPlot</strong>).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- §02 Anatomy & Layer Stacking -->
+    <section class="spec-section" id="anatomy">
+      <h2 class="spec-section-title">§02 Anatomy & Layer Stacking</h2>
+      <div class="anatomy-diagram">
++-----------------------------------------------------------------------------------+
+|  Heatmap Container (role="region", aria-roledescription="heatmap")                |
+|                                                                                   |
+|  [Header]: Title, Subtitle, [Table Modal Trigger (Alt+F11)]                       |
+|                                                                                   |
+|  +-- SVG Plot Region (Layer 0: Background) ------------------------------------+  |
+|  |  +-- Layer 1: Matrix Cells (role="grid", role="row", role="gridcell") ------+   |  |
+|  |  |   [Cell Marks: Rounded Rectangles with cellPadding & cellRadius]         |   |  |
+|  |  |   [Sequential / Diverging Color Fills via interpolateRgb]                |   |  |
+|  |  |   [Missing / Downtime Hatch Pattern Overlay]                             |   |  |
+|  |  |   [Optional In-Cell Text with Automated WCAG Luminance Contrast Inversion|   |  |
+|  |  +----------------------------------------------------------------------+   |  |
+|  |  +-- Layer 2: Matrix Row Labels (Y-Axis) & Column Labels (X-Axis) ----------+   |  |
+|  |  +-- Layer 3: Continuous / Diverging Gradient Color Legend Ramp -----------+   |  |
+|  |  +-- Layer 4: Active / Selected Cell Focus Border Ring --------------------+   |  |
+|  +-----------------------------------------------------------------------------+  |
+|                                                                                   |
+|  [Layer 5 (HTML)]: Inspection Tooltip (Row × Col, Measured Value, Interpretation)  |
+|  [Accessible Modal]: Complete Semantic HTML 2D Data Table (Alt+F11)               |
+|  [Screen Reader Live Region]: aria-live="polite" Speech Output                    |
++-----------------------------------------------------------------------------------+
+      </div>
+    </section>
+
+    <!-- §03 Properties & Data Model -->
+    <section class="spec-section" id="props">
+      <h2 class="spec-section-title">§03 Properties & Data Model</h2>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>data</code></td>
+            <td><code>Array&lt;Record&lt;string, any&gt;&gt;</code></td>
+            <td><code>[]</code></td>
+            <td>Array of observation objects containing row, col, and value keys.</td>
+          </tr>
+          <tr>
+            <td><code>rows</code></td>
+            <td><code>string[]</code></td>
+            <td><code>[]</code></td>
+            <td>Explicit list of row labels defining matrix vertical order.</td>
+          </tr>
+          <tr>
+            <td><code>cols</code></td>
+            <td><code>string[]</code></td>
+            <td><code>[]</code></td>
+            <td>Explicit list of column labels defining matrix horizontal order.</td>
+          </tr>
+          <tr>
+            <td><code>rowKey</code></td>
+            <td><code>string</code></td>
+            <td><code>'row'</code></td>
+            <td>Data field mapped to matrix rows.</td>
+          </tr>
+          <tr>
+            <td><code>colKey</code></td>
+            <td><code>string</code></td>
+            <td><code>'col'</code></td>
+            <td>Data field mapped to matrix columns.</td>
+          </tr>
+          <tr>
+            <td><code>valueKey</code></td>
+            <td><code>string</code></td>
+            <td><code>'value'</code></td>
+            <td>Data field mapped to cell fill color intensity.</td>
+          </tr>
+          <tr>
+            <td><code>variant</code></td>
+            <td><code>'matrix' | 'clustered' | 'calendar' | 'correlation'</code></td>
+            <td><code>'matrix'</code></td>
+            <td>Matrix representation variant.</td>
+          </tr>
+          <tr>
+            <td><code>colorScaleType</code></td>
+            <td><code>'sequential' | 'diverging'</code></td>
+            <td><code>'sequential'</code></td>
+            <td>Interpolation model for color mapping.</td>
+          </tr>
+          <tr>
+            <td><code>colorRange</code></td>
+            <td><code>string[]</code></td>
+            <td><code>['#eff6ff', '#1d4ed8']</code></td>
+            <td>Array of boundary hex colors for gradient ramp interpolation.</td>
+          </tr>
+          <tr>
+            <td><code>showCellValues</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>Renders numeric value labels inside matrix cells with automated text contrast inversion.</td>
+          </tr>
+          <tr>
+            <td><code>missingCellLabel</code></td>
+            <td><code>string</code></td>
+            <td><code>'No Record / Down'</code></td>
+            <td>Human-readable label for null/missing matrix cells.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §04 Included Variants -->
+    <section class="spec-section" id="variants">
+      <h2 class="spec-section-title">§04 Included Variants</h2>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Variant</th>
+            <th>Visual Encoding</th>
+            <th>Primary Manufacturing Scenario</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Standard Matrix</strong></td>
+            <td>2D categorical/ordinal grid mapping rows $\times$ columns with sequential color intensity.</td>
+            <td>Machine Cell vs Shift Hour Thermal Load (°C) across 8 CNC machining centers over 24h.</td>
+          </tr>
+          <tr>
+            <td><strong>Correlation Matrix</strong></td>
+            <td>Symmetric square matrix with diverging color ramp centered at $r = 0$.</td>
+            <td>Sensor Cross-Correlation Matrix between Spindle Speed, Vibration, Current, Bearing Temp, and Coolant Flow.</td>
+          </tr>
+          <tr>
+            <td><strong>Calendar Heatmap</strong></td>
+            <td>Temporal matrix mapping days of week against weeks of month/year.</td>
+            <td>Daily Scrap Generation Weight (kg) across 30 days of the operating month.</td>
+          </tr>
+          <tr>
+            <td><strong>Clustered Matrix</strong></td>
+            <td>Hierarchically reordered matrix grouping similar rows and columns.</td>
+            <td>Defect Type vs Stamping Die Tooling Sets clustering common failure modes.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §05 Sizes & Density Modes -->
+    <section class="spec-section" id="sizes">
+      <h2 class="spec-section-title">§05 Sizes & Density Modes</h2>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Density / Size</th>
+            <th>Default Dimensions</th>
+            <th>Cell Sizing</th>
+            <th>Use Case</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Compact (Dense)</strong></td>
+            <td>Width: 360–480px, Height: 200–240px</td>
+            <td>14–20px cells, values hidden</td>
+            <td>Sidebar status cards and embedded machine line overview widgets.</td>
+          </tr>
+          <tr>
+            <td><strong>Standard (Comfortable)</strong></td>
+            <td>Width: 640–780px, Height: 340–380px</td>
+            <td>28–42px cells, values optional</td>
+            <td>Primary plant telemetry dashboards and correlation analysis views.</td>
+          </tr>
+          <tr>
+            <td><strong>Expanded</strong></td>
+            <td>Width: 900–1200px, Height: 480–560px</td>
+            <td>44–64px cells, values displayed</td>
+            <td>Full-page historical monthly auditing and multi-sensor correlation studies.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §06 Interactive & Visual States -->
+    <section class="spec-section" id="states">
+      <h2 class="spec-section-title">§06 Interactive & Visual States</h2>
+      <ul>
+        <li><strong>Resting:</strong> Cell fill rendered based on interpolated color scale with 1px subtle boundary border.</li>
+        <li><strong>Hover / Pointer Over:</strong> Active cell highlighted with 2px high-contrast border and pinned inspection tooltip.</li>
+        <li><strong>Selection:</strong> Clicking a cell locks selection ring and emits <code>onCellSelect</code> callback.</li>
+        <li><strong>Missing / Downtime:</strong> Null or unavailable cells rendered with diagonal hatch pattern (<code>#missing-hatch</code>).</li>
+        <li><strong>Keyboard Active:</strong> Focused cell displays 2px solid active border ring and live screen reader announcement.</li>
+        <li><strong>Loading Skeleton:</strong> Shimmering grid placeholder maintains matrix layout during async query.</li>
+      </ul>
+    </section>
+
+    <!-- §07 Color Scale Mathematics & Missing Cell Policies -->
+    <section class="spec-section" id="math">
+      <h2 class="spec-section-title">§07 Color Scale Mathematics & Missing Cell Policies</h2>
+      <div class="spec-callout">
+        <strong>Perceptual Color Interpolation:</strong>
+        <p>
+          Linear RGB interpolation: $C(v) = \text{RGB}_1 + \frac{v - v_{min}}{v_{max} - v_{min}} (\text{RGB}_2 - \text{RGB}_1)$. For diverging scales, interpolation splits symmetrically around neutral zero $v_{neutral} = 0$.
+        </p>
+      </div>
+      <div class="spec-callout spec-callout--critical">
+        <strong>Missing vs Zero Data Policy:</strong>
+        <p>
+          Missing cells and machine downtime periods must NEVER be rendered as zero values (which implies valid operating telemetry of 0.0). Missing cells MUST render with diagonal hatch lines.
+        </p>
+      </div>
+    </section>
+
+    <!-- §08 Keyboard Navigation & Focus Interactions -->
+    <section class="spec-section" id="keyboard">
+      <h2 class="spec-section-title">§08 Keyboard Navigation & Focus Interactions</h2>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Key Combination</th>
+            <th>Target</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><kbd>Tab</kbd></td>
+            <td>Heatmap Container</td>
+            <td>Focuses the heatmap container (<code>tabindex="0"</code>) and highlights the top-left cell $(0,0)$.</td>
+          </tr>
+          <tr>
+            <td><kbd>→</kbd> / <kbd>←</kbd></td>
+            <td>Matrix Columns</td>
+            <td>Moves focus right / left across columns in the active row.</td>
+          </tr>
+          <tr>
+            <td><kbd>↓</kbd> / <kbd>↑</kbd></td>
+            <td>Matrix Rows</td>
+            <td>Moves focus down / up across rows in the active column.</td>
+          </tr>
+          <tr>
+            <td><kbd>Home</kbd> / <kbd>End</kbd></td>
+            <td>Matrix Boundary</td>
+            <td>Snaps focus to the first cell $(0,0)$ or last cell $(R_{max}, C_{max})$.</td>
+          </tr>
+          <tr>
+            <td><kbd>Alt</kbd> + <kbd>F11</kbd></td>
+            <td>Accessible Data Table</td>
+            <td>Opens modal dialog rendering the full 2D tabular matrix with semantic HTML markup.</td>
+          </tr>
+          <tr>
+            <td><kbd>Escape</kbd></td>
+            <td>Active Tooltip / Modal</td>
+            <td>Dismisses active inspection tooltip or closes the open data table modal.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- §09 Accessibility & Assistive Technology -->
+    <section class="spec-section" id="a11y">
+      <h2 class="spec-section-title">§09 Accessibility & Assistive Technology (WCAG 2.2 AA)</h2>
+      <div class="spec-callout spec-callout--critical">
+        <strong>WCAG 1.4.1 (Non-Color Reliance) Strict Compliance:</strong>
+        <p>
+          Color intensity cannot be the sole source of information. <code>Heatmap</code> enforces full accessibility parity by providing: (1) automated in-cell text values with contrast inversion, (2) pinned inspection tooltips, (3) semantic ARIA grid landmarks, and (4) <kbd>Alt+F11</kbd> tabular matrix.
+        </p>
+      </div>
+      <ul>
+        <li><strong>Luminance Contrast Inversion:</strong> When in-cell text is enabled, text color dynamically inverts between dark slate (`#0f172a`) on light cells and white (`#ffffff`) on saturated cells ($> 4.5:1$ contrast).</li>
+        <li><strong>ARIA Grid Semantics:</strong> `role="grid"`, `role="row"`, `role="gridcell"`, with descriptive `aria-label`.</li>
+        <li><strong>Live Screen Reader Region:</strong> `aria-live="polite"` announces: <em>"Selected cell CNC-02, 14:00: 74 °C, High Thermal Load."</em></li>
+      </ul>
+    </section>
+
+    <!-- §10 Motion & Transition Guidelines -->
+    <section class="spec-section" id="motion">
+      <h2 class="spec-section-title">§10 Motion & Transition Guidelines</h2>
+      <ul>
+        <li><strong>Cell Focus Transitions:</strong> Border highlights execute within <strong>150ms</strong> using <code>cubic-bezier(0.16, 1, 0.3, 1)</code>.</li>
+        <li><strong>Prefers Reduced Motion:</strong> When <code>@media (prefers-reduced-motion: reduce)</code> is active, all transitions execute instantly with <strong>0ms duration</strong>.</li>
+      </ul>
+    </section>
+
+    <!-- §11 Content Rules & Number Formatting -->
+    <section class="spec-section" id="content-rules">
+      <h2 class="spec-section-title">§11 Content Rules & Number Formatting</h2>
+      <ul>
+        <li><strong>Locale Convention:</strong> Default to Indian numbering system (<code>en-IN</code>).</li>
+        <li><strong>Precision:</strong> Correlation coefficients $r$ formatted to <strong>2 decimal places</strong> (e.g. $r = 0.82$), temperature formatted to integer or 1 decimal.</li>
+        <li><strong>Legend Scale Units:</strong> Explicit engineering units declared on legend gradient ramp (`°C`, `kg`, `r`, `kW`).</li>
+      </ul>
+    </section>
+
+    <!-- §12 Responsive Behavior & Container Constraints -->
+    <section class="spec-section" id="responsive">
+      <h2 class="spec-section-title">§12 Responsive Behavior & Container Constraints</h2>
+      <ul>
+        <li><strong>Column Overflow:</strong> When column count exceeds available container width, enable horizontal scrolling container rather than compressing cells below 18px legibility threshold.</li>
+      </ul>
+    </section>
+
+    <!-- §13 Anti-Patterns & Misconfigurations -->
+    <section class="spec-section" id="anti-patterns">
+      <h2 class="spec-section-title">§13 Anti-Patterns & Misconfigurations</h2>
+      <div class="spec-callout spec-callout--critical">
+        <strong>Strictly Prohibited Anti-Patterns:</strong>
+        <ol>
+          <li><strong>Rainbow / Jet Color Scales:</strong> Spectral color maps introduce artificial visual boundaries that distort linear intensity perception. Always use perceptual sequential or diverging scales.</li>
+          <li><strong>Mapping Missing Telemetry to Zero:</strong> Treating machine downtime as 0.0 creates false operational conclusions.</li>
+          <li><strong>Hardcoding Fixed Text Colors on Cells:</strong> Placing dark text on dark cells fails WCAG 1.4.3 contrast. Always use automated contrast inversion.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- §14 Implementation & Developer Notes -->
+    <section class="spec-section" id="dev-notes">
+      <h2 class="spec-section-title">§14 Implementation & Developer Notes</h2>
+      <ul>
+        <li><strong>Zero Heavy Dependencies:</strong> Native React and SVG implementation without D3 or Canvas dependencies, importing shared color scale interpolators from <code>viz-core.js</code>.</li>
+        <li><strong>Pattern Hatching:</strong> SVG `<pattern>` defines reusable downtime hatch textures.</li>
+      </ul>
+    </section>
+
+  </div>
+</body>
+</html>

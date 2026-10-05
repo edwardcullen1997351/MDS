@@ -1,0 +1,255 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x760" name="Conditional input" subtitle="Full specification — one value governs whether another applies · manufacturing ERP reference" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Conditional input — interaction pattern specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.mock{padding:14px 14px 15px;display:flex;flex-direction:column;gap:10px;background:var(--background-page)}
+.mf{display:flex;flex-direction:column;gap:4px}
+.ml{font-size:11px;font-weight:var(--weight-medium);color:var(--text-primary)}
+.mi{height:28px;border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);display:flex;align-items:center;padding:0 8px;font-size:11px;color:var(--text-primary)}
+.mi.bad{border-color:var(--status-critical-solid)}
+.mi.off{background:var(--surface-sunken);color:var(--text-disabled)}
+.mi.focus{border-color:var(--action-solid);box-shadow:0 0 0 2px var(--status-info-soft)}
+.mh{font-size:10px;color:var(--text-tertiary)}
+.me{font-size:10px;color:var(--text-critical)}
+.mn{font-size:10px;color:var(--text-secondary)}
+.mb{align-self:flex-start;height:28px;padding:0 12px;border-radius:var(--radius-sm);background:var(--action-solid);color:var(--action-solid-ink,#fff);font-size:11px;font-weight:var(--weight-medium);display:flex;align-items:center}
+.ma{padding:8px 10px;border-radius:var(--radius-sm);font-size:10px;line-height:1.5;background:var(--status-critical-soft);color:var(--text-critical)}
+.mopt{display:flex;gap:7px;align-items:flex-start;font-size:11px;color:var(--text-primary)}
+.mdot{width:11px;height:11px;border-radius:999px;border:1px solid var(--border-strong);flex:none;margin-top:2px}
+.mdot.on{border:3px solid var(--action-solid)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:90ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Interaction pattern</span>
+  <h1>Conditional input</h1>
+  <p class="lede">Asking for additional or alternative input only when another user-controlled value makes that input relevant — with the dependency stated as a rule, and the value, its applicability and its validity kept as three separate facts.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/interaction-pattern-spec-standard.card.html">Interaction pattern spec standard §01–§21</a></span><span>Required: Field, one controlling control, one dependent control</span><span>Reference implementation: <a href="conditional-input-reference.card.html">card</a> · <a href="../../templates/conditional-input/ConditionalInput.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — dispositioning a nonconforming lot</span><span>Sections included: 11 of 21</span><span style="color:var(--text-primary)">status: frozen 7 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Required</span></div>
+  <div class="body">
+    <p>Some input only makes sense in light of another answer. A written justification is needed only when a lot is scrapped; a mobile number only if the supervisor is told by SMS; a hold window only once the lot is held at all. The pattern owns the dependency itself — when a dependent input applies, whether it is required, what happens to a value once it stops applying, and what the user is told and where their focus goes when the set of questions changes underneath them.</p>
+    <p><strong>Use it when</strong> a value the user controls changes the relevance, availability, or acceptance rules of another input.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>A disposition that requires supporting detail only when chosen.</li><li>A choice that swaps one input for a different one.</li><li>A limit or format on one value determined by another.</li><li>Several inputs governed together by one control.</li></ul></div>
+      <div class="pane dont"><h3>Not this pattern</h3><ul><li><strong>Disclosure for tidiness.</strong> Collapsing a section that always applies is progressive disclosure — no dependency exists, so nothing here is needed.</li><li><strong>Availability the user does not control.</strong> A field disabled by role, plant, or licence state is not conditional input; the controlling value must be one the user can change.</li><li><strong>Whether the set as a whole is acceptable.</strong> One acceptance decision over many values, and its commit, belong to <a href="ValidatedSubmission.spec.html">validated submission</a>; this pattern sits inside it.</li><li><strong>A branch that changes the destination.</strong> An answer that routes the user to a different step is a stepped flow.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Role</th><th>Component</th><th>Requirement</th></tr></thead><tbody>
+      <tr><td class="k">Controller</td><td><code>RadioGroup</code>, <code>Select</code>, <code>Switch</code>, <code>Checkbox</code>, <code>CheckboxGroup</code>, <code>SegmentedControl</code>, <code>Combobox</code>, or any value-bearing control</td><td>Required, at least one. Holds the value the dependency reads. A controller whose options carry a description states the consequence of choosing each one there (§14).</td></tr>
+      <tr><td class="k">Input relationship</td><td><code>Field</code></td><td>Required per dependent value. Carries the label, the condition in its hint, the requiredness mark, and the error association. Requiredness on a dependent <code>Field</code> is set by the rule, not fixed in the markup.</td></tr>
+      <tr><td class="k">Dependent capture</td><td><code>Input</code>, <code>Textarea</code>, <code>Select</code>, <code>Checkbox</code>, <code>CheckboxGroup</code>, <code>Radio</code>, <code>RadioGroup</code>, <code>Switch</code>, <code>Combobox</code>, <code>Autocomplete</code>, <code>MultiCombobox</code>, <code>DatePicker</code>, <code>TimeField</code></td><td>Required, at least one. A dependent may itself be a controller for a further dependency — that is a chain, not a new pattern.</td></tr>
+      <tr><td class="k">Dependent group</td><td><code>Fieldset</code></td><td>Optional. Where one controlling value governs several dependents, a named group makes the set one thing rather than several coincidences, and gives the condition one place to be stated.</td></tr>
+      <tr><td class="k">Change statement</td><td>Live region, or <code>Alert</code></td><td>Required whenever the change is more than one field appearing next to the control that caused it. Says what now applies, what no longer does, and what happened to anything entered.</td></tr>
+    </tbody></table>
+    <p>The relationship the pattern owns: a named condition over controlling values, a set of dependents that condition governs, and a declared policy for each dependent's value when the condition is false. A dependent with no stated condition, or a condition with no stated policy, is an incomplete application of the pattern.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Flow</h2></div>
+  <div class="body">
+    <ol>
+      <li><strong>Entry.</strong> Every dependency is evaluated against the current values before the user touches anything — including values restored from a draft, a URL, or a previous session. Conditional input has no privileged first render.</li>
+      <li><strong>Change.</strong> The user changes a controlling value.</li>
+      <li><strong>Re-evaluation.</strong> Every rule reading that value is re-evaluated, and every rule chained behind those, in dependency order and in one pass.</li>
+      <li><strong>Transition.</strong> Dependents that became applicable are presented; dependents that became inapplicable are withdrawn under the declared unavailability policy, their values handled under the declared retention policy, and their conditions cease to block.</li>
+      <li><strong>Statement.</strong> What changed is stated (§12) and focus is placed (§12) before the user's next action.</li>
+      <li><strong>Completion.</strong> The user completes whatever now applies. Applicable dependents participate in validation and in the submission exactly as unconditional fields do.</li>
+      <li><strong>Return.</strong> Restoring a previous controlling value re-evaluates the same rules against the current value set — never against the set as it stood when the condition last held.</li>
+    </ol>
+    <p>The order matters in one place: re-evaluate the whole graph, then present, then announce, then move focus. Presenting before the graph settles produces a frame in which a chained dependent is applicable while its parent is not.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§04</span><h2>Behavior</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The dependency is a rule over values, not over what is on screen.</strong> Applicability is a function of the value set. Deriving it from visibility — asking whether a node is in the DOM to decide whether a value counts — makes presentation the source of truth and guarantees the two will disagree.</li>
+      <li><strong>Rules are deterministic and acyclic.</strong> The same value set always yields the same applicability. A rule may not read a value its own dependent controls; a circular dependency has no correct resolution and is refused rather than resolved by evaluation order.</li>
+      <li><strong>Every dependent declares a retention policy</strong> — <em>preserve</em> or <em>clear</em> — and it holds for the life of the interaction rather than being decided per event. Preserve keeps the value out of the submission while inapplicable; clear discards it as the condition ends. Undeclared is the failure case: the user cannot tell whether their typing still exists.</li>
+      <li><strong>Nothing is discarded silently.</strong> Under a clear policy the user is told what was cleared, in the same statement that says what no longer applies.</li>
+      <li><strong>Restoration is a re-evaluation, not a rewind.</strong> A preserved value returns only if it is still valid to return it; otherwise the field returns empty or returns marked, and never returns quietly wrong.</li>
+      <li><strong>An inapplicable value never participates.</strong> It is excluded from the submission, cannot block completion, and cannot be the reason something else fails.</li>
+      <li><strong>Unavailability has a declared form</strong> — removed from the flow, or present and disabled with the condition stated. Disabled is for a dependent whose existence the user should know about before it applies; removal is for one that would be noise. Either way, the condition is readable without operating the control.</li>
+      <li><strong>The controller is never disabled by its own dependent.</strong> Whatever state a dependent is in — incomplete, invalid, mid-edit — the user can always change the value that governs it. Trapping the user inside a branch they can no longer leave is the pattern's worst failure.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="mopt"><span class="mdot"></span><span>Scrap</span></div><div class="mn">Scrap justification and Quality manager email no longer apply. Your entries are kept and return if you choose Scrap again.</div></div><p class="why">The policy is declared and stated. The user knows their paragraph still exists and knows it is not being submitted.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="mopt"><span class="mdot"></span><span>Scrap</span></div><div class="mn" style="opacity:.45">&nbsp;</div></div><p class="why">Two fields and a paragraph of typing vanish with no statement. Whether the text survives a change of mind is unknowable, so users stop changing their mind.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§05</span><h2>Properties</h2></div>
+  <div class="body">
+    <p>Three choices belong to the application of the pattern rather than to any component. Each is declared per dependent — or per group of dependents governed together — and each changes the behavioral contract, so none of them may be left implicit.</p>
+    <table><thead><tr><th>Property</th><th>Options</th><th>What it decides</th></tr></thead><tbody>
+      <tr><td class="k">unavailability</td><td><code>hidden</code> · <code>disabled</code></td><td>How an inapplicable dependent presents. <code>hidden</code> removes it from the flow; <code>disabled</code> keeps it visible, not focusable, with its condition stated outside the control. Choose <code>disabled</code> where knowing the field exists changes the user's choice of controlling value.</td></tr>
+      <tr><td class="k">retention</td><td><code>preserve</code> · <code>clear</code></td><td>What happens to an entered value when its condition ends. <code>preserve</code> for anything the user authored or would resent re-entering; <code>clear</code> where carrying the value back would be misleading or unsafe. Both are announced (§04).</td></tr>
+      <tr><td class="k">requiredness</td><td><code>required-when-applicable</code> · <code>optional</code></td><td>Whether becoming applicable also makes the dependent blocking. Requiredness is a property of the applicable state; it is never a static attribute on a field that comes and goes.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>States</h2></div>
+  <div class="body">
+    <p>Per dependent — not per form. Several dependents governed by one controller each hold their own state, and the group's state is nothing more than the set of them.</p>
+    <table><thead><tr><th>State</th><th>What is true</th><th>Blocks completion</th></tr></thead><tbody>
+      <tr><td class="k">inactive</td><td>The condition is false. The dependent is unavailable under the declared policy, its value held or cleared under the declared policy, out of the submission.</td><td>Never</td></tr>
+      <tr><td class="k">active · incomplete</td><td>The condition is true and no value has been supplied yet.</td><td>Only if required-when-applicable</td></tr>
+      <tr><td class="k">active · invalid</td><td>The condition is true and the value fails a rule — including a rule the current controlling value introduced.</td><td>Yes</td></tr>
+      <tr><td class="k">active · complete</td><td>The condition is true and the value satisfies every applicable rule.</td><td>No</td></tr>
+    </tbody></table>
+    <p class="warn"><strong>Applicability, value, and validity are three states, not one.</strong> A dependent can hold a value while inactive, and can be active with a value that was valid under the previous condition. Collapsing them into a single "shown and required" flag is what produces forms that cannot be submitted because of a field nobody can see.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§09</span><h2>Validation</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Only applicable values are judged.</strong> A dependent whose condition is false is not incomplete, not invalid, and not a reason the submission cannot proceed — whatever it contains.</li>
+      <li><strong>Requiredness follows applicability in both directions.</strong> Becoming applicable can make a field blocking; becoming inapplicable must release it in the same pass. A field left blocking-required behind a false condition is unresolvable by any action the user can take.</li>
+      <li><strong>Changing a controlling value re-evaluates every rule it participates in</strong> — the dependents' own rules and any rule whose <em>limits</em> it sets. A value that was acceptable under the previous condition is re-judged, not grandfathered.</li>
+      <li><strong>A newly-invalid preserved value is reported at once,</strong> not held until commit: the user changed something and the consequence is theirs to see. A value the user has never touched is still not judged before they reach it.</li>
+      <li><strong>The message names the condition, not just the rule.</strong> “Scrap must clear the hold within 14 days. Shorten the hold, or change the disposition” tells the user both fixes; “Maximum 14” tells them a number they cannot account for.</li>
+      <li><strong>The problem attaches to the field the user is expected to change,</strong> which is usually the dependent and not the controller. Marking both leaves the user to guess which one is wrong.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="mf"><span class="ml">Disposition</span><div class="mi">Use as-is</div></div><div class="mf"><span class="ml">Scrap justification</span><div class="mi off">Not applicable — the disposition is not Scrap.</div><span class="mh">Required for Scrap.</span></div><div class="mb">Post disposition</div></div><p class="why">Inapplicable, so not required and not blocking. The disposition posts and the rule is still legible.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="mf"><span class="ml">Disposition</span><div class="mi">Use as-is</div></div><div class="ma">Scrap justification is required.</div><div class="mb">Post disposition</div></div><p class="why">A hidden field still blocking. The user is told to fill in something that is not on screen and cannot be reached — the dead end this pattern exists to prevent.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Accessibility</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>A change in what is being asked is announced, not merely rendered.</strong> Visual proximity is not perception: a user reading through a virtual cursor, or magnified onto one field, sees nothing at all when two fields appear elsewhere. The statement names what now applies, what no longer does, and what became of anything entered.</li>
+      <li><strong>One statement per change, politely.</strong> A live region assertive enough to interrupt every keystroke-driven re-evaluation is worse than none; announce on the settled result of a controlling change, once.</li>
+      <li><strong>Focus is never left inside content that becomes unavailable.</strong> When a controlling change strands the focused element, focus moves to the control that caused the change — a place the user can account for. Focus must not be dropped to the document, and must not be moved when nothing was stranded.</li>
+      <li><strong>Requiredness changes are carried in the accessible name and state,</strong> not by an asterisk alone: the field's required state follows the rule, and the condition is in its description so it is read on arrival.</li>
+      <li><strong>Newly available dependents are reachable in the reading order</strong> that matches their visual placement — immediately after their controller, not appended at the end of the group.</li>
+      <li><strong>A disabled dependent explains itself outside the control.</strong> A disabled control is not focusable and its own text may never be read; the condition belongs in the surrounding <code>Field</code> or <code>Fieldset</code>.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="mf"><span class="ml">Notification channel</span><div class="mi focus">Email</div></div><div class="mn">Mobile number no longer applies.</div></div><p class="why">The inspector switched away from SMS while typing the number. Focus returns to the control they operated, and the change is stated.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="mf"><span class="ml">Notification channel</span><div class="mi">Email</div></div><div class="mn" style="opacity:.45">focus: &lt;body&gt;</div></div><p class="why">The focused input was removed and focus fell to the document. A keyboard user's next <kbd>Tab</kbd> restarts at the top of the page.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§14</span><h2>Content rules</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>The controlling choice states its consequence</strong> where the choice is made — “Scrap: write the lot off at standard cost — asks for a justification and a quality manager”. A user choosing blind cannot weigh the cost of the branch they are entering.</li>
+      <li><strong>Every dependent states its condition in its own description,</strong> in words, and permanently. “Required for Scrap”, not “Required”. A label that only makes sense to someone who watched it appear fails everyone who did not.</li>
+      <li><strong>Never refer to the disclosure event.</strong> No "the field below", no "now that you have chosen this" — position and history are not available to every reader, and neither survives the value being restored from a draft.</li>
+      <li><strong>The change statement is written in terms of applicability,</strong> not visibility: "no longer applies", not "hidden". What the user needs to know is whether they are still being asked, not what the interface did.</li>
+      <li><strong>Dependent errors name both values and the direction of the fix,</strong> since two values produced the conflict and either may be the one the user wants to change.</li>
+      <li><strong>Terminology is stable</strong> between the controlling option, the dependent's condition line, and any error that cites it: a disposition called “Scrap” in the radio is “Scrap” in the hint and “Scrap” in the message.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do</div><div class="mock"><div class="mopt"><span class="mdot on"></span><span>Scrap<span class="mh"> — write the lot off at standard cost; asks for a justification and a quality manager.</span></span></div><div class="mf"><span class="ml">Scrap justification</span><div class="mi"></div><span class="mh">Required for Scrap. At least 20 characters.</span></div></div><p class="why">The consequence is known before the choice, and the condition is legible afterwards without having seen the change.</p></div>
+      <div class="no"><div class="cap">Don't</div><div class="mock"><div class="mopt"><span class="mdot on"></span><span>Scrap</span></div><div class="mf"><span class="ml">Scrap justification</span><div class="mi"></div><span class="mh">Required. Please complete the field shown above.</span></div></div><p class="why">A choice with an unstated cost, and a dependent that describes itself by where it appeared rather than by what makes it apply.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§18</span><h2>Edge cases</h2></div>
+  <div class="body">
+    <table><thead><tr><th>Condition</th><th>Required behavior</th></tr></thead><tbody>
+      <tr><td class="k">Controller changes while focus is inside a dependent</td><td>The in-progress value is handled by the retention policy, the change is announced, and focus moves to the controller. The keystroke in flight is never committed to a field that no longer applies.</td></tr>
+      <tr><td class="k">Previously valid value becomes invalid</td><td>Re-evaluated against the new condition and reported immediately on the dependent, with the controlling value named. Never silently corrected, clamped, or left as an accepted value that the rules now reject.</td></tr>
+      <tr><td class="k">One controller, several dependents</td><td>All governed dependents transition in one pass and are announced as one statement. Not one announcement per field, and never a partially applied group.</td></tr>
+      <tr><td class="k">Chained dependency</td><td>A dependent behind an inapplicable parent is inapplicable, whatever its own condition says. Evaluate parents first; a child may never be active under an inactive parent.</td></tr>
+      <tr><td class="k">Rapid controller changes</td><td>Each evaluation is complete and independent; the final value set decides. Announce the settled result, not every intermediate one.</td></tr>
+      <tr><td class="k">Restored draft or deep link</td><td>Rules are evaluated on arrival. A stored value whose condition is false is inactive and out of the submission — even though nothing was disclosed in this session.</td></tr>
+      <tr><td class="k">Controlling value cleared to none</td><td>An empty controller is a value like any other: its dependents are inactive, not indeterminate. There is no third state between applicable and not.</td></tr>
+      <tr><td class="k">Dependent options depend on the controller</td><td>A dependent whose <em>choices</em> narrow keeps its value only if the value survives in the new set; otherwise the value is cleared and the user told, never mapped onto a neighbouring option.</td></tr>
+      <tr><td class="k">Condition restored after clear</td><td>The dependent returns empty and incomplete. It must not appear complete, and must not be treated as untouched-and-therefore-fine at commit.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§20</span><h2>Implementation notes</h2></div>
+  <div class="body">
+    <ul>
+      <li><strong>Three separable stores: values, applicability, validity.</strong> Applicability is derived from values; validity is derived from both. Storing "visible" or "required" as writable state is what allows the three to drift apart.</li>
+      <li><strong>Applicability is one pure function of the whole value set,</strong> returning a map keyed by dependent. Not a condition scattered across each field's own render, which cannot be read as a whole, tested as a whole, or checked for cycles.</li>
+      <li><strong>Chained rules restate their parent's condition</strong> in the same function, so an inactive parent cannot leave an active child even for a frame.</li>
+      <li><strong>The submission is built from the applicability map,</strong> not from what rendered. Same map, same source of truth, for the fields, the requiredness, the validation and the payload.</li>
+      <li><strong>Preserved values live above the controls.</strong> A value held in a field that unmounts is a value lost; retention must be state the mount cycle cannot touch.</li>
+      <li><strong>Sequence on a controlling change:</strong> re-evaluate the graph → apply retention → render → announce → move focus if the active element was stranded. Moving focus before the new content exists lands it nowhere.</li>
+      <li><strong>Confirm the focus move landed.</strong> The withdrawal that stranded focus is a re-render, and a re-render can replace the node focus was just placed on — leaving the document focused a frame after the move looked successful. Place focus, then verify it holds, and place it again if it fell back to the document.</li>
+      <li><strong>Check for cycles where rules are defined,</strong> not where they run. A dependency graph that can be traversed can be validated; a cycle discovered at runtime shows up as a render loop, not as a message.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted"><strong>Omitted sections and why.</strong>
+§06 Variants — hidden versus disabled, and preserve versus clear, are declared policies within one contract (§05), not different forms of the pattern; a dependency that changes the destination is a stepped flow.
+§07 Sizes — no coordinated sizing exists at the pattern level.
+§10 Error handling — the pattern commits nothing and calls nothing; operational failure belongs to whatever pattern owns the commit, normally <a href="ValidatedSubmission.spec.html">validated submission</a>. A dependent whose options load remotely inherits that component's loading contract.
+§11 Input &amp; interaction modalities — every affordance is an ordinary control; the one cross-component responsibility the pattern adds, moving focus out of withdrawn content, is stated in §12 because it is a focus contract rather than a modality one.
+§13 Motion — disclosure may be animated for continuity, but no motion carries pattern-owned meaning, and a transition must never delay the announcement or the focus move of §12.
+§15 Responsive — the questions asked do not change with available space; only their layout does.
+§16 Internationalization — locale-sensitive parsing and formatting of individual values are owned by the capturing controls, and the pattern is direction-agnostic. Its one cross-cutting requirement, that a dependent never refers to the position of anything, is stated in §14.
+§17 Performance — evaluation is local and synchronous, and must be immediate; nothing here waits, and a rule that does is a remote validation governed by §17 of validated submission.
+§19 Anti-patterns — the refusals in §01, the trapping and silent-discard rules in §04, and the blocking rule in §09 cover the recurring misuses.
+§21 Developer notes — the contract in §04, §05, §08 and §20 is the whole contract; there is no separate API surface.</p>
+</div></body></html>

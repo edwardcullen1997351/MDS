@@ -1,0 +1,399 @@
+<!-- @dsCard group="Specs · Navigation" viewport="1080x760" name="Tabs" subtitle="Full specification — the view switcher: purpose, anatomy, props, variants, keyboard, a11y, motion" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Tabs — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+.w420{width:420px;flex:none;max-width:100%}
+.w300{width:300px;flex:none;max-width:100%}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:7px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.panelbox{border:var(--border-hairline);border-top:0;border-radius:0 0 var(--radius-md) var(--radius-md);padding:14px 16px;background:var(--surface-card)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}.w420,.w300{width:100%}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Tabs, TabPanel, Accordion, Card, Button, IconButton, Badge, Text, Table, Select, Menu } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+const P = ({children}) => <Text size="sm" tone="secondary">{children}</Text>;
+
+const ALARMS = [
+  {value:'open',label:'Open',count:3},
+  {value:'ack',label:'Acknowledged',count:1},
+  {value:'resolved',label:'Resolved',count:186},
+  {value:'rules',label:'Rules'},
+];
+
+function Local({items,...props}){
+  const [v,setV] = React.useState((typeof items[0]==='string'?items[0]:items[0].value));
+  return <Tabs items={items} value={v} onChange={setV} {...props} />;
+}
+
+function Spec(){
+const [tab,setTab] = React.useState('open');
+const [manual,setManual] = React.useState('overview');
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Navigation · Component specification</span>
+    <h1>Tabs</h1>
+    <p className="lede">One screen, several sibling views, one of them always showing. Tabs are the only component in this system that <em>replaces</em> content in place — an Accordion adds it, a Dialog covers it, a Menu closes and gets out of the way. That "always one" is the whole contract: there is no empty state for a tab bar, no way to close a tab, and no honest way to show two panels at once. If the views are not siblings, or none of them is a reasonable default, this is the wrong component.</p>
+    <div className="meta">
+      <span>components/navigation/Tabs.jsx</span><span>window.MeridianDesignSystem_962c43.Tabs</span><span style={{color:'var(--text-primary)'}}>status: frozen 5 Sep 2026 · 0 open items</span><span>since: 1.0.0 · revised 1.7.0</span><span>18 tokens · 0 new layers</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Sibling views of one subject, in one place.">
+    <p>Use tabs when a screen has 2–6 views of the <strong>same subject</strong>, the user needs one at a time, and switching is cheap enough to be casual. Alarm state, line detail sections, chart-or-table. The subject stays fixed in the page header; the tabs change what you see of it. Every tab is a <em>place</em>, not an action — nothing in a tab bar submits, saves or deletes.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Switch between sibling views of one subject','Tabs','This component.'],
+      ['Shorten a page whose sections are independent','Accordion','An accordion keeps the whole outline visible and adds content; tabs replace it.'],
+      ['Navigate to another page or route','Sidebar · Link','A tab that changes the URL\u2019s subject is navigation wearing a tab bar.'],
+      ['Filter one list without changing the view','Chip · Select','"Open / Acknowledged" as a filter over the same table is a filter, unless the columns differ.'],
+      ['Offer commands','Menu · Button','Tabs are places. A tab that runs something is a button in the wrong costume.'],
+      ['Step the user through a sequence','Form · wizard','Tabs imply free movement between equals. Steps have order and prerequisites.'],
+      ['Compare two views side by side','Grid of Cards','Tabs can only ever show one.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> 2–6 tabs. One tab is a heading. Seven start scrolling, and a scrolled tab bar hides the very views it advertises (§11).</li>
+      <li><strong>Do not use</strong> when the views have nothing to do with each other — that is a page, and it belongs in the sidebar.</li>
+      <li><strong>Do not use</strong> when there is no sensible default view. Something is always selected; if the honest initial state is "nothing", tabs are lying.</li>
+      <li><strong>Do not nest.</strong> One bar per screen region, one level, by decision (§12).</li>
+    </ul>
+    <div className="demo col">
+      <div>
+        <Tabs label="Alarm state" idBase="spec-alarms" value={tab} onChange={setTab} items={ALARMS} />
+        <TabPanel idBase="spec-alarms" value={tab} active className="panelbox">
+          <Text size="sm">{tab === 'rules' ? 'Rule editor — same subject (this site\u2019s alarms), different view.' : `Alarm table filtered to ${tab}. The subject never changed; only the view did.`}</Text>
+        </TabPanel>
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="A tablist, tabs, and one panel that claims them.">
+    <div className="demo col">
+      <div className="w420">
+        <Local label="Line detail" items={[
+          {value:'overview',label:'Overview',icon:'gauge'},
+          {value:'downtime',label:'Downtime',icon:'octagon-pause',count:7},
+          {value:'routing',label:'Routing',icon:'route'},
+          {value:'audit',label:'Audit',icon:'scroll-text',disabled:true},
+        ]} />
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        {[['1','Tablist — role="tablist", aria-label saying what the tabs switch between. In underline it spans the content width and carries the 1px --tabs-border rule.'],
+          ['2','Tab — a real <button role="tab">. The label, an optional leading icon and an optional count are one hit area.'],
+          ['3','Indicator — a 2px --tab-indicator bottom border on the active tab (underline), or a raised --tab-pill-background-active chip (segmented). One indicator, never both.'],
+          ['4','Count — mono 2xs, after the label. Data about the view, dimmer when the tab is inactive. Display only.'],
+          ['5','Disabled tab — kept in the bar so the view\u2019s existence is discoverable; skipped by pointer and arrow.'],
+          ['6','Panel — role="tabpanel", labelled by its tab, focusable so keyboard users can page it. The product owns everything inside.'],
+          ['7','Rule — in underline, the tablist border and the panel\u2019s top edge are the same line: the active tab sits on the panel, not above a gap.']].map(([n,t])=>(
+          <div className="callout" key={n}><span className="cnum">{n}</span><Text size="xs">{t}</Text></div>
+        ))}
+      </div>
+    </div>
+    <p>The bar is a flex row with a <code>--space-5</code> gap in underline and 2px in segmented, and no dividers between tabs: the indicator is the only mark. Tab width is content width — equal-width tabs exist only behind <code>fitted</code>, and only for segmented (§04).</p>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Tabs, TabItem, TabPanel.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['items','Array<string | TabItem>','—','A bare string is both value and label. Order is the arrow order.'],
+      ['value · onChange','string · (value) => void','—','Always controlled. The selected view is page state — it belongs in the route or the screen, not inside the bar.'],
+      ['variant','\u2018underline\u2019 | \u2018segmented\u2019','underline','Page-level sections · local view toggle (§04).'],
+      ['size','\u2018sm\u2019 | \u2018md\u2019','md','32/24px or 36/26px (§05).'],
+      ['label','string','—','Accessible name of the tablist. Warns in the console when absent.'],
+      ['idBase','string','—','Opt in to tab↔panel wiring. Set it and pass the same string to every TabPanel; without it no aria-controls is claimed (§08).'],
+      ['fitted','boolean','false','Equal-width tabs filling the bar. Segmented, 2–4 short labels.'],
+      ['activation','\u2018automatic\u2019 | \u2018manual\u2019','automatic','Selection follows focus, or arrows move and Enter/Space commits (§07).'],
+      ['style','CSSProperties','—','Merged onto the tablist. Width belongs here.'],
+    ]}/>
+    <T cols={['TabItem','Type','Notes']} rows={[
+      ['value','string','Stable key, reported by onChange, usually the URL fragment. Never the index.'],
+      ['label','string','One or two words, sentence case, no punctuation.'],
+      ['icon','string','Lucide 0.469.0 name. All tabs or none — a bar where two tabs have icons reads as two groups.'],
+      ['count','number','Mono counter after the label. A fact about the view; never a badge tone.'],
+      ['disabled','boolean','Stays in the bar, announced with aria-disabled, skipped by arrows.'],
+    ]}/>
+    <p><code>TabPanel</code> takes <code>idBase</code>, <code>value</code>, <code>active</code> and children, and does exactly three things: sets <code>role="tabpanel"</code>, points <code>aria-labelledby</code> at its tab, and makes the panel focusable. It renders no padding, border or background — the panel's chrome is the product's, because a tab panel is usually just the page.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="Two, and they are not interchangeable.">
+    <div className="demo col">
+      <div>
+        <span className="lbl" style={{minWidth:0,padding:'0 0 8px',display:'block'}}>underline — page-level</span>
+        <Local label="Settings section" items={[{value:'general',label:'General'},{value:'notifications',label:'Notifications'},{value:'integrations',label:'Integrations'},{value:'members',label:'Members',count:12}]} />
+      </div>
+      <div style={{display:'flex',gap:24,flexWrap:'wrap',alignItems:'flex-start'}}>
+        <div>
+          <span className="lbl" style={{minWidth:0,padding:'0 0 8px',display:'block'}}>segmented — local</span>
+          <Local label="Range" variant="segmented" items={['1h','24h','7d','30d']} />
+        </div>
+        <div>
+          <span className="lbl" style={{minWidth:0,padding:'0 0 8px',display:'block'}}>segmented · fitted</span>
+          <div style={{width:220}}><Local label="Display mode" variant="segmented" fitted items={['Chart','Table']} /></div>
+        </div>
+      </div>
+    </div>
+    <T cols={['Variant','Reads as','Use','Never']} rows={[
+      ['underline','Structure. Part of the page frame, sitting on the panel it controls.','Directly under a page header; the primary sections of a screen or a drawer.','Inside a toolbar, a card header, or next to buttons — it needs the full width to mean anything.'],
+      ['segmented','A control. A compact switch you press, like a ButtonGroup that remembers.','Card headers, toolbars, page-header action rows: time ranges, chart/table, unit toggles.','As a page\u2019s primary sections. A 26px pill row cannot carry the weight of "these are the parts of this screen".'],
+    ]}/>
+    <ul>
+      <li><strong>One bar per region, one variant.</strong> An underline bar for sections and a segmented switch inside one of those sections is correct and common; two underline bars on one screen is not.</li>
+      <li><strong><code>fitted</code> is segmented-only</strong> and for 2–4 short labels. Equal-width tabs with uneven labels waste the bar and make the widest label define the rest.</li>
+      <li><strong>Counts belong in underline</strong>, where there is room and the tab is a section. A count inside a 24px pill crowds the label it qualifies.</li>
+      <li><strong>There is no vertical variant.</strong> A vertical tab list is a sidebar, and this system already has one.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Two, and the variant decides more than the size does.">
+    <T cols={['Size','Underline height','Pill height','Label','Icon','Use']} rows={[
+      ['sm','32px','24px','--text-xs','14px','Drawers, card headers, toolbars, anything already at sm density.'],
+      ['md','36px','26px','--text-sm','14px','Default. Page-level bars and page-header switches.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="underline sm"><div className="w420"><Local label="Line detail sm" size="sm" items={[{value:'a',label:'Overview'},{value:'b',label:'Downtime',count:7},{value:'c',label:'Routing'}]} /></div></Row>
+      <Row label="underline md"><div className="w420"><Local label="Line detail md" size="md" items={[{value:'a',label:'Overview'},{value:'b',label:'Downtime',count:7},{value:'c',label:'Routing'}]} /></div></Row>
+      <Row label="segmented"><Local label="Range sm" variant="segmented" size="sm" items={['1h','24h','7d']} /><Local label="Range md" variant="segmented" size="md" items={['1h','24h','7d']} /></Row>
+    </div>
+    <p>Match the surface, not the page: a drawer at <code>sm</code> density gets <code>sm</code> tabs. Neither size clears the 44px touch minimum — the underline variant's real target is the full 32/36px row height plus the gap, which is acceptable on a pointer and marginal on a phone. On touch, prefer <code>md</code> underline with generous labels, or move the switch into a <code>Select</code> (§11).</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Selected is a 2px line and a weight change. That is enough.">
+    <T cols={['State','Treatment']} rows={[
+      ['Rest','--tab-text, transparent indicator, --weight-medium.'],
+      ['Hover','--tab-text-hover; underline shows --tab-indicator-hover under the label, segmented tints the pill with --tab-pill-background-hover. The hover indicator is a neutral grey — it previews the position, it does not pretend to be selected.'],
+      ['Selected','--tab-text-active at --weight-semibold, plus --tab-indicator (underline) or the raised pill (segmented). Weight and mark together: colour alone would fail greyscale, and a mark alone reads weakly at 12px.'],
+      ['Focus','--tab-focus-ring box-shadow, z-index 1 so the ring is not clipped by the bar\u2019s bottom rule. Visible on keyboard focus only.'],
+      ['Disabled','--tab-text-disabled, no hover, no indicator, aria-disabled, skipped by arrows. Stays in the bar.'],
+      ['Panel','No state of its own. It is either the current view or not rendered.'],
+    ]}/>
+    <div className="demo col">
+      <Row label="rest / hover"><div className="w420"><Local label="States a" items={[{value:'a',label:'Overview'},{value:'b',label:'Downtime'},{value:'c',label:'Routing'}]} /></div></Row>
+      <Row label="focus"><div className="w420"><Local label="States b" items={[{value:'a',label:'Tab into this bar'},{value:'b',label:'Then press →'},{value:'c',label:'Routing'}]} /></div></Row>
+      <Row label="disabled"><div className="w420"><Local label="States c" items={[{value:'a',label:'Overview'},{value:'b',label:'Audit',disabled:true},{value:'c',label:'Routing'}]} /></div></Row>
+      <Row label="counts"><div className="w420"><Local label="States d" items={ALARMS} /></div></Row>
+    </div>
+    <p>The bold weight on the selected tab is load-bearing, not decoration — it is what survives a monochrome print, a low-vision zoom, and the 20% of users who cannot tell a 2px blue line from a 2px grey one. It also means the tab's width changes slightly on selection, which is why labels are short and the bar is content-width rather than measured.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="APG tabs: one tab stop, arrows inside, selection follows focus.">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Tab','Enters the bar at the SELECTED tab — one stop for the whole tablist (roving tabindex), then out to the panel. Six tabs do not cost six presses to get past.'],
+      ['→ · ←','Moves to the next · previous enabled tab, wrapping. With activation="automatic" (default) the view changes as focus moves.'],
+      ['Home · End','First · last enabled tab.'],
+      ['Enter · Space','Nothing under automatic activation — the tab is already selected. Under manual, commits the focused tab.'],
+      ['Tab (from a tab)','Moves into the panel, which is focusable, so the next Tab is inside the content the user just chose.'],
+      ['↑ · ↓','Nothing. The bar is horizontal and says so with aria-orientation; vertical arrows belong to the page.'],
+    ]}/>
+    <p><strong>Automatic activation is the default</strong> because a console's panels are already-loaded views, and following focus means one key press per view instead of two. Switch to <code>activation="manual"</code> when a panel costs a fetch, a chart re-render or anything a user should not trigger four times while arrowing past it — then arrows preview and <kbd>Enter</kbd> commits, which is the APG rule for expensive panels.</p>
+    <div className="demo col">
+      <div className="w420">
+        <span className="lbl" style={{minWidth:0,padding:'0 0 8px',display:'block'}}>manual activation</span>
+        <Tabs label="Line detail (manual)" idBase="spec-manual" activation="manual" value={manual} onChange={setManual} items={[
+          {value:'overview',label:'Overview'},{value:'downtime',label:'Downtime',count:7},{value:'routing',label:'Routing'},{value:'audit',label:'Audit',disabled:true}]} />
+        <TabPanel idBase="spec-manual" value={manual} active className="panelbox"><Text size="xs" tone="tertiary">Arrow to move, <kbd>Enter</kbd> to commit — current: <code>{manual}</code></Text></TabPanel>
+      </div>
+      <Text size="xs" tone="tertiary">Try <kbd>Tab</kbd> into either bar, then <kbd>→</kbd> <kbd>←</kbd> <kbd>Home</kbd> <kbd>End</kbd>. The disabled tab is skipped, not landed on.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="Real roles, and no relationship claimed that isn't wired.">
+    <ul>
+      <li><strong>Roles.</strong> <code>role="tablist"</code> on the bar, <code>role="tab"</code> on each button, <code>role="tabpanel"</code> on the panel. Buttons are real <code>&lt;button&gt;</code>s, so activation is the browser's.</li>
+      <li><strong>Naming.</strong> <code>label</code> is the tablist's accessible name and the component warns without one. "Alarm state" tells a screen-reader user what the four tabs are; "tab list, 4 items" does not.</li>
+      <li><strong><code>aria-selected</code></strong> on every tab, always present — one <code>true</code>, the rest <code>false</code>. The roving <code>tabindex</code> follows it: selected tab <code>0</code>, others <code>-1</code>.</li>
+      <li><strong><code>aria-controls</code> only with <code>idBase</code>.</strong> A dangling <code>aria-controls</code> pointing at an id that never renders is worse than no relationship at all, so the component makes the claim only when the product opts in and renders <code>TabPanel</code>. Do opt in: it is two props.</li>
+      <li><strong>The panel is focusable</strong> (<code>tabIndex=0</code>) and labelled by its tab, so a keyboard user can tab straight from the bar into the content and a screen reader announces which view they are in.</li>
+      <li><strong><code>aria-orientation="horizontal"</code></strong> is explicit, which is what tells assistive tech that left/right — not up/down — are the keys here.</li>
+      <li><strong>Disabled tabs keep their meaning:</strong> <code>aria-disabled</code> rather than removal, so a view that exists but is not available to this role can still be asked about.</li>
+      <li><strong>Counts are read as part of the tab's name</strong> — "Open 3" — which is why they must be plain numbers. A count that needs a unit needs to be in the panel.</li>
+      <li><strong>Never announce the switch.</strong> No live region: the panel's own content is the feedback, and a toast for a tab change is noise.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="The indicator does not slide.">
+    <T cols={['Moment','Motion','Tokens']} rows={[
+      ['Selection','Indicator colour and text colour cross-fade in place. The mark does not travel.','--transition-control (--duration-fast)'],
+      ['Hover','Text colour, and the neutral hover indicator or pill tint.','--transition-control'],
+      ['Panel change','None. The new view is simply there.','—'],
+      ['Scrolled bar','Active tab is brought into view instantly on change, without animation.','—'],
+      ['Reduced motion','--duration-* collapse to 1ms; every transition above becomes instant.','prefers-reduced-motion'],
+    ]}/>
+    <p>A sliding underline is the most-copied tab animation and the wrong one here. It has to measure the active tab, and re-measure on font load, resize, label change and count change — so it is either wrong for a frame or maintained by a ResizeObserver on furniture that never needed one. It also animates a mark <em>across</em> tabs the user did not choose, which at 200ms and forty switches an hour is motion the operator is paying for and did not ask for.</p>
+    <p>Panels do not fade or slide either. Under automatic activation, arrowing across four tabs would queue four fades, and the fourth view — the one actually wanted — would be the last to arrive. Instant is the only honest option: the whole point of a tab is that the other view is already there.</p>
+  </Sec>
+
+  <Sec n="10" title="Content Rules" note="A tab label is a place name.">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li><strong>Nouns.</strong> "Overview", "Downtime", "Members", "Rules".</li>
+        <li><strong>One or two words</strong>, sentence case, no punctuation, no ellipses.</li>
+        <li><strong>Parallel labels.</strong> All states ("Open / Acknowledged / Resolved") or all sections ("Overview / Downtime / Routing") — never a mix of the two.</li>
+        <li><strong>Counts where the number is the reason to look</strong>: open alarms, members, failed rows.</li>
+        <li><strong>Put the default view first</strong>, and make it the one most visits want.</li>
+        <li><strong>Keep the subject in the page header</strong>, out of the labels: "Line 4" above, "Overview" in the tab.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li><strong>Verbs.</strong> "Configure", "Export" — tabs are places, and a verb promises an action.</li>
+        <li><strong>Repeat the subject</strong> in every label: "Line overview / Line downtime / Line routing".</li>
+        <li><strong>Sentences or questions.</strong> If the label needs more than two words, the view needs a page.</li>
+        <li><strong>A count that is always 0</strong>, or a count nobody acts on. An absent count is quieter than a zero.</li>
+        <li><strong>Tones in the bar.</strong> A red count or a warning badge in a tab makes the furniture shout; state belongs in the panel.</li>
+        <li><strong>"More" / "Other".</strong> A tab that describes nothing gets opened every visit by everyone.</li>
+      </ul></div>
+    </div>
+    <p>Labels also have to survive being the URL: <code>value</code> ends up in a fragment, a saved view and an analytics event, so it is a stable slug (<code>downtime</code>), never the index and never the display string. Renaming a label must not change where a bookmark lands.</p>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="The bar scrolls. Past that, stop using tabs.">
+    <ul>
+      <li><strong>The tablist scrolls horizontally</strong> when the tabs exceed the width, with the native scrollbar hidden, and the selected tab is kept in view whenever <code>value</code> changes — including when the change came from the route rather than a press.</li>
+      <li><strong>A scrolled bar is a warning, not a feature.</strong> Tabs off-screen are views the user cannot see they have. At 390px, three md underline tabs fit comfortably and five do not: cut, or switch control.</li>
+      <li><strong>Below ~480px, prefer a <code>Select</code></strong> for more than four views. One field showing the current view beats a bar showing a third of them — and it is a 44px target.</li>
+      <li><strong>Never wrap the bar to two lines.</strong> A two-row tab bar has no indicator geometry that reads, and the rule under it stops meaning "the panel starts here".</li>
+      <li><strong>Segmented bars keep their content width</strong> unless <code>fitted</code>; in a narrow card header, <code>fitted</code> plus two short labels is the reliable shape.</li>
+      <li><strong>Touch.</strong> Underline tabs are wide but only 32–36px tall, which is under the 44px minimum — give them room with <code>md</code> and real spacing, and never put a segmented <code>sm</code> bar on a phone.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{maxWidth:320}}>
+        <span className="lbl" style={{minWidth:0,padding:'0 0 8px',display:'block'}}>320px — scrolled</span>
+        <Local label="Overflowing bar" items={[{value:'a',label:'Overview'},{value:'b',label:'Downtime',count:7},{value:'c',label:'Routing'},{value:'d',label:'Members',count:12},{value:'e',label:'Audit'}]} />
+      </div>
+      <div style={{maxWidth:320}}>
+        <span className="lbl" style={{minWidth:0,padding:'0 0 8px',display:'block'}}>320px — the better answer</span>
+        <Select aria-label="View" options={[{value:'a',label:'Overview'},{value:'b',label:'Downtime'},{value:'c',label:'Routing'},{value:'d',label:'Members'},{value:'e',label:'Audit'}]} defaultValue="a" />
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="12" title="Anti Patterns" note="Six ways to break it, one of them by design.">
+    <div className="two">
+      <div className="pane dont"><h3>No nested tabs</h3><ul>
+        <li>Two bars in one region give the user two indicators, two arrow scopes and no way to tell which level the second bar belongs to — and the inner bar's own rule collides with the outer panel's edge.</li>
+        <li>It is also almost always a symptom: a screen with tabs inside tabs has two subjects, and the outer one belongs in the sidebar.</li>
+        <li><strong>Instead:</strong> promote the outer level to routes, or make the inner level a segmented switch inside the panel — one underline bar for structure, one small local control, visibly different weights.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Also don't</h3><ul>
+        <li><strong>Tabs as navigation.</strong> If pressing it changes the page's subject, it is a link and it needs an <code>href</code>.</li>
+        <li><strong>Tabs as a wizard.</strong> Free movement between equals is the promise; steps have prerequisites and a direction.</li>
+        <li><strong>A form split across tabs</strong> with one Save. Validation errors land in a view the user cannot see — the same failure as a collapsed accordion panel, with the extra problem that nothing indicates which tab failed.</li>
+        <li><strong>Closable or addable tabs.</strong> Not in this system: the set is fixed, and a document-tab model needs its own component.</li>
+        <li><strong>Tone colours and icons in labels</strong> to signal state. The bar is furniture; if a view needs attention, say so in the panel.</li>
+        <li><strong>Uncontrolled tabs.</strong> The selected view is page state. Keeping it inside the bar loses it on every refresh and makes the view unlinkable.</li>
+      </ul></div>
+    </div>
+    <p className="warn">The one to watch for in review is the form-across-tabs: it looks tidy in a mock, passes every happy path, and fails the first time a required field two tabs away is empty. Either validate on tab change and mark the failing tab, or do not split the form.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation Notes" note="What the code does, and why it does it that way.">
+    <ul>
+      <li><strong>Roving tabindex, not four tab stops.</strong> The selected tab is <code>tabIndex=0</code> and the rest <code>-1</code>, so the bar costs one <kbd>Tab</kbd> to cross. Arrow handlers call <code>focus()</code> on a sibling ref; under automatic activation the tab's own <code>onFocus</code> is what fires <code>onChange</code> — selection follows focus by construction rather than by duplicating the logic in the key handler.</li>
+      <li><strong>Focus-visible is read, not assumed.</strong> <code>onFocus</code> checks <code>:focus-visible</code> before showing the ring, so a mouse press does not leave a ring on the tab it selected while a keyboard arrow does.</li>
+      <li><strong>The indicator is a border on the tab.</strong> No measured overlay, no ResizeObserver, nothing to re-measure on font load or label change (§09). The cost is that the selected tab is 2px "taller" in the box model — absorbed by the fixed row height.</li>
+      <li><strong>Overflow is a plain scroller</strong> (<code>overflow-x:auto</code>, scrollbar hidden) and the keep-in-view effect writes <code>scrollLeft</code> via <code>scrollTo</code> — never <code>scrollIntoView</code>, which would also scroll the page and, in a drawer, the drawer.</li>
+      <li><strong>Always controlled.</strong> There is no <code>defaultValue</code>. A tab bar that owns its selection cannot be deep-linked, restored on refresh, or driven by a "view all alarms" button elsewhere on the page — and every product needed at least one of those.</li>
+      <li><strong><code>aria-controls</code> is conditional on <code>idBase</code></strong>. Claiming a relationship whose target id is not in the document is a real a11y regression, and the component cannot know whether the product rendered a panel.</li>
+      <li><strong>Disabled tabs stay in <code>items</code></strong> and are skipped by the arrow walk (the same wrap-around search the Accordion uses), so the bar's length is stable between roles and visits.</li>
+      <li><strong>The <code>label</code> warning is a real <code>useEffect</code></strong> keyed on <code>label</code> — not an inline conditional — so the hook order cannot change when a product starts passing a name.</li>
+      <li><strong>String items are normalised at the edge</strong> (<code>'24h'</code> → <code>{"{value:'24h',label:'24h'}"}</code>), which is what makes the segmented time-range case a one-liner.</li>
+      <li><strong>18 tokens, no reference to <code>--button-*</code>.</strong> A segmented bar resembles a ButtonGroup by intent; retargeting button surfaces must not move the tab bar.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--tabs-border','--tab-text','--tab-text-hover','--tab-text-active','--tab-text-disabled','--tab-icon','--tab-icon-active','--tab-count-text','--tab-count-text-active','--tab-indicator','--tab-indicator-hover','--tab-focus-ring','--tabs-pill-background','--tabs-pill-border','--tab-pill-background-active','--tab-pill-background-hover','--tab-pill-shadow-active'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer Notes" note="Wiring it into a product.">
+    <pre>{`import { Tabs, TabPanel } from '@meridian/navigation';
+
+// Page sections, deep-linkable: the route owns the selected view.
+const tab = useRouteParam('tab', 'open');
+
+<Tabs
+  label="Alarm state"
+  idBase="alarms"
+  value={tab}
+  onChange={(v) => navigate({ tab: v })}
+  items={[
+    { value: 'open', label: 'Open', count: counts.open },
+    { value: 'ack', label: 'Acknowledged', count: counts.ack },
+    { value: 'resolved', label: 'Resolved', count: counts.resolved },
+    { value: 'rules', label: 'Rules', disabled: !isAdmin },
+  ]}
+/>
+<TabPanel idBase="alarms" value={tab} active>
+  {tab === 'rules' ? <RuleEditor /> : <AlarmTable state={tab} />}
+</TabPanel>
+
+// A local switch in a card header — segmented, sm, no panel roles needed.
+<Card title="Output" actions={
+  <Tabs label="Display mode" variant="segmented" size="sm"
+    items={['Chart', 'Table']} value={mode} onChange={setMode} />}>
+  {mode === 'Chart' ? <OutputChart /> : <OutputTable />}
+</Card>
+
+// A panel that costs a fetch: arrows preview, Enter commits.
+<Tabs label="Report" activation="manual" value={report} onChange={load} items={reports} />`}</pre>
+    <ul>
+      <li><strong>Put the selected tab in the URL</strong> for any page-level bar. It costs one route param and buys back linkable views, refresh survival, and back-button behaviour users already expect.</li>
+      <li><strong>Render one panel, not all four hidden.</strong> Mounting every view to hide three is the tab equivalent of an accordion with everything open — and unlike the accordion, there is no <code>keepMounted</code> escape hatch here: if a view must keep state, hoist that state above the bar.</li>
+      <li><strong>Counts come from the same query as the panel.</strong> A tab reading "Open 3" over a table of five is worse than no count, and it is the most common bug in this component.</li>
+      <li><strong>Pass <code>activation="manual"</code> when <code>onChange</code> fetches.</strong> Automatic activation plus a network call means arrowing from tab one to tab four fires four requests.</li>
+      <li><strong>Always pass <code>label</code>.</strong> Two bars on one screen with no names are indistinguishable in a screen reader's rotor.</li>
+      <li><strong>Testing hooks:</strong> the bar is <code>[role="tablist"]</code> with your <code>label</code> as accessible name, tabs are <code>[role="tab"][aria-selected]</code>, the panel is <code>[role="tabpanel"]</code>. The container also carries <code>[data-tabs="underline|segmented"]</code>. Assert on roles and names, never on ids.</li>
+    </ul>
+  </Sec>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

@@ -1,0 +1,233 @@
+<!-- @dsCard group="Specs · Composite" viewport="1080x900" name="SearchField" subtitle="Full specification — the query contract: search semantics, clear and submit as separate actions, no results" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>SearchField — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px 28px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:118px;padding-top:8px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:14px 0 0}
+.log{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { SearchField, Text } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span><div style={{flex:'1 1 320px',minWidth:0}}>{children}</div></div>;
+
+function Spec(){
+/* The compiled bundle lags a same-turn component by one compile; without this
+   an undefined export throws inside render and blanks the whole document. */
+if (!SearchField) return <div className="page"><div className="masthead"><span className="eyebrow">Composite · Component specification</span><h1>SearchField</h1><p className="lede">The design-system bundle has not been recompiled with <code>components/composite/SearchField.jsx</code> yet — reload once it has.</p></div></div>;
+const [q,setQ] = React.useState('');
+const [log,setLog] = React.useState('nothing submitted yet');
+const [live,setLive] = React.useState('overdue');
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Composite · Component specification</span>
+    <h1>SearchField</h1>
+    <p className="lede">A standardized text-search control: query entry with search semantics, optional explicit submission, and optional clearing.</p>
+    <div className="meta">
+      <span>Status · stable</span>
+      <span>Primitives · Box, Text</span>
+      <span>Core · Input, Icon, IconButton, Button</span>
+      <span>Follows · Composite spec standard</span>
+    </div>
+  </div>
+
+  <Sec n="§01" title="Purpose" note="Why the composition exists at all">
+    <p>SearchField standardizes the entry and execution of free-text queries, and distinguishes search intent from generic textual data entry. A field that filters a list, queries an archive or looks up a record is not the same control as one that captures a customer's surname, even when both are single-line text.</p>
+    <ul>
+      <li><strong>Why a composite rather than an Input with an icon.</strong> Search brings a query contract (one value, one change signal, and clearing as an ordinary value change), a search semantic boundary, an accessible name that is a <em>scope</em> rather than a placeholder, two auxiliary actions that must stay distinct, and rules about when each is present. A magnifier glyph supplies none of that.</li>
+      <li><strong>What it deliberately does not do.</strong> It owns no results, no suggestions, no filter controls and no result counts. Suggestions are <code>Autocomplete</code>'s contract — a listbox, a cursor and a selection model — and recreating them here would be a second Autocomplete with none of its keyboard work.</li>
+    </ul>
+    <div className="demo col">
+      <div style={{maxWidth:420}}>
+        <SearchField label="Search invoices" value={q} onChange={setQ} placeholder="Invoice no. or customer" />
+      </div>
+      <Text size="xs" tone="tertiary">Query: <code>{q ? q : '(empty)'}</code> — searched as it changes, no submit control.</Text>
+    </div>
+  </Sec>
+
+  <Sec n="§02" title="Anatomy" note="Required field, plus the parts search actually needs">
+    <ul>
+      <li><strong>1 · <code>Input</code> — required.</strong> Captures the query and keeps every text-editing behaviour it already has.</li>
+      <li><strong>2 · Search <code>Icon</code> — optional.</strong> Communicates the affordance, on the leading edge. Decorative: it is never part of the accessible name, and it appears <em>once</em> — with <code>submit="icon"</code> the magnifier button IS the affordance, so the copy inside the field is dropped.</li>
+      <li><strong>3 · Clear <code>IconButton</code> — optional.</strong> Empties the current query. Sits inside the field, one size step down, and carries its own accessible name.</li>
+      <li><strong>4 · Submit <code>Button</code> or <code>IconButton</code> — optional.</strong> Executes the query explicitly. Sits outside the field, because it is a different action from clearing.</li>
+      <li><strong>5 · <code>Text</code> — optional.</strong> One line of supporting information (a syntax hint, a scope note) under the field.</li>
+    </ul>
+    <p>Relationship rules: clear and submit are never the same control and never share a slot; the clear control lives inside the box because it acts on the box's contents, while submit lives outside because it acts on the query; and nothing may sit between the icon and the text run — that space is the field.</p>
+  </Sec>
+
+  <Sec n="§03" title="Properties" note="Composite-level API">
+    <T cols={['Prop','Type','Default','Meaning']} rows={[
+      ['label','string','—','Required accessible name and search scope, independent of the placeholder.'],
+      ['value / defaultValue','string',"''",'The query. Controlled with onChange, or uncontrolled.'],
+      ['onChange','(next, e) => void','—','The query changed. Emits the string, not the event.'],
+      ['onSubmit','(query, e) => void','—','Explicit submission. Present ⇒ Enter submits and a submit control fires it.'],
+      ['onClear','(e) => void','—','Extra signal that the query was cleared; onChange(\u2019\u2019) fires either way.'],
+      ['placeholder','string','—','Example or format hint. Never a substitute for label.'],
+      ['submit',"'none' | 'icon' | 'button'","'none'",'The explicit submit control, if any. Requires onSubmit.'],
+      ['clearable',"boolean | 'always'",'true','Clear when there is something to clear · always for a stable target · false for none.'],
+      ['landmark','boolean','false','Publishes the wrapper as a role="search" landmark named by label. For a page’s primary search only (§08).'],
+      ['size',"'sm' | 'md' | 'lg'","'md'",'Coordinated height for the field, the clear control and the submit control (§05).'],
+      ['disabled','boolean','false','Disables the field and both auxiliary controls together (§06).'],
+      ['readOnly','boolean','false','Input\u2019s read-only behaviour; the clear control is withdrawn, since there is nothing to edit.'],
+      ['hint','ReactNode','—','One short supporting line under the field.'],
+    ]} />
+    <p>Everything else is <code>Input</code>'s: <code>name</code>, <code>autoFocus</code>, <code>maxLength</code>, <code>inputMode</code> and the rest pass straight through.</p>
+  </Sec>
+
+  <Sec n="§05" title="Sizes" note="Three controls, one height">
+    <Row label="sm"><SearchField label="Filter rows, small" size="sm" defaultValue="overdue" submit="icon" onSubmit={()=>{}} /></Row>
+    <Row label="md"><SearchField label="Filter rows, default" defaultValue="overdue" submit="icon" onSubmit={()=>{}} /></Row>
+    <Row label="lg"><SearchField label="Filter rows, touch" size="lg" defaultValue="overdue" submit="icon" onSubmit={()=>{}} /></Row>
+    <ul>
+      <li><strong>One prop sizes three controls.</strong> The field, the submit control beside it and the clear control inside it must agree, and only the composite can know all three. A submit button one step off makes the row look broken in a way no individual component can detect.</li>
+      <li><strong>The clear control is deliberately one step down.</strong> It sits <em>inside</em> the box: an <code>md</code> button in an <code>md</code> field leaves it no breathing room, so <code>sm</code>/<code>md</code> fields take an <code>sm</code> clear and <code>lg</code> takes <code>md</code>.</li>
+      <li><strong><code>lg</code> is the touch size</strong>, inherited from <code>Input</code> — 16px type, which is the largest iOS Safari will not zoom to on focus.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§06" title="States" note="Owned or coordinated by the composite">
+    <Row label="Empty"><SearchField label="Search customers, empty" /></Row>
+    <Row label="Populated"><SearchField label="Search customers, populated" value={live} onChange={setLive} /></Row>
+    <Row label="Clear always"><SearchField label="Search customers, stable clear" clearable="always" /></Row>
+    <Row label="Disabled"><SearchField label="Search customers, disabled" defaultValue="acme" submit="button" onSubmit={()=>{}} disabled /></Row>
+    <Row label="Read-only"><SearchField label="Search customers, read-only" defaultValue="status:open owner:me" readOnly /></Row>
+    <ul>
+      <li><strong>Empty and populated are composite states</strong>, because they govern the anatomy: the clear control exists only when there is something to clear, unless a stable visibility policy is asked for deliberately.</li>
+      <li><strong>Clearing updates query state synchronously.</strong> One value change, not a visual reset followed by a later state update — a consumer searching on change re-runs immediately with an empty query.</li>
+      <li><strong>Disabled is coordinated.</strong> The field and both auxiliary controls go together; a live Search button beside a dead field is a promise the composite cannot keep.</li>
+      <li><strong>Result state is not owned here.</strong> Loading, empty results, error and result counts belong to whatever renders the results — see <code>EmptyState</code> and <code>Progress</code>. A search field that also reported on results would make every consumer route result data back into the control.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§07" title="Keyboard" note="What the composition adds, and what it refuses to touch">
+    <T cols={['Key','Behaviour']} rows={[
+      ['Enter','Submits the current query when explicit submission is part of the contract (onSubmit present). Otherwise it does nothing — the query is already the signal.'],
+      ['Tab','Field, then the clear control when present, then submit. Ordinary order; no roving tabindex, because these are not a set of peer actions.'],
+      ['Text editing','Untouched. Selection, word jumps, undo, IME composition, autofill are all Input\u2019s and the platform\u2019s.'],
+    ]} />
+    <ul>
+      <li><strong>Clearing introduces no text-editing keys.</strong> The clear control is a button, activated the way buttons are; nothing is rebound inside the text run.</li>
+      <li><strong>Escape is deliberately not bound.</strong> Clear-on-Escape is a common search idiom, but in this system a search field frequently sits inside a <code>Dialog</code>, <code>Drawer</code> or <code>Popover</code>, where <kbd>Esc</kbd> belongs to the surface. A field that swallows it strands the user in the dialog — and the clear control is one <kbd>Tab</kbd> away.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="§08" title="Accessibility" note="Relationships created by the composition">
+    <ul>
+      <li><strong>The name is required and independent of the placeholder.</strong> A placeholder is gone after the first keystroke and is not reliably announced; <code>label</code> supplies the accessible name and states the scope.</li>
+      <li><strong>Search semantics come from the field, the landmark is opt-in.</strong> The input is <code>role="searchbox"</code> always — that is what makes it a search control rather than a text box. The <code>role="search"</code> landmark is <code>landmark</code>-gated and off by default: a region named the same as the single field inside it announces the scope twice ("Search invoices, search region… Search invoices, edit"), which is noise on the fifth filter field in a table toolbar. On a page's primary search the landmark earns its keep as a navigation shortcut, and it is named by <code>label</code> so two of them are distinguishable.</li>
+      <li><strong>The decorative icon adds no accessible content.</strong> It is presentational; the magnifier must not be announced as a second "search".</li>
+      <li><strong>The clear control names its action</strong> — "Clear <em>&lt;scope&gt;</em>", not "Close" and not an unlabelled ✕.</li>
+      <li><strong>Clearing keeps focus predictable.</strong> Focus returns to the input, where the user was typing — never lost to the body, which is what removing the button they just pressed would otherwise do.</li>
+      <li><strong>The hint is associated, not merely adjacent.</strong> When <code>hint</code> is present the field points at it through <code>aria-describedby</code> — a line of supporting text a screen-reader user never hears is decoration.</li>
+      <li><strong>Search execution is never communicated by visual state alone.</strong> The consumer announces the outcome — a live region on the result count, or focus moved to the results heading. The composite cannot do this, because it does not own the results; it is stated here so it is not forgotten.</li>
+    </ul>
+    <div className="warn"><p>The most common failure of this component is a placeholder used as the label. It reads fine on an empty field, and is unnavigable the moment anyone types.</p></div>
+  </Sec>
+
+  <Sec n="§10" title="Content rules" note="What keeps the control interpretable">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Name the scope: "Search invoices", "Search this document".</li>
+        <li>Use the placeholder for an example or a format ("Invoice no. or customer").</li>
+        <li>Show the clear control only when there is content to clear — or commit to <code>clearable="always"</code> deliberately.</li>
+        <li>Keep the hint to one line, about the query.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don't</h3><ul>
+        <li>Label two search fields on one page both "Search".</li>
+        <li>Put the only label in the placeholder.</li>
+        <li>Flicker the clear control on every keystroke as an animation.</li>
+        <li>Put result counts, filter chips or suggestions in the hint — none of those are this component's.</li>
+      </ul></div>
+    </div>
+  </Sec>
+
+  <Sec n="§13" title="Implementation notes" note="Constraints not visible from the API">
+    <ul>
+      <li><strong>Query coordination here, text entry in <code>Input</code>.</strong> The composite holds the value contract and the auxiliary controls; it does not reimplement focus rings, caret handling, IME behaviour or the invalid treatment.</li>
+      <li><strong><code>Input</code> semantics are never rebuilt through <code>Box</code>.</strong> A styled div with a caret is not a text control.</li>
+      <li><strong><code>type="text"</code> with <code>role="searchbox"</code>, not <code>type="search"</code>.</strong> A native search input paints its own cancel button in WebKit, which would put two clear affordances in one field and split the action in two — and it cannot be styled to match. The role supplies the semantics the type would have.</li>
+      <li><strong>Clear and submit stay separate actions</strong> where both exist — never one control that submits when the field is full and clears when it is not.</li>
+      <li><strong>Focus restoration is a ref call.</strong> <code>Input</code> forwards its ref to the underlying <code>&lt;input&gt;</code> (additive amendment, 6 Sep 2026, merged with the internal ref the box uses for click-to-focus) — so this composite does not reach into another component's markup with <code>querySelector</code>, which would make it depend on <code>Input</code>'s internal structure.</li>
+      <li><strong>Not a <code>&lt;form&gt;</code>.</strong> A form element would give <kbd>Enter</kbd> and the mobile "Go" key for free, but a search field routinely sits inside a product form, and nested forms are invalid HTML — the browser silently drops the inner one. <kbd>Enter</kbd> is handled explicitly instead.</li>
+      <li><strong>Autocomplete is not reinvented here.</strong> A field needing suggestions is <code>Autocomplete</code>, which owns the listbox, the cursor and the selection contract.</li>
+    </ul>
+    <div className="tokenlist">
+      {['--search-field-gap','--input-* (via Input)','--control-h-sm / -md / -lg'].map(t=><span key={t}>{t}</span>)}
+    </div>
+  </Sec>
+
+  <Sec n="§14" title="Developer notes" note="Integration contract">
+    <div className="demo col">
+      <div style={{maxWidth:460}}>
+        <SearchField label="Search the archive" submit="button" onSubmit={(v)=>setLog(v ? 'submitted: "'+v+'"' : 'submitted: (empty query)')} onClear={()=>setLog('cleared')} hint="Whole words only. Quotes for an exact phrase." />
+      </div>
+      <span className="log">{log}</span>
+    </div>
+    <ul>
+      <li><strong>One stable query contract.</strong> <code>value</code> + <code>onChange(next)</code>, controlled or uncontrolled — the same string in both models, emitted as a string rather than an event, so consumers never read <code>e.target</code> to learn the query.</li>
+      <li><strong>Query change and submission are different events.</strong> <code>onChange</code> is "the query is now this"; <code>onSubmit</code> is "run it". Treating a keystroke as a submission is what turns a search field into an accidental request per character.</li>
+      <li><strong>Clearing is a value change, predictably.</strong> <code>onChange('')</code> always fires; <code>onClear</code> is an additional signal for consumers that want to distinguish it (cancel an in-flight request, reset a scroll position). Nobody has to special-case the clear to stay in sync.</li>
+      <li><strong>Both search models fit without changing identity.</strong> Search-as-you-type is <code>onChange</code> alone; explicit search is <code>onSubmit</code> with or without a visible submit control. The semantics — a text-search control over one scope — are the same either way, which is why this is one component and not two.</li>
+      <li><strong>Debouncing belongs to the consumer.</strong> The composite does not delay <code>onChange</code>: a component that decided the debounce interval would be wrong for a local filter and wrong for a network query at the same time.</li>
+    </ul>
+  </Sec>
+
+  <p className="omitted">Omitted, per the composite spec standard: §04 Variants (the submit control is a property, not a variant — the contract does not change) · §09 Motion (no composite-owned state transition; the clear control appearing is a presence change, not a communicated one) · §11 Responsive (the field is fluid and the composition does not change at any width) · §12 Anti-patterns (§10's content rules and <code>Input</code>'s own documentation already cover the misuses).</p>
+</div>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

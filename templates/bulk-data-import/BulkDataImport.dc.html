@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Pattern · Bulk data import" description="Interaction pattern reference implementation, set in a manufacturing ERP — importing Deccan Machine Supply's catalogue extract into the PL-04 item master: the columns are mapped to fields, every row is judged before anything is written, and 412 of 500 commit while 88 come back for correction." -->
+<helmet>
+<script src="./ds-base.js"></script>
+<style>body{margin:0;background:var(--background-page,#fff)}</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 24px;font-family:var(--font-sans);color:var(--text-primary);display:flex;justify-content:center;align-items:flex-start">
+<div style="width:100%;max-width:1320px;display:flex;flex-direction:column;gap:24px">
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Demo harness · remove on copy</span>
+<a href="../../specs/patterns/BulkDataImport.spec.html" style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-link);text-decoration:none">Specification §01–§21</a>
+</div>
+<p style="margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55">Everything marked <span style="font-family:var(--font-mono)">remove-on-copy</span> — this note, the state inspector at the foot, and the tweaks under <span style="font-family:var(--font-mono)">Demo harness</span> — exists to make the contract visible. The parse, the dry run and the write are timers standing in for the item-master service; the comments above them say what to replace. The five tweaks under <span style="font-family:var(--font-mono)">Pattern properties</span> are not harness: <span style="font-family:var(--font-mono)">existingRecords</span>, <span style="font-family:var(--font-mono)">commitScope</span>, <span style="font-family:var(--font-mono)">mappingSource</span>, <span style="font-family:var(--font-mono)">previewStaleness</span> and <span style="font-family:var(--font-mono)">rejectDelivery</span> are the §05 policies an adopting team must declare.</p>
+<p style="margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty;font-size:var(--text-xs);line-height:1.55"><strong>What to try:</strong> read the file, confirm the proposed mapping, then <span style="font-family:var(--font-mono)">Check 500 rows</span> — nothing is written and the verdict is what the commit acts on. Change a mapping afterwards to see the verdict go stale. Set <span style="font-family:var(--font-mono)">existingRecords</span> to <span style="font-family:var(--font-mono)">upsert</span> and the 41 collisions become updates with their own count; <span style="font-family:var(--font-mono)">commitScope: all-or-nothing</span> removes the commit entirely while rejects exist. The harness switches force a partial write, a whole failure, an unknown outcome, a file where every row is rejected, and a file missing a required column.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Item master · Suryodaya Autocomp Ltd · Chakan plant (PL-04) · IST</span>
+<h1 style="margin:0;font-size:var(--text-2xl);font-weight:300;letter-spacing:-0.02em">Import parts from a supplier catalogue</h1>
+<p style="margin:0;max-width:80ch;color:var(--text-secondary);font-size:var(--text-sm);line-height:1.55">Deccan Machine Supply's monthly extract, loaded by Anjali Deshmukh (planning). Every row is checked against the item master before anything is created — the check writes nothing, and what it reports is what the import commits.</p>
+</div>
+
+<sc-if value="{{ hasNotices }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ notices }}" as="n" hint-placeholder-count="1">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Alert" tone="{{ n.tone }}" title="{{ n.title }}" live="on" size="sm" action="{{ n.action }}" hint-size="100%,104px">{{ n.body }}</x-import>
+</sc-for>
+</div>
+</sc-if>
+
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.55fr);gap:20px;align-items:start">
+
+<div style="display:flex;flex-direction:column;gap:20px">
+
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:13px 18px;border-bottom:var(--border-hairline)">
+<span style="font-size:var(--text-sm);font-weight:var(--weight-semibold)">1 · The file</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ fileMeta }}</span>
+</div>
+<div style="padding:14px 18px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:11px;padding:10px 12px;border:var(--border-hairline);border-radius:var(--radius-md);background:var(--surface-sunken)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Icon" name="file-spreadsheet" size="md" hint-size="20px,20px"></x-import>
+<div style="display:flex;flex-direction:column;gap:1px;min-width:0;flex:1 1 auto">
+<span style="font-size:var(--text-xs);color:var(--text-primary);font-family:var(--font-mono)">{{ fileName }}</span>
+<span style="font-size:var(--text-2xs);color:var(--text-tertiary)">{{ fileSub }}</span>
+</div>
+<sc-if value="{{ fileBadge }}" hint-placeholder-val="{{ true }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Badge" tone="{{ fileBadgeTone }}" size="sm" dot="{{ true }}" hint-size="72px,20px">{{ fileBadge }}</x-import>
+</sc-if>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.55;text-wrap:pretty">Selection, upload, progress, cancel and retry belong to <span style="font-family:var(--font-mono)">FileUpload</span> — this pattern begins where they end. Here the file stands in for one already uploaded.</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="{{ readVariant }}" size="sm" onClick="{{ onRead }}" disabled="{{ readDisabled }}" loading="{{ reading }}" hint-size="128px,32px">{{ readLabel }}</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" onClick="{{ onReset }}" hint-size="96px,32px">Start over</x-import>
+</div>
+</div>
+</div>
+
+<sc-if value="{{ showMapping }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+<div style="display:flex;flex-direction:column;gap:3px;padding:13px 18px;border-bottom:var(--border-hairline)">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+<span style="font-size:var(--text-sm);font-weight:var(--weight-semibold)">2 · Map the columns</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ mapMeta }}</span>
+</div>
+<sc-if value="{{ proposalNote }}" hint-placeholder-val="{{ false }}">
+<span style="font-size:var(--text-2xs);color:var(--text-warning);line-height:1.5;text-wrap:pretty">{{ proposalNote }}</span>
+</sc-if>
+</div>
+<div style="display:flex;flex-direction:column;padding:6px 0">
+<sc-for list="{{ fields }}" as="f" hint-placeholder-count="6">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:10px;align-items:start;padding:8px 18px">
+<div style="display:flex;flex-direction:column;gap:1px;min-width:0">
+<span style="font-size:var(--text-xs);color:var(--text-primary)">{{ f.label }}</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ f.hint }}</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Select" value="{{ f.value }}" onChange="{{ f.onChange }}" options="{{ f.options }}" size="sm" invalid="{{ f.invalid }}" aria-label="{{ f.aria }}" hint-size="100%,32px"></x-import>
+<sc-if value="{{ f.problem }}" hint-placeholder-val="{{ false }}">
+<span style="font-size:var(--text-2xs);color:var(--text-critical);line-height:1.5;text-wrap:pretty">{{ f.problem }}</span>
+</sc-if>
+<sc-if value="{{ f.coercion }}" hint-placeholder-val="{{ false }}">
+<span style="font-size:var(--text-2xs);color:var(--text-warning);line-height:1.5;text-wrap:pretty">{{ f.coercion }}</span>
+</sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="padding:11px 18px;border-top:var(--border-hairline);background:var(--surface-sunken);display:flex;flex-direction:column;gap:8px">
+<span style="font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.55;text-wrap:pretty">{{ ignoredNote }}</span>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="primary" size="sm" onClick="{{ onDryRun }}" disabled="{{ dryRunDisabled }}" loading="{{ judging }}" hint-size="150px,32px">{{ dryRunLabel }}</x-import>
+<sc-if value="{{ dryRunBlockedWhy }}" hint-placeholder-val="{{ false }}">
+<span style="font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;flex:1 1 200px;text-wrap:pretty">{{ dryRunBlockedWhy }}</span>
+</sc-if>
+</div>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.5">The check writes nothing — no parts created, no numbers reserved. Leaving now costs nothing.</span>
+</div>
+</div>
+</sc-if>
+
+</div>
+
+<div style="display:flex;flex-direction:column;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-lg);overflow:hidden">
+<div style="display:flex;flex-direction:column;gap:3px;padding:13px 18px;border-bottom:var(--border-hairline)">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+<span style="font-size:var(--text-sm);font-weight:var(--weight-semibold)">3 · The verdict</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ verdictMeta }}</span>
+</div>
+<span style="font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.5;text-wrap:pretty">{{ verdictSub }}</span>
+</div>
+
+<sc-if value="{{ hasVerdict }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-wrap:wrap;gap:0;border-bottom:var(--border-hairline)">
+<sc-for list="{{ counts }}" as="c" hint-placeholder-count="4">
+<div style="flex:1 1 118px;display:flex;flex-direction:column;gap:2px;padding:12px 16px;border-right:var(--border-subtle)">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Text" size="xl" tone="{{ c.tone }}" hint-size="48px,28px">{{ c.n }}</x-import>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.4">{{ c.label }}</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ hasVerdict }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:11px 18px;border-bottom:var(--border-hairline)">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="{{ t.variant }}" size="sm" onClick="{{ t.onClick }}" hint-size="112px,30px">{{ t.label }}</x-import>
+</sc-for>
+</div>
+</sc-if>
+
+<div style="display:flex;flex-direction:column;min-height:210px">
+<sc-if value="{{ hasRows }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:52px minmax(0,1fr) 78px;gap:10px;padding:8px 18px;border-bottom:var(--border-hairline);background:var(--background-page)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Line</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Part and reason</span>
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Verdict</span>
+</div>
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+<div style="display:grid;grid-template-columns:52px minmax(0,1fr) 78px;gap:10px;align-items:start;padding:8px 18px;border-bottom:var(--border-subtle)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:2px">{{ r.line }}</span>
+<div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+<span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-primary)">{{ r.part }}</span>
+<span style="font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.5">{{ r.desc }}</span>
+<sc-for list="{{ r.reasons }}" as="why" hint-placeholder-count="1">
+<span style="font-size:var(--text-2xs);color:var(--text-critical);line-height:1.5;text-wrap:pretty">{{ why.text }}</span>
+</sc-for>
+</div>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Badge" tone="{{ r.tone }}" size="sm" hint-size="64px,20px">{{ r.verdict }}</x-import>
+</div>
+</sc-for>
+</sc-if>
+<sc-if value="{{ emptyText }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;padding:34px 24px;text-align:center">
+<span style="font-size:var(--text-sm);color:var(--text-secondary);max-width:44ch;text-wrap:pretty">{{ emptyText }}</span>
+<sc-if value="{{ emptySub }}" hint-placeholder-val="{{ false }}">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);max-width:52ch;line-height:1.6;text-wrap:pretty">{{ emptySub }}</span>
+</sc-if>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{ pageNote }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:10px 18px;border-top:var(--border-hairline)">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)">{{ pageNote }}</span>
+<div style="display:flex;gap:6px">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" onClick="{{ onPrev }}" disabled="{{ prevDisabled }}" hint-size="76px,30px">Previous</x-import>
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="ghost" size="sm" onClick="{{ onNext }}" disabled="{{ nextDisabled }}" hint-size="60px,30px">Next</x-import>
+</div>
+</div>
+</sc-if>
+
+<div style="padding:13px 18px;border-top:var(--border-hairline);background:var(--surface-sunken);display:flex;flex-direction:column;gap:9px">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+<sc-if value="{{ showCommit }}" hint-placeholder-val="{{ true }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="primary" size="md" onClick="{{ onCommit }}" disabled="{{ commitDisabled }}" loading="{{ committing }}" hint-size="180px,36px">{{ commitLabel }}</x-import>
+</sc-if>
+<sc-if value="{{ showRejectDownload }}" hint-placeholder-val="{{ false }}">
+<x-import component-from-global-scope="MeridianDesignSystem_962c43.Button" variant="secondary" size="md" onClick="{{ onDownload }}" hint-size="220px,36px">{{ downloadLabel }}</x-import>
+</sc-if>
+</div>
+<span style="font-size:var(--text-xs);color:var(--text-secondary);line-height:1.55;text-wrap:pretty">{{ commitNote }}</span>
+<div role="status" aria-live="polite" style="min-height:17px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.5;text-wrap:pretty">{{ announcement }}</div>
+</div>
+</div>
+
+</div>
+
+<div data-harness="remove-on-copy" style="display:flex;flex-direction:column;gap:12px;background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:var(--radius-lg);padding:15px 17px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Phase, mapping and verdict identity · remove on copy</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px 20px">
+<sc-for list="{{ stateRows }}" as="row" hint-placeholder-count="10">
+<div style="display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-2xs)">
+<span style="color:var(--text-tertiary);flex:none;width:126px">{{ row.k }}</span>
+<span style="color:var(--text-primary);word-break:break-word">{{ row.v }}</span>
+</div>
+</sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;border-top:var(--border-hairline);padding-top:11px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Mapping (target field → source column)</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ mappingText }}</pre>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)">Verdict object</span>
+<pre style="margin:0;font-family:var(--font-mono);font-size:var(--text-2xs);line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word">{{ verdictText }}</pre>
+</div>
+</div>
+<p style="margin:0;font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.6;text-wrap:pretty">The verdict carries the mapping signature it was computed under, so staleness is an inequality this page asserts on every render rather than a flag anyone has to remember to clear (§08, §20). Nothing in the item master changes until the commit.</p>
+</div>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1380,&quot;height&quot;:1080},&quot;existingRecords&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;insert-only&quot;,&quot;upsert&quot;,&quot;refuse-file&quot;],&quot;default&quot;:&quot;insert-only&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;A row that already exists&quot;},&quot;commitScope&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;accept-valid-rows&quot;,&quot;all-or-nothing&quot;],&quot;default&quot;:&quot;accept-valid-rows&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Commit with rejects present&quot;},&quot;mappingSource&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;inferred-confirmable&quot;,&quot;explicit&quot;],&quot;default&quot;:&quot;inferred-confirmable&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Where the mapping comes from&quot;},&quot;previewStaleness&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;refuse&quot;,&quot;re-run&quot;],&quot;default&quot;:&quot;refuse&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;Mapping changed after a check&quot;},&quot;rejectDelivery&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;download-file&quot;,&quot;on-screen-list&quot;],&quot;default&quot;:&quot;download-file&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pattern properties (§05)&quot;,&quot;label&quot;:&quot;How rejects reach the fixer&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:200,&quot;max&quot;:3000,&quot;step&quot;:100,&quot;default&quot;:700,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Service latency&quot;},&quot;partialWrite&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Write stops part-way&quot;},&quot;commitFails&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Import refused (nothing written)&quot;},&quot;unknownOutcome&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Outcome unknown (timeout)&quot;},&quot;allRejected&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;Every row rejected&quot;},&quot;missingColumn&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo harness (remove on copy)&quot;,&quot;label&quot;:&quot;File has no UOM column&quot;}}">
+// Deccan Machine Supply's September extract. 500 rows; the twelve below are the
+// ones the verdict shows — `SYNTH` stands in for the rest so counts are real
+// without rendering five hundred rows (§17: the counts are over every row, the
+// table is windowed).
+const COLUMNS = ['Material Code', 'Description', 'UOM', 'List Price (INR)', 'HSN', 'Lead Days', 'Min Order Qty', 'Vendor Ref'];
+const FIELDS = [
+  { key: 'partNumber', label: 'Part number', hint: 'required \u00b7 item master key', required: true, guess: 'Material Code' },
+  { key: 'description', label: 'Description', hint: 'required \u00b7 40 chars', required: true, guess: 'Description' },
+  { key: 'uom', label: 'Unit of measure', hint: 'required \u00b7 must exist in the UOM master', required: true, guess: 'UOM' },
+  { key: 'stdCost', label: 'Standard cost', hint: 'required \u00b7 \u20b9 per unit', required: true, guess: 'List Price (INR)' },
+  { key: 'hsn', label: 'HSN code', hint: 'optional \u00b7 8 digits', required: false, guess: 'HSN' },
+  { key: 'leadTime', label: 'Lead time (days)', hint: 'optional \u00b7 whole days', required: false, guess: 'Lead Days' }
+];
+// Twelve real rows: 5 clean, 41 collisions represented by 2, plus the reject shapes.
+const SAMPLE = [
+  { line: 2, part: 'DMS-BRG-6204', desc: 'Ball bearing 6204 2RS', kind: 'ok' },
+  { line: 3, part: 'DMS-SEAL-2035', desc: 'Oil seal 20x35x7 NBR', kind: 'ok' },
+  { line: 12, part: 'DMS-CIRC-0450', desc: 'Circlip external 45 mm', kind: 'ok' },
+  { line: 40, part: 'BRK-4820-A', desc: 'Brake caliper bracket', kind: 'exists' },
+  { line: 87, part: 'DMS-BUSH-1120', desc: 'Bronze bush 11x20', kind: 'closedCC' },
+  { line: 91, part: 'BRK-4820-A', desc: 'Brake caliper bracket (dup)', kind: 'dupInFile', dupOf: 40 },
+  { line: 92, part: 'DMS-WASH-M10', desc: 'Washer M10 spring', kind: 'badUom' },
+  { line: 118, part: 'DMS-PIN-0625', desc: 'Dowel pin 6x25', kind: 'ok' },
+  { line: 143, part: 'DMS-GSKT-0908', desc: 'Gasket 90x8 CAF', kind: 'noCost' },
+  { line: 204, part: 'DMS-NUT-M12', desc: 'Nyloc nut M12', kind: 'ok' },
+  { line: 288, part: 'SEAL-2035-B', desc: 'Oil seal, plant code', kind: 'exists' },
+  { line: 377, part: 'DMS-KEY-0850', desc: 'Parallel key 8x50', kind: 'longDesc' }
+];
+const TOTAL = 500;
+// The rest of the file, by shape, so the counts are the file's and not the table's.
+// Tuned so the counts are the ones the spec and the reference card state:
+// 5 sample creates + 407 = 412 to create; 7 sample rejects + 81 = 88 rejected;
+// 2 sample collisions + 39 = the 41 the harness note names under upsert.
+const SYNTH = { ok: 407, exists: 39, closedCC: 17, dupInFile: 8, badUom: 9, noCost: 6, longDesc: 2 };
+const INR = n => '\u20b9' + Number(n).toLocaleString('en-IN');
+const M = () => window.MeridianDesignSystem_962c43 || {};
+
+class Component extends DCLogic {
+  state = {
+    phase: 'no-file',        // no-file · reading · mapped · judging · judged · committing · resolved
+    mapping: {},
+    verdict: null,           // { sig, rows, counts, at }
+    outcome: null,           // { kind, created, notAttempted, stoppedAt, rejects }
+    tab: 'rejects',
+    page: 0,
+    announcement: '',
+    parseError: null,
+    touched: false
+  };
+  runId = 0;
+
+  policy(n, fb) { return this.props[n] || fb; }
+  // A signature over the mapping, so the verdict can assert its own freshness.
+  sig(m) { return FIELDS.map(f => f.key + '=' + (m[f.key] || '\u2014')).join('|'); }
+  stale() { const v = this.state.verdict; return !!v && v.sig !== this.sig(this.state.mapping); }
+
+  columns() { return this.props.missingColumn ? COLUMNS.filter(c => c !== 'UOM') : COLUMNS; }
+
+  say = (t) => this.setState({ announcement: t });
+
+  // REPLACE: stands in for GET /api/imports/parse — reads the header row and a
+  // sample. Writes nothing.
+  read = () => {
+    this.setState({ phase: 'reading', verdict: null, outcome: null, parseError: null });
+    this.say('Reading deccan-catalogue-2026-09.csv\u2026');
+    setTimeout(() => {
+      const cols = this.columns();
+      if (this.props.missingColumn) {
+        this.setState({
+          phase: 'no-file',
+          parseError: { title: 'This file cannot be imported as it stands', body: 'No column in deccan-catalogue-2026-09.csv can be the unit of measure, which every item-master record requires. The file has ' + cols.length + ' columns: ' + cols.join(', ') + '. Ask Deccan Machine Supply to include UOM, or map it to a constant if every part shares one unit.' },
+          announcement: 'File level: a required field has no candidate column. Nothing to map.'
+        });
+        return;
+      }
+      const inferred = this.policy('mappingSource', 'inferred-confirmable') === 'inferred-confirmable';
+      const mapping = {};
+      if (inferred) FIELDS.forEach(f => { if (cols.includes(f.guess)) mapping[f.key] = f.guess; });
+      this.setState({ phase: 'mapped', mapping, touched: false });
+      this.say(TOTAL + ' rows read, ' + cols.length + ' columns found.' + (inferred ? ' A mapping is proposed \u2014 check it before running.' : ' Map every required field to continue.'));
+    }, this.props.latency ?? 700);
+  };
+
+  setField = (key) => (v) => {
+    const value = typeof v === 'string' ? v : (v && v.target ? v.target.value : '');
+    this.setState(p => ({ mapping: Object.assign({}, p.mapping, { [key]: value }), touched: true }), () => {
+      if (this.state.verdict && this.stale()) {
+        if (this.policy('previewStaleness', 'refuse') === 're-run') { this.say('The mapping changed \u2014 re-checking ' + TOTAL + ' rows.'); this.dryRun(); }
+        else this.say('The mapping changed after the check, so the verdict no longer applies. Check the rows again before importing.');
+      }
+    });
+  };
+
+  missingRequired() { return FIELDS.filter(f => f.required && !this.state.mapping[f.key]); }
+  doubleBound() {
+    const seen = {}, out = {};
+    FIELDS.forEach(f => { const c = this.state.mapping[f.key]; if (!c) return; if (seen[c]) { out[f.key] = seen[c]; out[seen[c]] = f.key; } else seen[c] = f.key; });
+    return out;
+  }
+
+  // REPLACE: stands in for POST /api/imports/dry-run — judges every row against
+  // the item master and returns per-row dispositions. MUST write nothing and
+  // reserve nothing, or the pattern's central guarantee is gone (§20).
+  dryRun = () => {
+    const id = ++this.runId;
+    const sig = this.sig(this.state.mapping);
+    this.setState({ phase: 'judging' });
+    this.say('Checking ' + TOTAL + ' rows against the item master\u2026 nothing is being written.');
+    setTimeout(() => {
+      if (id !== this.runId) return;
+      const upsert = this.policy('existingRecords', 'upsert') === 'upsert';
+      const refuseFile = this.policy('existingRecords', 'insert-only') === 'refuse-file';
+      const allBad = !!this.props.allRejected;
+      const rows = SAMPLE.map(r => this.judge(r, upsert, allBad));
+      const counts = { create: 0, update: 0, reject: 0 };
+      rows.forEach(r => { counts[r.verdict] += 1; });
+      Object.keys(SYNTH).forEach(k => {
+        const n = SYNTH[k];
+        if (allBad) { counts.reject += n; return; }
+        if (k === 'ok') counts.create += n;
+        else if (k === 'exists') { if (upsert) counts.update += n; else counts.reject += n; }
+        else counts.reject += n;
+      });
+      if (refuseFile && (counts.update > 0 || rows.some(r => r.kind === 'exists'))) {
+        this.setState({
+          phase: 'mapped', verdict: null,
+          parseError: { title: 'This file contains parts that already exist', body: (SYNTH.exists + 2) + ' of ' + TOTAL + ' rows name parts already in the PL-04 item master \u2014 the first is line 40, BRK-4820-A. Under existingRecords: refuse-file the whole file is rejected: it was meant to contain new parts only. Ask Deccan Machine Supply for a delta extract.' },
+          announcement: 'File refused: it contains parts that already exist.'
+        });
+        return;
+      }
+      this.setState({
+        phase: 'judged', verdict: { sig, rows, counts, at: this.clock() }, outcome: null, parseError: null,
+        tab: counts.reject > 0 ? 'rejects' : 'accepted', page: 0
+      });
+      this.say('Check complete: ' + counts.create + ' to create' + (counts.update ? ', ' + counts.update + ' to update' : '') + ', ' + counts.reject + ' rejected, of ' + TOTAL + ' rows. Nothing has been written.');
+    }, (this.props.latency ?? 700) + 500);
+  };
+
+  judge(r, upsert, allBad) {
+    const reasons = [];
+    let verdict = 'create';
+    if (allBad) { reasons.push('Cost centre CC-4412 is closed for period 2026-09.'); verdict = 'reject'; }
+    else if (r.kind === 'exists') {
+      if (upsert) { verdict = 'update'; reasons.push('Already in the item master \u2014 this row will overwrite its description, unit and standard cost.'); }
+      else { verdict = 'reject'; reasons.push('Part ' + r.part + ' is already in the PL-04 item master (created 2024-11-18). Under insert-only the existing record is left untouched.'); }
+    }
+    else if (r.kind === 'closedCC') { verdict = 'reject'; reasons.push('Cost centre CC-4412 is closed for period 2026-09.'); }
+    else if (r.kind === 'dupInFile') { verdict = 'reject'; reasons.push('Line ' + r.line + ' duplicates line ' + r.dupOf + ' (' + r.part + ') within this file.'); }
+    else if (r.kind === 'badUom') { verdict = 'reject'; reasons.push('Unit \u201cEA\u201d is not in the unit-of-measure master. Valid: NOS, KG, MTR, LTR, SET.'); }
+    else if (r.kind === 'noCost') { verdict = 'reject'; reasons.push('Standard cost is empty, and it is required to create a part.'); reasons.push('HSN 84829119 does not match the 8-digit format.'); }
+    else if (r.kind === 'longDesc') { verdict = 'reject'; reasons.push('Description is 63 characters \u2014 the item master allows 40.'); }
+    return Object.assign({}, r, { verdict, reasons });
+  }
+
+  // REPLACE: stands in for POST /api/imports/{id}/commit — writes the verdict's
+  // rows. Sends the verdict identity and dispositions, never the file again.
+  commit = () => {
+    if (this.state.phase === 'committing') return;   // guarded by the transition, not the attribute
+    const id = ++this.runId;
+    const v = this.state.verdict;
+    const writing = v.counts.create + v.counts.update;
+    this.setState({ phase: 'committing' });
+    this.say('Writing ' + writing + ' rows to the item master\u2026');
+    setTimeout(() => {
+      if (id !== this.runId) return;
+      if (this.props.unknownOutcome) {
+        this.setState({ phase: 'resolved', outcome: { kind: 'unknown' } });
+        this.say('The item-master service did not answer. It is not known whether any parts were created.');
+        return;
+      }
+      if (this.props.commitFails) {
+        this.setState({ phase: 'resolved', outcome: { kind: 'failed' } });
+        this.say('Nothing was written. The file, the mapping and the verdict all survive.');
+        return;
+      }
+      if (this.props.partialWrite) {
+        const created = 167;
+        this.setState({ phase: 'resolved', outcome: { kind: 'partial', created, notAttempted: writing - created, stoppedAt: 180 } });
+        this.say(created + ' parts were created before the write stopped at line 180. ' + (writing - created) + ' rows were not attempted.');
+        return;
+      }
+      this.setState({ phase: 'resolved', outcome: { kind: 'done', created: v.counts.create, updated: v.counts.update, rejects: v.counts.reject } });
+      this.say(v.counts.create + ' parts created' + (v.counts.update ? ', ' + v.counts.update + ' updated' : '') + '. ' + v.counts.reject + ' rows returned for correction.');
+    }, (this.props.latency ?? 700) + 900);
+  };
+
+  resume = () => {
+    const o = this.state.outcome;
+    this.setState({ phase: 'committing', outcome: null });
+    this.say('Resuming from line ' + (o.stoppedAt + 1) + ' \u2014 the ' + o.created + ' parts already created are not sent again.');
+    setTimeout(() => {
+      const v = this.state.verdict;
+      this.setState({ phase: 'resolved', outcome: { kind: 'done', created: v.counts.create, updated: v.counts.update, rejects: v.counts.reject, resumed: true } });
+      this.say('Resume complete. ' + v.counts.create + ' parts created in total; ' + v.counts.reject + ' rows returned for correction.');
+    }, this.props.latency ?? 700);
+  };
+
+  download = () => this.say('deccan-catalogue-2026-09-rejects.csv \u2014 ' + this.state.verdict.counts.reject + ' original rows with a reason column added.');
+  reset = () => { this.runId++; this.setState({ phase: 'no-file', mapping: {}, verdict: null, outcome: null, parseError: null, page: 0, touched: false, announcement: '' }); };
+  clock() { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+
+  componentDidUpdate(prev) {
+    if (this.props.missingColumn !== prev.missingColumn || this.props.allRejected !== prev.allRejected || this.props.existingRecords !== prev.existingRecords) {
+      if (this.state.phase !== 'no-file') this.reset();
+    }
+  }
+  componentDidMount() { this.say('One file waiting. Reading it writes nothing.'); }
+
+  renderVals() {
+    const s = this.state, C = M();
+    const stale = this.stale();
+    const missing = this.missingRequired();
+    const dbl = this.doubleBound();
+    const upsert = this.policy('existingRecords', 'upsert') === 'upsert';
+    const acceptValid = this.policy('commitScope', 'accept-valid-rows') === 'accept-valid-rows';
+    const v = s.verdict;
+    const cols = this.columns();
+    const btn = (p, l) => C.Button ? React.createElement(C.Button, p, l) : null;
+
+    const fields = FIELDS.map(f => {
+      const value = s.mapping[f.key] || '';
+      const isMissing = f.required && !value && s.touched;
+      return {
+        key: f.key, label: f.label + (f.required ? '' : ' (optional)'), hint: f.hint,
+        value, aria: 'Source column for ' + f.label,
+        options: [{ value: '', label: f.required ? '\u2014 not mapped \u2014' : '\u2014 leave empty \u2014' }].concat(cols.map(c => ({ value: c, label: c }))),
+        onChange: this.setField(f.key),
+        invalid: isMissing || !!dbl[f.key],
+        problem: dbl[f.key] ? '\u201c' + value + '\u201d is also mapped to ' + (FIELDS.find(x => x.key === dbl[f.key]) || {}).label + '. One column cannot fill two fields.'
+          : isMissing ? f.label + ' is required to create a part.' : '',
+        coercion: f.key === 'uom' && value === 'UOM' ? 'Sampled 50 rows: Nos, NOS, PCS \u2014 3 values not in the UOM master. Read as text and matched on import.'
+          : f.key === 'stdCost' && value === 'List Price (INR)' ? 'Read as \u20b9 with en-IN grouping: \u201c1,250.00\u201d \u2192 ' + INR(1250) + '. Sampled 50 rows.' : ''
+      };
+    });
+
+    const mappedCols = FIELDS.map(f => s.mapping[f.key]).filter(Boolean);
+    const ignored = cols.filter(c => !mappedCols.includes(c));
+
+    const rows = v ? (s.tab === 'rejects' ? v.rows.filter(r => r.verdict === 'reject')
+      : s.tab === 'accepted' ? v.rows.filter(r => r.verdict !== 'reject') : v.rows) : [];
+    const PER = 6;
+    const pageRows = rows.slice(s.page * PER, s.page * PER + PER);
+    const shownTotal = v ? (s.tab === 'rejects' ? v.counts.reject : s.tab === 'accepted' ? v.counts.create + v.counts.update : TOTAL) : 0;
+
+    const writing = v ? v.counts.create + v.counts.update : 0;
+    const blockAll = v && !acceptValid && v.counts.reject > 0;
+    const commitLabel = !v ? 'Import' : upsert && v.counts.update
+      ? 'Create ' + v.counts.create + ' and update ' + v.counts.update + ' parts'
+      : 'Create ' + v.counts.create + ' parts';
+
+    const o = s.outcome;
+    const notices = [
+      s.parseError ? { key: 'p', tone: 'danger', title: s.parseError.title, body: s.parseError.body, action: btn({ variant: 'secondary', size: 'sm', type: 'button', onClick: this.reset }, 'Start over') } : null,
+      stale && this.policy('previewStaleness', 'refuse') === 'refuse' ? {
+        key: 's', tone: 'warning', title: 'The verdict no longer matches the mapping',
+        body: 'The check was run against a different mapping, so its counts are arithmetic about a file that no longer exists. Check the ' + TOTAL + ' rows again before importing \u2014 nothing has been written.',
+        action: btn({ variant: 'secondary', size: 'sm', type: 'button', onClick: this.dryRun }, 'Check ' + TOTAL + ' rows again')
+      } : null,
+      o && o.kind === 'done' ? {
+        key: 'd', tone: 'success', title: o.created + ' parts created in the item master' + (o.updated ? ', ' + o.updated + ' updated' : ''),
+        body: (o.rejects ? o.rejects + ' rows were returned for correction. ' : 'Every row was accepted. ') + 'Written at ' + this.clock() + ' (IST) against process ' + (o.resumed ? 'resume' : 'import') + ' of deccan-catalogue-2026-09.csv.' + (o.rejects ? ' Correct them in the reject file and import again \u2014 under insert-only the parts already created will reject as collisions, which is the legible outcome.' : ''),
+        action: o.rejects ? btn({ variant: 'secondary', size: 'sm', type: 'button', onClick: this.download }, 'Download ' + o.rejects + ' rejected rows (CSV)') : null
+      } : null,
+      o && o.kind === 'partial' ? {
+        key: 'pt', tone: 'warning', title: 'The write stopped after line ' + o.stoppedAt,
+        body: o.created + ' parts were created; ' + o.notAttempted + ' rows were not attempted. The item-master service stopped answering mid-write. Resume sends only the rows after line ' + o.stoppedAt + ' \u2014 a retry over the whole verdict would create the first ' + o.created + ' a second time.',
+        action: btn({ variant: 'secondary', size: 'sm', type: 'button', onClick: this.resume }, 'Resume from line ' + (o.stoppedAt + 1))
+      } : null,
+      o && o.kind === 'failed' ? {
+        key: 'f', tone: 'danger', title: 'Nothing was written',
+        body: 'The item-master service refused the batch \u2014 the PL-04 item master is locked for month-end close until 09:00 (IST). The file, the mapping and the verdict all survive, so the import can be committed again without re-checking.',
+        action: btn({ variant: 'secondary', size: 'sm', type: 'button', onClick: this.commit }, 'Import ' + writing + ' rows again')
+      } : null,
+      o && o.kind === 'unknown' ? {
+        key: 'u', tone: 'warning', title: 'It is not known whether any parts were created',
+        body: 'The item-master service did not answer within 60s. No count can be claimed and no retry is offered: importing again could create ' + writing + ' parts or ' + (writing * 2) + '. Check the item master for parts created after ' + this.clock() + ' (IST) before importing this file again.',
+        action: null
+      } : null
+    ].filter(Boolean);
+
+    const emptyText = v ? (rows.length === 0 ? (s.tab === 'rejects' ? 'No rows were rejected.' : 'No rows were accepted.') : '')
+      : s.phase === 'judging' ? 'Checking ' + TOTAL + ' rows\u2026'
+        : s.phase === 'mapped' ? 'No verdict yet.'
+          : 'No file read yet.';
+
+    return {
+      fileName: 'deccan-catalogue-2026-09.csv',
+      fileSub: '500 data rows \u00b7 ' + cols.length + ' columns \u00b7 214 KB \u00b7 uploaded 08:14 (IST) by Anjali Deshmukh',
+      fileMeta: 'Deccan Machine Supply \u00b7 monthly extract',
+      fileBadge: s.phase === 'no-file' ? 'uploaded' : s.phase === 'reading' ? 'reading' : 'read',
+      fileBadgeTone: s.phase === 'no-file' ? 'neutral' : 'accent',
+      readLabel: s.phase === 'no-file' ? 'Read the file' : 'Re-read the file',
+      readVariant: s.phase === 'no-file' ? 'primary' : 'secondary',
+      readDisabled: s.phase === 'reading' || s.phase === 'judging' || s.phase === 'committing',
+      reading: s.phase === 'reading',
+      onRead: this.read, onReset: this.reset,
+
+      showMapping: s.phase !== 'no-file' && s.phase !== 'reading',
+      fields,
+      mapMeta: FIELDS.filter(f => s.mapping[f.key]).length + ' of ' + FIELDS.length + ' fields mapped',
+      proposalNote: this.policy('mappingSource', 'inferred-confirmable') === 'inferred-confirmable' && !s.touched
+        ? 'Matched by column name \u2014 check every row before running. A wrong inference writes the supplier\u2019s list price into standard cost across 400 parts.' : '',
+      ignoredNote: ignored.length
+        ? 'Ignored, and not imported: ' + ignored.join(', ') + '. Nothing is dropped silently \u2014 map a field to a column to bring it in.'
+        : 'Every column in the file is mapped to a field.',
+      dryRunLabel: 'Check ' + TOTAL + ' rows',
+      dryRunDisabled: missing.length > 0 || Object.keys(dbl).length > 0 || s.phase === 'judging' || s.phase === 'committing',
+      judging: s.phase === 'judging',
+      dryRunBlockedWhy: missing.length ? 'Map ' + missing.map(f => f.label.toLowerCase()).join(' and ') + ' first \u2014 a check over an incomplete mapping would reject every row for the wrong reason.'
+        : Object.keys(dbl).length ? 'One column is mapped to two fields.' : '',
+      onDryRun: this.dryRun,
+
+      hasVerdict: !!v && !stale,
+      verdictMeta: v ? (stale ? 'stale \u00b7 computed ' + v.at + ' (IST)' : 'checked ' + v.at + ' (IST)') : 'not checked',
+      verdictSub: v && !stale
+        ? 'Rejects first \u2014 they are what needs acting on. ' + (upsert ? 'Updates are counted separately from creations: an overwrite of live item-master data is never hidden inside a creation figure.' : 'Under insert-only, a part that already exists is rejected and the existing record left untouched.')
+        : 'Nothing is written by the check. What it reports is exactly what the import commits.',
+      counts: v && !stale ? [
+        { n: v.counts.create, label: 'to create', tone: 'success' },
+        { n: v.counts.update, label: upsert ? 'to update' : 'to update (n/a)', tone: upsert ? 'warning' : 'tertiary' },
+        { n: v.counts.reject, label: 'rejected', tone: 'critical' },
+        { n: TOTAL, label: 'rows in the file', tone: 'tertiary' }
+      ] : [],
+      tabs: v && !stale ? [
+        { key: 'rejects', label: 'Rejected (' + v.counts.reject + ')', variant: s.tab === 'rejects' ? 'secondary' : 'ghost', onClick: () => this.setState({ tab: 'rejects', page: 0 }) },
+        { key: 'accepted', label: 'Accepted (' + (v.counts.create + v.counts.update) + ')', variant: s.tab === 'accepted' ? 'secondary' : 'ghost', onClick: () => this.setState({ tab: 'accepted', page: 0 }) },
+        { key: 'all', label: 'All ' + TOTAL, variant: s.tab === 'all' ? 'secondary' : 'ghost', onClick: () => this.setState({ tab: 'all', page: 0 }) }
+      ] : [],
+      hasRows: pageRows.length > 0,
+      rows: pageRows.map(r => ({
+        line: r.line, part: r.part, desc: r.desc,
+        verdict: r.verdict, tone: r.verdict === 'create' ? 'success' : r.verdict === 'update' ? 'warning' : 'critical',
+        reasons: r.reasons.map((t, i) => ({ key: i, text: t }))
+      })),
+      emptyText,
+      emptySub: !v && s.phase === 'mapped' ? 'Run the check to see what this file would do. It reads the item master and writes nothing.'
+        : !v && s.phase === 'no-file' ? 'Read the file to see its columns.' : '',
+      pageNote: rows.length > PER ? 'Showing ' + (s.page * PER + 1) + '\u2013' + Math.min(rows.length, s.page * PER + PER) + ' of ' + rows.length + ' listed \u00b7 ' + shownTotal + ' in this verdict across the file' : (v && rows.length ? rows.length + ' listed \u00b7 ' + shownTotal + ' in this verdict across the file' : ''),
+      onPrev: () => this.setState(p => ({ page: Math.max(0, p.page - 1) })),
+      onNext: () => this.setState(p => ({ page: Math.min(Math.ceil(rows.length / PER) - 1, p.page + 1) })),
+      prevDisabled: s.page === 0,
+      nextDisabled: s.page >= Math.ceil(rows.length / PER) - 1,
+
+      showCommit: !!v && !stale && !blockAll && (!o || o.kind === 'failed'),
+      commitLabel,
+      commitDisabled: s.phase === 'committing' || !v || stale,
+      committing: s.phase === 'committing',
+      onCommit: this.commit,
+      showRejectDownload: !!v && !stale && v.counts.reject > 0 && this.policy('rejectDelivery', 'download-file') === 'download-file',
+      downloadLabel: v ? 'Download ' + v.counts.reject + ' rejected rows (CSV)' : 'Download rejects',
+      onDownload: this.download,
+      commitNote: !v ? 'The import is unavailable until the rows have been checked.'
+        : stale ? 'The verdict is stale. Check the rows again \u2014 a stale verdict is never committed.'
+          : blockAll ? 'Under commitScope: all-or-nothing this file cannot be imported in part: ' + v.counts.reject + ' of ' + TOTAL + ' rows are rejected, and the rows depend on each other. Correct the reject file and import again.'
+            : o && o.kind === 'done' ? 'Committed. The rejects remain available until you start another import.'
+              : v.counts.reject > 0 ? v.counts.reject + ' rows will not be created. Download them, correct them, and import again \u2014 nothing is called complete while they are outstanding.'
+                : 'Every row was accepted.',
+      announcement: s.announcement,
+      hasNotices: notices.length > 0,
+      notices,
+
+      stateRows: [
+        { k: 'phase', v: s.phase + (stale ? ' \u00b7 verdict stale' : '') },
+        { k: 'mapping', v: FIELDS.filter(f => s.mapping[f.key]).length + '/' + FIELDS.length + (missing.length ? ' \u00b7 missing ' + missing.length + ' required' : ' \u00b7 complete') },
+        { k: 'written so far', v: o && o.kind === 'done' ? o.created + ' parts' : o && o.kind === 'partial' ? o.created + ' parts (stopped at line ' + o.stoppedAt + ')' : o && o.kind === 'unknown' ? 'unknown \u2014 not claimed' : 'nothing' },
+        { k: 'existingRecords', v: this.policy('existingRecords', 'upsert') },
+        { k: 'commitScope', v: this.policy('commitScope', 'accept-valid-rows') + (blockAll ? ' \u00b7 commit absent' : '') },
+        { k: 'mappingSource', v: this.policy('mappingSource', 'inferred-confirmable') },
+        { k: 'previewStaleness', v: this.policy('previewStaleness', 'refuse') },
+        { k: 'rejectDelivery', v: this.policy('rejectDelivery', 'download-file') },
+        { k: 'run', v: '#' + this.runId + (s.phase === 'judging' || s.phase === 'committing' ? ' \u00b7 in flight' : ' \u00b7 settled') },
+        { k: 'counts', v: v ? v.counts.create + ' create / ' + v.counts.update + ' update / ' + v.counts.reject + ' reject of ' + TOTAL : '\u2014' }
+      ],
+      mappingText: JSON.stringify(FIELDS.reduce((a, f) => { a[f.key] = s.mapping[f.key] || null; return a; }, {}), null, 1),
+      verdictText: v ? JSON.stringify({ sig: v.sig.slice(0, 46) + '\u2026', at: v.at, counts: v.counts, currentSig: stale ? this.sig(s.mapping).slice(0, 46) + '\u2026 (differs \u2192 stale)' : 'matches' }, null, 1) : JSON.stringify({ note: 'no verdict \u2014 nothing has been judged and nothing written' }, null, 1)
+    };
+  }
+}
+
+</script>
+</body>
+</html>

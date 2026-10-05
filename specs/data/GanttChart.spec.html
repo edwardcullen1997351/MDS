@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gantt Chart · 14-Section Specification Standard</title>
+  <link rel="stylesheet" href="../../tokens/tokens.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+    }
+    body {
+      margin: 0;
+      padding: 40px 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .spec-container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .spec-header {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 24px;
+      margin-bottom: 36px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #a7f3d0;
+      margin-top: 8px;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      color: #0f172a;
+    }
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+    p, li {
+      font-size: 14px;
+      color: #334155;
+    }
+    ul, ol {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      background: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="spec-container">
+    <header class="spec-header">
+      <div class="badge">Data Visualization Standard · Component 14 of 14</div>
+      <h1>Gantt Chart Specification Standard</h1>
+      <div class="status-tag">
+        <span>✓</span> status: frozen 9 Sep 2026 · 0 open items
+      </div>
+    </header>
+
+    <!-- 1. Purpose & Analytical Intent -->
+    <section>
+      <h2>1. Purpose & Analytical Intent</h2>
+      <p>
+        The <code>GanttChart</code> component communicates temporal schedules by placing activities, manufacturing phases, tooling work orders, maintenance shutdowns, or machine resources as horizontal intervals on a common time scale. It is explicitly designed for schedule and duration analysis, not generic time-series metric measurements.
+      </p>
+      <ul>
+        <li><strong>Schedule Coordination:</strong> Plan and track multi-phase activities across dates and shifts.</li>
+        <li><strong>Critical Path Analysis:</strong> Trace predecessor-successor dependency chains to identify bottleneck tasks.</li>
+        <li><strong>Progress & Overdue Tracking:</strong> Visualize percentage completion fills and flag delayed activities.</li>
+        <li><strong>Milestone Gate Governance:</strong> Mark formal sign-offs, audits, and OEM handover gates.</li>
+      </ul>
+    </section>
+
+    <!-- 2. Anatomy & Hierarchy -->
+    <section>
+      <h2>2. Anatomy & Hierarchy</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Element</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>Task Grid Table (Left Pane)</code></td>
+            <td>Master View</td>
+            <td>Scrollable list of task names, owners, phases, and percentage completion indicators.</td>
+          </tr>
+          <tr>
+            <td><code>Timeline Header Axis</code></td>
+            <td>Temporal Grid</td>
+            <td>Day, week, or month column headers with weekend shading and synchronized horizontal scrolling.</td>
+          </tr>
+          <tr>
+            <td><code>Duration Bars</code></td>
+            <td>Interval Mark</td>
+            <td>Horizontal bars spanning from start date to end date with progress overlay fills.</td>
+          </tr>
+          <tr>
+            <td><code>Milestone Diamonds</code></td>
+            <td>Point Mark</td>
+            <td>Zero-duration milestone diamonds placed at exact delivery or sign-off dates.</td>
+          </tr>
+          <tr>
+            <td><code>Dependency Connectors</code></td>
+            <td>Flow Links</td>
+            <td>Orthogonal SVG path lines with directional arrowheads connecting predecessor end dates to successor start dates.</td>
+          </tr>
+          <tr>
+            <td><code>Today Line</code></td>
+            <td>Temporal Reference</td>
+            <td>Vertical dashed reference line indicating current date and time.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 3. Data Model & Input Contract -->
+    <section>
+      <h2>3. Data Model & Input Contract</h2>
+      <pre><code>export type GanttVariant = 'basic' | 'progress' | 'dependency' | 'milestone' | 'grouped';
+export type GanttZoomLevel = 'day' | 'week' | 'month';
+
+export interface GanttTask {
+  id: string;
+  name: string;
+  startDate?: string | Date | number;
+  endDate?: string | Date | number;
+  progress?: number; // 0 - 100%
+  status?: 'nominal' | 'completed' | 'in-progress' | 'warning' | 'critical' | 'overdue' | 'scheduled';
+  group?: string; // Phase or Work Center
+  owner?: string;
+  isMilestone?: boolean;
+  milestoneDate?: string | Date | number;
+  dependencies?: string[]; // Array of predecessor task IDs
+  isCritical?: boolean;
+}
+
+export interface GanttChartProps {
+  tasks: GanttTask[];
+  variant?: GanttVariant;
+  width?: number;
+  height?: number;
+  title?: string;
+  subtitle?: string;
+  showDependencies?: boolean;
+  showProgress?: boolean;
+  showTodayLine?: boolean;
+  todayDate?: Date | string;
+  defaultZoom?: GanttZoomLevel;
+}</code></pre>
+    </section>
+
+    <!-- 4. Visual Encoding & Aesthetics -->
+    <section>
+      <h2>4. Visual Encoding & Aesthetics</h2>
+      <ul>
+        <li><strong>Status Palettes:</strong> Completed/Nominal (<code>#16a34a</code>), In-Progress (<code>#2563eb</code>), Warning (<code>#d97706</code>), Overdue/Critical (<code>#dc2626</code>), Scheduled (<code>#64748b</code>).</li>
+        <li><strong>Non-Color Differentiation:</strong> Overdue tasks use 45° diagonal hatch patterns (<code>#gantt-hatch-overdue</code>), Warning tasks use 45° dashed hatch patterns (<code>#gantt-hatch-warn</code>) to comply with WCAG 1.4.1.</li>
+        <li><strong>Critical Path Connectors:</strong> Critical dependency arrows render in 2px Ruby red (<code>#dc2626</code>); standard dependencies render in 1.5px Slate gray (<code>#94a3b8</code>).</li>
+        <li><strong>Today Marker:</strong> 2px dashed Sky blue line (<code>#0284c7</code>) with downward triangle indicator at the top timeline axis.</li>
+      </ul>
+    </section>
+
+    <!-- 5. Included Variants -->
+    <section>
+      <h2>5. Included Variants</h2>
+      <ul>
+        <li><code>basic</code>: Clean horizontal interval bars displaying task duration across project timeline.</li>
+        <li><code>progress</code>: Bars with embedded percentage completion fills ($0-100\%$) and numerical badges.</li>
+        <li><code>dependency</code>: Interactive orthogonal connectors routing predecessors to successors with arrowheads.</li>
+        <li><code>milestone</code>: Emphasizes zero-duration checkpoint diamonds for project audits and customer gate sign-offs.</li>
+        <li><code>grouped</code>: Hierarchical grouping by production line, project phase, or work center with collapsible headers.</li>
+      </ul>
+    </section>
+
+    <!-- 6. Primitive & Core Component Composition -->
+    <section>
+      <h2>6. Primitive & Core Component Composition</h2>
+      <ul>
+        <li><strong>Primitives:</strong> <code>Box</code>, <code>Text</code>, <code>Heading</code>, <code>Surface</code>, <code>Container</code>, <code>Stack</code>.</li>
+        <li><strong>Core Components:</strong> <code>Tooltip</code> (task hover details), <code>Popover</code> (dependency metadata), <code>Skeleton</code> (loading placeholder), <code>EmptyState</code> (zero task matches).</li>
+        <li><strong>Composite Components:</strong> <code>Toolbar</code> (zoom toggles, search filter, table modal button).</li>
+      </ul>
+    </section>
+
+    <!-- 7. Visualization-Native Elements & Engine Math -->
+    <section>
+      <h2>7. Visualization-Native Elements & Engine Math</h2>
+      <p>
+        The component incorporates Section 19 math from <code>viz-core.js</code>:
+      </p>
+      <ul>
+        <li><strong>Temporal Domain Calculation:</strong> <code>calculateGanttDomain</code> calculates global min/max timestamps and temporal padding:
+          <pre><code>minDate = min(task.startDate) - padDays * 86400000;
+maxDate = max(task.endDate) + padDays * 86400000;
+timeToX(t) = ((t - minDate) / (maxDate - minDate)) * timelineWidth;</code></pre>
+        </li>
+        <li><strong>Orthogonal Dependency Routing:</strong> <code>createOrthogonalDependencyPath</code> connects predecessor end coordinates to successor start coordinates with collision avoidance loops.</li>
+      </ul>
+    </section>
+
+    <!-- 8. Interactive Behaviors & Gestures -->
+    <section>
+      <h2>8. Interactive Behaviors & Gestures</h2>
+      <ul>
+        <li><strong>Synchronized Scrolling:</strong> Scrolling either the left task table or the right timeline canvas maintains 1:1 vertical alignment across rows.</li>
+        <li><strong>Zoom Level Switching:</strong> Instant toggle between Day, Week, and Month scales dynamically recalibrates column widths and date tick labels.</li>
+        <li><strong>Live Filter:</strong> Search field filters tasks in real-time by task name, group, or owner.</li>
+      </ul>
+    </section>
+
+    <!-- 9. Layout Templates & Responsiveness -->
+    <section>
+      <h2>9. Layout Templates & Responsiveness</h2>
+      <ul>
+        <li><strong>Split View:</strong> Left-hand master task grid table (280px fixed width) paired with right-hand horizontally-scrollable timeline canvas.</li>
+        <li><strong>Preserve Temporal Scale:</strong> Responsive horizontal scrolling ensures duration proportions are never distorted or compressed.</li>
+      </ul>
+    </section>
+
+    <!-- 10. Accessibility (WCAG 2.2 AA & Section 508) -->
+    <section>
+      <h2>10. Accessibility (WCAG 2.2 AA & Section 508)</h2>
+      <ul>
+        <li><strong>WCAG 1.4.1 (Use of Color):</strong> Overdue and warning tasks dual-encoded with monochrome diagonal hatch patterns.</li>
+        <li><strong>Accessible Table (<kbd>Alt+F11</kbd>):</strong> Complete accessible HTML table modal exposing task names, start/end dates, progress %, predecessors, and status codes.</li>
+        <li><strong>Keyboard Navigation:</strong> Interactive task selection and dependency navigation operates via keyboard focus without requiring mouse drag gestures.</li>
+      </ul>
+    </section>
+
+    <!-- 11. State Matrix & Edge Cases -->
+    <section>
+      <h2>11. State Matrix & Edge Cases</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>Component Behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Zero Duration (Milestone)</td>
+            <td>Renders a discrete diamond marker instead of a zero-width bar.</td>
+          </tr>
+          <tr>
+            <td>Predecessor Behind Successor</td>
+            <td>Dependency routing generates an outer orthogonal loop without visual clipping.</td>
+          </tr>
+          <tr>
+            <td>Overdue Schedule ($End < Today$)</td>
+            <td>Applies warning/critical hatch patterns and overdue status pill.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 12. Performance & Rendering Budgets -->
+    <section>
+      <h2>12. Performance & Rendering Budgets</h2>
+      <ul>
+        <li><strong>Frame Budget:</strong> Smooth 60fps horizontal scrolling via native DOM virtual scroll layers.</li>
+        <li><strong>Bundle Budget:</strong> Pure React + SVG implementation under 22KB with zero third-party chart library dependencies.</li>
+      </ul>
+    </section>
+
+    <!-- 13. Manufacturing Domain Implementation -->
+    <section>
+      <h2>13. Manufacturing Domain Implementation (Suryodaya Autocomp Ltd)</h2>
+      <ul>
+        <li><strong>Entity:</strong> Suryodaya Autocomp Ltd (Chakan Plant PL-04, Pune).</li>
+        <li><strong>Press Maintenance:</strong> Press 800T electrical lockout (LOTO), die tooling extraction, hydraulic cylinder overhaul, and platen laser alignment.</li>
+        <li><strong>Tooling Launch:</strong> EV Axle APQP schedule (Die CAD, CNC milling, vacuum heat treatment, PPAP level-3 batch, OEM handover).</li>
+        <li><strong>Date Format:</strong> Indian standard date format (`DD/MM/YYYY`) and `en-IN` numbering.</li>
+      </ul>
+    </section>
+
+    <!-- 14. Verification & Validation Checklist -->
+    <section>
+      <h2>14. Verification & Validation Checklist</h2>
+      <ul>
+        <li>[x] Split-view synchronized vertical scrolling between table and timeline verified.</li>
+        <li>[x] Orthogonal dependency connectors and critical path highlighting active.</li>
+        <li>[x] Zoom levels (Day, Week, Month) dynamically recalibrate timescale.</li>
+        <li>[x] WCAG 1.4.1 hatch patterns active for overdue and warning tasks.</li>
+        <li>[x] Accessible schedule table modal bound to <kbd>Alt+F11</kbd>.</li>
+        <li>[x] Zero open items · Status frozen 9 Sep 2026.</li>
+      </ul>
+    </section>
+  </div>
+
+</body>
+</html>

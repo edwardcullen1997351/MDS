@@ -1,0 +1,447 @@
+<!-- @dsCard group="Specs · Forms" viewport="1080x760" name="Autocomplete" subtitle="Full specification — purpose, anatomy, props, states, a11y, motion, content" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Autocomplete — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:62ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 36px}
+.demo.col{flex-direction:column;align-items:stretch;gap:14px}
+.demo.tall{min-height:300px}
+.demo p{max-width:64ch;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k,td .t{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);min-width:112px;padding-top:7px}
+.staterow{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.callout{display:flex;gap:10px;align-items:baseline}
+.cnum{font-family:var(--font-mono);font-size:var(--text-2xs);width:18px;height:18px;flex:none;display:grid;place-items:center;border:var(--border-hairline);border-radius:var(--radius-full);color:var(--text-secondary)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+.filterbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;background:var(--background-page);border:var(--border-hairline);border-radius:var(--radius-sm)}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Autocomplete, Combobox, Input, Field, Button, Badge } = window.MeridianDesignSystem_962c43;
+
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+const Row = ({label,children}) => <div className="staterow"><span className="lbl">{label}</span>{children}</div>;
+
+const PARTS = [
+  {value:'BRK-4120', description:'Brake pad · 412 in stock'},
+  {value:'BRK-4180', description:'Brake pad, wide · 38 in stock'},
+  {value:'BRK-4120-R', description:'Brake pad, reman · 0 in stock'},
+  {value:'BSH-2210', description:'Bushing, 22 mm · 1,904 in stock'},
+  {value:'BSH-2215', description:'Bushing, 22 mm oversize · 260 in stock'},
+  {value:'CLP-0090', description:'Clamp, spring · 88 in stock'},
+  {value:'GSK-7701', description:'Gasket, head · 12 in stock'},
+  {value:'SPR-3300', description:'Spring, return · 640 in stock'},
+];
+const TAGS = ['bearing-wear','coolant-low','downtime-planned','downtime-unplanned','operator-error','overtemp','rework','scrap','tooling','vibration'];
+
+function Live({initial='', ...props}){
+  const [v,setV] = React.useState(initial);
+  return <Autocomplete value={v} onChange={setV} suggestions={PARTS} placeholder="e.g. BRK-4120" {...props} />;
+}
+function Tagger(props){
+  const [v,setV] = React.useState('');
+  return <Autocomplete value={v} onChange={setV} suggestions={TAGS} placeholder="Add a reason tag" {...props} />;
+}
+function Async(){
+  const [v,setV] = React.useState('');
+  const [hits,setHits] = React.useState([]);
+  const [pending,setPending] = React.useState(false);
+  const timer = React.useRef(null);
+  const type = (next) => {
+    setV(next);
+    const q = next.trim().toLowerCase();
+    clearTimeout(timer.current);
+    if (q.length < 2) { setHits([]); setPending(false); return; }
+    setPending(true);
+    timer.current = setTimeout(() => {
+      setHits(PARTS.filter(p => p.value.toLowerCase().includes(q)));
+      setPending(false);
+    }, 420);
+  };
+  return (
+    <Field label="Part number" hint="Looked up on the server after two characters.">
+      <Autocomplete value={v} onChange={type} suggestions={hits} filter={false} loading={pending} minChars={2} placeholder="e.g. BSH" />
+    </Field>
+  );
+}
+
+function Spec(){
+return (
+<div className="page">
+  <div className="masthead">
+    <span className="eyebrow">Forms · Component specification</span>
+    <h1>Autocomplete</h1>
+    <p className="lede">A text field that suggests as you type. It is <code>Combobox</code> turned inside out: there, the list is the law and typed text can never be a value; here, <strong>the typed text is the value</strong> and the list is only help. That single inversion decides everything downstream — nothing is ever committed, so there is no selected row, no revert on blur, no accept on Tab, and no “no matches” message, because an empty list is not a failure when the text in the box is already valid.</p>
+    <div className="meta">
+      <span>components/forms/Autocomplete.jsx</span><span>window.MeridianDesignSystem_962c43.Autocomplete</span><span style={{color:'var(--text-primary)'}}>status: frozen 4 Sep 2026 · 2 open items</span><span>since: 1.4.0</span><span>10 new tokens</span>
+    </div>
+  </div>
+
+  <Sec n="01" title="Purpose" note="Free text, made faster.">
+    <p>Autocomplete is for fields where the user may type anything, but usually types something seen before: a part number, a reason tag, a supplier, a location. It removes keystrokes and typos without removing freedom. The question that picks the component is one line long — <strong>may the user submit a value that is not in the list?</strong> If yes, this. If no, <code>Combobox</code>.</p>
+    <T cols={['You want to…','Component','Why']} rows={[
+      ['Type anything, with help','Autocomplete','This component.'],
+      ['Pick one of 15+ known values','Combobox','Closed set: free text can never be a value there.'],
+      ['Pick one of 4–15 known values','Select','Native keyboard, popup and mobile picker for free.'],
+      ['Type anything, no help worth giving','Input','Suggestions with a 2% hit rate are noise in a popup.'],
+      ['Search a page, table or dataset','Input with iconLeft="search"','A search field returns results into the page. This returns text into a form — though a search box may well use this to suggest queries (§04).'],
+      ['Add several tags','Autocomplete + Tag list','One value at a time; the consumer owns the chips (§03).'],
+      ['Create a record from a picker','—','Not a thing in this system. Put creation next to the field as a Button.'],
+    ]}/>
+    <ul>
+      <li><strong>Use</strong> when the set is open, or larger than anyone can enumerate: part numbers, tags, cities, email addresses, free-text reason codes.</li>
+      <li><strong>Use</strong> when history beats a list — the last twenty parts this operator scanned are better suggestions than the catalogue.</li>
+      <li><strong>Do not use</strong> when the value must exist. That is <code>Combobox</code>, and using this instead means a typo becomes a record.</li>
+      <li><strong>Do not use</strong> when there are no suggestions worth showing. A popup that fires on every keystroke and never helps is worse than a plain <code>Input</code>.</li>
+      <li><strong>Do not use</strong> to hold a hidden id. <code>onChange</code> gives you text, not a record — if you need the id, take it from <code>onSelect</code> and accept that it can be stale the moment the user types again (§14).</li>
+    </ul>
+    <div className="demo tall">
+      <div style={{width:320}}>
+        <Field label="Part number" hint="Anything scannable — suggestions are recent orders.">
+          <Live />
+        </Field>
+      </div>
+      <div style={{width:320}}>
+        <Field label="Line" hint="Must be a real line — closed set, so Combobox.">
+          <Combobox options={[{value:'l-01',label:'L-01',description:'Assembly · Bay 3'},{value:'l-02',label:'L-02',description:'Assembly · Bay 4'},{value:'l-07',label:'L-07',description:'Fabrication · Bay 1'}]} placeholder="Search lines" />
+        </Field>
+      </div>
+    </div>
+  </Sec>
+
+  <Sec n="02" title="Anatomy" note="Input's box, a short list, and no disclosure.">
+    <div className="demo tall"><div style={{width:340}}><Field label="Part number"><Live initial="BRK" /></Field></div></div>
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      <div className="callout"><span className="cnum">1</span><span><strong>Control box</strong> — <code>Input</code>'s chrome from the same <code>--input-*</code> tokens. At rest an Autocomplete <em>is</em> an Input, and that is the honest signal: the field takes text.</span></div>
+      <div className="callout"><span className="cnum">2</span><span><strong>No chevron.</strong> The single most important thing in this anatomy is what is missing. A chevron promises a list you can open and choose from; there is no such list here — suggestions exist only in response to typing. Pointer-clicking the field opens nothing.</span></div>
+      <div className="callout"><span className="cnum">3</span><span><strong>Suggestion list</strong> — <code>--autocomplete-list-*</code>: <code>--surface-overlay</code>, <code>--radius-md</code>, <code>--elevation-3</code>, 4 px below the box, at <code>--z-dropdown</code>, positioned <code>fixed</code> in viewport coordinates so no ancestor clips it (§11).</span></div>
+      <div className="callout"><span className="cnum">4</span><span><strong>Suggestion</strong> — one line, plus an optional <code>description</code>. One state only: <em>active</em>, the cursor. There is no selected state, because accepting a row does not select it — it rewrites the text and closes the list (§06).</span></div>
+      <div className="callout"><span className="cnum">5</span><span><strong>Completion emphasis</strong> — the typed run is plain and the <em>remainder</em> is semibold in <code>--autocomplete-suggestion-completion-text</code>. Combobox bolds the match to answer “why is this row here?”. Here the user knows what they typed; the news is what the suggestion would add.</span></div>
+      <div className="callout"><span className="cnum">6</span><span><strong>Inline ghost</strong> — optional (<code>inline</code>): the top suggestion's remainder in <code>--autocomplete-ghost-text</code>, drawn as an overlay behind the caret, accepted with <kbd>→</kbd>. Never inserted into the input's own value (§13).</span></div>
+      <div className="callout"><span className="cnum">7</span><span><strong>Spinner</strong> — occupies the trailing slot only while <code>loading</code>. Nothing lives there otherwise, so the field does not reserve a gutter for an icon it usually lacks.</span></div>
+      <div className="callout"><span className="cnum">8</span><span><strong>No status row, no empty message.</strong> Zero matches closes the list. There is nothing to report: the field already holds a valid value.</span></div>
+    </div>
+    <T cols={['Region','Value (md)','Token']} rows={[
+      ['Box height','34 px','--control-h-md'],
+      ['Box radius','4 px','--input-radius'],
+      ['List offset','4 px','literal'],
+      ['List radius','6 px','--autocomplete-list-radius'],
+      ['List shadow','elevation-3','--autocomplete-list-shadow'],
+      ['List padding','4 px block','literal'],
+      ['Rows','6 max; sized to its rows','maxSuggestions'],
+      ['Row padding','6 px / 12 px','--control-px-md'],
+      ['Height','the rows it has, capped to the room available','measured'],
+      ['Label','13 px','--text-sm'],
+      ['Description','11 px','--text-2xs'],
+      ['Layer','300','--z-dropdown'],
+    ]}/>
+  </Sec>
+
+  <Sec n="03" title="Properties" note="Thirteen props — and five deliberate absences.">
+    <T cols={['Prop','Type','Default','Notes']} rows={[
+      ['value',<span className="t">string</span>,<span className="t">''</span>,'The field\u2019s text. This IS the value. Always controlled.'],
+      ['onChange',<span className="t">(value: string) => void</span>,'—','Every keystroke AND every accepted suggestion. Receives text, not an event.'],
+      ['suggestions',<span className="t">Array&lt;string | Suggestion&gt;</span>,<span className="t">[]</span>,'Suggestion is {value, label?, description?}. Nothing here constrains what may be typed.'],
+      ['onSelect',<span className="t">(s: Suggestion) => void</span>,'—','Fires only on acceptance. For analytics, or fetching the record behind the text — never the source of the value.'],
+      ['filter',<span className="t">false | (s, q) => boolean</span>,'ranked','Prefix, then word-start, then mid-word, on the LABEL only. false when the server matches.'],
+      ['minChars',<span className="t">number</span>,<span className="t">1</span>,'Characters before anything is suggested. Raise to 2–3 for server-backed fields.'],
+      ['maxSuggestions',<span className="t">number</span>,<span className="t">6</span>,'Hard cap. The list never scrolls (§05). Warns above 10.'],
+      ['inline',<span className="t">boolean</span>,<span className="t">false</span>,'Ghost completion in the field, accepted with →. Sets aria-autocomplete="both".'],
+      ['placeholder',<span className="t">string</span>,'—','An example, not an instruction (§10).'],
+      ['loading',<span className="t">boolean</span>,<span className="t">false</span>,'Spinner in the field; a "Searching…" row only while there is nothing to show.'],
+      ['size',<span className="t">'sm' | 'md' | 'lg'</span>,<span className="t">'md'</span>,'Matches Input. lg draws 16px type so iOS does not zoom.'],
+      ['invalid',<span className="t">boolean</span>,<span className="t">false</span>,'Danger border and ring. Inherited from Field error.'],
+      ['disabled',<span className="t">boolean</span>,<span className="t">false</span>,'Inert and unfocusable.'],
+    ]}/>
+    <p><strong>No <code>defaultValue</code>, and no uncontrolled mode.</strong> The typed text is the value, so the consumer must already hold it — an uncontrolled Autocomplete would put the one thing that matters somewhere the form cannot read it. The component warns when <code>onChange</code> is missing.</p>
+    <p><strong>No <code>emptyMessage</code>.</strong> This is the clearest consequence of the inversion. In a Combobox, no matches means the user cannot proceed, so it must be announced. Here it means the suggestions could not help — the value is fine — and a popup saying “No matches” while the user types a genuinely new part number is a false alarm on every character.</p>
+    <p><strong>No <code>allowedValues</code> or validation prop.</strong> A field that validates against a list is a closed set wearing a text field's clothes. Use <code>Combobox</code>, or validate on submit and show the error through <code>Field</code>.</p>
+    <p><strong>No <code>multiple</code>, and no chips in the box.</strong> Tag entry is a real use, and the honest shape is this control plus a <code>Tag</code> list the consumer renders: the consumer already owns the array, and backspace-to-remove inside the box would fight the field's own text editing.</p>
+    <p><strong>No <code>groups</code>, no "recent" vs "all" sections.</strong> Six rows do not need headings; if the ordering matters, put it in the order, and put the provenance in <code>description</code>.</p>
+  </Sec>
+
+  <Sec n="04" title="Variants" note="No variant prop. Four placements.">
+    <T cols={['Placement','Shape','Note']} rows={[
+      ['In a Field','md, full width, label + hint','The default. Field owns the name and the error.'],
+      ['Tag entry','md + a Tag list below, onChange cleared on accept','Use onSelect to push and clear (§14). The control stays single-value.'],
+      ['Search box','size="sm", iconLeft on the Input pattern, suggestions = past queries','Enter submits the query — the list has no active row unless the user arrowed to one (§07).'],
+      ['Server-backed','filter={false} + minChars 2–3 + loading','The list is whatever came back; the client must not re-rank it (§13).'],
+      ['With inline ghost','inline','Best for long, prefix-shaped identifiers — part numbers, hostnames. Poor for anything the user might legitimately abbreviate.'],
+    ]}/>
+    <div className="demo col tall">
+      <Row label="in a field"><div style={{width:320}}><Field label="Part number" hint="Scanned or typed."><Live /></Field></div></Row>
+      <Row label="tag entry"><div style={{width:300,display:'flex',flexDirection:'column',gap:8}}>
+        <Tagger aria-label="Reason tag" />
+        <div style={{display:'flex',gap:6,flexWrap:'wrap'}}><Badge>downtime-unplanned</Badge><Badge>tooling</Badge></div>
+      </div></Row>
+      <Row label="inline ghost"><div style={{width:300}}><Live inline aria-label="Part number, inline completion" initial="BS" /></div></Row>
+      <Row label="server-backed"><div style={{width:320}}><Async /></div></Row>
+    </div>
+  </Sec>
+
+  <Sec n="05" title="Sizes" note="Three, matched to Input. The list is sized to its rows.">
+    <T cols={['size','Box height','Padding-x','Type','Row height','Use']} rows={[
+      ['sm','28 px','8 px','12 px','30 px · 47 with a description','Filter bars and toolbars.'],
+      ['md','34 px','12 px','13 px','32 px · 50 with a description','Default. Forms and panels.'],
+      ['lg','40 px','16 px','16 px','36 px · 55 with a description','Touch and single-question surfaces.'],
+    ]}/>
+    <div className="demo col tall">
+      <Row label="sm"><div style={{width:280}}><Live size="sm" aria-label="Part number, small" /></div></Row>
+      <Row label="md"><div style={{width:280}}><Live size="md" aria-label="Part number, medium" /></div></Row>
+      <Row label="lg"><div style={{width:280}}><Live size="lg" aria-label="Part number, large" /></div></Row>
+    </div>
+    <p><strong>The list is sized by its rows, not by a cap.</strong> Combobox's list is a browse surface: it holds 264 px and scrolls. This one is an accelerator — it must be readable in a glance taken between two keystrokes, and a scrollbar means the glance failed. Six rows is the budget; the height follows the rows actually shown, so three matches draw a three-row list and six described rows draw a tall one. <strong>The one exception is the viewport:</strong> six described rows want just over 300 px, and on a short screen — a phone with the keyboard up, a laptop at 600 px — that does not exist. The list then takes the room available and scrolls, which is the honest failure. It never scrolls because of a cap of ours.</p>
+    <p><strong>Raising <code>maxSuggestions</code> is the wrong fix for a long list.</strong> If the user needs to browse, they need <code>Combobox</code> or a results page. Past 10 the component warns.</p>
+  </Sec>
+
+  <Sec n="06" title="States" note="Two axes — but one of them has fewer states than you expect.">
+    <T cols={['Box state','Chrome','Notes']} rows={[
+      ['Rest, empty','--input-border, placeholder text','Indistinguishable from an Input. Intentional.'],
+      ['Rest, filled','--input-border, text in --input-text','Just text. There is no “committed value” to render differently.'],
+      ['Hover','--input-border-hover','Border only. Hovering does not open anything.'],
+      ['Focus','--input-border-focus + focus ring','Focus alone opens nothing either — the list needs minChars characters of input.'],
+      ['Suggesting','ring + aria-expanded, list below','Entered by typing, never by clicking.'],
+      ['Loading','spinner in the trailing slot','With a list already showing, the spinner is the only change; with nothing to show, a "Searching…" row.'],
+      ['Invalid','--input-border-invalid + danger ring, aria-invalid','From submit-time validation, via Field. Never from “not in the list”.'],
+      ['Disabled','--input-background-disabled, not-allowed, unfocusable','Never as a read-only display — print the value as text.'],
+    ]}/>
+    <T cols={['Suggestion state','Chrome','Notes']} rows={[
+      ['Active','--autocomplete-suggestion-background-active','The cursor: where Enter would accept. Follows arrows and the pointer.'],
+      ['Completion run','semibold, --autocomplete-suggestion-completion-text','The part the suggestion would add. Absent when the match is not a prefix.'],
+      ['Selected','—','Does not exist. Nothing is ever committed to a row, so no check, no persistent tint, and no aria-selected that outlives the cursor.'],
+      ['Empty','—','The list closes. No message (§03).'],
+    ]}/>
+    <div className="demo tall">
+      <div style={{width:300}}><Field label="Part number" error="No such part in this plant." ><Live initial="BRK-9999" invalid /></Field></div>
+      <div style={{width:300}}><Field label="Part number" hint="Locked once the order is released."><Live initial="BSH-2210" disabled aria-label="Part number, disabled" /></Field></div>
+    </div>
+    <p className="warn"><strong>The invariant: the text is the value, and nothing may change it but the user.</strong> Blur does not accept the highlighted row. Tab does not accept it. Escape does not clear the field. Losing focus mid-typeahead leaves exactly the characters typed — because in this control those characters are already an answer, and “helpfully” completing them on the way out silently substitutes a different one. That is the mirror image of Combobox's invariant, and it is why the two cannot be one component with a flag.</p>
+  </Sec>
+
+  <Sec n="07" title="Keyboard" note="Ours, and quieter than Combobox's.">
+    <T cols={['Key','No list showing','List showing']} rows={[
+      [<kbd>↓</kbd>,'Opens the list IF the current text already has matches. Nothing to show, nothing happens.','Next suggestion; wraps.'],
+      [<kbd>↑</kbd>,'Nothing.','Previous suggestion; wraps.'],
+      ['Typing','Opens the list at minChars. Cursor resets on every keystroke.','Re-filters; cursor resets, so Enter cannot accept a row that moved.'],
+      [<kbd>Enter</kbd>,'Submits the form, like any input.','With an active row, accepts it. With none, closes the list and lets the form submit.'],
+      [<kbd>→</kbd>,'—','With inline and the caret at the end, accepts the ghost. Anywhere else it is an ordinary cursor move.'],
+      [<kbd>Esc</kbd>,'Nothing — it never clears the field.','Closes the list. Keeps the text. Does not close a Dialog behind it.'],
+      [<kbd>Tab</kbd>,'Moves on.','Moves on, and does NOT accept the active row.'],
+      [<><kbd>Home</kbd> <kbd>End</kbd></>,'Ordinary text navigation.','Text navigation, unless the cursor is in the list — then first / last row.'],
+    ]}/>
+    <ul>
+      <li><strong>Tab does not accept — the deliberate divergence from <code>Combobox</code>.</strong> There, Tab commits the highlighted row because otherwise the user's typing is thrown away. Here their typing is the value, so accepting on the way out would <em>replace</em> a valid answer with a different one. Accepting is always explicit: <kbd>Enter</kbd>, <kbd>→</kbd>, or a click.</li>
+      <li><strong>Escape never clears.</strong> Same rule as Combobox, for a different reason: there the value survives; here there is nothing to revert to, since the text <em>is</em> the value.</li>
+      <li><strong>Typing resets the cursor</strong>, so <kbd>Enter</kbd> can never accept a row that has just been replaced by a re-filter. This is the classic wrong-value bug in hand-rolled typeaheads.</li>
+      <li><strong>Enter is only swallowed when there is a row to accept.</strong> Single-field search boxes depend on it reaching the form.</li>
+      <li><strong>One tab stop.</strong> The list is never in the tab order; the cursor is published with <code>aria-activedescendant</code> so focus stays in the input and typing keeps working.</li>
+      <li><strong><kbd>→</kbd> is guarded.</strong> It only accepts the ghost when the caret is at the end of the text with no selection — otherwise a user editing mid-string would find their arrow key rewriting the field.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="08" title="Accessibility" note="Hand-written ARIA, and one honest simplification.">
+    <T cols={['Requirement','How it is met']} rows={[
+      ['Role & name','input[role="combobox"] with aria-expanded, aria-controls and aria-autocomplete="list" (or "both" with inline). The list is role="listbox", rows role="option". Name from Field or aria-label; warns when unnamed.'],
+      ['Focus management (4.1.2)','Focus never leaves the input; the cursor is published with aria-activedescendant. Moving DOM focus into the list would stop the user typing, which is the whole activity here.'],
+      ['aria-selected is the cursor','The one place this control simplifies: with nothing ever committed, aria-selected marks the active row and nothing else — following the APG list-with-manual-selection pattern. In Combobox the two are different facts and are kept apart; here there is only one fact.'],
+      ['Autocomplete announcement','aria-autocomplete="both" is set only with inline, because it promises a completion in the field. Claiming "both" without a ghost makes a screen reader describe behaviour that is not there.'],
+      ['Status (4.1.3)','"Searching…" is in role="status". An empty result is deliberately silent — nothing failed, and announcing "no matches" on a valid value is a false alarm.'],
+      ['A placeholder is not a name','Standard rule, and sharper here: the placeholder is gone after one character, which is the moment the field starts doing work.'],
+      ['Control boundary (1.4.11)','Box border is --border-control (4.74:1 on a card); the list has --border-default plus elevation-3 against the page.'],
+      ['Suggestion contrast (1.4.1)','The active row is a background change, and the completion emphasis is weight AND colour, never colour alone.'],
+      ['Focus (2.4.7)','3px ring on the box whenever the input has focus — not only while the list is open.'],
+      ['Target size (2.5.8)','Rows are 28/34/40px with size; the box matches Input.'],
+      ['Escape (2.1.2)','Escape closes the list only, and only when the list is open, so a Dialog behind it stays open.'],
+      ['Reduced motion','Nothing animates except the spinner, which the global block stops after one iteration — which is why the "Searching…" text exists (§09).'],
+      ['Mobile','No native picker. The list flips above the field when the on-screen keyboard leaves no room (§11). The ghost is hidden on IME composition (§13).'],
+    ]}/>
+    <p className="warn"><strong>The screen-reader risk is over-announcement.</strong> A suggestion list that fires on every keystroke can produce a live-region announcement per character. Nothing here is a live region except the loading row: the count of matches is not announced, and neither is an empty result. If a future change adds “6 suggestions available” it must be debounced and it must be tested with a real screen reader — the same standing requirement Combobox carries.</p>
+  </Sec>
+
+  <Sec n="09" title="Motion" note="140 ms on the box. Nothing else moves.">
+    <T cols={['Change','Duration','Easing','Property']} rows={[
+      ['Border colour, focus ring','140 ms','--ease-out','border-color, box-shadow'],
+      ['List open / close','—','—','never'],
+      ['Row active background','—','—','instant'],
+      ['Ghost text','—','—','never fades — it appears and disappears with the text'],
+      ['Loading spinner','800 ms','linear, infinite','--anim-spin'],
+    ]}/>
+    <ul>
+      <li><strong>The list appears instantly, and it appears often.</strong> This control opens and closes on almost every keystroke — a 120 ms fade would read as flicker, not polish.</li>
+      <li><strong>The ghost must not animate.</strong> It sits under a blinking caret and changes with every character; a fade turns typing into a shimmer.</li>
+      <li><strong>The active row must never animate</strong> — holding <kbd>↓</kbd> moves the cursor faster than any transition can settle.</li>
+      <li><strong>The spinner is the only moving part</strong>, only while <code>loading</code>, and under reduced motion it stops dead — which is why <code>Searching…</code> is text and not decoration.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="10" title="Content rules" note="The placeholder does more work here than anywhere else.">
+    <T cols={['Slot','Job','Write','Not']} rows={[
+      ['Field label','The noun being entered','Part number','Enter part number · Part lookup'],
+      ['Placeholder','A real example of the format','e.g. BRK-4120','Type to search… · Start typing'],
+      ['Field hint','The rule the user cannot guess','Type at least three characters. · Suggestions are your last 20 orders.','—'],
+      ['Suggestion label','The exact text that will land in the field','BRK-4120','Brake pad (BRK-4120)'],
+      ['Description','Why this row, or what it is','Brake pad · 412 in stock','Part number BRK-4120'],
+      ['Loading','—','Searching…','Loading… · Please wait'],
+      ['Empty','Nothing at all','—','No matches · No results · Nothing found'],
+    ]}/>
+    <ul>
+      <li><strong>The placeholder shows the format, because the field accepts anything.</strong> This is the one control where an example beats an instruction: “e.g. BRK-4120” teaches the shape of a valid answer, which is the only guidance available when the value is not constrained.</li>
+      <li><strong>Say where suggestions come from</strong> when it is not obvious. “Your last 20 orders” makes an incomplete list legible; silence makes it look broken.</li>
+      <li><strong>The label must be the text that lands in the field.</strong> A row reading “Brake pad (BRK-4120)” that inserts <code>BRK-4120</code> makes the user doubt what they got.</li>
+      <li><strong>Never write an empty message.</strong> It reads as an error about a value that is perfectly valid.</li>
+      <li><strong>Descriptions are shown but not matched.</strong> Matching invisible text gives rows the user cannot explain — the opposite of what a completion is for.</li>
+      <li><strong>Order by likelihood, not alphabet.</strong> Prefix matches first, then word-start; within a rank, most-used first if you know it.</li>
+    </ul>
+  </Sec>
+
+  <Sec n="11" title="Responsive" note="The keyboard is always up, by definition.">
+    <T cols={['Breakpoint','Behaviour']} rows={[
+      ['mobile ≥ 0','Full width, size="lg". The list only ever exists while the user is typing, so the on-screen keyboard is always up: it flips above the field whenever the room below is short and there is more above, and caps to the room available.'],
+      ['tablet ≥ 600','As authored. The list matches the box width — size the field to its longest suggestion.'],
+      ['desktop ≥ 1024','Full width in a Field; fixed width in a toolbar.'],
+      ['ultrawide ≥ 1600','Keep the form inside --measure-narrow. A 900px-wide list of six short strings is unreadable.'],
+    ]}/>
+    <div className="demo col tall" style={{maxWidth:340}}>
+      <Field label="Part number" hint="Touch size, full width."><Live size="lg" /></Field>
+    </div>
+    <Row label="clipped">
+      <div style={{width:300,height:96,overflow:'hidden',background:'var(--surface-card)',border:'var(--border-hairline)',borderRadius:'var(--radius-md)',padding:14}}>
+        <Live aria-label="Part number, inside a clipped container" />
+      </div>
+      <span style={{fontSize:'var(--text-xs)',color:'var(--text-tertiary)',maxWidth:'32ch'}}>A 96 px box with <code>overflow: hidden</code>. The list opens past the container edge.</span>
+    </Row>
+    <p><strong>The list is not clipped by its container.</strong> Same mechanism as <code>Combobox</code>: <code>position: fixed</code> in viewport coordinates rather than <code>absolute</code> inside the field, so an ancestor's <code>overflow: hidden</code> cannot cut it off, with no portal and no dependency. Geometry re-measures while open — <code>scroll</code> in the capture phase, <code>resize</code>, and a per-frame anchor-rect check for what no event reports. <strong>Same residual caveat:</strong> an ancestor with <code>transform</code>, <code>filter</code>, <code>perspective</code> or <code>contain</code> becomes the containing block for fixed descendants, so transformed panels are out of scope. Because the list is short, the flip case is rarer than Combobox's — a six-row list needs roughly 220 px, not 264.</p>
+  </Sec>
+
+  <Sec n="12" title="Anti-patterns">
+    <div className="two">
+      <div className="pane do"><h3>Do</h3><ul>
+        <li>Ask “may the value be off-list?” first.</li>
+        <li>Hold <code>value</code> in your state.</li>
+        <li>Put an example in the placeholder.</li>
+        <li>Raise <code>minChars</code> for server calls, and debounce.</li>
+        <li>Keep the list at six rows.</li>
+        <li>Say where suggestions come from.</li>
+        <li>Let the user submit text you never suggested.</li>
+      </ul></div>
+      <div className="pane dont"><h3>Don’t</h3><ul>
+        <li>Use it for a closed set.</li>
+        <li>Accept on blur or Tab.</li>
+        <li>Clear on Escape.</li>
+        <li>Show “No matches”.</li>
+        <li>Open the list on click or focus.</li>
+        <li>Add a chevron.</li>
+        <li>Hold an id you got from <code>onSelect</code> as the value.</li>
+        <li>Re-rank server results on the client.</li>
+      </ul></div>
+    </div>
+    <p className="warn"><strong>The failure this component invites.</strong> Treating it as a Combobox with a text escape hatch: wiring <code>onSelect</code> into form state and ignoring <code>onChange</code>. It demos perfectly — type, click a row, the id is captured — and then a user types a part number that has no row, submits, and the form sends the <em>previous</em> selection, or nothing. If the value must be an id, the field must be a <code>Combobox</code>. If the value is text, <code>onChange</code> is the only source of it, and <code>onSelect</code> is a notification.</p>
+  </Sec>
+
+  <Sec n="13" title="Implementation notes" note="What ships, and the decisions inside it.">
+    <ul>
+      <li><strong>Structure:</strong> a wrapper (the measurement anchor), <code>Input</code>'s box chrome, a real <code>&lt;input&gt;</code>, an optional ghost overlay, and a <code>position: fixed</code> list. The fixed-position measurement is lifted from <code>Combobox</code> — the same code wanting the same extraction into a <code>Popover</code> primitive (§14).</li>
+      <li><strong>No <code>dirty</code> flag, and no seeded query.</strong> Combobox needs both because it opens showing a committed value. This control has nothing to seed: the input's value is the state, the list is derived from it, and the list is only open because the user typed. Roughly forty lines of Combobox's state machine simply do not exist here.</li>
+      <li><strong>The ghost is an overlay, not an insertion.</strong> The alternative — writing the completion into the input and selecting the added range, which is what <code>aria-autocomplete="both"</code> classically describes — corrupts IME composition (the completion becomes part of the composition buffer), pollutes undo history with text the user never typed, and makes every <code>onChange</code> ambiguous. An absolutely-positioned <code>aria-hidden</code> span with the typed prefix in <code>transparent</code> and the remainder in <code>--autocomplete-ghost-text</code> gets the same read with none of that, at the cost of one duplicated font declaration that must stay in sync with the input's.</li>
+      <li><strong>Ranked filtering, not substring filtering.</strong> <code>rank()</code> returns 0 for a prefix, 1 for a word-start (after a space, hyphen, underscore, dot, slash, colon or comma), 2 for mid-word, −1 for no match; results sort by rank with the original order as a stable tiebreak, then slice to <code>maxSuggestions</code>. A plain substring filter puts <code>SPR-3300</code> above <code>BRK-4120</code> for the query “br”, which is wrong for a typeahead in a way it is not wrong for a search.</li>
+      <li><strong>Matching is label-only.</strong> Descriptions are rendered and never matched — a row whose only match is in text the user has to squint at cannot be explained by the completion emphasis, and the emphasis is the feature.</li>
+      <li><strong>The list opens from <code>onChange</code> alone.</strong> Not focus, not <code>mousedown</code>. <kbd>↓</kbd> can reopen it after an Escape, but only when the existing text already has matches — an arrow key must never conjure a list out of an empty field.</li>
+      <li><strong>Height is measured, and written imperatively.</strong> Since 1.5.0 the shared engine (<code>anchor.js</code>) sums the surface's children on every animation frame and writes <code>max-height</code> straight onto it — ungated, because three separate attempts at a <em>cached</em> height all failed the same way. Row constants were wrong for described rows; a value computed in the keystroke handler was a render behind; and a value in React state behind a change key stayed wrong for as long as the query stood when the key was missed. The children are measured rather than the surface itself, so a clamped box cannot feed its own height back, and the surface's borders are added because <code>max-height</code> under <code>border-box</code> must cover them — sizing a 1px-bordered list from its content alone made every list that should exactly fit scroll by 2px.</li>
+      <li><strong>Close on <code>pointerdown</code> outside, accept on <code>mousedown</code> with <code>preventDefault()</code></strong> — the same two lessons as Combobox: a drag that ends outside fires no click, and committing on <code>click</code> lets blur close the list before the click lands.</li>
+      <li><strong><code>autoComplete="off"</code> is not optional.</strong> Left on, the browser's own autofill menu opens over ours on exactly the fields most likely to use this control (names, emails, addresses) — two lists, two cursors, one keyboard. Chrome ignores <code>off</code> on some heuristically-detected fields; a distinctive <code>name</code> attribute is the reliable fix, and is worth setting on any address-shaped field.</li>
+      <li><strong>Four warnings:</strong> no accessible name; <code>invalid</code> with no <code>aria-describedby</code>; <code>maxSuggestions</code> above 10 (that is a browse list — use <code>Combobox</code>); and a missing <code>onChange</code>, since an uncontrolled Autocomplete puts the value where the form cannot reach it.</li>
+      <li><strong>10 new tokens</strong>, all for the list, in their own <code>--autocomplete-*</code> family: reusing <code>--combobox-*</code> would be a sideways component reference and the linter rejects it. Two of them carry the design difference rather than a value — there is no <code>-selected</code> pair, and <code>-completion-text</code> emphasises what is added rather than what matched.</li>
+      <li><strong>Tokens consumed:</strong></li>
+    </ul>
+    <div className="tokenlist">
+      <span>--autocomplete-list-background</span><span>--autocomplete-list-border</span><span>--autocomplete-list-radius</span><span>--autocomplete-list-shadow</span><span>--autocomplete-suggestion-text</span><span>--autocomplete-suggestion-description-text</span><span>--autocomplete-suggestion-completion-text</span><span>--autocomplete-suggestion-background-active</span><span>--autocomplete-ghost-text</span><span>--autocomplete-status-text</span><span>--input-* (the whole box)</span><span>--control-h-sm · md · lg</span><span>--control-px-sm · md · lg</span><span>--text-2xs · xs · sm · lg</span><span>--z-dropdown</span><span>--border-width</span><span>--transition-control</span><span>--anim-spin</span>
+    </div>
+  </Sec>
+
+  <Sec n="14" title="Developer notes" note="Integration, testing, open items.">
+    <pre>{`import { Field, Autocomplete } from '@meridian/ds';
+
+// local history — the common case
+const [part, setPart] = React.useState('');
+<Field label="Part number" hint="Suggestions are your last 20 orders.">
+  <Autocomplete value={part} onChange={setPart}
+    suggestions={recentParts} placeholder="e.g. BRK-4120" />
+</Field>
+
+// server-backed: onChange does both jobs, and the server ranks
+const [q, setQ] = React.useState('');
+const { data, isFetching } = useQuery(['parts', q], () => searchParts(q),
+  { enabled: q.trim().length >= 2 });
+
+<Autocomplete
+  aria-label="Part number"
+  value={q}
+  onChange={setQ}            // the value AND the query — they are the same string
+  suggestions={data ?? []}
+  filter={false}             // the server already ranked
+  minChars={2}
+  loading={isFetching}
+/>
+
+// tag entry: accept, push, clear
+<Autocomplete value={draft} onChange={setDraft} suggestions={TAGS}
+  onSelect={(s) => { addTag(s.value); setDraft(''); }} />`}</pre>
+    <ul>
+      <li><strong><code>onChange</code> is the value.</strong> <code>onSelect</code> is a notification — use it for analytics, for prefetching the record behind the text, or for the push-and-clear of tag entry, never as the field's source of truth (§12).</li>
+      <li><strong>The value and the query are one string</strong>, which is the simplification this control buys over <code>Combobox</code>: no <code>onSearch</code>, no <code>filter={'{false}'}</code> trap, no way for the two to drift. Debounce the fetch, not the state — the input must stay instant.</li>
+      <li><strong>Raise <code>minChars</code> to 2 or 3 for anything server-backed</strong>, and let it gate the request as well as the list. One character against a million parts returns noise and costs a round trip per keystroke.</li>
+      <li><strong>If you need the id, keep the mapping yourself</strong> — <code>onSelect</code> gives you the suggestion, but the user can type over it afterwards, so the id is only valid while the text still matches. Resolve on submit, or use <code>Combobox</code>.</li>
+      <li><strong>Testing.</strong> <code>getByRole('combobox', {'{ name: /part number/i }'})</code>; assert <code>aria-expanded</code> flips on typing and not on focus or click, and that <code>aria-activedescendant</code> tracks the active row. The regression tests that matter: (1) type a partial value, blur, assert the field still holds exactly what was typed and no suggestion was accepted; (2) <kbd>Tab</kbd> with an active row does <em>not</em> accept it; (3) <kbd>Esc</kbd> closes the list and leaves <code>value</code> untouched; (4) re-filtering resets the cursor so <kbd>Enter</kbd> cannot accept a row that moved; (5) with <code>inline</code>, <kbd>→</kbd> mid-string moves the caret instead of accepting.</li>
+      <li><strong>Lint.</strong> Flag an <code>Autocomplete</code> with no <code>Field</code> ancestor and no <code>aria-label</code>; an <code>onSelect</code> that writes form state a matching <code>onChange</code> does not; <code>minChars={'{1}'}</code> together with <code>filter={'{false}'}</code> (a server call per keystroke from the first character); and a static <code>suggestions</code> array of fewer than 15 entries where nothing off-list is accepted — that is a <code>Combobox</code> or a <code>Select</code>.</li>
+      <li><strong>Frozen 4 Sep 2026.</strong> API closed: <code>value</code>, <code>onChange</code>, <code>suggestions</code>, <code>onSelect</code>, <code>filter</code>, <code>minChars</code>, <code>maxSuggestions</code>, <code>inline</code>, <code>placeholder</code>, <code>loading</code>, <code>size</code>, <code>invalid</code>, <code>disabled</code>, <code>style</code>.</li>
+      <li><strong>Closed — the shared anchoring primitive.</strong> Shipped in 1.5.0 as <code>anchor.js</code> (<code>useAnchor</code>), extracted from <code>Combobox</code> and consumed by this component, <code>Tooltip</code> and the new <code>Popover</code>. This file lost ~60 lines and behaves as before; the height-measurement rules above are now the engine's, so a fix here fixes all four surfaces. <code>Tooltip</code> got the clip-immunity it was promised in the same change.</li>
+      <li><strong>Closed in 1.19.0 — <code>MultiCombobox</code> shipped.</strong> Tag entry works today as this control plus a <code>Tag</code> list, and the pattern is common enough to deserve a component that owns the array, backspace-to-remove and the overflow rule. It should compose this, not extend it. It owns the array, backspace-to-remove and the overflow rule, and composes this control’s list rather than extending it.</li>
+      <li><strong>Open — announcing the match count.</strong> Deliberately absent (§08) because a naive implementation announces on every keystroke. If it ships it needs a debounced <code>role="status"</code> and a real screen-reader pass.</li>
+      <li><strong>Open — highlighting non-prefix matches.</strong> A word-start or mid-word match currently shows no emphasis at all, since the completion run only exists for a prefix. Bolding the matched substring instead would work, but then two different emphasis rules live in one list; leaving it plain is the smaller lie for now.</li>
+    </ul>
+  </Sec>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

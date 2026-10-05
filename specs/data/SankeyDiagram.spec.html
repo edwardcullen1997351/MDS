@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sankey Diagram · 14-Section Specification Standard</title>
+  <link rel="stylesheet" href="../../tokens/tokens.css">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+    }
+    body {
+      margin: 0;
+      padding: 40px 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .spec-container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .spec-header {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 24px;
+      margin-bottom: 36px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #a7f3d0;
+      margin-top: 8px;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      color: #0f172a;
+    }
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+    p, li {
+      font-size: 14px;
+      color: #334155;
+    }
+    ul, ol {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      background: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 12px;
+      margin-bottom: 24px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: #eff6ff;
+      padding: 14px 18px;
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+      font-size: 13px;
+      color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="spec-container">
+    <header class="spec-header">
+      <div class="badge">Meridian Design System · Data Visualization Specification</div>
+      <h1>Sankey Diagram Component Specification</h1>
+      <div style="font-size: 14px; color: var(--text-muted);">
+        Standard Specification Document for Multi-Stage Quantitative Flows & Transfer Networks
+      </div>
+      <div class="status-tag">
+        <span>●</span> status: frozen 9 Sep 2026 · 0 open items
+      </div>
+    </header>
+
+    <!-- SECTION 01: PURPOSE -->
+    <section>
+      <h2>§01 Purpose & Quantitative Transfer Intent</h2>
+      <p>
+        The <code>SankeyDiagram</code> component visualizes how quantities move, split, merge, or transform between sequential entities or operational stages. Unlike general node-link diagrams or static hierarchy trees, the primary visual encoding is the <em>thickness of flowing ribbons</em>, which directly represents flow magnitude.
+      </p>
+      <ul>
+        <li><strong>Primary analytical questions:</strong> <em>"Where does the energy/material enter, how does it distribute across intermediate processes, and what proportion is converted into useful output vs. loss/scrap?"</em></li>
+        <li><strong>Contextual enterprise scenario:</strong> Plant electrical energy balances, raw steel coil mass flows, and industrial water circuits at <strong>Suryodaya Autocomp Ltd (Chakan plant PL-04, Pune)</strong>.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 02: DATA MODEL -->
+    <section>
+      <h2>§02 Data Model & Flow Conservation</h2>
+      <p>
+        Data is modeled as a directed graph comprising discrete stage nodes and positive weighted links:
+      </p>
+      <pre><code>interface SankeyNode {
+  id: string;              // Unique node ID
+  label: string;           // Display name (e.g. "Grid 33kV")
+  category?: string;       // Categorical color key
+}
+
+interface SankeyLink {
+  source: string;          // Source node ID
+  target: string;          // Target node ID
+  value: number;           // Positive quantitative flow volume (> 0)
+  category?: string;
+}
+
+// Flow Conservation Principle
+Total Inflow(Node) = Sum(Link.value for Link.target == Node.id)
+Total Outflow(Node) = Sum(Link.value for Link.source == Node.id)
+Node Value = Max(Total Inflow, Total Outflow)</code></pre>
+    </section>
+
+    <!-- SECTION 03: VISUAL ENCODING -->
+    <section>
+      <h2>§03 Visual Encoding & Flow Ribbon Anatomy</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Visual Channel</th>
+            <th>Data Attribute</th>
+            <th>Design & Scaling Rule</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Link Ribbon Thickness</strong></td>
+            <td>Flow Volume (<code>value</code>)</td>
+            <td>Linear scale: <code>Link.thickness = Link.value * ky</code> (where <code>ky</code> is the vertical pixels/unit ratio).</td>
+          </tr>
+          <tr>
+            <td><strong>Node Bar Height</strong></td>
+            <td>Net Node Throughput</td>
+            <td><code>Node.height = Max(Inflow, Outflow) * ky</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Horizontal Columns</strong></td>
+            <td>Stage / Temporal Sequence</td>
+            <td>Left-to-right columns computed via DAG topological depth traversal.</td>
+          </tr>
+          <tr>
+            <td><strong>Ribbon Fill / Gradient</strong></td>
+            <td>Source &rarr; Target Association</td>
+            <td>Source-to-target smooth two-color linear gradient (<code>#2563eb &rarr; #0d9488</code>) with 0.55 default opacity.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SECTION 04: COMPONENT COMPOSITION -->
+    <section>
+      <h2>§04 Component Composition & Layer Stacking</h2>
+      <ol>
+        <li><code>Layer 0 (Canvas)</code>: SVG background viewport with linear gradients and pattern definitions.</li>
+        <li><code>Layer 10 (Link Ribbons)</code>: Flow paths with source-target gradient fills and boundary strokes.</li>
+        <li><code>Layer 20 (Stage Nodes)</code>: Vertical rectangular node bars with category color fills and 3px corner radii.</li>
+        <li><code>Layer 25 (Hatch Textures)</code>: Transparent SVG monochrome hatch pattern overlays for non-color differentiation (WCAG 1.4.1).</li>
+        <li><code>Layer 30 (Node Typography)</code>: Node titles and value metrics with background stroke halo for readability.</li>
+        <li><code>Layer 50 (Inspection Overlays)</code>: Floating tooltip portal and accessible flow table modal (<kbd>Alt+F11</kbd>).</li>
+      </ol>
+    </section>
+
+    <!-- SECTION 05: PROPERTIES & PROPS -->
+    <section>
+      <h2>§05 Properties, Props & Configuration</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>nodes</code></td>
+            <td><code>SankeyNode[]</code></td>
+            <td><strong>Required</strong></td>
+            <td>Array of entity nodes with IDs and labels.</td>
+          </tr>
+          <tr>
+            <td><code>links</code></td>
+            <td><code>SankeyLink[]</code></td>
+            <td><strong>Required</strong></td>
+            <td>Array of directed weighted links between nodes.</td>
+          </tr>
+          <tr>
+            <td><code>align</code></td>
+            <td><code>'justify' | 'left' | 'right' | 'center'</code></td>
+            <td><code>'justify'</code></td>
+            <td>Column alignment mode for sink nodes.</td>
+          </tr>
+          <tr>
+            <td><code>linkGradient</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Renders source-to-target smooth gradients along ribbons.</td>
+          </tr>
+          <tr>
+            <td><code>patternFills</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Overlays SVG monochrome hatch textures on nodes for color-blind accessibility.</td>
+          </tr>
+          <tr>
+            <td><code>unit</code></td>
+            <td><code>string</code></td>
+            <td><code>''</code></td>
+            <td>Flow measurement unit suffix (e.g. <code>'kWh'</code>, <code>'MT'</code>, <code>'kL'</code>).</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SECTION 06: STATES & INTERACTIONS -->
+    <section>
+      <h2>§06 States & Interactions</h2>
+      <ul>
+        <li><strong>Default State:</strong> All flow ribbons rendered at 55% opacity with smooth source-target gradients.</li>
+        <li><strong>Hover / Focus State:</strong> Hovered node or link triggers full connected upstream/downstream path tracing; active ribbons brighten to 90% opacity with solid dark boundary strokes; all unrelated ribbons dim to 12% opacity.</li>
+        <li><strong>Selection Lock:</strong> Clicking a node or link locks the highlighted pathway.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 07: LAYOUT ALGORITHMS & GEOMETRY -->
+    <section>
+      <h2>§07 Layout Algorithms & Geometry</h2>
+      <p>
+        The <code>computeSankeyLayout()</code> algorithm performs deterministic 5-stage partitioning:
+      </p>
+      <pre><code>// 1. Column Topological Depth
+Column(Node) = Max(Column(Parent_i) + 1) for all incoming Parent_i
+
+// 2. Global Vertical Scale (ky)
+ky = (PlotHeight - (MaxNodesInColumn - 1) * NodePadding) / MaxColumnCumulativeValue
+
+// 3. Link Ribbon Stacking
+OutLinks(Node).sort((a, b) => a.target.y - b.target.y)
+InLinks(Node).sort((a, b) => a.source.y - b.source.y)</code></pre>
+    </section>
+
+    <!-- SECTION 08: LABELING & DENSITY RULES -->
+    <section>
+      <h2>§08 Labeling, Collision & Density Rules</h2>
+      <p>
+        Labels on the first column anchor to the right of the node; labels on the final column anchor to the left; intermediate column labels center or float above to avoid overlapping dense ribbons.
+      </p>
+    </section>
+
+    <!-- SECTION 09: RESPONSIVE BEHAVIOR -->
+    <section>
+      <h2>§09 Responsive & Viewport Scaling</h2>
+      <ul>
+        <li><strong>Fluid Column Spacing:</strong> Columns scale proportionally across available container width.</li>
+        <li><strong>Link Decimation:</strong> Micro-flows (&lt; 0.5% total volume) render with a minimum 1.5px visible ribbon width to preserve clickability.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 10: ACCESSIBILITY -->
+    <section>
+      <h2>§10 Accessibility & Dual-Encoding (WCAG 2.2 AA / AAA)</h2>
+      <ul>
+        <li><strong>Explicit Textual Relationship:</strong> Tooltips and table modal provide explicit <code>Source &rarr; Target: Quantity</code> text (does not rely on color alone).</li>
+        <li><strong>WCAG 1.4.1 (Non-Color Differentiation):</strong> Hatch patterns on nodes, distinct gradient ramps on links.</li>
+        <li><strong>Keyboard Navigation:</strong> Roving focus between nodes (<kbd>&larr;</kbd>/<kbd>&rarr;</kbd>/<kbd>&uarr;</kbd>/<kbd>&darr;</kbd>) with <kbd>Enter</kbd> path locking.</li>
+        <li><strong>Non-Spatial Modal Alternative:</strong> <kbd>Alt+F11</kbd> accessible flow data table.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 11: COLOR PALETTES & THEMES -->
+    <section>
+      <h2>§11 Color Palettes, Tokens & Themes</h2>
+      <p>
+        Adheres to Meridian tokens: <code>--viz-1</code> through <code>--viz-6</code>, <code>--surface-card</code>, and <code>--border-subtle</code>.
+      </p>
+    </section>
+
+    <!-- SECTION 12: MOTION & TRANSITIONS -->
+    <section>
+      <h2>§12 Motion & Transitions</h2>
+      <p>
+        Ribbon opacity and node glow transition smoothly at <code>200ms ease</code>.
+      </p>
+    </section>
+
+    <!-- SECTION 13: ANTI-PATTERNS -->
+    <section>
+      <h2>§13 Anti-Patterns & Error Handling</h2>
+      <ul>
+        <li>❌ <strong>Do NOT use for unweighted relations:</strong> Sankey diagrams require meaningful conservation weights.</li>
+        <li>❌ <strong>Do NOT allow negative link values:</strong> Flow volume must be strictly non-negative.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 14: DEVELOPER NOTES -->
+    <section>
+      <h2>§14 Developer Notes & Sample Code</h2>
+      <pre><code>import React from 'react';
+import { SankeyDiagram } from '@meridian/design-system';
+
+const energyData = {
+  nodes: [
+    { id: 'grid', label: 'Grid 33kV' },
+    { id: 'substation', label: 'Main Substation' },
+    { id: 'press', label: 'Press Shop' },
+    { id: 'output', label: 'Mechanical Output' }
+  ],
+  links: [
+    { source: 'grid', target: 'substation', value: 4100 },
+    { source: 'substation', target: 'press', value: 1950 },
+    { source: 'press', target: 'output', value: 1650 }
+  ]
+};
+
+export function EnergyDashboard() {
+  return (
+    &lt;SankeyDiagram
+      nodes={energyData.nodes}
+      links={energyData.links}
+      unit="kWh"
+      title="Plant Energy Balance"
+      width={760}
+      height={420}
+    /&gt;
+  );
+}</code></pre>
+    </section>
+  </div>
+
+</body>
+</html>
+`;
+
+fs.writeFileSync(path.join(brainDir, 'SankeyDiagram.spec.raw.html'), specHtml, 'utf8');
+console.log('SankeyDiagram.spec.raw.html written.');

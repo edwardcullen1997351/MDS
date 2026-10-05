@@ -1,0 +1,191 @@
+<!-- @dsCard group="Specs · Layouts" viewport="1080x760" name="Sidebar" subtitle="Full specification — a secondary region kept continuously beside a dominant one: what the frame owns, what it does when the width runs out, and the three neighbours it is confused with" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Sidebar — layout template specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;gap:0;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{display:flex;align-items:center;gap:7px;padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5;background:var(--surface-card)}
+.mock{padding:14px;display:flex;gap:10px;background:var(--background-page);min-height:150px}
+.mock.col{flex-direction:column}
+.col{display:flex;flex-direction:column;gap:7px;min-width:0}
+.ml{font-size:10px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+.bar{height:8px;border-radius:3px;background:var(--surface-sunken);border:var(--border-hairline)}
+.bar.h{height:14px;background:var(--surface-card)}
+.blk{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:8px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:96ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Layout template</span>
+  <h1>Sidebar</h1>
+  <p class="lede">Rohan Jadhav is measuring a bore against 48.00 +0.05 / −0.00. The tolerance, the gauge and the sampling plan are not something he reads once and remembers — he checks them against every reading, and a screen that makes him leave the entry form to see them will be a screen he stops using correctly. This layout keeps a narrower secondary region continuously associated with a dominant content region, for exactly that case: material that earns lateral persistence. What the sidebar contains is deliberately not prescribed — it is not defined as navigation.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/layout-template-spec-standard.card.html">Layout template spec standard §01–§14</a></span><span>Regions: 5 (2 required, 3 optional)</span><span>Reference implementation: <a href="sidebar-reference.card.html">card</a> · <a href="../../templates/sidebar/Sidebar.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — incoming inspection of lot LOT-2609-118</span><span>Sections included: 9 of 14</span><span style="color:var(--text-primary)">status: frozen 8 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <p>Keep a secondary region continuously associated with a dominant content region, where the secondary material benefits from lateral persistence. The test is continuity of reference: does the user consult the secondary region <em>while</em> working in the main one, repeatedly, in a way that makes moving away from it a cost? If the answer is no, the material is supplementary and belongs in the flow of <a href="SingleColumn.spec.html">single column</a>.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>Reference consulted per action — drawing tolerances beside measurement entry, a rate card beside a quotation.</li><li>Refinement controls beside the collection they narrow, where the current criteria must stay visible.</li><li>Context about the record being edited: revision history, the approval chain, related documents.</li><li>Any content whose value is that it is <em>still there</em> after the next interaction.</li></ul></div>
+      <div class="pane dont"><h3>Not this layout</h3><ul><li><strong>A collection whose selection drives the other region.</strong> That is master–detail: the lateral region is not reference, it is the thing being chosen from.</li><li><strong>Two independent lateral regions</strong> — controls on one side, context on the other. That is a <a href="HolyGrail.spec.html">holy-grail</a> frame and has its own ordering rules.</li><li><strong>Material read once.</strong> Notes, related records, history that informs but is not consulted mid-task: single column, subordinate in the flow.</li><li><strong>Space that happens to be free.</strong> A region invented to occupy 1600px is not a hierarchy.</li></ul></div>
+    </div>
+    <p><strong>Applicable interaction patterns.</strong> <em>Primary:</em> none — the frame hosts patterns rather than implying one. <em>Supported:</em> <a href="../patterns/CollectionRefinement.spec.html">collection refinement</a>, <a href="../patterns/SearchResults.spec.html">search results</a>, <a href="../patterns/ExplicitSave.spec.html">explicit save</a>. Where refinement is the pattern, the sidebar holds the controls and the main region the collection — but the criteria model, the counts and the clearing semantics are the pattern's, and this frame adds only that the two stay side by side.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <table><thead><tr><th>#</th><th>Region</th><th>Requirement</th><th>What it owns</th></tr></thead><tbody>
+      <tr><td class="k">1</td><td class="k">Outer container</td><td>Required</td><td>The frame's outer measure and gutter, and the two-track structure itself. One per screen; the tracks are its children and nothing else is.</td></tr>
+      <tr><td class="k">2</td><td class="k">Sidebar region</td><td>Required</td><td>The narrower contextual region: its side, its width and its persistence (§03), and its own internal vertical order. May hold <code>SearchField</code>, <code>Field</code> controls, <code>Accordion</code>, <code>Tree</code>, <code>DescriptionList</code> or supporting content — <strong>its function is deliberately not prescribed as navigation</strong>, and a spec that assumes navigation has narrowed the frame without saying so.</td></tr>
+      <tr><td class="k">3</td><td class="k">Main region</td><td>Required</td><td>The dominant, flexible track. Owns the usable-width floor (§13): it flexes, the sidebar does not, and the main region is never compressed to make lateral persistence survive.</td></tr>
+      <tr><td class="k">4</td><td class="k">Page header</td><td>Optional</td><td>Either spans both regions or belongs to the main region alone. Spanning states the subject of the whole screen; main-only says the sidebar is not about the header. One choice, stated, not both.</td></tr>
+      <tr><td class="k">5</td><td class="k">Dividers</td><td>Optional</td><td>Clarify the region boundary where surface and gap do not. Never required, never load-bearing: a frame that is only legible because of a rule has a spacing problem.</td></tr>
+    </tbody></table>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — reference, persistent, narrower</div><div class="mock"><div class="col" style="flex:0 0 30%"><span class="ml">2 · sidebar</span><div class="blk"><div class="bar"></div><div class="bar"></div><div class="bar" style="width:70%"></div></div></div><div class="col" style="flex:1"><span class="ml">3 · main</span><div class="blk"><div class="bar h"></div><div class="bar"></div><div class="bar"></div></div></div></div><div class="why">Tolerances stay in view while every reading is typed. Nothing in the sidebar drives what the main region shows — it is consulted, not chosen from.</div></div>
+      <div class="no"><div class="cap">Don't — a collection driving the other side</div><div class="mock"><div class="col" style="flex:0 0 34%"><span class="ml">2 · rows</span><div class="blk" style="border-color:var(--status-critical-border)"><div class="bar"></div><div class="bar" style="background:var(--surface-selected,var(--surface-sunken))"></div><div class="bar"></div></div></div><div class="col" style="flex:1"><span class="ml">3 · the selected row</span><div class="blk"><div class="bar h"></div><div class="bar"></div></div></div></div><div class="why">Once the left region is a list whose selection replaces the right, the contract is selection identity, stale content and empty state — master–detail owns those, and this frame specifies none of them.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Properties</h2><span class="sec-note">Conditional — included: three choices change the frame's contract</span></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Values</th><th>Default</th><th>Effect</th></tr></thead><tbody>
+      <tr><td class="k">sidebarSide</td><td><code>leading</code> · <code>trailing</code></td><td><code>leading</code></td><td>Which side the sidebar occupies — and, with it, document order: leading means the sidebar precedes the main region in the DOM, trailing means it follows. Choose per product, not per screen; a sidebar that changes sides between screens is a new frame each time. Leading suits material read before acting; trailing suits material about what is on screen.</td></tr>
+      <tr><td class="k">sidebarWidth</td><td>fixed/bounded track · proportional</td><td>bounded, 280–320px</td><td>Fixed or bounded gives a stable, predictable region and hands every surplus pixel to the main region — the default, and right for reference content. Proportional (e.g. <code>minmax(240px, 0.32fr)</code>) is for a sidebar whose content genuinely scales with the viewport. Either way it carries a minimum, below which §11 relocates rather than squeezes.</td></tr>
+      <tr><td class="k">persistence</td><td><code>persistent</code> · <code>collapsible</code></td><td><code>persistent</code> at expanded widths</td><td>Persistent is the point of the layout. Collapsible is legitimate where the main region occasionally needs the full measure — a wide table, a drawing — and then the control that hides it must also restore it, and must say which state it is in (§08). Collapsed is a user state, never a default the product ships in.</td></tr>
+    </tbody></table>
+    <p>Presence of the page header and the dividers is composition, not configuration. The sidebar's <em>content</em> is not a property of this frame at all.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§06</span><h2>States</h2><span class="sec-note">Conditional — included: the frame holds two states no component in it holds</span></div>
+  <div class="body">
+    <table><thead><tr><th>State</th><th>When</th><th>Contract</th></tr></thead><tbody>
+      <tr><td class="k">lateral</td><td>Expanded width, persistent or expanded-collapsible</td><td>Both regions present and co-visible. The frame's normal state and the one the layout exists for.</td></tr>
+      <tr><td class="k">collapsed</td><td><code>persistence: collapsible</code>, user hid the sidebar</td><td>Region 2 is out of the visual and accessibility trees, not merely visually hidden — a screen-reader user must not walk content that is not there. The toggle remains, reports <code>aria-expanded="false"</code>, and restores the region to the same scroll and internal state it had.</td></tr>
+      <tr><td class="k">relocated</td><td>Constrained width (§11)</td><td>Region 2 sits before or after region 3 in one column. It is the same region with the same contents and the same accessible name; nothing about it is a different component.</td></tr>
+      <tr><td class="k">temporary</td><td>Constrained width, <code>Drawer</code> route</td><td>Region 2 is reachable on request and closed by default. <code>Drawer</code> owns modality, focus trap and dismissal; the frame owns only that the trigger exists, is discoverable, and that closing returns the user with nothing lost.</td></tr>
+    </tbody></table>
+    <p>These four are the whole state model. Anything else on the screen — a pending refinement, a dirty draft in the main region — belongs to the pattern in play, and this frame neither holds nor coordinates it.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>Accessibility</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Responsive relocation must preserve a meaningful reading and focus order.</strong> Whichever side the sidebar takes, document order and visual order agree, and the relocated single-column order is one a person can work in: reference before the form it is read against, context after the content it describes. Relocation is a change of place, never a scramble.</li>
+      <li><strong>The <code>Drawer</code> route inherits <code>Drawer</code>'s focus management</strong> — trap while open, restoration to the trigger on close, dismissal routes. This frame adds nothing to it and must not reimplement any of it.</li>
+      <li><strong>A control that exposes the sidebar communicates state and relationship:</strong> <code>aria-expanded</code> reflecting whether region 2 is showing, and <code>aria-controls</code> naming it <em>while it is in the document</em> — when the region is genuinely removed (collapsed, or a closed <code>Drawer</code>), the attribute is omitted rather than left pointing at nothing, because a dangling IDREF is worse than no relationship. Its label says what appears — "Show tolerances" — not "Toggle sidebar".</li>
+      <li><strong>Landmarks are assigned by role, not by column.</strong> Region 3 is <code>main</code>. Region 2 takes <code>aside</code>, or <code>search</code>/<code>form</code> when that is genuinely what it is, and carries an accessible name in every state, because a second unnamed region is indistinguishable from the first.</li>
+      <li><strong>Heading levels run down the page, not across the split.</strong> The page header owns the <code>h1</code>; both regions start their own sections at <code>h2</code>. Lateral position is not hierarchy.</li>
+      <li><strong>Both regions scroll to their own content without trapping.</strong> If a region scrolls independently (§13), keyboard focus moving into it must bring the focused control into view — a sidebar that scrolls only by pointer is unusable.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§09</span><h2>Motion</h2><span class="sec-note">Conditional — included: the frame's structure changes under §06</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Collapse and restore are the only motion this frame owns.</strong> Region 2 leaves and returns along its own axis — width, not opacity — so the main region visibly takes and gives back the space. A fade reads as content vanishing; a slide reads as a region moving.</li>
+      <li><strong>Use the system's short duration and standard easing.</strong> Motion here is orientation, not expression: long enough to see where the region went, short enough that the next reading is not waiting on it.</li>
+      <li><strong>The <code>Drawer</code> route uses <code>Drawer</code>'s own enter and exit.</strong> Do not animate the frame underneath it as well.</li>
+      <li><strong>Responsive relocation is not animated.</strong> A layout re-laying out at a breakpoint is not an event the user caused, and animating it turns a resize into a performance.</li>
+      <li><strong>The region leaves the document when the motion ends, not when it starts.</strong> Region 2 stays mounted for the duration of the collapse — marked <code>aria-hidden</code> while it is on its way out — and is removed once the width reaches zero, so §06's contract and the animation do not contradict each other.</li>
+      <li><strong>Reduced motion:</strong> the region appears and disappears without transition, and leaves the document in the same frame. The state change is still announced and still legible — nothing about the contract depends on the animation.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§11</span><h2>Responsive</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Expanded.</strong> Sidebar and main region coexist laterally. Surplus width goes to the main region; a fixed or bounded sidebar does not grow with the viewport.</li>
+      <li><strong>Constrained.</strong> The sidebar normally moves before or after the main region in one column — reference material before, contextual material after — or becomes available through a <code>Drawer</code> where temporary access preserves the intended hierarchy better than a long scroll past it. Pick one per screen and state it; do not offer both.</li>
+      <li><strong>The floor is the rule.</strong> The primary content must retain usable width rather than being compressed indefinitely. When the main region reaches its floor, the sidebar relocates — the split does not keep narrowing until both regions are unusable.</li>
+      <li><strong>Relocation is not a different layout.</strong> Same regions, same contents, same names, same order logic. A constrained-width sidebar that loses half its content was two designs.</li>
+      <li><strong>Collapsible is a user choice, not a breakpoint.</strong> Do not collapse the sidebar automatically at some width and call it responsive: that is relocation, and it must follow the rules above rather than silently hiding reference material the user is relying on.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — relocate at the floor</div><div class="mock col"><span class="ml">2 · sidebar, before main</span><div class="blk"><div class="bar"></div><div class="bar" style="width:60%"></div></div><span class="ml">3 · main, full usable width</span><div class="blk"><div class="bar h"></div><div class="bar"></div><div class="bar"></div></div></div><div class="why">On a tablet at the goods-inward gate the tolerances come first, then the entry form at full width. Nothing is lost and nothing is cramped.</div></div>
+      <div class="no"><div class="cap">Don't — squeeze both to keep the split</div><div class="mock"><div class="col" style="flex:0 0 46%"><span class="ml">2 · sidebar</span><div class="blk"><div class="bar" style="width:80%"></div><div class="bar" style="width:60%"></div></div></div><div class="col" style="flex:1"><span class="ml">3 · main</span><div class="blk"><div class="bar h" style="width:90%"></div><div class="bar" style="width:70%"></div></div></div></div><div class="why">Lateral persistence is not worth a 300px entry form. The measurement fields wrap, the tolerance text goes to three words a line, and the operator gives up on both.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Anti-patterns</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Using it merely to fill unused horizontal space.</strong> The sidebar is justified by continuous reference, not by available pixels.</li>
+      <li><strong>Reaching for it when supplementary material needs no persistent spatial separation.</strong> Use <a href="SingleColumn.spec.html">single column</a>: subordinate placement in the flow says "reference", and says it honestly.</li>
+      <li><strong>Using it when the lateral region is a collection whose selection drives the other region.</strong> That is master–detail, and its contract — selection identity, correspondence, stale content, empty state — is specified nowhere in this frame.</li>
+      <li><strong>Using it when two independent lateral regions are structurally required.</strong> That is a <a href="HolyGrail.spec.html">holy-grail</a> frame; forcing both into one sidebar makes the region a bucket.</li>
+      <li><strong>Compressing the main region to preserve the split.</strong> Named again here because it is the failure this layout actually ships with.</li>
+      <li><strong>A sidebar that scrolls the whole page away.</strong> Region 2 that is only reachable by scrolling past region 3 is not persistent; it is a footer.</li>
+      <li><strong>Collapsed by default.</strong> A frame whose defining region starts hidden is a single column with an extra control.</li>
+      <li><strong>Assuming the sidebar is navigation</strong> and giving it navigation chrome — a nav landmark, current-page treatment — when it holds reference content. The role must match what is in it.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§13</span><h2>Implementation notes</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Two tracks, one declaration.</strong> Build the split with <code>Grid</code>/<code>GridItem</code> or a nested <code>Stack</code>/<code>Box</code> structure; <code>Container</code>, <code>Surface</code> and <code>Divider</code> establish the boundaries. The sidebar track is a fixed or bounded length, the main track is <code>minmax(&lt;floor&gt;, 1fr)</code>. That <code>minmax</code> floor is the §11 contract expressed in one value — without it, the frame silently squeezes instead of relocating.</li>
+      <li><strong>Both tracks need <code>min-width: 0</code>.</strong> A table or a long part number in either region will otherwise push the track past its declared width and break the split from inside.</li>
+      <li><strong>Document order follows <code>sidebarSide</code>.</strong> Order the regions in the markup; do not place them visually with <code>order</code> or grid line numbers against their DOM sequence, or reading order and visual order part company at exactly the width where it matters.</li>
+      <li><strong>Independent scroll is opt-in and explicit.</strong> Either the page scrolls as one, or each region owns its own scroll container with its own height constraint. Two scrollbars by accident — a region that scrolls inside a page that also scrolls — is the most common defect in this frame.</li>
+      <li><strong>A collapsible sidebar's track sizes to its content</strong> (<code>auto</code>), so the region's own width transition moves the boundary. A fixed track cannot be animated reliably across engines, and animating <code>grid-template-columns</code> instead makes the frame's structure the animated thing — put the motion on the region, not on the grid.</li>
+      <li><strong>A sticky sidebar sticks within its own track</strong>, not to the viewport, and never overlaps the main region's content or its own scroll.</li>
+      <li><strong>The <code>Drawer</code> route is the same content mounted elsewhere</strong>, not a second implementation of the sidebar. Keep one component and give it a home in both states, or the two copies will drift within a release.</li>
+      <li><strong>The frame holds only §06's state.</strong> Collapsed and drawer-open live here; everything the regions contain holds its own state, and the layout passes nothing between them.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted">Omitted, with reasons — §04 Variants: one structural form; side, width and persistence are properties (§03), and the constrained-width forms are §11, not variants. · §05 Sizes: no frame-level size classes; the sidebar track is a §03 property and everything else comes from the spacing and density tokens. · §07 Keyboard: the frame introduces no keyboard relationship between regions — focus runs in document order, the toggle is an ordinary <code>Button</code>, and the <code>Drawer</code> route's focus trap and restoration are <code>Drawer</code>'s contract, cited in §08 rather than restated. · §10 Content rules: the frame constrains no content beyond each region's purpose in §02; what belongs in the sidebar is a product decision this layout deliberately leaves open. · §14 Developer notes: nothing technical remains once §13 is written — no slot API, no routing or persistence responsibility beyond §06's two flags, no per-region data boundary.</p>
+<p class="omitted">Applies to: this layout template · Section set and include/omit tests: <a href="../../guidelines/layout-template-spec-standard.card.html">layout template spec standard</a> · Register: <a href="layouts.card.html">layouts index</a></p>
+</div>
+</body></html>

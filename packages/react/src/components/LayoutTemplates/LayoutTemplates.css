@@ -1,0 +1,1241 @@
+/* Layout Templates Base & Macro Scaffolding Styles */
+
+/* Screen Reader Only Utility */
+.ds-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ds-sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 8px 16px;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  color: var(--ds-semantic-color-primary-default, #2563eb);
+  border: 2px solid var(--ds-semantic-color-primary-default, #2563eb);
+  border-radius: 4px;
+  z-index: 9999;
+}
+
+/* ==========================================================================
+   1. Single Column Layout (§01–§14)
+   ========================================================================== */
+.ds-single-column {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.ds-single-column__wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: var(--ds-global-space-6, 24px) var(--ds-global-space-4, 16px);
+}
+
+.ds-single-column__wrapper--sm { max-width: 640px; }
+.ds-single-column__wrapper--md { max-width: 900px; }
+.ds-single-column__wrapper--lg { max-width: 1240px; }
+.ds-single-column__wrapper--full { max-width: 100%; }
+
+.ds-single-column__wrapper--centered { margin-left: auto; margin-right: auto; }
+.ds-single-column__wrapper--start { margin-left: 0; margin-right: auto; }
+
+.ds-single-column__header {
+  margin-bottom: var(--ds-global-space-6, 24px);
+}
+
+.ds-single-column__main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.ds-single-column__main--spacing-sm { gap: var(--ds-global-space-4, 16px); }
+.ds-single-column__main--spacing-md { gap: var(--ds-global-space-6, 24px); }
+.ds-single-column__main--spacing-lg { gap: var(--ds-global-space-8, 32px); }
+
+.ds-single-column__actions {
+  margin-top: var(--ds-global-space-8, 32px);
+  padding-top: var(--ds-global-space-4, 16px);
+  border-top: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+.ds-single-column__actions--anchored {
+  position: sticky;
+  bottom: 0;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-top: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  padding: var(--ds-global-space-4, 16px);
+  margin-top: auto;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+.ds-single-column__supplementary {
+  margin-top: var(--ds-global-space-8, 32px);
+  padding-top: var(--ds-global-space-6, 24px);
+  border-top: 1px dashed var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+/* ==========================================================================
+   2. Sidebar Layout (§01–§14)
+   ========================================================================== */
+.ds-sidebar-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--background-page, #f8fafc);
+}
+
+.ds-sidebar-layout__body {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  transition: grid-template-columns 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ds-sidebar-layout__sidebar {
+  overflow-y: auto;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-right: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s ease;
+}
+
+.ds-sidebar-layout__sidebar--end {
+  border-right: none;
+  border-left: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+.ds-sidebar-layout__sidebar--collapsed {
+  display: none;
+}
+
+.ds-sidebar-layout__main {
+  overflow-y: auto;
+  padding: var(--ds-global-space-6, 24px);
+  min-width: 0;
+}
+
+@media (max-width: 860px) {
+  .ds-sidebar-layout__body {
+    display: flex;
+    flex-direction: column;
+  }
+  .ds-sidebar-layout__sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  }
+}
+
+/* ==========================================================================
+   3. Holy Grail Layout (§01–§14)
+   ========================================================================== */
+.ds-holy-grail {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--background-page, #f8fafc);
+}
+
+.ds-holy-grail__header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+.ds-holy-grail__body {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.ds-holy-grail__nav {
+  overflow-y: auto;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-right: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+.ds-holy-grail__nav--collapsed {
+  display: none;
+}
+
+.ds-holy-grail__main {
+  overflow-y: auto;
+  padding: var(--ds-global-space-6, 24px);
+  min-width: 0;
+}
+
+.ds-holy-grail__utility {
+  overflow-y: auto;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-left: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+.ds-holy-grail__utility--collapsed {
+  display: none;
+}
+
+.ds-holy-grail__footer {
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-top: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  padding: var(--ds-global-space-3, 12px) var(--ds-global-space-6, 24px);
+}
+
+@media (max-width: 1100px) {
+  .ds-holy-grail__utility {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .ds-holy-grail__nav {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   4. Split View Layout (§01–§14)
+   ========================================================================== */
+.ds-split-view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  background: var(--background-page, #f8fafc);
+}
+
+.ds-split-view__header {
+  padding: var(--ds-global-space-4, 16px) var(--ds-global-space-6, 24px);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+.ds-split-view__panes {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.ds-split-view__pane {
+  overflow-y: auto;
+  padding: var(--ds-global-space-6, 24px);
+  min-width: 0;
+}
+
+.ds-split-view__pane--primary {
+  border-right: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+}
+
+.ds-split-view__pane--secondary {
+  background: var(--background-page, #f8fafc);
+}
+
+/* Mobile sequential tab controls */
+.ds-split-view__tabs {
+  display: none;
+  padding: var(--ds-global-space-2, 8px) var(--ds-global-space-6, 24px);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+@media (max-width: 860px) {
+  .ds-split-view__tabs {
+    display: flex;
+    gap: 8px;
+  }
+  .ds-split-view__panes {
+    display: block;
+  }
+  .ds-split-view__pane--primary,
+  .ds-split-view__pane--secondary {
+    border-right: none;
+  }
+  .ds-split-view__pane--hidden {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   5. Master Detail Layout (§01–§14)
+   ========================================================================== */
+.ds-master-detail {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  background: var(--background-page, #f8fafc);
+}
+
+.ds-master-detail__master {
+  overflow-y: auto;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-right: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-master-detail__detail {
+  overflow-y: auto;
+  background: var(--background-page, #f8fafc);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ds-master-detail__empty {
+  margin: auto;
+  padding: 48px 24px;
+  text-align: center;
+  max-width: 400px;
+}
+
+@media (max-width: 800px) {
+  .ds-master-detail {
+    display: block;
+  }
+  .ds-master-detail__master--hidden,
+  .ds-master-detail__detail--hidden {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   6. Dashboard Layout (§01–§14)
+   ========================================================================== */
+.ds-dashboard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: var(--ds-global-space-6, 24px);
+  gap: var(--ds-global-space-6, 24px);
+  box-sizing: border-box;
+}
+
+.ds-dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ds-global-space-4, 16px);
+}
+
+.ds-dashboard__kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--ds-global-space-4, 16px);
+}
+
+.ds-dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--ds-global-space-6, 24px);
+}
+
+.ds-dashboard__grid--compact {
+  gap: var(--ds-global-space-4, 16px);
+}
+
+.ds-dashboard-widget {
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  border-radius: var(--ds-global-radius-lg, 8px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  overflow: hidden;
+}
+
+.ds-dashboard-widget__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+.ds-dashboard-widget__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+}
+
+.ds-dashboard-widget__body {
+  padding: 18px;
+  flex: 1 1 auto;
+}
+
+/* Col spans */
+.ds-col-span-1 { grid-column: span 1; }
+.ds-col-span-2 { grid-column: span 2; }
+.ds-col-span-3 { grid-column: span 3; }
+.ds-col-span-4 { grid-column: span 4; }
+.ds-col-span-5 { grid-column: span 5; }
+.ds-col-span-6 { grid-column: span 6; }
+.ds-col-span-7 { grid-column: span 7; }
+.ds-col-span-8 { grid-column: span 8; }
+.ds-col-span-9 { grid-column: span 9; }
+.ds-col-span-10 { grid-column: span 10; }
+.ds-col-span-11 { grid-column: span 11; }
+.ds-col-span-12 { grid-column: span 12; }
+
+@media (max-width: 1024px) {
+  .ds-dashboard__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .ds-col-span-8, .ds-col-span-9, .ds-col-span-10, .ds-col-span-11, .ds-col-span-12 {
+    grid-column: span 6;
+  }
+  .ds-col-span-4, .ds-col-span-5, .ds-col-span-6, .ds-col-span-7 {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 640px) {
+  .ds-dashboard__grid {
+    grid-template-columns: 1fr;
+  }
+  [class*="ds-col-span-"] {
+    grid-column: span 1;
+  }
+}
+
+/* ==========================================================================
+   7. Collection Workspace Layout (§01–§14)
+   ========================================================================== */
+.ds-collection-workspace {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  background: var(--background-page, #f8fafc);
+  position: relative;
+}
+
+.ds-collection-workspace__scope-header {
+  padding: var(--ds-global-space-4, 16px) var(--ds-global-space-6, 24px);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+}
+
+.ds-collection-workspace__toolbar {
+  padding: var(--ds-global-space-3, 12px) var(--ds-global-space-6, 24px);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ds-global-space-3, 12px);
+}
+
+.ds-collection-workspace__selection-bar {
+  padding: 10px 24px;
+  background: var(--ds-semantic-color-primary-subtle, #eff6ff);
+  border-bottom: 1px solid var(--ds-semantic-color-primary-default, #3b82f6);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: dsSlideDown 0.15s ease-out;
+}
+
+@keyframes dsSlideDown {
+  from { transform: translateY(-8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.ds-collection-workspace__content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+}
+
+.ds-collection-workspace__footer {
+  padding: var(--ds-global-space-3, 12px) var(--ds-global-space-6, 24px);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border-top: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ds-collection-workspace__footer--sticky {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+/* ==========================================================================
+   7. Workbench 3-Pane Layout (§01–§14)
+   ========================================================================== */
+.ds-workbench-3pane {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* §GB-1 Viewport-safe height: fills its flex parent without causing
+     outer-page scroll when nested inside app shells (e.g. PlannerWorkbench).
+     height: 100vh is forbidden here — it blows past parent chrome headers. */
+  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+}
+
+.ds-workbench-3pane__header {
+  flex: 0 0 auto;
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  position: relative;
+  z-index: 20;
+}
+
+.ds-workbench-3pane__body {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  z-index: 0; /* Creates own stacking context — isolates drawer z-indexes from header */
+}
+
+.ds-workbench-3pane__nav {
+  overflow: hidden;
+  border-right: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: var(--ds-wb-nav-width, 280px);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.28s ease;
+  position: relative;
+  z-index: 10;
+}
+
+.ds-workbench-3pane__nav-content {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  /* §GB-2 Structural container only — consumer pane owns its scroll.
+     overflow:hidden here prevents a scroll-dead-zone: if we used overflow-y:auto,
+     consumer's height:100% root div makes scrollHeight === clientHeight,
+     so the scrollbar never appears and content is silently clipped. */
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: opacity 0.2s ease;
+}
+
+.ds-workbench-3pane__center {
+  flex: 1 1 0%;
+  min-width: 0;
+  max-width: 100%;
+  height: 100%;
+  /* §GB-3 Center pane frame — overflow hidden so the inner
+     __center-content wrapper owns all scrolling, not the frame itself */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+}
+
+/* §GB-3a First-class center scroll container (wraps mainPane slot).
+   Scroll is owned here so consumers provide naturally-sized content
+   (no height:100% on their root div) and the framework scrolls it.
+   overflow-x: auto enables wide matrix/table horizontal scrolling. */
+.ds-workbench-3pane__center-content {
+  width: 100%;
+  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: auto;
+  box-sizing: border-box;
+  overscroll-behavior: contain;
+  /* Stable gutter on center only: prevents layout shift when content
+     grows/shrinks past the scrollable threshold */
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.ds-workbench-3pane__inspector {
+  overflow: hidden;
+  border-left: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: var(--ds-wb-inspector-width, 360px);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.28s ease;
+  position: relative;
+  z-index: 10;
+}
+
+.ds-workbench-3pane__inspector-content {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  /* §GB-2 Structural container only — same rationale as __nav-content:
+     consumer height:100% root would collapse scrollHeight, making this
+     a silent clip rather than a live scroll container. Consumer owns scroll. */
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: opacity 0.2s ease;
+}
+
+/* Desktop flex collapse rules (§01–§14) */
+.ds-workbench-3pane__body--nav-collapsed .ds-workbench-3pane__nav,
+.ds-workbench-3pane__body--both-collapsed .ds-workbench-3pane__nav {
+  width: 0 !important;
+  border-right-color: transparent;
+}
+
+.ds-workbench-3pane__body--nav-collapsed .ds-workbench-3pane__nav-content,
+.ds-workbench-3pane__body--both-collapsed .ds-workbench-3pane__nav-content {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ds-workbench-3pane__body--inspector-collapsed .ds-workbench-3pane__inspector,
+.ds-workbench-3pane__body--both-collapsed .ds-workbench-3pane__inspector {
+  width: 0 !important;
+  border-left-color: transparent;
+}
+
+.ds-workbench-3pane__body--inspector-collapsed .ds-workbench-3pane__inspector-content,
+.ds-workbench-3pane__body--both-collapsed .ds-workbench-3pane__inspector-content {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Mid-Screen Seam Edge Toggles (§01–§14) */
+.ds-workbench-edge-toggle {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 30;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 48px;
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  color: var(--ds-semantic-color-text-muted, #475569);
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: width 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ds-workbench-3pane__body--nav-collapsed .ds-workbench-edge-toggle--nav,
+.ds-workbench-3pane__body--both-collapsed .ds-workbench-edge-toggle--nav {
+  display: inline-flex;
+}
+
+.ds-workbench-3pane__body--inspector-collapsed .ds-workbench-edge-toggle--inspector,
+.ds-workbench-3pane__body--both-collapsed .ds-workbench-edge-toggle--inspector {
+  display: inline-flex;
+}
+
+.ds-workbench-edge-toggle:hover {
+  background: var(--ds-semantic-color-surface-hover, #f1f5f9);
+  border-color: var(--ds-semantic-color-border-default, #cbd5e1);
+  color: var(--ds-semantic-color-primary-default, #2563eb);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+  width: 24px;
+}
+
+/* ==========================================================================
+   Draggable Splitters (§01–§14)
+   ========================================================================== */
+.ds-workbench-splitter {
+  width: 6px;
+  margin: 0 -3px;
+  cursor: col-resize;
+  position: relative;
+  z-index: 25;
+  flex: 0 0 6px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: none;
+  transition: background-color 0.15s ease;
+}
+
+.ds-workbench-splitter-region {
+  position: relative;
+  z-index: 25;
+  width: 6px;
+  margin: 0 -3px;
+  flex: 0 0 6px;
+}
+
+.ds-workbench-splitter-region > .ds-workbench-splitter {
+  width: 6px;
+  height: 100%;
+  margin: 0;
+}
+
+.ds-workbench-splitter::before {
+  content: '';
+  width: 1px;
+  height: 100%;
+  background: var(--ds-semantic-color-border-subtle, #e2e8f0);
+  transition: background-color 0.15s ease, width 0.15s ease;
+}
+
+.ds-workbench-splitter:hover::before,
+.ds-workbench-splitter--dragging::before,
+.ds-workbench-splitter:focus-visible::before {
+  width: 3px;
+  background: var(--ds-semantic-color-primary-default, #2563eb);
+}
+
+.ds-workbench-splitter:focus-visible {
+  outline: 2px solid var(--ds-semantic-color-focus-ring, #3b82f6);
+  outline-offset: 1px;
+}
+
+.ds-workbench-3pane__body--resizing {
+  user-select: none !important;
+  cursor: col-resize !important;
+}
+
+.ds-workbench-3pane__body--resizing * {
+  user-select: none !important;
+}
+
+.ds-workbench-edge-toggle:focus-visible {
+  outline: 2px solid var(--ds-semantic-color-primary-default, #2563eb);
+  outline-offset: 1px;
+}
+
+.ds-workbench-edge-toggle--nav {
+  left: 0;
+  border-radius: 0 var(--ds-global-radius-md, 8px) var(--ds-global-radius-md, 8px) 0;
+  border-left: none;
+}
+
+.ds-workbench-edge-toggle--inspector {
+  right: 0;
+  border-radius: var(--ds-global-radius-md, 8px) 0 0 var(--ds-global-radius-md, 8px);
+  border-right: none;
+}
+
+/* NotebookLM-style Collapsible Controls (§01–§14) */
+.ds-workbench-pane-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ds-global-space-2, 8px) var(--ds-global-space-3, 12px);
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+  flex-shrink: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.ds-workbench-pane-title {
+  font-size: var(--ds-global-font-size-xs, 12px);
+  font-weight: var(--ds-global-font-weight-semibold, 600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569 !important;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-global-space-2, 8px);
+}
+
+.ds-workbench-pane-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ds-global-radius-md, 8px);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  color: var(--ds-semantic-color-text-muted, #64748b);
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ds-workbench-pane-toggle:hover {
+  background: var(--ds-semantic-color-surface-hover, #f1f5f9);
+  border-color: var(--ds-semantic-color-border-default, #cbd5e1);
+  color: var(--ds-semantic-color-primary-default, #2563eb);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  transform: scale(1.05);
+}
+
+.ds-workbench-pane-toggle:active {
+  transform: scale(0.95);
+}
+
+.ds-workbench-pane-toggle:focus-visible {
+  outline: 2px solid var(--ds-semantic-color-primary-default, #2563eb);
+  outline-offset: 1px;
+}
+
+.ds-workbench-expand-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-global-space-2, 8px);
+  height: 30px;
+  padding: 0 var(--ds-global-space-2, 8px);
+  border-radius: var(--ds-global-radius-md, 8px);
+  border: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  background: var(--ds-semantic-color-surface-default, #ffffff);
+  color: var(--ds-semantic-color-text-default, #1e293b);
+  font-size: var(--ds-global-font-size-xs, 12px);
+  font-weight: var(--ds-global-font-weight-medium, 500);
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ds-workbench-expand-trigger:hover {
+  background: var(--ds-semantic-color-surface-hover, #f1f5f9);
+  border-color: var(--ds-semantic-color-border-default, #cbd5e1);
+  color: var(--ds-semantic-color-primary-default, #2563eb);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.ds-workbench-expand-trigger:active {
+  transform: translateY(0);
+}
+
+.ds-workbench-expand-trigger:focus-visible {
+  outline: 2px solid var(--ds-semantic-color-primary-default, #2563eb);
+  outline-offset: 1px;
+}
+
+/* Header-Anchored Layout Expand Buttons (Desktop Only: > 1024px) (§01–§14) */
+.ds-workbench-header-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tablet & 200% Zoom Responsive Reflow: Hide workbench header expand buttons when mobile tabs take over */
+@media (max-width: 1024px) {
+  .ds-workbench-3pane .ds-workbench-header-expand-btn {
+    display: none !important;
+  }
+
+  .ds-workbench-3pane__body {
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Left Drawer: Off-canvas sliding from left */
+  .ds-workbench-3pane__nav {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(340px, 85vw) !important;
+    max-width: 85vw;
+    height: 100% !important;
+    z-index: 50;
+    background: var(--ds-semantic-color-surface-default, #ffffff);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
+    transform: translateX(-100%);
+    visibility: hidden;
+    pointer-events: none;
+    border-right: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.28s;
+  }
+
+  .ds-workbench-3pane__nav--open,
+  .ds-workbench-3pane__body--nav-collapsed .ds-workbench-3pane__nav--open,
+  .ds-workbench-3pane__body--both-collapsed .ds-workbench-3pane__nav--open {
+    width: min(340px, 85vw) !important;
+    transform: translateX(0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  .ds-workbench-3pane__nav--open .ds-workbench-3pane__nav-content,
+  .ds-workbench-3pane__body--nav-collapsed .ds-workbench-3pane__nav--open .ds-workbench-3pane__nav-content,
+  .ds-workbench-3pane__body--both-collapsed .ds-workbench-3pane__nav--open .ds-workbench-3pane__nav-content {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  /* Right Inspector: Modal Right Slide-Over Sheet */
+  .ds-workbench-3pane__inspector {
+    position: absolute !important;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: auto;
+    width: min(380px, 90vw) !important;
+    max-width: 90vw;
+    height: 100% !important;
+    border-left: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+    border-top: none;
+    z-index: 60;
+    background: var(--ds-semantic-color-surface-default, #ffffff);
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.18);
+    transform: translateX(100%);
+    border-radius: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.28s;
+  }
+
+  .ds-workbench-3pane__inspector--open,
+  .ds-workbench-3pane__body--inspector-collapsed .ds-workbench-3pane__inspector--open,
+  .ds-workbench-3pane__body--both-collapsed .ds-workbench-3pane__inspector--open {
+    width: min(380px, 90vw) !important;
+    transform: translateX(0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  .ds-workbench-3pane__inspector--open .ds-workbench-3pane__inspector-content,
+  .ds-workbench-3pane__body--inspector-collapsed .ds-workbench-3pane__inspector--open .ds-workbench-3pane__inspector-content,
+  .ds-workbench-3pane__body--both-collapsed .ds-workbench-3pane__inspector--open .ds-workbench-3pane__inspector-content {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  /* Dark Backdrop */
+  .ds-workbench-3pane__backdrop {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 45;
+    cursor: pointer;
+  }
+
+  .ds-workbench-edge-toggle {
+    display: none !important;
+  }
+
+  .ds-workbench-mobile-trigger {
+    display: inline-flex !important;
+  }
+
+  /* Mobile pane trigger bar: full-width sticky row below the title row */
+  .ds-workbench-mobile-toolbar {
+    display: flex !important;
+    flex-direction: row;
+    gap: var(--ds-global-space-2, 8px);
+    padding: 6px 12px 8px;
+    background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+    border-top: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+  }
+
+  .ds-workbench-bottom-sheet-grabber {
+    display: block;
+    width: 44px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--ds-semantic-color-border-default, #cbd5e1);
+    margin: 8px auto 4px auto;
+    flex-shrink: 0;
+  }
+
+  /* Draggable splitters hidden on mobile/tablet */
+  .ds-workbench-splitter,
+  .ds-workbench-splitter-region {
+    display: none !important;
+  }
+
+  /* NotebookLM-style Top Segmented Tab Bar */
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-mobile-tabs {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--ds-global-space-1, 4px);
+    padding: 6px 12px;
+    background: var(--ds-semantic-color-surface-subtle, #f8fafc);
+    border-bottom: 1px solid var(--ds-semantic-color-border-subtle, #e2e8f0);
+    flex-shrink: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 10;
+  }
+
+  .ds-workbench-mobile-tab {
+    flex: 1 1 0%;
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-global-space-1-5, 6px);
+    padding: 8px 8px;
+    border-radius: var(--ds-global-radius-md, 6px);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--ds-semantic-color-text-secondary, #475569);
+    font-family: inherit;
+    font-size: var(--ds-global-font-size-sm, 13px);
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transition: all 0.15s ease;
+  }
+
+  .ds-workbench-mobile-tab__icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+  }
+
+  .ds-workbench-mobile-tab__text {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ds-workbench-mobile-tab__badge {
+    min-width: 0;
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: var(--ds-global-font-size-xs, 11px);
+    font-weight: 600;
+    color: var(--ds-semantic-color-text-secondary, #475569);
+  }
+
+  .ds-workbench-mobile-tab:hover {
+    background: var(--ds-semantic-color-surface-default, #ffffff);
+    color: var(--ds-semantic-color-text-primary, #0f172a);
+  }
+
+  .ds-workbench-mobile-tab--active {
+    background: var(--ds-semantic-color-surface-default, #ffffff);
+    color: var(--ds-semantic-color-primary-default, #2563eb);
+    border-color: var(--ds-semantic-color-border-subtle, #e2e8f0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .ds-workbench-mobile-tab:focus-visible {
+    outline: 2px solid var(--ds-semantic-color-focus-ring, #3b82f6);
+    outline-offset: -1px;
+  }
+
+  @media (max-width: 640px) {
+    .ds-workbench-mobile-tab {
+      padding: 8px 4px;
+      font-size: var(--ds-global-font-size-xs, 12px);
+      gap: var(--ds-global-space-1, 4px);
+    }
+
+    .ds-workbench-mobile-tab__badge {
+      display: none !important;
+    }
+  }
+
+  /* Pane Visibility in Tabbed Mode (Clean Full-Width Switching) */
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-3pane__body {
+    flex-direction: column !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-edge-toggle {
+    display: none !important;
+  }
+
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-3pane__body--tab-nav .ds-workbench-3pane__nav {
+    display: flex !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    transform: none !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    border-right: none !important;
+    box-shadow: none !important;
+  }
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-3pane__body--tab-nav .ds-workbench-3pane__nav-content {
+    width: 100% !important;
+    min-width: 0 !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-3pane__body--tab-nav .ds-workbench-3pane__center,
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-3pane__body--tab-nav .ds-workbench-3pane__inspector {
+    display: none !important;
+  }
+
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-3pane__body--tab-main .ds-workbench-3pane__center {
+    display: flex !important;
+    width: 100% !important;
+    height: 100% !important;
+    flex: 1 1 auto !important;
+  }
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-3pane__body--tab-main .ds-workbench-3pane__nav,
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-3pane__body--tab-main .ds-workbench-3pane__inspector {
+    display: none !important;
+  }
+
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-3pane__body--tab-inspector .ds-workbench-3pane__inspector {
+    display: flex !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    transform: none !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    border-left: none !important;
+    box-shadow: none !important;
+  }
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-3pane__body--tab-inspector .ds-workbench-3pane__inspector-content {
+    width: 100% !important;
+    min-width: 0 !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-3pane__body--tab-inspector .ds-workbench-3pane__nav,
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-3pane__body--tab-inspector .ds-workbench-3pane__center {
+    display: none !important;
+  }
+
+  /* Opt-in document scrolling for tabbed workbenches embedded in a page. */
+  .ds-workbench-3pane--mobile-tabs.ds-workbench-3pane--tab-page-scroll {
+    height: auto;
+    max-height: none;
+    flex: none;
+    overflow: visible;
+  }
+
+  .ds-workbench-3pane--tab-page-scroll .ds-workbench-3pane__body {
+    height: auto;
+    min-height: 0;
+    flex: none;
+    overflow: visible !important;
+  }
+
+  .ds-workbench-3pane--tab-page-scroll .ds-workbench-3pane__body--tab-nav .ds-workbench-3pane__nav,
+  .ds-workbench-3pane--tab-page-scroll .ds-workbench-3pane__body--tab-main .ds-workbench-3pane__center,
+  .ds-workbench-3pane--tab-page-scroll .ds-workbench-3pane__body--tab-inspector .ds-workbench-3pane__inspector {
+    height: auto !important;
+    flex: none !important;
+    overflow: visible;
+  }
+
+  .ds-workbench-3pane--tab-page-scroll .ds-workbench-3pane__nav-content,
+  .ds-workbench-3pane--tab-page-scroll .ds-workbench-3pane__center-content,
+  .ds-workbench-3pane--tab-page-scroll .ds-workbench-3pane__inspector-content {
+    height: auto !important;
+    min-height: 0;
+    flex: none;
+    overflow: visible;
+    scrollbar-gutter: auto;
+  }
+}
+
+.ds-workbench-mobile-tabs {
+  display: none !important;
+}
+
+.ds-workbench-3pane__backdrop {
+  display: none;
+}
+
+.ds-workbench-mobile-trigger {
+  display: none !important;
+}
+
+/* Dedicated mobile pane-trigger toolbar row — always hidden on desktop */
+.ds-workbench-mobile-toolbar {
+  display: none;
+}
+
+.ds-workbench-bottom-sheet-grabber {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .ds-workbench-3pane--mobile-tabs .ds-workbench-pane-toggle {
+    display: none !important;
+  }
+}
+
+/* Reduced Motion Compliance (§01 Foundations) */
+@media (prefers-reduced-motion: reduce) {
+  .ds-workbench-3pane__nav,
+  .ds-workbench-3pane__inspector,
+  .ds-workbench-pane-toggle,
+  .ds-workbench-expand-trigger {
+    transition: none !important;
+    transform: none !important;
+  }
+}

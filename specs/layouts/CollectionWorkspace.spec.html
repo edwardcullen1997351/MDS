@@ -1,0 +1,199 @@
+<!-- @dsCard group="Specs · Layouts" viewport="1080x760" name="Collection workspace" subtitle="Full specification — one collection as the work surface: controls kept structurally apart from items, the conditional bulk region, the five states that replace a region, and why there is no table page" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Collection workspace — layout template specification</title><link rel="stylesheet" href="../../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:64ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:72ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:normal}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.vp .why{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5}
+.mock{padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--background-page);min-height:150px}
+.ml{font-size:10px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+.bar{height:9px;border-radius:3px;background:var(--surface-sunken);border:var(--border-hairline)}
+.bar.h{height:15px;background:var(--surface-card)}
+.bar.on{background:var(--status-info-soft);border-color:var(--status-info-border)}
+.blk{border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card);padding:8px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.blk.bad{border-color:var(--status-critical-border)}
+.row{display:flex;gap:8px}
+.omitted{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding:20px 0 0;max-width:96ch;line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two,.vp{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<div class="masthead">
+  <span class="eyebrow">Layout template</span>
+  <h1>Collection workspace</h1>
+  <p class="lede">Nikhil Bhagat opens the instrument register once a week and does five different things to it: finds the gauges due, narrows to the machine shop, sorts by days overdue, ticks eleven of them, books the lab for all eleven. Not one of those is about a single gauge. This frame is the reusable surface for exactly that — finding, refining, selecting, manipulating and acting on a collection — and its whole discipline is keeping the controls that act on the collection structurally separate from the items in it, so that at any moment a user can tell what a control will touch.</p>
+  <div class="meta"><span>Written against: <a href="../../guidelines/layout-template-spec-standard.card.html">Layout template spec standard §01–§14</a></span><span>Regions: 6 (3 required, 3 conditional)</span><span>Reference implementation: <a href="collection-workspace-reference.card.html">card</a> · <a href="../../templates/collection-workspace/CollectionWorkspace.dc.html">standalone</a></span><span>Reference domain: manufacturing ERP — gauge and instrument calibration register, PL-04</span><span>Sections included: 9 of 14</span><span style="color:var(--text-primary)">status: frozen 8 Sep 2026 · 0 open items</span></div>
+</div>
+
+<section>
+  <div class="sec-head"><span class="num">§01</span><h2>Purpose</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <p>Provide a reusable work surface for finding, refining, selecting, manipulating and acting on a collection, while keeping collection-level controls structurally distinct from the items themselves. The frame is right when one collection <em>is</em> the screen: the user arrives to do something to that set, the work is done through the controls around it, and an individual member — when it is opened at all — is opened somewhere else.</p>
+    <p><strong>The distinctness is the point.</strong> Three scopes coexist on this screen: actions on the collection (add, import), actions on the current refinement (search, filter, sort), and actions on a selected subset (schedule, recall, withdraw). A user must be able to tell which is which from where the control sits, before reading its label. Every failure of this frame is a scope the user guessed wrong.</p>
+    <div class="two">
+      <div class="pane do"><h3>Appropriate</h3><ul><li>A register maintained over time: instruments, items, suppliers, customers, work centres.</li><li>A queue worked in bulk: goods receipts to post, requisitions to approve, certificates to import.</li><li>Any screen where the answer to "what am I looking at?" is one collection, and members open as their own pages.</li></ul></div>
+      <div class="pane dont"><h3>Not this layout</h3><ul><li><strong>Selection structurally controls a simultaneously visible detail region.</strong> Use <a href="MasterDetail.spec.html">master-detail</a> — that frame owns selection identity, the detail's four states and the position-preserving return, and none of it is specified here.</li><li><strong>Several independent modules, not one collection, are the composition.</strong> Use <a href="Dashboard.spec.html">dashboard</a>.</li><li><strong>Sequential reading content.</strong> Use <a href="SingleColumn.spec.html">single column</a>.</li><li><strong>Two substantial surfaces compared.</strong> Use <a href="SplitView.spec.html">split view</a>.</li></ul></div>
+    </div>
+    <p><strong>Applicable interaction patterns.</strong> <em>Primary:</em> none — the frame hosts collection work rather than implying one contract. <em>Supported:</em> <a href="../patterns/SearchResults.spec.html">search results</a>, <a href="../patterns/CollectionRefinement.spec.html">collection refinement</a>, <a href="../patterns/BulkSelectionAction.spec.html">bulk selection and action</a>, <a href="../patterns/CollectionEditing.spec.html">collection editing</a>, <a href="../patterns/DirectManipulationOfOrder.spec.html">direct manipulation of order</a>, <a href="../patterns/BulkDataImport.spec.html">bulk data import</a>. Most real workspaces host three or four of these at once; the frame's contribution is that each one's controls have a place to live where their scope is legible.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§02</span><h2>Anatomy</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <table><thead><tr><th>#</th><th>Region</th><th>Requirement</th><th>What it owns</th></tr></thead><tbody>
+      <tr><td class="k">1</td><td class="k">Collection header</td><td>Required</td><td>The heading and the context that says what this collection is and as of when, plus the actions whose scope is the <em>whole collection</em> — add a member, import members. Owns the <code>h1</code>. A selection-scoped action never appears here, because position is how scope is read.</td></tr>
+      <tr><td class="k">2</td><td class="k">Collection controls</td><td>Required</td><td>Search, refinement, and scope or sort controls where the collection component does not carry them. Structurally above and outside the collection surface, and never interleaved with items. Each control names the collection it affects (§08).</td></tr>
+      <tr><td class="k">3</td><td class="k">Selection and action region</td><td>Conditional</td><td>Actions on the selected subset, where selection is supported. It sits between the controls and the collection so that appearing does not move what the user is reading, and its label states how many members it will act on. Present-on-selection or present-and-disabled is a declared property (§03) — never both behaviours on one product.</td></tr>
+      <tr><td class="k">4</td><td class="k">Collection surface</td><td>Required</td><td>The collection itself — <code>Table</code>, <code>List</code>, <code>Tree</code>, a card or grid composition, or <code>SortableCollection</code>. The dominant region at every width. Which component it is does not change the frame (§12).</td></tr>
+      <tr><td class="k">5</td><td class="k">Collection footer</td><td>Conditional</td><td>Pagination, or the supplementary status that makes the collection legible — how many of how many, as at when. Bound to the collection surface, not to the page, and reachable without scrolling the collection body past it.</td></tr>
+      <tr><td class="k">6</td><td class="k">State regions</td><td>Conditional</td><td>Loading, empty, no-matches and failure presentations, which occupy the collection surface and its footer in place of them (§06). They are regions, not overlays: the controls above stay present and usable, because a user whose refinement returned nothing needs the refinement controls most.</td></tr>
+    </tbody></table>
+    <p><strong>What the frame does not own:</strong> anything inside the collection surface. Row structure, columns, sorting mechanics, inline editing, drag handles, per-item actions and the collection's own keyboard model all belong to the collection component and to the patterns in play.</p>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — three scopes, three places</div><div class="mock"><div class="row"><span class="ml" style="flex:1">1 · register heading</span><span class="ml">add · import</span></div><div class="row"><div class="bar" style="flex:2"></div><div class="bar" style="flex:1"></div><div class="bar" style="flex:1"></div></div><span class="ml">3 · 11 selected — schedule · recall · withdraw</span><div class="blk"><div class="bar h"></div><div class="bar on"></div><div class="bar on"></div><div class="bar"></div></div><span class="ml">5 · 1–8 of 16 · pagination</span></div><div class="why">Collection-scoped actions in the header, refinement in its own row, selection-scoped actions in a region that names its count. Nikhil can tell what "Withdraw" will touch without reading twice.</div></div>
+      <div class="no"><div class="cap">Don't — one action row for everything</div><div class="mock"><div class="row"><span class="ml" style="flex:1">heading</span><span class="ml">add · withdraw · import · schedule</span></div><div class="blk bad"><div class="bar h"></div><div class="bar on"></div><div class="bar"></div><div class="bar"></div></div><span class="ml">footer</span></div><div class="why">"Withdraw" and "Schedule" act on eleven ticked rows; "Add" and "Import" act on the register. Sat in one strip they are indistinguishable, and the first mistake withdraws sixteen gauges from service instead of eleven.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§03</span><h2>Properties</h2><span class="sec-note">Conditional — included: four choices change the frame's contract</span></div>
+  <div class="body">
+    <table><thead><tr><th>Property</th><th>Values</th><th>Default</th><th>Effect</th></tr></thead><tbody>
+      <tr><td class="k">controlPlacement</td><td>one horizontal control row · search inline with refinement in a <code>Popover</code> or non-modal <code>Drawer</code></td><td>one horizontal control row</td><td>A single row is the default: every refinement visible, nothing hidden behind a click. A panel is right when refinement is genuinely many-dimensional, and it must be non-modal — narrowing a collection you cannot see is guesswork. A <em>lateral, permanent</em> facet region is not this property: that is <a href="Sidebar.spec.html">sidebar</a> hosting this frame in its main region, and it is specified there.</td></tr>
+      <tr><td class="k">collectionDensity</td><td>as the collection component offers</td><td>the component's default</td><td>Declared at the frame so that one workspace does not mix densities between its collection and its controls. The scale itself belongs to the collection component; the frame only chooses.</td></tr>
+      <tr><td class="k">paginationPlacement</td><td>collection footer · footer and header</td><td>collection footer</td><td>Footer is the default and the honest place: pagination belongs to the collection it pages. Duplicating it above is defensible only for a long collection with page-level scroll, and both instances must be the same control reporting the same state.</td></tr>
+      <tr><td class="k">bulkRegionPersistence</td><td>appears on selection · always present, disabled until selection</td><td>appears on selection</td><td>Appearing keeps the resting screen quiet; standing present keeps the layout stable and tells a first-time user that bulk work exists. Either is acceptable; mixing them across a product is not, and whichever is chosen must not displace content the user is reading (§07).</td></tr>
+    </tbody></table>
+    <p>Which collection component fills region 4 is composition, not configuration — see §12.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§06</span><h2>States</h2><span class="sec-note">Conditional — included: five states change which structural region occupies the workspace</span></div>
+  <div class="body">
+    <p>These qualify as layout states because each one decides which major region is present. They are not the collection component's states aggregated: the frame decides whether region 4 exists at all right now, and what stands in its place.</p>
+    <table><thead><tr><th>State</th><th>What occupies the workspace</th><th>Contract</th></tr></thead><tbody>
+      <tr><td class="k">loading collection</td><td>A placeholder in place of regions 4 and 5</td><td>The header and controls stay present. Reserve the collection's height so the workspace does not jump when rows arrive, and never blank the controls the user is about to use.</td></tr>
+      <tr><td class="k">empty collection</td><td>An empty state in place of region 4</td><td>Nothing exists yet. It offers the collection-scoped way out — add the first member, import a set — and it is a different screen from no-matches. Conflating the two tells a user with a stray filter that their register is empty.</td></tr>
+      <tr><td class="k">no refinement matches</td><td>An empty state in place of region 4, controls untouched</td><td>Members exist; this refinement excludes them. It says what was searched and refined, how many the collection holds, and offers to clear the refinement. The controls must remain exactly as the user left them.</td></tr>
+      <tr><td class="k">selection active</td><td>Region 3 in addition to everything else</td><td>The only additive state: nothing is replaced, and the collection stays fully visible. Selection is held by identity, so it survives refinement and paging; where a selected member is no longer visible, the frame says so rather than silently dropping it.</td></tr>
+      <tr><td class="k">collection-level failure</td><td>A failure presentation in place of regions 4 and 5</td><td>The collection could not be read. Nothing is shown, because nothing is known — never a stale collection presented as current. The refinement is preserved and the retry is offered where the collection was. Recovery is <a href="../patterns/RecoverableFailure.spec.html">recoverable failure</a>'s contract; the frame's part is that the failure occupies the collection's region and no other.</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§07</span><h2>Keyboard</h2><span class="sec-note">Conditional — included: regions appear and disappear, and focus order is the frame's</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>The frame invents no collection-navigation semantics.</strong> Arrowing rows, expanding tree nodes, moving items, entering and leaving a cell editor, typeahead — all belong to <code>Table</code>, <code>List</code>, <code>Tree</code>, <code>SortableCollection</code> and the patterns. This section exists only because regions come and go.</li>
+      <li><strong>A region appearing does not move focus.</strong> Ticking a row raises region 3; focus stays on the control the user just used. The new region is reachable by ordinary forward movement from there, which is why it sits above the collection and not at the foot of the page.</li>
+      <li><strong>Focus order follows the regions' order at every width</strong> — header, controls, selection region, collection, footer — including when the refinement moves into a panel: the trigger keeps the controls' place in the order and the panel's contents follow it.</li>
+      <li><strong>A region disappearing hands focus back deliberately.</strong> When the last selection is cleared and region 3 leaves, focus goes to the control that cleared it or to the collection — never nowhere, which is what happens by default and drops the user at the top of the document.</li>
+      <li><strong>State regions are focusable destinations, not traps.</strong> When a state region replaces the collection, its own action (clear the refinement, retry, add the first member) is in the focus order where the collection was.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§08</span><h2>Accessibility</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Every control identifies the collection it affects.</strong> "Search the instrument register", not "Search"; "Actions on the selected instruments", not "Actions". The frame is the only thing that knows there is one collection here and what it is called, and a control named for its mechanism is unusable to anyone who cannot see what it sits above.</li>
+      <li><strong>Regions are labelled and heading levels run down the document.</strong> The header owns the <code>h1</code>; a titled region starts at <code>h2</code>. The primary search may publish a <code>search</code> landmark named for the collection; a second unnamed one on the same page is worse than none.</li>
+      <li><strong>The selection region does not relocate focus disruptively</strong> (§07), and it reports its scope in words — the count and the noun — not by a highlight the user must infer.</li>
+      <li><strong>Loading, empty and failure states communicate through their components</strong> — <code>Skeleton</code>, <code>EmptyState</code>, <code>Alert</code> — with the politeness their own specs define. The frame adds only that the replacement is announced as a change to the collection region, and that the surrounding controls' names still describe the same collection.</li>
+      <li><strong>Selection state is exposed on the members themselves</strong>, not carried by row shading, and a select-all control states its own scope: this page, or the whole refined collection. The two are different promises and only one of them is usually true.</li>
+      <li><strong>Sort and refinement changes are perceivable without sight of the collection.</strong> Where the frame owns the sort or scope control, its current state is legible from the control, and the resulting count is stated in text.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§11</span><h2>Responsive</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Expanded.</strong> Controls may occupy one coordinated horizontal row, and the collection may use its richer multi-column presentation.</li>
+      <li><strong>Constrained.</strong> Controls wrap or stack <em>ahead of</em> the collection — never below it, never interleaved — and non-essential simultaneous controls may move into a <code>Popover</code> or <code>Drawer</code>. Search stays directly visible: it is the control most likely to be the reason the user opened the screen.</li>
+      <li><strong>The collection remains the dominant region at every width.</strong> A workspace whose controls take more vertical space than its collection has inverted itself.</li>
+      <li><strong>Changing <code>Table</code> to a list or card presentation is a component-level responsive decision, not a new layout.</strong> The frame is unchanged by it, and no product may fork this template because its collection renders differently on a phone (§12).</li>
+      <li><strong>Region order is preserved in every form</strong>, in the DOM and on screen: header, controls, selection region, collection, footer.</li>
+      <li><strong>The selection region stays reachable when the collection scrolls.</strong> Pinning it is permitted; covering the last row is not, and neither is a floating bar that hides the footer's own controls.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — controls stack ahead of the collection</div><div class="mock"><span class="ml">search — always visible</span><div class="bar h"></div><span class="ml">refine (2) — in a panel</span><div class="blk"><div class="bar h"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div><div class="why">On the tablet in the quality lab, the register still owns the screen. Search is one tap, the two refinements are one tap behind a trigger that keeps the controls' place in the focus order.</div></div>
+      <div class="no"><div class="cap">Don't — controls below, or a forked template</div><div class="mock"><div class="blk bad"><div class="bar h"></div><div class="bar"></div></div><span class="ml">search + filters, after the collection</span><div class="bar h"></div><span class="ml">&ldquo;instrument card grid&rdquo; — a second template</span></div><div class="why">Controls after the collection can only be found by scrolling past what they are meant to narrow. And a card presentation is not a new frame: forking "table page" and "card grid" doubles the specifications and halves the consistency.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§12</span><h2>Anti-patterns</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>Separate "table page", "list page", "card grid" or "gallery" templates derived from the collection component chosen.</strong> One frame, many collection surfaces. This is the misuse the frame exists to prevent, and it is the most common one.</li>
+      <li><strong>Using it where selection structurally controls a simultaneously visible detail region.</strong> That is <a href="MasterDetail.spec.html">master-detail</a>; adopting this frame instead leaves you without a detail state model.</li>
+      <li><strong>Using it where several independent modules are the composition.</strong> That is <a href="Dashboard.spec.html">dashboard</a> — and summary tiles above a collection do not make a dashboard either.</li>
+      <li><strong>Mixing the three scopes in one action strip</strong>, or putting a selection-scoped action in the header (§02).</li>
+      <li><strong>A bulk region that displaces the collection</strong>, covers the last row, or appears and takes focus with it.</li>
+      <li><strong>One empty state for both "nothing exists" and "nothing matches".</strong> Two different screens, two different ways out (§06).</li>
+      <li><strong>Blanking the controls while the collection loads</strong>, or showing a stale collection during a failed read.</li>
+      <li><strong>Refinement that clears the selection silently</strong>, or a select-all whose scope — this page or the whole refined set — is not stated.</li>
+      <li><strong>Controls interleaved with items</strong> — a filter row inside the collection, a sort control in a column header that also acts on other collections — dissolving the distinctness in §01.</li>
+      <li><strong>Growing a detail pane into the workspace</strong> because one member needed more room. At that point the screen is master-detail and should be specified as such, not improvised here.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">§13</span><h2>Implementation notes</h2><span class="sec-note">Unconditional</span></div>
+  <div class="body">
+    <ul>
+      <li><strong>One vertical order, built with <code>Stack</code> inside <code>Container</code>;</strong> regions 4 and 5 sit on one <code>Surface</code> so the collection and its pagination read as a single object. Use <code>Toolbar</code> for each action group so that each set of controls carries its own accessible name and one tab stop, and <code>Grid</code> only inside a region.</li>
+      <li><strong>Selection lives in the frame, keyed by member identity — never by row index or page position.</strong> That is what lets selection survive sorting, refinement and paging (§06), and it is what makes a bulk action's count trustworthy.</li>
+      <li><strong>Keep three action scopes in three places in the DOM.</strong> Resist the convenience of one action array rendered in one strip: the scope distinction in §01 is carried by position, and it disappears the moment the strips are merged.</li>
+      <li><strong>Refinement state and page belong together and belong in the URL</strong> where the workspace is shared, bookmarked or returned to from a member's page. Restoring a workspace means restoring query, refinement, sort, page and scroll — a member's page returning to page 1 unfiltered is the same defect master-detail names in its §12.</li>
+      <li><strong>Give the collection surface a bounded height only if you need it to scroll independently</strong>, and then keep the footer outside the scrolled area. Never nest a scrolling collection inside a scrolling page: two scrollbars on one collection is unnavigable with a trackpad and impossible with a keyboard.</li>
+      <li><strong>Reserve the collection's height across state changes.</strong> Loading, empty, no-matches and failure all occupy the same box; if they do not, every read reflows the screen and the controls move under the pointer.</li>
+      <li><strong>The state regions are mutually exclusive and evaluated in one place.</strong> Failure, then loading, then empty, then no-matches, then the collection — decided once, so two states can never render together.</li>
+      <li><strong>Every region needs <code>min-width: 0</code></strong>, and a wide collection scrolls horizontally inside its own surface rather than widening the workspace.</li>
+    </ul>
+  </div>
+</section>
+
+<p class="omitted">Omitted, with reasons — §04 Variants: one structural form; control placement and pagination placement are properties (§03), the collection component is composition (§12), and the constrained arrangement is a §11 consequence. · §05 Sizes: the frame names no size classes — density is chosen in §03 but the scale is the collection component's, and space comes from the spacing tokens. · §09 Motion: the frame owns no structural motion; a region appearing must not animate the collection out from under the pointer, which is a §07 and §13 requirement rather than a motion specification. · §10 Content rules: the frame constrains no content beyond the region purposes in §02 and the naming obligation in §08 — what a column says or how a member is labelled belongs to the collection component and the product. · §14 Developer notes: nothing technical remains once §13 is written — identity-keyed selection, the URL-borne refinement, the single state decision and the scroll boundary are all stated there.</p>
+<p class="omitted">Applies to: this layout template · Section set and include/omit tests: <a href="../../guidelines/layout-template-spec-standard.card.html">layout template spec standard</a> · Register: <a href="layouts.card.html">layouts index</a></p>
+</div>
+</body></html>

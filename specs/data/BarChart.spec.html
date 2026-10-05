@@ -1,0 +1,480 @@
+<!-- @dsCard group="Specs · Data" viewport="1080x760" name="BarChart" subtitle="Full specification — discrete magnitude comparison: zero-baseline truth, multi-series variants, keyboard traversal, and accessible tabular fallback" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>BarChart — specification</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+.page{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+.masthead{display:flex;flex-direction:column;gap:10px;padding-bottom:20px;border-bottom:var(--border-width) solid var(--border-strong)}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-4xl);font-weight:300;letter-spacing:-0.022em;line-height:1.1}
+.lede{margin:0;max-width:74ch;color:var(--text-secondary);text-wrap:pretty}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);padding-top:4px}
+section{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding:28px 0;border-bottom:var(--border-hairline)}
+section:last-of-type{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.sec-note{font-size:var(--text-xs);color:var(--text-tertiary);text-wrap:pretty}
+.body{display:flex;flex-direction:column;gap:16px;min-width:0}
+p{margin:0;max-width:74ch;text-wrap:pretty;color:var(--text-secondary)}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code,.mono{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.demo{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);box-shadow:var(--shadow-xs);padding:20px;display:flex;flex-direction:column;gap:16px}
+.st{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+.st th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+.st td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+.st tr:last-child td{border-bottom:none}
+.st td.k{font-family:var(--font-mono);color:var(--text-primary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pane{background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pane h3{margin:0;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold)}
+.pane.do h3{color:var(--text-success)}
+.pane.dont h3{color:var(--text-critical)}
+.pane ul{padding-left:16px;font-size:var(--text-xs)}
+pre{margin:0;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);padding:14px 16px;overflow:auto;font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.6;color:var(--text-primary)}
+.tokenlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 20px;font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-secondary)}
+.warn{border-left:2px solid var(--status-critical-solid);padding-left:12px}
+kbd{font-family:var(--font-mono);font-size:var(--text-2xs);background:var(--surface-sunken);border:var(--border-hairline);border-radius:var(--radius-xs);padding:1px 5px;color:var(--text-primary)}
+.lbl{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);padding-bottom:4px;display:block}
+@media (max-width:860px){section{grid-template-columns:1fr;gap:14px}.two{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+
+<script type="text/babel">
+const Sec = ({n,title,note,children}) => (
+  <section>
+    <div className="sec-head"><span className="num">{n}</span><h2>{title}</h2>{note?<span className="sec-note">{note}</span>:null}</div>
+    <div className="body">{children}</div>
+  </section>
+);
+const T = ({cols,rows}) => (
+  <table className="st"><thead><tr>{cols.map((c,i)=><th key={i}>{c}</th>)}</tr></thead>
+  <tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} className={j===0?'k':''}>{c}</td>)}</tr>)}</tbody></table>
+);
+
+// Plant Datasets (Suryodaya Autocomp Ltd — Chakan PL-04, Pune)
+const SCRAP_DATA = [
+  { line: 'Line 1 (Tandem)', scrap: 142000, target: 120000 },
+  { line: 'Line 2 (Prog)', scrap: 88000, target: 100000 },
+  { line: 'Line 3 (Transfer)', scrap: 215000, target: 150000 },
+  { line: 'Line 4 (Blanking)', scrap: 64000, target: 80000 },
+];
+
+const SHIFT_COMPARE_DATA = [
+  { day: 'Mon', 'Shift A': 420, 'Shift B': 390, 'Shift C': 310 },
+  { day: 'Tue', 'Shift A': 450, 'Shift B': 410, 'Shift C': 290 },
+  { day: 'Wed', 'Shift A': 430, 'Shift B': 440, 'Shift C': 340 },
+  { day: 'Thu', 'Shift A': 460, 'Shift B': 420, 'Shift C': 360 },
+  { day: 'Fri', 'Shift A': 440, 'Shift B': 380, 'Shift C': 300 },
+];
+
+const DEFECT_PCT_DATA = [
+  { part: 'Crankcase', Porosity: 45, Burr: 25, Dimensional: 30 },
+  { part: 'Flywheel', Porosity: 20, Burr: 55, Dimensional: 25 },
+  { part: 'Brake Disc', Porosity: 15, Burr: 30, Dimensional: 55 },
+];
+
+function MiniBarChart({ data, categoryKey, valueKey, series, variant = 'vertical', unit = '', height = 200 }) {
+  const isHorizontal = variant === 'horizontal';
+  const isGrouped = variant === 'grouped';
+  const isNormalized = variant === 'normalized';
+
+  const seriesList = series || [{ key: valueKey, label: 'Value', color: 'var(--viz-1, #2563eb)' }];
+  const maxVal = isNormalized ? 100 : Math.max(...data.flatMap(d => seriesList.map(s => Number(d[s.key]) || 0))) * 1.15;
+
+  return (
+    <svg width="100%" height={height} viewBox={`0 0 500 ${height}`} style={{ overflow: 'visible', background: 'var(--surface-sunken)', borderRadius: 'var(--radius-sm)', padding: 12 }}>
+      {/* Zero baseline */}
+      <line x1={isHorizontal ? 80 : 40} y1={isHorizontal ? 10 : height - 30} x2={isHorizontal ? 80 : 480} y2={isHorizontal ? height - 20 : height - 30} stroke="var(--border-strong)" strokeWidth="1.2" />
+
+      {data.map((d, i) => {
+        const cat = d[categoryKey];
+        if (isHorizontal) {
+          const y = 20 + i * ((height - 40) / data.length);
+          const raw = Number(d[valueKey]) || 0;
+          const w = (raw / maxVal) * 360;
+          return (
+            <g key={i}>
+              <text x="72" y={y + 14} textAnchor="end" fontSize="10" fontFamily="var(--font-sans)" fill="var(--text-secondary)">{cat}</text>
+              <rect x="80" y={y + 2} width={Math.max(2, w)} height="16" rx="2" fill="var(--viz-1, #2563eb)" />
+              <text x={86 + w} y={y + 14} fontSize="9" fontFamily="var(--font-mono)" fill="var(--text-tertiary)">{unit === '₹' ? `₹${raw.toLocaleString('en-IN')}` : raw}</text>
+            </g>
+          );
+        }
+
+        const bandW = 440 / data.length;
+        const x = 40 + i * bandW;
+        return (
+          <g key={i}>
+            <text x={x + bandW / 2} y={height - 14} textAnchor="middle" fontSize="10" fontFamily="var(--font-sans)" fill="var(--text-secondary)">{cat}</text>
+            {isGrouped ? (
+              seriesList.map((s, sIdx) => {
+                const subW = (bandW - 12) / seriesList.length;
+                const raw = Number(d[s.key]) || 0;
+                const h = (raw / maxVal) * (height - 50);
+                return (
+                  <rect key={s.key} x={x + 6 + sIdx * subW} y={height - 30 - h} width={subW - 2} height={Math.max(2, h)} rx="2" fill={s.color} />
+                );
+              })
+            ) : isNormalized ? (
+              (() => {
+                let currY = height - 30;
+                return seriesList.map(s => {
+                  const pct = Number(d[s.key]) || 0;
+                  const h = (pct / 100) * (height - 50);
+                  const barY = currY - h;
+                  currY = barY;
+                  return <rect key={s.key} x={x + 10} y={barY} width={bandW - 20} height={h} fill={s.color} />;
+                });
+              })()
+            ) : (
+              (() => {
+                const raw = Number(d[valueKey]) || 0;
+                const h = (raw / maxVal) * (height - 50);
+                return <rect x={x + 10} y={height - 30 - h} width={bandW - 20} height={Math.max(2, h)} rx="2" fill="var(--viz-1, #2563eb)" />;
+              })()
+            )}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function Spec() {
+  const [theme, setTheme] = React.useState('light');
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  return (
+    <div className="page">
+      <div className="masthead">
+        <span className="eyebrow">Data Visualization · Component specification</span>
+        <h1>BarChart</h1>
+        <p className="lede">Compares quantitative magnitude across discrete categories. Uses rectangular bar marks whose lengths represent values along a common quantitative scale. Enforces a strict zero baseline for proportional truth, multi-channel pattern encoding, keyboard roving tabindex traversal, and automatic tabular fallback.</p>
+        <div className="meta">
+          <span>status: frozen 8 Sep 2026 · 0 open items</span>
+          <span>since: 1.3.0</span>
+          <span>source: components/data/BarChart.jsx</span>
+          <span>infrastructure: components/data/viz-core.js</span>
+        </div>
+      </div>
+
+      {/* §01 Purpose */}
+      <Sec n="§01" title="Purpose" note="Cognitive task and selection boundaries">
+        <p>The Bar Chart answers the analytical question: <em>"How do quantitative values compare across discrete, independent categories?"</em> It uses length from a common baseline, which the human visual cortex decodes with the highest cognitive accuracy of any visual channel (Cleveland & McGill, 1984).</p>
+
+        <T
+          cols={["You want to...", "Use this visualization", "Instead of...", "Why"]}
+          rows={[
+            ["Compare magnitude across discrete entities (e.g. scrap cost across 4 press lines)", "BarChart (Horizontal / Vertical)", "LineChart", "Categories have no continuous sequential relationship; connecting lines would falsely imply a continuous trend."],
+            ["Compare parts of a whole across categories (e.g. defect mode breakdown per part)", "BarChart (Normalized 100% Stacked)", "Pie / Donut Chart", "Multiple stacked bars allow accurate cross-category comparison of composition; pie charts fail beyond a single category."],
+            ["Compare sub-series within discrete buckets (e.g. Shift A/B/C volume per day)", "BarChart (Grouped)", "Multi-Line Chart", "Days are discrete intervals; grouped bars give direct height comparison per shift."],
+            ["Examine 3 or fewer static metrics (e.g. total plant OEE today)", "DescriptionList / KPI Stat", "BarChart", "Under 3 points, graphical chart overhead adds visual clutter without analytical value."]
+          ]}
+        />
+
+        <div className="two">
+          <div className="pane do">
+            <h3>Do</h3>
+            <p>Use horizontal bars when category strings exceed 12 characters (e.g. Indian machine names like <em>Tandem Press Line 01 (Chakan)</em>), allowing full readability without awkward text rotation.</p>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <p>Don't use a Bar Chart to plot 500 high-frequency sensor readings sampled every second. Continuous high-density telemetry belongs in a <code>LineChart</code> or <code>Heatmap</code>.</p>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §02 Anatomy */}
+      <Sec n="§02" title="Anatomy" note="Structural regions and mark slots">
+        <p>The Bar Chart is composed of an SVG container enclosing visual marks, coordinate grids, and an accessible HTML description layer.</p>
+
+        <T
+          cols={["Part", "Role", "DOM Type", "Token Assignment"]}
+          rows={[
+            ["Container", "Root wrapper hosting SVG, header, legend, and table switcher", "HTML <div>", "--surface-card, --border-hairline, --radius-md"],
+            ["Plot Area", "Inner coordinate bounding box where bars and gridlines render", "SVG <g>", "Defined by margin reservations (top, right, bottom, left)"],
+            ["Categorical Axis", "Discrete dimension axis showing tick labels per category", "SVG <text>", "--font-sans, --text-xs, --text-secondary"],
+            ["Quantitative Axis", "Continuous numerical scale with ticks and formatted values", "SVG <line>, <text>", "--font-mono, --text-2xs, --text-tertiary"],
+            ["Baseline", "Zero-magnitude anchor line (Y=0 for vertical, X=0 for horizontal)", "SVG <line>", "--border-strong (1.5px solid)"],
+            ["Gridlines", "Major tick interval guides across the plot canvas", "SVG <line>", "--border-subtle (1px dashed)"],
+            ["Bar Marks", "Rectangular geometric marks encoding quantitative magnitude", "SVG <rect>", "--viz-1 through --viz-6, rx=2px (--radius-xs)"],
+            ["Reference Line", "Benchmark, upper control limit, or target threshold guide", "SVG <line>, <text>", "--status-danger-solid / --action-solid (dashed)"],
+            ["Threshold Band", "Shaded tolerance region spanning a range of values", "SVG <rect>", "--status-critical-soft, --status-warning-soft"],
+            ["Tooltip Card", "Floating inspection card displaying formatted values on hover/focus", "HTML <div>", "--surface-card, --shadow-md, --radius-sm, z-index: 50"],
+            ["Legend", "Interactive series toggles for grouped and stacked modes", "HTML <button>", "--text-xs, --text-secondary, click to isolate"],
+            ["Tabular View", "Accessible fallback data table with full screen-reader support", "HTML <table>", "--surface-sunken, --border-hairline, Alt+F11 toggle"]
+          ]}
+        />
+      </Sec>
+
+      {/* §03 Properties */}
+      <Sec n="§03" title="Properties" note="API surface and data schema">
+        <p>BarChart accepts structured records with explicit key mappings. It deliberately refuses arbitrary 3D styling, unconstrained hex strings, and unscaled manual dimensions.</p>
+
+        <T
+          cols={["Prop", "Type", "Default", "Contract & Behavior"]}
+          rows={[
+            ["data", "any[]", "[]", "Array of data records representing discrete categories."],
+            ["categoryKey", "string", "'label'", "Object property key used for categorical ticks and naming."],
+            ["valueKey", "string", "'value'", "Object property key representing the primary numeric measure."],
+            ["series", "(string | BarSeriesConfig)[]", "null", "Multi-series keys for grouped and stacked comparisons."],
+            ["variant", "'vertical'|'horizontal'|'grouped'|'stacked'|'normalized'|'diverging'|'floating'", "'vertical'", "Visual layout variant and analytical stacking mode."],
+            ["orientation", "'vertical'|'horizontal'", "inferred", "Explicit layout axis. Inferred from variant if omitted."],
+            ["unit", "string", "''", "Measurement unit ('₹', '%', 'ppm', 'mm/s'). Automatically formatted via en-IN."],
+            ["referenceLines", "ReferenceLineConfig[]", "[]", "Threshold lines ({ value, label, tone, strokeStyle })."],
+            ["thresholdBands", "ThresholdBandConfig[]", "[]", "Shaded tolerance regions ({ min, max, label, tone })."],
+            ["baseline", "number", "0", "Scale baseline anchor. Strictly enforced at 0 for magnitude charts."],
+            ["domain", "[number, number]", "auto", "Explicit [min, max] override for scale calculation."],
+            ["selectedKey", "string | number | null", "null", "Currently active category identifier."],
+            ["onSelect", "(item: any) => void", "null", "Selection callback when a bar is clicked or activated."],
+            ["showGrid", "boolean", "true", "Displays subtle quantitative gridlines."],
+            ["showValues", "boolean", "false", "Renders direct data labels on bar tips."],
+            ["showTableToggle", "boolean", "true", "Displays accessible table switcher button (Alt+F11)."]
+          ]}
+        />
+
+        <p><strong>Refused capabilities:</strong></p>
+        <ul>
+          <li><strong>No 3D cylinders or bevels.</strong> Perspective distortion alters perceived bar volume and violates visual truth.</li>
+          <li><strong>No arbitrary raw hex strings.</strong> All series colors strictly consume the system tokens <code>--viz-1</code> through <code>--viz-6</code> or semantic state tokens.</li>
+          <li><strong>No truncated magnitude baselines.</strong> The component rejects non-zero baselines on standard bar charts to prevent fraudulent scale exaggeration.</li>
+        </ul>
+      </Sec>
+
+      {/* §04 Variants */}
+      <Sec n="§04" title="Variants" note="Analytical sub-types and visual forms">
+        <p>Seven standardized variants provide mathematically sound answers for different categorical questions.</p>
+
+        <div className="demo">
+          <span className="lbl">1. Horizontal Bar (Press Shop Scrap Cost by Line — ₹ en-IN)</span>
+          <MiniBarChart data={SCRAP_DATA} categoryKey="line" valueKey="scrap" variant="horizontal" unit="₹" height={160} />
+
+          <span className="lbl" style={{ marginTop: 12 }}>2. Grouped Vertical Bar (Shift Production Output — Shift A / B / C)</span>
+          <MiniBarChart data={SHIFT_COMPARE_DATA} categoryKey="day" series={[{ key: 'Shift A', color: 'var(--viz-1)' }, { key: 'Shift B', color: 'var(--viz-2)' }, { key: 'Shift C', color: 'var(--viz-3)' }]} variant="grouped" height={180} />
+
+          <span className="lbl" style={{ marginTop: 12 }}>3. 100% Normalized Stacked Bar (Defect Mode Composition — Porosity, Burr, Dimension)</span>
+          <MiniBarChart data={DEFECT_PCT_DATA} categoryKey="part" series={[{ key: 'Porosity', color: 'var(--viz-1)' }, { key: 'Burr', color: 'var(--viz-3)' }, { key: 'Dimensional', color: 'var(--viz-4)' }]} variant="normalized" height={180} />
+        </div>
+      </Sec>
+
+      {/* §05 Sizes */}
+      <Sec n="§05" title="Sizes & Density" note="Geometric tokens and container budget">
+        <p>Bar dimensions, corner radii, and padding scale with <code>[data-density]</code> and container dimensions.</p>
+
+        <T
+          cols={["Density Mode", "Row Height (Horizontal)", "Bar Band Padding", "Corner Radius", "Label Font Size"]}
+          rows={[
+            ["compact", "24px", "16% band gap", "1px (--radius-2xs)", "--text-2xs (10px)"],
+            ["comfortable (default)", "32px", "22% band gap", "2px (--radius-xs)", "--text-xs (12px)"],
+            ["expanded", "44px", "28% band gap", "4px (--radius-sm)", "--text-sm (14px)"]
+          ]}
+        />
+      </Sec>
+
+      {/* §06 States */}
+      <Sec n="§06" title="States" note="Interactive and lifecycle conditions">
+        <p>Every bar mark and container transition expresses clear state changes with verified contrast.</p>
+
+        <T
+          cols={["State", "Trigger", "Visual Treatment", "Contrast Ratio"]}
+          rows={[
+            ["Rest", "Default rendering", "Solid series color at 0.85 opacity, no outline", "≥ 3:1 graphical contrast against surface"],
+            ["Hover / Pointer Tracking", "Pointer enters category column or bar", "0.95 opacity, active tooltip card displayed, bold axis label", "≥ 3:1 graphical, 4.5:1 text"],
+            ["Selected / Pinned", "Click or Space activation", "2px solid border in --text-primary, pinned tooltip", "≥ 3:1 boundary contrast"],
+            ["Dimmed (Isolate)", "Legend series click filters single series", "Unselected series reduced to 0.25 opacity", "Distinct visual separation"],
+            ["Threshold Breach", "Value exceeds danger reference line", "Mark highlighted with --status-critical-solid", "≥ 3:1 semantic alert contrast"],
+            ["Loading", "loading=true prop set", "Animated skeleton bars with mer-skeleton-sweep", "aria-busy='true' set on region"],
+            ["Empty", "data=[] or null", "Centered empty icon with descriptive copy", "No misleading empty axes drawn"]
+          ]}
+        />
+      </Sec>
+
+      {/* §07 Keyboard */}
+      <Sec n="§07" title="Keyboard" note="Spatial traversal and shortcuts">
+        <p>The chart container is a single Tab-stop. Once focused, arrow keys traverse discrete category marks using roving tabindex.</p>
+
+        <T
+          cols={["Key", "Action", "Contract Guarantee"]}
+          rows={[
+            ["Tab / Shift+Tab", "Focus chart container / exit", "Container receives 2px focus ring; does not trap keyboard."],
+            ["Arrow Right / Down", "Focus next category", "Moves active inspection focus forward chronologically; reveals tooltip."],
+            ["Arrow Left / Up", "Focus previous category", "Moves active inspection focus backward; wraps around bounds."],
+            ["Home / End", "Jump to first / last category", "Immediately moves focus to first or final data mark."],
+            ["Enter / Space", "Select / Pin category", "Fires onSelect callback and pins active inspection tooltip."],
+            ["Escape", "Clear selection / dismiss tooltip", "Hides hover tooltip and clears active series isolation."],
+            ["Alt + F11", "Toggle accessible data table", "Immediately swaps graphical SVG view for accessible HTML <table>."]
+          ]}
+        />
+      </Sec>
+
+      {/* §08 Accessibility */}
+      <Sec n="§08" title="Accessibility" note="WCAG 2.1/2.2 AA compliance and semantics">
+        <p>The Bar Chart conforms to WCAG 2.1/2.2 AA standards through multi-channel visual encodings and WAI-ARIA graphics module roles.</p>
+
+        <T
+          cols={["WCAG Rule", "Requirement", "Implementation Contract"]}
+          rows={[
+            ["1.1.1 Non-text Content", "Text alternative for data graphics", "<desc> element details total categories, domain range, and summary; Alt+F11 renders full HTML table."],
+            ["1.3.1 Info and Relationships", "Semantic role structure", "role='graphics-document', aria-roledescription='bar chart', child marks carry role='graphics-symbol'."],
+            ["1.4.1 Use of Color", "Color not the sole carrier", "Series use distinct SVG hatching patterns (diagonal, dots, cross) in addition to hues."],
+            ["1.4.3 Contrast (Minimum)", "Text contrast ≥ 4.5:1", "Axis labels, tick values, and tooltip copy meet 4.5:1 against --surface-card."],
+            ["1.4.11 Non-text Contrast", "UI component & graphics ≥ 3:1", "All bar marks, baselines, and reference lines measure ≥ 3:1 against background."],
+            ["4.1.2 Name, Role, Value", "Accessible name and states", "aria-label describes purpose; selected state exposed programmatically."]
+          ]}
+        />
+
+        <div className="two">
+          <div className="pane do">
+            <h3>Do</h3>
+            <p>Always provide a concise <code>title</code> or <code>caption</code> so screen readers announce an intelligible landmark (e.g. <em>"Line 2 Press Scrap Cost Chart"</em>).</p>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <p>Don't hide data values entirely behind hover-only tooltips. Always provide the accessible tabular toggle for keyboard and assistive-tech operators.</p>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §09 Motion */}
+      <Sec n="§09" title="Motion" note="Transitions and reduced motion">
+        <p>Animations communicate data change without delaying console operators.</p>
+
+        <T
+          cols={["Transition", "Duration Token", "Timing Curve", "Reduced Motion Override"]}
+          rows={[
+            ["Initial Bar Growth", "250ms (--motion-base)", "cubic-bezier(0.2, 0, 0, 1)", "Instantaneous 0ms draw"],
+            ["Data Update Morphing", "180ms (--motion-fast)", "ease-out", "Instantaneous 0ms update"],
+            ["Tooltip Position Glide", "90ms (--motion-instant)", "ease-out", "Immediate coordinate snap"]
+          ]}
+        />
+      </Sec>
+
+      {/* §10 Content Rules */}
+      <Sec n="§10" title="Content Rules" note="Number formatting and Indian plant taxonomy">
+        <p>All currency and numbers strictly adhere to Indian numbering standards (<code>en-IN</code>) and shop-floor metrics.</p>
+
+        <T
+          cols={["Metric Type", "Correct Format (en-IN)", "Incorrect Format", "Rationale"]}
+          rows={[
+            ["Indian Rupees (Lakhs)", "₹2,50,000 / ₹1.5L", "$250,000 / 250k INR", "Meridian standardizes on ₹ symbol with lakh grouping."],
+            ["Rejection PPM", "140 ppm", "0.014% / 140.00", "Shop-floor defect rates are reported as integer parts-per-million."],
+            ["Temperature Delta", "+4.2 °C / -2.8 °C", "4.2C / 4.2 deg", "Explicit sign and degree symbol on thermal variance."],
+            ["Shift Identifiers", "Shift A (06:00–14:00 IST)", "Morning shift", "Strict 8-hour shift nomenclature in Indian Standard Time."]
+          ]}
+        />
+      </Sec>
+
+      {/* §11 Responsive */}
+      <Sec n="§11" title="Responsive" note="Adaptive scaling across viewports">
+        <p>The chart restructures based on container width rather than simple distortion.</p>
+
+        <T
+          cols={["Breakpoint / Container", "Layout Behavior", "Label & Legend Adaptation"]}
+          rows={[
+            ["Desktop (≥ 1024px)", "Full vertical or horizontal layout", "Full categorical labels, side/top legend, floating hover tooltip."],
+            ["Tablet (768px – 1023px)", "Horizontal layout preferred for long labels", "Axis ticks decimated by 2x; horizontal legend wrapped below."],
+            ["Mobile (< 768px)", "Auto-converts vertical bars to horizontal rows", "Labels left-aligned, touch scrubbing crosshair with bottom data tray."],
+            ["Micro-widget (< 240px)", "Compact sparkline mode", "Hides axes and gridlines; renders summary stat + mini bar strip."]
+          ]}
+        />
+      </Sec>
+
+      {/* §12 Anti-patterns */}
+      <Sec n="§12" title="Anti-patterns" note="Visual chart crimes and consequential failures">
+        <div className="warn" style={{ marginBottom: 16 }}>
+          <p><strong>The Truncated Baseline Failure:</strong> Truncating the quantitative baseline on a bar chart (e.g. starting Y-axis at 95% rather than 0%) makes a normal 0.4% scrap fluctuation appear as an 80% spike. At the Chakan plant, this false visual signal caused an unauthorized press line stoppage during Shift B, delaying 450 crankshaft forgings. <strong>Bar charts MUST start at zero.</strong></p>
+        </div>
+
+        <div className="two">
+          <div className="pane do">
+            <h3>Do</h3>
+            <ul>
+              <li>Always anchor magnitude bars at zero baseline (Y=0 or X=0).</li>
+              <li>Sort categories by analytical magnitude (descending) unless chronological.</li>
+              <li>Limit multi-series groups to maximum 5 bars per cluster.</li>
+              <li>Provide accessible data table toggle for all analytical charts.</li>
+            </ul>
+          </div>
+          <div className="pane dont">
+            <h3>Don't</h3>
+            <ul>
+              <li>Never use 3D perspective, bevels, or shadows on bar geometry.</li>
+              <li>Never encode unrelated dimensions through bar stroke thickness.</li>
+              <li>Never truncate baselines to artificially inflate small differences.</li>
+              <li>Never rely on color alone to distinguish adjacent series.</li>
+            </ul>
+          </div>
+        </div>
+      </Sec>
+
+      {/* §13 Implementation Notes */}
+      <Sec n="§13" title="Implementation Notes" note="Scale math and tokens consumed">
+        <p>Bar coordinates derive strictly from mathematical scale functions (<code>createBandScale</code> and <code>createLinearScale</code> from <code>components/data/viz-core.js</code>), never hardcoded pixel offsets.</p>
+
+        <div className="lbl">Design Tokens Consumed</div>
+        <div className="tokenlist">
+          <div><code>--viz-1</code> Primary series blue (#2563eb)</div>
+          <div><code>--viz-2</code> Secondary series teal (#0d9488)</div>
+          <div><code>--viz-3</code> Tertiary series amber (#d97706)</div>
+          <div><code>--viz-4</code> Quaternary series purple (#7c3aed)</div>
+          <div><code>--viz-5</code> Quinary series pink (#db2777)</div>
+          <div><code>--viz-6</code> Senary series slate (#4b5563)</div>
+          <div><code>--surface-card</code> Container fill</div>
+          <div><code>--surface-sunken</code> Background canvas</div>
+          <div><code>--border-hairline</code> Frame boundaries</div>
+          <div><code>--border-strong</code> 1.5px baseline</div>
+          <div><code>--border-subtle</code> 1px dashed gridlines</div>
+          <div><code>--status-critical-solid</code> Out-of-spec breach</div>
+        </div>
+      </Sec>
+
+      {/* §14 Developer Notes */}
+      <Sec n="§14" title="Developer Notes" note="Integration, testing, and governance registry">
+        <pre>{`import { BarChart } from '@meridian/design-system';
+
+export function PressScrapWidget({ scrapRecords }) {
+  return (
+    <BarChart
+      title="Press Shop Monthly Scrap Cost"
+      caption="Chakan plant PL-04 press lines"
+      data={scrapRecords}
+      categoryKey="line"
+      valueKey="scrap"
+      unit="₹"
+      variant="horizontal"
+      referenceLines={[{ value: 120000, label: 'Ceiling Threshold', tone: 'danger' }]}
+      onSelect={(record) => navigateToLineDetails(record.lineId)}
+    />
+  );
+}`}</pre>
+
+        <p><strong>Automated Testing Assertions:</strong></p>
+        <ul>
+          <li><strong>Baseline check:</strong> Verify computed SVG Y/X position of baseline equals 0 value mapping.</li>
+          <li><strong>ARIA semantics:</strong> Verify root contains <code>role="graphics-document"</code> and children contain <code>role="graphics-symbol"</code> with non-empty <code>aria-label</code>.</li>
+          <li><strong>Keyboard navigation:</strong> Simulate <kbd>ArrowRight</kbd> to confirm roving focus shifts to second bar mark and updates tooltip content.</li>
+          <li><strong>Tabular toggle:</strong> Verify pressing <kbd>Alt+F11</kbd> swaps SVG for an accessible <code>&lt;table&gt;</code> element containing identical data points.</li>
+        </ul>
+
+        <div className="lbl" style={{ marginTop: 12 }}>Governance Status</div>
+        <T
+          cols={["Item", "Status", "Decision & Rationale"]}
+          rows={[
+            ["Zero-baseline policy", "Closed as decided", "Mandatory 0 floor on all magnitude comparisons; non-zero baselines strictly refused."],
+            ["Multi-channel hatching", "Closed as decided", "Embedded SVG defs with diagonal/dot patterns satisfy WCAG 1.4.1."],
+            ["Accessible table toggle", "Closed as decided", "Keyboard shortcut Alt+F11 and UI toggle provide instant parity for assistive technologies."]
+          ]}
+        />
+      </Sec>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Spec />);
+</script></body></html>

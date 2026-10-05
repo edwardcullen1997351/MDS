@@ -1,0 +1,210 @@
+<!-- @dsCard group="Guidelines" viewport="1000x1320" name="Form composition" subtitle="There is no Form layout and no Staged form layout — here is the composition guidance that would otherwise have been smuggled into one" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Form composition</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:32px}
+.wrap{max-width:1000px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0;max-width:76ch;color:var(--text-secondary);text-wrap:pretty}
+.rules{margin:24px 0 12px;padding:20px 22px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:10px}
+.rules.why{border-left:2px solid var(--status-info-solid)}
+.rules h2{margin:0 0 2px;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+p{margin:0;max-width:80ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:80ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:30px 0 12px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding:20px 0;border-bottom:var(--border-hairline)}
+.sec:last-child{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:7px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.body{display:flex;flex-direction:column;gap:11px;min-width:0}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:normal;word-break:normal}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.vp .why2{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5}
+.mock{padding:14px;display:flex;flex-direction:column;gap:9px;background:var(--background-page)}
+.mock .row{display:flex;gap:9px}
+.f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.f span{font-size:9px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+.f i{display:block;height:22px;border:var(--border-hairline);border-radius:var(--radius-sm);background:var(--surface-card)}
+.f.bad i{border-color:var(--status-critical-border)}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:2px}
+.pair div{padding:12px 14px;background:var(--surface-sunken);border-radius:var(--radius-sm)}
+.pair h4{margin:0 0 4px;font-size:var(--text-xs);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-regular)}
+.sig{margin-top:36px;padding-top:12px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:12px}.vp{grid-template-columns:1fr}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Guidelines · Composition</span>
+<h1>Form composition</h1>
+<p class="lede">Forms are the most-built screen in an ERP and the most often built badly, so it is tempting to standardize one as a Layout Template. That would be a mistake: every frame-level responsibility a form screen has is already owned — by <a href="../specs/layouts/SingleColumn.spec.html">single column</a>, by <code>Field</code> and <code>Fieldset</code>, and by the submission patterns. What is genuinely unowned is not a frame but a set of composition decisions: what to ask, in what order, grouped how, at what width, and which pattern the commit belongs to. This card holds those, so that nobody has to invent a seventh layout to house them.</p>
+
+<div class="rules why">
+  <h2>Why there is no Form layout template</h2>
+  <p>Apply the <a href="layout-template-spec-standard.card.html">layout template standard</a>'s single test — <em>does the layout define this, or does its content?</em> — and a form screen has nothing left to define.</p>
+  <table><thead><tr><th>Responsibility</th><th>Already owned by</th></tr></thead><tbody>
+    <tr><td>One measured column, section rhythm, heading levels, an action region that reserves its height</td><td class="k"><a href="../specs/layouts/SingleColumn.spec.html">Single column</a> — whose own reference implementation is a form: raising a maintenance work request on press line P-2</td></tr>
+    <tr><td>Label placement, hint and error text, required marking, the control's own states</td><td class="k">Field</td></tr>
+    <tr><td>Grouping a set of related inputs under a legend</td><td class="k">Fieldset</td></tr>
+    <tr><td>Two short values side by side inside a region</td><td class="k">Grid / GridItem</td></tr>
+    <tr><td>Sequencing across steps; validation timing; dirty state and commit; dependent fields; attaching evidence</td><td class="k"><a href="../specs/patterns/StagedInput.spec.html">Staged input</a> · <a href="../specs/patterns/ValidatedSubmission.spec.html">Validated submission</a> · <a href="../specs/patterns/ExplicitSave.spec.html">Explicit save</a> · <a href="../specs/patterns/ConditionalInput.spec.html">Conditional input</a> · <a href="../specs/patterns/EvidenceAttachment.spec.html">Evidence attachment</a></td></tr>
+    <tr><td>A form beside a persistent summary, or under a section navigator</td><td class="k"><a href="../specs/layouts/Sidebar.spec.html">Sidebar</a> · <a href="../specs/layouts/HolyGrail.spec.html">Holy grail</a> — a form in the main region is a content choice, not a new frame</td></tr>
+  </tbody></table>
+  <p>A "Form" layout spec would therefore restate single column in §02, list <code>Field</code> props in §03 and aggregate field states in §06 — the three things the standard explicitly forbids. The guidance below is what would have been smuggled in with it, and it belongs here because it is cross-cutting composition, not a frame.</p>
+</div>
+
+<div class="groupline"><h2>Composition</h2><span>Examples are the same plant throughout — Suryodaya Autocomp Ltd, Chakan plant (PL-04), Pune</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">01</span><h3>Ask for less</h3></div>
+  <div class="body">
+    <p>Every field is a claim that the answer is both known and needed at this moment. A maintenance work request that asks the supervisor for a cost centre he has to phone accounts for is a form that will be filled in wrongly, consistently, for years.</p>
+    <ul>
+      <li><strong>Derive rather than ask.</strong> Plant, line, shift, requester, cost centre and current date are known from context or the item master. Show them as stated context, not as inputs.</li>
+      <li><strong>Defer rather than ask.</strong> A field only the planner can answer belongs on the planner's screen, at their step — that is <a href="../specs/patterns/StagedInput.spec.html">staged input</a> across roles, not one long form.</li>
+      <li><strong>Optional fields are a cost.</strong> If most people skip a field, it is either not needed or it is needed and badly explained. Both are fixed by removing it from the default path.</li>
+      <li><strong>Mark the exceptions, not the rule.</strong> Where nearly everything is required, mark the optional ones; where nearly everything is optional, mark the required ones. Never mark both.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">02</span><h3>Order by the user's information, not by the data model</h3></div>
+  <div class="body">
+    <p>Field order should follow the order in which the person filling the form came to know things. A line supervisor standing at a stopped press knows, in this order: which machine, what happened, when it stopped, whether it is still running, how urgent it is. The table's column order knows nothing about that.</p>
+    <ul>
+      <li><strong>One decision per line</strong> in the primary flow. A row of three inputs is three decisions presented as one.</li>
+      <li><strong>Identify first, describe second, qualify third.</strong> What this is about, then what is being said about it, then the codes and classifications the system needs.</li>
+      <li><strong>Put the field that changes other fields before the fields it changes</strong> — a disposition that reveals a rework routing sits above it, never below (<a href="../specs/patterns/ConditionalInput.spec.html">conditional input</a>).</li>
+      <li><strong>Never reorder fields between screens for the same object.</strong> A requisition that is entered in one order and approved in another makes the approver re-read it every time.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">03</span><h3>Group only where the legend earns its place</h3></div>
+  <div class="body">
+    <p>A <code>Fieldset</code> asserts that its members are one thing. Use it when the group has a name a person would actually say — "Downtime", "Delivery schedule", "Inspection result" — and when knowing that name changes how the fields are read.</p>
+    <div class="pair">
+      <div><h4>Group</h4><p>Three fields that answer one question together: <em>stopped at</em>, <em>restarted at</em>, <em>still down</em>. The legend "Downtime" is what the shift log calls it.</p></div>
+      <div><h4>Don't group</h4><p>Four unrelated fields under "Details", or a single field under a legend. A legend that adds no word the reader did not have is heading noise, and screen-reader users hear it on every field.</p></div>
+    </div>
+    <ul>
+      <li><strong>Two levels of grouping is the limit.</strong> Fieldsets inside fieldsets means the form is two forms.</li>
+      <li><strong>Six or seven fields per group, at the most.</strong> Beyond that the legend stops being a claim about the fields and becomes a chapter title — which is a step (<a href="../specs/patterns/StagedInput.spec.html">staged input</a>), not a group.</li>
+      <li><strong>Spacing is not grouping.</strong> A gap tells a sighted reader that something changed and tells nobody else anything; if the grouping matters, name it.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">04</span><h3>Width says what you expect</h3></div>
+  <div class="body">
+    <p>An input's width is a hint about the answer's length, and it is read as one. A four-character field for a work-centre code and a full-measure field for a fault description are both instructions.</p>
+    <ul>
+      <li><strong>Size the control to the content, not to the column.</strong> A quantity, a date, a shift or a part number in a full-width box says "write an essay here" and gets one.</li>
+      <li><strong>Prose measure and input measure are different numbers.</strong> Explanatory text stays inside a readable measure; a long text input may be wider than the prose beside it, but never wider than the region.</li>
+      <li><strong>Right-align numbers, and keep units out of the input.</strong> Units belong in the label or as a suffix on the field, so the value stays machine-comparable.</li>
+      <li><strong>Never let a field's width vary between screens for the same value.</strong> Consistent width is how people learn the shape of an answer.</li>
+    </ul>
+    <div class="vp">
+      <div class="yes"><div class="cap">Do — widths that fit the answers</div><div class="mock"><div class="f"><span>machine</span><i style="width:220px"></i></div><div class="row"><div class="f"><span>stopped at (IST)</span><i style="width:150px"></i></div><div class="f"><span>shift</span><i style="width:80px"></i></div></div><div class="f"><span>what happened</span><i style="width:100%;height:44px"></i></div></div><div class="why2">The date and shift sit together because they are one short pair a supervisor states in one breath. The fault description gets the measure it needs. Nothing implies an answer longer than the answer.</div></div>
+      <div class="no"><div class="cap">Don't — one width for everything</div><div class="mock"><div class="f bad"><span>machine</span><i style="width:100%"></i></div><div class="f bad"><span>stopped at (IST)</span><i style="width:100%"></i></div><div class="f bad"><span>shift</span><i style="width:100%"></i></div><div class="f bad"><span>what happened</span><i style="width:100%"></i></div></div><div class="why2">Four identical boxes hide which answers are codes and which is prose, and the single-line description box quietly tells the supervisor to be brief about the only field maintenance will actually read.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">05</span><h3>Two columns only for short paired values</h3></div>
+  <div class="body">
+    <p>Two fields on a line are legitimate when they are one thought — from and to, value and unit, date and shift, quantity and UOM — and both are short. Everything else is a single column, because two columns of inputs create two reading orders and a tab order that agrees with neither.</p>
+    <ul>
+      <li><strong>Never split a form into two independent columns of unrelated fields.</strong> The pair is the unit, not the column.</li>
+      <li><strong>Pairs collapse to one column when space is short</strong>, in the same order they were authored (<a href="responsive.card.html">responsive</a>).</li>
+      <li><strong>A pair never straddles a group boundary.</strong> If the two fields belong to different fieldsets, they are not a pair.</li>
+      <li><strong>Required fields do not hide in the right-hand half.</strong> Anything that can block submission belongs in the primary flow the eye follows.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">06</span><h3>The action region, and what belongs in it</h3></div>
+  <div class="body">
+    <p>Single column owns the region's placement and the fact that it reserves its height rather than covering the last field. What goes in it is a composition decision:</p>
+    <ul>
+      <li><strong>One primary action, named for what it does</strong> — "Raise the work request", not "Submit". The verb is the plant's, not the framework's.</li>
+      <li><strong>At most one secondary and one cancelling action.</strong> A row of five buttons means the form has more than one purpose.</li>
+      <li><strong>Destructive actions are not peers of the primary one</strong> and never sit adjacent to it.</li>
+      <li><strong>Nothing in the action region validates.</strong> Whether the primary action is disabled, and when errors appear, is <a href="../specs/patterns/ValidatedSubmission.spec.html">validated submission</a>'s contract; whether leaving with edits warns is <a href="../specs/patterns/ExplicitSave.spec.html">explicit save</a>'s.</li>
+      <li><strong>Say what will happen next</strong> where the answer is not obvious — who receives this, what number it gets, whether it can be edited afterwards. One line above the action, not a paragraph.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">07</span><h3>Staging a form: which frame, which pattern</h3></div>
+  <div class="body">
+    <p>A staged form is not a layout either. <a href="../specs/patterns/StagedInput.spec.html">Staged input</a> already owns the ordered stages, the single current stage, the gate on each forward move, the four separate movement controls, the progress rail's limits, focus placement on stage change, resumption and the preservation policy on cancel. The only decision left is where the rail sits &mdash; and that is a choice between two frames the system already has.</p>
+    <div class="pair">
+      <div><h4>Rail above &rarr; single column</h4><p>The rail reads as <em>progress</em>: how far through, how much left. Stage content keeps one measure and one action region. The default, and the right answer for a linear task of three to six stages &mdash; raising a purchase requisition, importing a supplier catalogue.</p></div>
+      <div><h4>Rail beside &rarr; sidebar</h4><p>The rail reads as <em>navigation</em>: a set of places, visible at once. Right when stages are revisited &mdash; a long approval dossier, a PPAP submission assembled over days &mdash; and it obliges backward movement to actually be permitted (staged input &sect;04), with the rail's own track width, collapse and <code>Drawer</code> relocation coming from <a href="../specs/layouts/Sidebar.spec.html">sidebar</a>.</p></div>
+    </div>
+    <ul>
+      <li><strong>A lateral rail is a promise.</strong> Showing eight stages side by side while refusing to let the user reach stage six is a frame contradicting its pattern. If movement is strictly forward, put the rail above.</li>
+      <li><strong>The rail is not the record of what is done.</strong> It reports position in the <em>applicable</em> stage set, never completion (staged input &sect;14) &mdash; and stage applicability is recomputed from current values, so a rail that hard-codes a count will lie the first time a stage drops out.</li>
+      <li><strong>Stage content still follows 01&ndash;06 above.</strong> Ask for less per stage, order by the user's information, one legend per stage, widths that fit the answers. A stage is not a licence to ask for thirty fields because there is a rail to prove progress.</li>
+      <li><strong>The final action is never the forward button.</strong> Two controls, two labels, in the action region the frame owns &mdash; and "Raise the requisition" is not "Next".</li>
+      <li><strong>If a stage would be a screen of its own for a different role</strong>, it probably is one: that is a handover between people, not a step in one form, and the queue each role works is <a href="../specs/layouts/MasterDetail.spec.html">master-detail</a> or a collection workspace.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">08</span><h3>Which pattern the commit belongs to</h3></div>
+  <div class="body">
+    <p>Choose the pattern before building the form; it decides what the buttons mean.</p>
+    <table><thead><tr><th>If the form…</th><th>Reach for</th></tr></thead><tbody>
+      <tr><td>is entered once and submitted, with rules that must hold</td><td class="k"><a href="../specs/patterns/ValidatedSubmission.spec.html">Validated submission</a></td></tr>
+      <tr><td>edits something that already exists, with a discardable draft</td><td class="k"><a href="../specs/patterns/ExplicitSave.spec.html">Explicit save</a></td></tr>
+      <tr><td>runs across steps or roles, each with its own completion</td><td class="k"><a href="../specs/patterns/StagedInput.spec.html">Staged input</a></td></tr>
+      <tr><td>reveals fields depending on an earlier answer</td><td class="k"><a href="../specs/patterns/ConditionalInput.spec.html">Conditional input</a></td></tr>
+      <tr><td>requires a document, photograph or certificate</td><td class="k"><a href="../specs/patterns/EvidenceAttachment.spec.html">Evidence attachment</a></td></tr>
+      <tr><td>commits something irreversible or costly</td><td class="k"><a href="../specs/patterns/ConfirmedAction.spec.html">Confirmed action</a></td></tr>
+      <tr><td>submits into a system that may not answer</td><td class="k"><a href="../specs/patterns/AsynchronousAction.spec.html">Asynchronous action</a> · <a href="../specs/patterns/RecoverableFailure.spec.html">Recoverable failure</a></td></tr>
+    </tbody></table>
+    <p>More than one applies on most real screens, and that is expected: a nonconformance disposition is conditional input inside validated submission with evidence attachment. What is not expected is a form built with none of them in mind, which is how a screen ends up with a disabled primary action nobody can explain.</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">09</span><h3>Anti-patterns</h3></div>
+  <div class="body">
+    <ul>
+      <li><strong>A form in a dashboard grid</strong> or across the modules of one — the grid says order does not matter and a form says it does.</li>
+      <li><strong>Asking for what the system knows.</strong> Every derived field re-asked is a defect waiting to be entered.</li>
+      <li><strong>Placeholder text carrying the label.</strong> It disappears at the first keystroke and was never available to anyone using a screen reader on the field.</li>
+      <li><strong>Help text explaining a badly named field.</strong> Rename the field.</li>
+      <li><strong>A wall of fields with one legend, or every field in its own fieldset.</strong> Both mean the grouping decision was skipped.</li>
+      <li><strong>Two columns of unrelated inputs</strong>, and required fields hidden in the second one.</li>
+      <li><strong>A form that scrolls under its own action bar</strong>, so the last field can never be read while the primary action is visible.</li>
+      <li><strong>Inventing a form frame.</strong> If a form screen seems to need a layout the system does not have, the thing it actually needs is usually a step boundary or one fewer field.</li>
+      <li><strong>A lateral stage rail on a strictly forward flow</strong>, or a rail that reports completion rather than position (07).</li>
+    </ul>
+  </div>
+</div>
+
+<p class="sig">Applies to: any screen whose primary content is a form · The frame is <a href="../specs/layouts/SingleColumn.spec.html">single column</a> (or a form placed in the main region of <a href="../specs/layouts/Sidebar.spec.html">sidebar</a> / <a href="../specs/layouts/HolyGrail.spec.html">holy grail</a>) · The commit is a <a href="../specs/patterns/patterns.card.html">pattern</a> · Field-level contracts are in <code>Field</code> and <code>Fieldset</code><br>Why this is a guideline and not a Layout Template: <a href="layout-template-spec-standard.card.html">layout template spec standard</a> · Register of accepted frames: <a href="../specs/layouts/layouts.card.html">layouts index</a></p>
+</div>
+</body></html>

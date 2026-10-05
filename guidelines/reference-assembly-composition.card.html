@@ -1,0 +1,156 @@
+<!-- @dsCard group="Guidelines" viewport="1040x1400" name="Reference assembly composition" subtitle="Architectural standard and 5-gate certification protocol for assembling enterprise reference screens" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Reference Assembly Composition Standard</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5;padding:32px}
+.wrap{max-width:1040px;margin:0 auto}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:8px 0 8px;font-size:var(--text-4xl);font-weight:var(--weight-light);letter-spacing:-0.022em;line-height:1.1}
+p.lede{margin:0;max-width:78ch;color:var(--text-secondary);text-wrap:pretty}
+.rules{margin:24px 0 16px;padding:20px 22px;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);display:flex;flex-direction:column;gap:12px}
+.rules.why{border-left:2px solid var(--action-solid)}
+.rules h2{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold)}
+p{margin:0;max-width:82ch;color:var(--text-secondary);text-wrap:pretty}
+ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:82ch;color:var(--text-secondary)}
+li strong{color:var(--text-primary);font-weight:var(--weight-medium)}
+code{font-family:var(--font-mono);font-size:0.92em;color:var(--text-primary)}
+.groupline{display:flex;align-items:baseline;gap:12px;margin:32px 0 14px;padding-bottom:8px;border-bottom:var(--border-width) solid var(--border-strong)}
+.groupline h2{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.groupline span{font-size:var(--text-xs);color:var(--text-tertiary)}
+.sec{display:grid;grid-template-columns:220px minmax(0,1fr);gap:28px;padding:22px 0;border-bottom:var(--border-hairline)}
+.sec:last-child{border-bottom:none}
+.sec-head{display:flex;flex-direction:column;gap:7px}
+.num{font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary)}
+h3{margin:0;font-size:var(--text-base);font-weight:var(--weight-semibold);letter-spacing:-0.006em}
+.body{display:flex;flex-direction:column;gap:12px;min-width:0}
+table{width:100%;border-collapse:collapse;background:var(--surface-card);border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs)}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:9px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:9px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{font-family:var(--font-mono);color:var(--text-primary);white-space:normal;word-break:normal}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+.vp>div{display:flex;flex-direction:column;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-card)}
+.vp .cap{padding:8px 12px;font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);border-bottom:var(--border-hairline)}
+.vp .yes .cap{color:var(--text-success);background:var(--status-success-soft)}
+.vp .no .cap{color:var(--text-critical);background:var(--status-critical-soft)}
+.vp .why2{padding:9px 12px;border-top:var(--border-hairline);font-size:var(--text-2xs);color:var(--text-secondary);line-height:1.5}
+.mock{padding:14px;display:flex;flex-direction:column;gap:9px;background:var(--background-page)}
+.sig{margin-top:40px;padding-top:14px;border-top:var(--border-hairline);font-family:var(--font-mono);font-size:var(--text-2xs);color:var(--text-tertiary);line-height:1.9}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+@media (max-width:760px){.sec{grid-template-columns:1fr;gap:12px}.vp{grid-template-columns:1fr}}
+</style></head><body>
+<div class="wrap">
+<span class="eyebrow">Guidelines · Architecture & Governance</span>
+<h1>Reference Assembly Composition Standard</h1>
+<p class="lede">When assembling enterprise reference screens from Meridian design tokens and layout templates, teams must never write bespoke control CSS. Missing interaction patterns must be promoted into Tier 1 primitives or Tier 2 composites to guarantee 100% token purity, zero horizontal overflow, and zero accessibility violations.</p>
+
+<div class="rules why">
+  <h2>The Prime Directive of Reference Assemblies: The Zero-Bespoke-CSS Mandate</h2>
+  <p><strong>Never write custom control styles in an assembly story.</strong> If an assembly requires a new grouping (e.g. aligning a date stepper next to a view toggle) or a new control (e.g. a segmented switcher), that is a genuine Tier 1 or Tier 2 Design System gap. Solve it once in the system packages so all enterprise applications inherit the certified behavior.</p>
+</div>
+
+<div class="groupline"><h2>1. The Three-Tier Implementation Model</h2><span>Architecture</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§01</span><h3>Tier classification</h3></div>
+  <div class="body">
+    <table>
+      <thead>
+        <tr><th>Tier</th><th>Scope</th><th>Examples</th><th>Location</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="k">Tier 1: Primitives & Atoms</td>
+          <td>Single-purpose reusable controls with zero domain coupling</td>
+          <td><code>Button</code>, <code>Badge</code>, <code>SegmentedControl</code>, <code>Tabs</code>, <code>TreeGridCell</code></td>
+          <td><code>packages/react</code>, <code>packages/angular</code></td>
+        </tr>
+        <tr>
+          <td class="k">Tier 2: Composites & Templates</td>
+          <td>Standardized multi-component units and viewport containers</td>
+          <td><code>CommandToolbarGroup</code>, <code>Workbench3PaneLayout</code>, <code>ConflictResolver</code></td>
+          <td><code>packages/react</code>, <code>packages/angular</code></td>
+        </tr>
+        <tr>
+          <td class="k">Tier 3: Reference Assemblies</td>
+          <td>Orchestration ONLY via state coordinator hooks and data bindings</td>
+          <td><code>PlannerWorkbench</code>, <code>DispatchConsole</code>, <code>PeggingMatrix</code></td>
+          <td><code>apps/storybook/src/stories/assemblies</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§02</span><h3>The Composition Gap</h3></div>
+  <div class="body">
+    <div class="vp">
+      <div class="no">
+        <span class="cap">Violates System Architecture</span>
+        <div class="mock">
+          <code>.ds-planner-toolbar { display: flex; gap: 8px; }</code>
+          <code>.ds-planner-view-btn { background: #0284c7; color: #fff; }</code>
+          <code>.ds-workbench-3pane__body { overflow: visible !important; }</code>
+        </div>
+        <span class="why2">Leaking bespoke CSS overrides breaks theming, breaks reflow on narrow viewports, and causes regressions across subsequent releases.</span>
+      </div>
+      <div class="yes">
+        <span class="cap">Meridian Golden Standard</span>
+        <div class="mock">
+          <code>&lt;CommandToolbarGroup controls={...} /&gt;</code>
+          <code>&lt;SegmentedControl options={views} /&gt;</code>
+          <code>&lt;Workbench3PaneLayout /&gt;</code>
+        </div>
+        <span class="why2">Composing certified Tier 1/2 building blocks ensures zero assembly CSS, full keyboard accessibility, and guaranteed reflow boundaries.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="groupline"><h2>2. The Five Automated Certification Gates</h2><span>Verification</span></div>
+
+<div class="sec">
+  <div class="sec-head"><span class="num">§03</span><h3>The 70-Point Verification Matrix</h3></div>
+  <div class="body">
+    <p>Every reference assembly must pass 100% of these 5 gates evaluated across <strong>14 enterprise scenarios</strong> and <strong>5 canonical viewports</strong> (320px, 390px, 768px, 1440px, 1920px) = <strong>70 verification points</strong>:</p>
+    <table>
+      <thead>
+        <tr><th>Gate</th><th>Requirement</th><th>Automated Check</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="k">Gate 1: Zero-Bespoke-CSS</td>
+          <td>Zero control/toolbar overrides; 100% token purity</td>
+          <td>Source AST check for raw hex, <code>!important</code>, and bespoke classes</td>
+        </tr>
+        <tr>
+          <td class="k">Gate 2: Viewport Containment</td>
+          <td>WCAG 2.2 Reflow (1.4.10): <code>scrollWidth &lt;= clientWidth</code></td>
+          <td>CDP layout evaluation at 320px, 390px, 768px, 1440px, 1920px</td>
+        </tr>
+        <tr>
+          <td class="k">Gate 3: Automated Accessibility</td>
+          <td>0 Axe violations; Text contrast &gt;= 4.5:1; Active state &gt;= 3:1</td>
+          <td>Axe-core run across all 14 scenarios and 5 viewports</td>
+        </tr>
+        <tr>
+          <td class="k">Gate 4: Tri-Pane State Sync</td>
+          <td>Left selector filters Center; Center updates Right; Keyboard navigation</td>
+          <td>Automated ETag 409 conflict, multi-plant scope switch, and J/K shortcuts</td>
+        </tr>
+        <tr>
+          <td class="k">Gate 5: Dual-Framework Parity</td>
+          <td>100% contract, prop, event, and token parity</td>
+          <td>TypeScript compile and contract equivalence in React and Angular</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sig">
+  <span>Meridian Design System · Architecture & Governance Council</span><br>
+  <span>Standard Version 1.0.0 · Governed by <code>reference-assembly-standard.md</code></span>
+</div>
+</div>
+</body></html>

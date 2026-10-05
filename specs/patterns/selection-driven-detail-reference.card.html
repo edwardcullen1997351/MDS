@@ -1,0 +1,21 @@
+<!-- @dsCard group="Specs · Patterns" viewport="1080x860" name="Selection-driven detail — reference implementation" subtitle="The working composition behind the spec, set in a manufacturing ERP — switch the initial-selection, removal, loading and presentation policies with the tweaks" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Selection-driven detail — reference implementation</title><link rel="stylesheet" href="../../styles.css">
+<style>
+html,body{margin:0;height:100%}
+body{background:var(--background-page);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);display:flex;flex-direction:column}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;padding:16px 22px;border-bottom:var(--border-hairline);background:var(--surface-card);flex:none}
+.eyebrow{font-family:var(--font-mono);font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary)}
+h1{margin:0;font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:-0.01em;flex:1 1 auto;min-width:200px}
+.links{display:flex;flex-wrap:wrap;gap:14px;font-family:var(--font-mono);font-size:var(--text-2xs)}
+a{color:var(--text-link);text-decoration:none;border-bottom:1px solid transparent}a:hover{color:var(--action-solid-hover);border-bottom-color:currentColor}
+p{margin:0;flex:1 1 100%;max-width:88ch;color:var(--text-secondary);font-size:var(--text-xs);line-height:1.55;text-wrap:pretty}
+iframe{flex:1 1 auto;width:100%;border:0;display:block;min-height:0}
+</style></head><body>
+<header>
+<span class="eyebrow">Reference implementation</span>
+<h1>Selection-driven detail</h1>
+<div class="links"><a href="../../specs/patterns/SelectionDrivenDetail.spec.html">Specification §01–§21</a><a href="../../templates/selection-driven-detail/SelectionDrivenDetail.dc.html">Open standalone</a><a href="patterns.card.html">Patterns index</a></div>
+<p>Live, on Meridian's own components: the press-shop tool crib at the Chakan plant (PL-04), where a clerk reads a die's tool life before handing it to a press. The crib row carries the current selection as a real radio; the stroke count, inspection history and refurbishment spend are read from MES into the panel beside it, and selecting is never navigation — sort the strokes column and the selection stays on the die. Issuing or grinding a die takes it out of the crib, which is the removed-selection rule reached by the user's own action. Open standalone to reach the tweaks: the <span style="font-family:var(--font-mono)">initialSelection</span>, <span style="font-family:var(--font-mono)">removalPolicy</span>, <span style="font-family:var(--font-mono)">loadingTreatment</span> and <span style="font-family:var(--font-mono)">presentation</span> policies of §05, plus a harness that slows the MES read, drops the service, has the tool room issue the die you are inspecting, and — set to <span style="font-family:var(--font-mono)">accept</span> — lets a stale response through so you can watch the panel describe a die that is no longer selected.</p>
+</header>
+<iframe src="../../templates/selection-driven-detail/SelectionDrivenDetail.dc.html" title="Selection-driven detail reference implementation"></iframe>
+</body></html>

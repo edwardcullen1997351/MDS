@@ -1,0 +1,70 @@
+<!-- @dsCard group="Governance" viewport="1000x1620" name="Why primitives have no specs" subtitle="The 12 primitives are the token layer given a React shape — their contract is the token contract" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Primitives: no specs</title><link rel="stylesheet" href="../styles.css">
+<style>
+body{margin:0;padding:24px 26px;background:var(--surface-card);font-family:var(--font-sans);color:var(--text-primary);font-size:var(--text-sm);line-height:1.5}
+h1{margin:0 0 4px;font-size:var(--text-xl);font-weight:var(--weight-semibold);letter-spacing:-0.01em}
+.lede{margin:0 0 16px;max-width:90ch;color:var(--text-secondary);font-size:var(--text-xs);text-wrap:pretty}
+.rule{display:block;padding:12px 14px;border-left:2px solid var(--action-solid);background:var(--surface-sunken);border-radius:var(--radius-sm);margin:0 0 18px;max-width:96ch;text-wrap:pretty;font-size:var(--text-xs)}
+h2{margin:18px 0 8px;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold);color:var(--text-tertiary)}
+table{width:100%;border-collapse:collapse;border:var(--border-hairline);border-radius:var(--radius-md);overflow:hidden;font-size:var(--text-xs);margin-bottom:6px}
+th{text-align:left;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--text-tertiary);font-weight:var(--weight-semibold);padding:8px 12px;background:var(--background-page);border-bottom:var(--border-hairline);white-space:nowrap}
+td{padding:8px 12px;border-bottom:var(--border-subtle);color:var(--text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td:first-child{color:var(--text-primary);font-weight:var(--weight-medium);white-space:nowrap}
+.na{color:var(--text-tertiary);font-family:var(--font-mono);font-size:var(--text-2xs)}
+.mono{font-family:var(--font-mono);color:var(--text-primary)}
+ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:5px;font-size:var(--text-xs);color:var(--text-secondary);max-width:92ch}
+li b{color:var(--text-primary);font-weight:var(--weight-medium)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pane{border:var(--border-hairline);border-radius:var(--radius-md);padding:12px 14px}
+.pane h3{margin:0 0 8px;font-size:var(--text-2xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:var(--weight-semibold);color:var(--text-tertiary)}
+a,a:hover{color:var(--text-link)}
+.warn{border-left:2px solid var(--status-warning-solid);padding-left:12px;font-size:var(--text-xs);color:var(--text-secondary);max-width:92ch;text-wrap:pretty}
+</style></head><body>
+<h1>Why primitives have no specs</h1>
+<p class="lede"><span class="mono">Box, Surface, Container, Stack, Grid (+ GridItem), Spacer, Divider, AspectRatio, Image, Text, Heading</span> — twelve exports, no <span class="mono">.spec.html</span> between them, and that is the settled position rather than a backlog. Every other component in the system has a fourteen-section spec because it has judgment attached: when to reach for it, what it must not be used for, how its copy should read. A primitive has none of that, and writing the document anyway would produce twelve files whose honest answer to most sections is "not applicable".</p>
+<div class="rule"><b>The decision:</b> primitives are documented by their <span class="mono">.d.ts</span> (the full prop surface), their <span class="mono">.prompt.md</span> (purpose, do/don't, one example), the two specimen cards in <span class="mono">components/primitives/</span>, and <span class="mono">Token Architecture.md</span> — which is their real contract, because a primitive's props <i>are</i> the token scales. <b>A primitive earns a spec only if it acquires judgment</b>: semantics, states, keyboard behaviour, or a rule about when not to use it. None currently has any. <b>Components are the opposite default</b> — one is not frozen until its spec exists.</div>
+<h2>What the fourteen sections would say</h2>
+<table>
+<thead><tr><th>Section</th><th>For a component</th><th>For a primitive</th></tr></thead>
+<tbody>
+<tr><td>Purpose</td><td>Which of several overlapping components to reach for</td><td>Real, and already in the <span class="mono">.prompt.md</span> in two lines</td></tr>
+<tr><td>Anatomy</td><td>Named parts with a callout each</td><td><span class="na">n/a</span> — a Box has one part: itself</td></tr>
+<tr><td>Properties</td><td>Table with defaults and rationale</td><td>Real, and generated better by the <span class="mono">.d.ts</span></td></tr>
+<tr><td>Variants</td><td>Tones, emphases, layouts with usage rules</td><td><span class="na">n/a</span> — <span class="mono">Surface</span>'s six tones are the six surface tokens, no more</td></tr>
+<tr><td>Sizes</td><td>A named ladder with a use per rung</td><td><span class="na">n/a</span> — the space and type scales, unchanged</td></tr>
+<tr><td>States</td><td>Hover, focus, disabled, loading, error</td><td><span class="na">n/a</span> — none has state except <span class="mono">Surface interactive</span> (one hover tint)</td></tr>
+<tr><td>Keyboard</td><td>Key-by-key behaviour</td><td><span class="na">n/a</span> — nothing is focusable</td></tr>
+<tr><td>Accessibility</td><td>Roles, names, live regions, focus management</td><td><span class="na">n/a</span> — no roles; <span class="mono">as</span> hands semantics to the caller, which is where they belong</td></tr>
+<tr><td>Motion</td><td>Entrances, transitions, reduced-motion</td><td><span class="na">n/a</span> — nothing animates</td></tr>
+<tr><td>Content Rules</td><td>Copy voice, length, capitalisation</td><td><span class="na">n/a</span> — a primitive has no copy of its own</td></tr>
+<tr><td>Responsive</td><td>Reflow and breakpoint behaviour</td><td>Real for <span class="mono">Grid</span> and <span class="mono">Container</span> only — two components' worth, not twelve</td></tr>
+<tr><td>Anti Patterns</td><td>The misuses to catch in review</td><td>Real, and the reason this card exists at all (below)</td></tr>
+<tr><td>Implementation</td><td>Why the code is shaped as it is</td><td>Real, and it lives in <span class="mono">scale.js</span> beside the resolvers</td></tr>
+<tr><td>Developer</td><td>Wiring, gotchas, test hooks</td><td>Real, and it is one paragraph shared by all twelve</td></tr>
+</tbody>
+</table>
+<p class="lede">Nine of fourteen are not applicable, and of the five that survive, four are already written somewhere better. What is genuinely missing is <b>not twelve specs but one page of anti-patterns</b> — so that is what the rest of this card is.</p>
+<h2>The primitive anti-patterns</h2>
+<div class="cols">
+<div class="pane"><h3>The two that matter</h3><ul>
+<li><b>Margins instead of gaps.</b> <span class="mono">Box</span> still accepts <span class="mono">m / mx / my / mt / mr / mb / ml</span>; as of 1.13.0 they <b>warn</b>. Element margins collapse unpredictably and they break the moment a sibling is reordered or deleted — which is exactly what layout tooling does. Space siblings with the parent's <span class="mono">gap</span>.</li>
+<li><b>A primitive where a component exists.</b> A <span class="mono">Surface</span> with a hairline and a padded footer is a <span class="mono">Card</span>; a <span class="mono">Box</span> with a border and a focus ring is an <span class="mono">Input</span>. The rebuild loses the states, the ARIA and the density wiring, and it drifts from the real component the first time that component changes.</li>
+</ul></div>
+<div class="pane"><h3>Also don't</h3><ul>
+<li><b>Raw values in token props.</b> <span class="mono">p="14px"</span>, <span class="mono">background="#f4f6f8"</span>. The props take token <i>names</i>; literals bypass density and the dark scope.</li>
+<li><b>Reaching past the semantic tier.</b> <span class="mono">background="grey-100"</span> instead of <span class="mono">"surface-sunken"</span> — forbidden by the token contract, and now warned.</li>
+<li><b>A Spacer between every pair of items.</b> That is <span class="mono">gap</span>. <span class="mono">Spacer</span> is for the one gap a gap cannot express — usually <span class="mono">grow</span>, pushing a trailing action to the edge.</li>
+<li><b>A Spacer as a section break.</b> That is a <span class="mono">Divider</span> or a heading; a Spacer is <span class="mono">aria-hidden</span> and means nothing.</li>
+<li><b>Nesting Box for one property.</b> Four wrappers to centre something is a flex parent that was not written.</li>
+<li><b>Text or Heading with a hand-set <span class="mono">fontSize</span>.</b> Use the scale; <span class="mono">style</span> is an escape hatch, not the API.</li>
+</ul></div>
+</div>
+<h2>What replaced the specs</h2>
+<ul>
+<li><b>Validation, in the one place every primitive passes through.</b> <span class="mono">scale.js</span> now warns once per bad name for colour family, radius, elevation, border tone and text size. A mistyped token is the primitive layer's characteristic bug and it fails <i>silently</i> — <span class="mono">var(--text-secondry)</span> is valid CSS that resolves to nothing, so the property is dropped and the value inherits. Invisible in review, nearly invisible on screen.</li>
+<li><b>A deprecation with a reason, not a removal.</b> Margin props stay because the console kit still uses a few; they warn because accepting them silently keeps teaching the pattern the system's own layout rule forbids.</li>
+<li><b>This card.</b> The anti-patterns and the policy, in one place, instead of twelve documents repeating that a Box has no keyboard behaviour.</li>
+</ul>
+<p class="warn"><b>When this decision should be revisited:</b> if a primitive gains a state, a role, focus behaviour, or a genuine "use this instead" rule against another primitive, it has acquired judgment and it needs a spec. <span class="mono">Surface interactive</span> is the closest — one hover tint and a pointer cursor — and is worth watching: if it ever grows focus, keyboard activation or a pressed state, it has become a Card or a Button and should be one.</p>
+</body></html>
