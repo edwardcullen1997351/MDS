@@ -1,4 +1,4 @@
-import React, { useId, useMemo, useEffect, useRef } from 'react';
+import React, { useId, useMemo } from 'react';
 import * as select from '@zag-js/select';
 import { useMachine, normalizeProps, Portal } from '@zag-js/react';
 import './Select.css';
@@ -68,38 +68,19 @@ export const Select: React.FC<SelectProps> = ({
     [items]
   );
 
-  const [state, send] = useMachine(
-    select.machine({
-      id,
-      name,
-      collection,
-      value: value ?? defaultValue,
-      disabled,
-      onValueChange(details) {
-        onValueChange?.(details as unknown as { value: string[]; items: SelectItem[] });
-      },
-    }),
-    { context: { collection, ...(value !== undefined ? { value } : {}), disabled } }
-  );
+  const service = useMachine(select.machine, {
+    id,
+    name,
+    collection,
+    value,
+    defaultValue,
+    disabled,
+    onValueChange(details) {
+      onValueChange?.(details);
+    },
+  });
 
-  const api = select.connect(state, send, normalizeProps);
-  const apiRef = useRef(api);
-
-  useEffect(() => {
-    apiRef.current = api;
-  }, [api]);
-
-  useEffect(() => {
-    if (apiRef.current.setCollection) {
-      apiRef.current.setCollection(collection);
-    }
-  }, [collection]);
-
-  useEffect(() => {
-    if (value !== undefined && apiRef.current.setValue) {
-      apiRef.current.setValue(value);
-    }
-  }, [value]);
+  const api = select.connect(service, normalizeProps);
 
   const currentValues = value !== undefined ? value : (api.value || []);
   const selectedItemLabels = items
