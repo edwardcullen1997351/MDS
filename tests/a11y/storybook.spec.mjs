@@ -53,6 +53,8 @@ for (const [id, entry] of stories) {
         }
       }, entry.title);
     }
+    // Axe should inspect the settled UI, not the low-opacity frames of entrance animations.
+    await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; }' });
     let results;
     for (let attempt = 0; attempt < 6; attempt++) {
       try {
