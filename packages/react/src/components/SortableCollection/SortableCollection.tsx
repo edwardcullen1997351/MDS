@@ -179,18 +179,9 @@ export const SortableCollection = forwardRef<HTMLElement, SortableCollectionProp
       announce(`Cancelled moving ${getItemName(id)}. Reverted to original position.`);
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent, id: string, index: number) => {
+    const handleKeyDown = (e: React.KeyboardEvent, id: string) => {
       if (disabled) return;
-
-      if (!grab) {
-        if (e.key === ' ' || e.key === 'Enter') {
-          e.preventDefault();
-          handleStartGrab(id, index, 'keyboard');
-        }
-        return;
-      }
-
-      if (grab.id === id) {
+      if (grab?.id === id) {
         if (e.key === 'ArrowUp') {
           e.preventDefault();
           if (grab.proposedIndex > 0) {
@@ -215,9 +206,6 @@ export const SortableCollection = forwardRef<HTMLElement, SortableCollectionProp
               }.`
             );
           }
-        } else if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          handleDrop();
         } else if (e.key === 'Escape') {
           e.preventDefault();
           handleCancel();
@@ -341,15 +329,14 @@ export const SortableCollection = forwardRef<HTMLElement, SortableCollectionProp
                   aria-roledescription="sortable item"
                   aria-grabbed={isGrabbed}
                   aria-describedby={instrId}
-                  draggable={!disabled && !isImmovable}
                   className={`ds-sortable-item ${isGrabbed ? 'ds-sortable-item--grabbed' : ''} ${
                     isImmovable ? 'ds-sortable-item--immovable' : ''
                   }`}
                 >
+                  {/* HTML drag events use this row as a drop target; keyboard interaction lives on the handle button. */}
+                  {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
                   <div
                     className="ds-sortable-item-row"
-                    role="button"
-                    tabIndex={disabled || isImmovable ? -1 : 0}
                     draggable={!disabled && !isImmovable}
                     onDragStart={(e) => handleDragStart(e, id, index)}
                     onDragOver={(e) => handleDragOver(e, id, index)}
@@ -357,9 +344,9 @@ export const SortableCollection = forwardRef<HTMLElement, SortableCollectionProp
                     onDragEnd={handleDragEnd}
                   >
                     {moveControls !== 'none' && (
-                      <div
-                        role="button"
-                        tabIndex={disabled || isImmovable ? -1 : 0}
+                      <button
+                        type="button"
+                        disabled={disabled || isImmovable}
                         aria-disabled={disabled || isImmovable}
                         aria-label={`Reorder ${getItemName(id)}, position ${index + 1} of ${items.length}`}
                         title={isImmovable ? immovableReason || 'Pinned' : `Grab and drag ${getItemName(id)}`}
@@ -369,7 +356,7 @@ export const SortableCollection = forwardRef<HTMLElement, SortableCollectionProp
                           e.stopPropagation();
                           handleDragStart(e, id, index);
                         }}
-                        onKeyDown={(e) => handleKeyDown(e, id, index)}
+                        onKeyDown={(e) => handleKeyDown(e, id)}
                         onClick={(e) => {
                           e.stopPropagation();
                           if (grab?.id === id) {
@@ -382,7 +369,7 @@ export const SortableCollection = forwardRef<HTMLElement, SortableCollectionProp
                         <span className="ds-sortable-handle-icon" aria-hidden="true">
                           ⠿
                         </span>
-                      </div>
+                      </button>
                     )}
 
                     <div className="ds-sortable-item-content">{content}</div>
