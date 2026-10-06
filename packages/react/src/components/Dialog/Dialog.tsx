@@ -37,26 +37,18 @@ export const Dialog: React.FC<DialogProps> = ({
   const generatedId = useId();
   const id = customId || generatedId;
 
-  const [state, send] = useMachine(
-    dialog.machine({
-      id,
-      open: open !== undefined ? open : defaultOpen,
-      closeOnInteractOutside: closeOnOutsideClick,
-      closeOnEscape,
-      onOpenChange(details) {
-        onOpenChange?.(details);
-      },
-    }),
-    {
-      context: {
-        open: open !== undefined ? open : defaultOpen,
-        closeOnInteractOutside: closeOnOutsideClick,
-        closeOnEscape,
-      },
-    }
-  );
+  const service = useMachine(dialog.machine, {
+    id,
+    open,
+    defaultOpen,
+    closeOnInteractOutside: closeOnOutsideClick,
+    closeOnEscape,
+    onOpenChange(details) {
+      onOpenChange?.(details);
+    },
+  });
 
-  const api = dialog.connect(state, send, normalizeProps);
+  const api = dialog.connect(service, normalizeProps);
   const isDialogActive = open !== undefined ? open : api.open;
 
   const content =

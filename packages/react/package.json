@@ -22,9 +22,9 @@
   },
   "dependencies": {
     "@ds/tokens": "*",
-    "@zag-js/dialog": "^0.82.2",
-    "@zag-js/react": "^0.82.2",
-    "@zag-js/select": "^1.44.0"
+    "@zag-js/dialog": "1.44.0",
+    "@zag-js/react": "1.44.0",
+    "@zag-js/select": "1.44.0"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
