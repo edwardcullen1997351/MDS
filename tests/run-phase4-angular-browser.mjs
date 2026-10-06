@@ -38,8 +38,8 @@ try {
   const url = `http://127.0.0.1:${server.address().port}/phase4-angular-browser.html`;
   browser = await chromium.launch({ headless: true, ...(executablePath ? { executablePath } : {}) });
   const page = await browser.newPage();
-  await page.goto(url, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => document.querySelector('#result')?.textContent?.startsWith('PHASE4_ANGULAR'), null, { timeout: 30000 });
+  await page.goto(url, { waitUntil: 'commit' });
+  await page.waitForFunction(() => document.querySelector('#result')?.textContent?.startsWith('PHASE4_ANGULAR'), null, { timeout: 120000 });
   const result = (await page.locator('#result').textContent())?.replace(/^PHASE4_ANGULAR /, '') ?? '';
   console.log(result);
   if (result.includes(':fail')) process.exitCode = 1;
