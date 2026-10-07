@@ -17,7 +17,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import tsParser from '@typescript-eslint/parser';
-import jsxA11y from 'eslint-plugin-jsx-a11y';
+import jsxA11y from 'eslint-plugin-jsx-a11y-x';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const adherence = JSON.parse(
@@ -44,7 +44,13 @@ export default [
     ],
     plugins: { 'jsx-a11y': jsxA11y },
     languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
-    rules: jsxA11y.flatConfigs.strict.rules,
+    // Preserve the rule IDs used by the accessibility baseline.
+    rules: Object.fromEntries(
+      Object.entries(jsxA11y.configs.strict.rules).map(([rule, severity]) => [
+        rule.replace('jsx-a11y-x/', 'jsx-a11y/'),
+        severity,
+      ])
+    ),
   },
   {
     // TypeScript parsing is also needed for Storybook's TypeScript sources.
