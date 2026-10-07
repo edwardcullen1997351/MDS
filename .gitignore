@@ -10,6 +10,9 @@ coverage/
 .tmp/
 .cache/
 /.agents/
+!/.agents/AGENTS.md
+!/.agents/registry.json
+!/.agents/skills/meridian-design/
 playwright-report/
 test-results/
 

@@ -1,0 +1,21 @@
+/* ── Snackbar ──────────────────────────────────────────────────────────
+   A bar, not a card. Snackbar borrows nothing from --toast-*: it is wider,
+   shorter, lower (--elevation-2 against the toast's 4), tighter in radius,
+   and it carries no tone colour at all — its whole job is one sentence and
+   one action, anchored to the surface that caused it. It is deliberately
+   NOT inverted: --surface-inverse belongs to Tooltip, and a second inverted
+   surface in the same corner of the screen would read as the same layer. */
+--snackbar-background:var(--surface-overlay);
+--snackbar-border:var(--border-strong);
+--snackbar-radius:var(--radius-sm);
+--snackbar-shadow:var(--elevation-2);
+--snackbar-text:var(--text-primary);
+--snackbar-dismiss-icon:var(--text-tertiary);
+--snackbar-attached-border:var(--border-default);
+--snackbar-height-sm:36px;
+--snackbar-height-md:44px;
+--snackbar-padding-sm:var(--space-3);
+--snackbar-padding-md:var(--space-4);
+--snackbar-gap:var(--space-4);
+--snackbar-max-width:560px;
+--snackbar-inset:var(--space-4);

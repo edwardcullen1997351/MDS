@@ -1,0 +1,11 @@
+/* ── Link ──────────────────────────────────────────────────────────────
+   Navigation, not action. `subtle` inherits the body hierarchy for
+   breadcrumbs and metadata rows, where a blue link per line is noise. */
+--link-foreground:var(--text-link);
+--link-foreground-hover:var(--action-solid-hover);
+--link-foreground-active:var(--action-solid-active);
+--link-foreground-subtle:var(--text-secondary);
+--link-foreground-subtle-hover:var(--text-primary);
+--link-foreground-inverse:var(--text-link-inverse);
+--link-foreground-inverse-hover:var(--text-link-inverse-hover);
+--link-foreground-inverse-active:var(--text-link-inverse-active);

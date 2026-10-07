@@ -1,0 +1,9 @@
+/* ── SplitButton (composite) ───────────────────────────────────────────
+   Two halves, one control. The seam is drawn once and never by both: an
+   outlined pair shares one border colour, a ghost pair draws a divider it
+   has no border for, and a solid pair can only be divided by the fill's
+   own inverse — a grey line on action blue disappears. */
+--split-button-radius:var(--radius-sm);
+--split-button-border:var(--border-default);
+--split-button-divider:var(--border-default);
+--split-button-seam-solid:var(--action-on-solid);

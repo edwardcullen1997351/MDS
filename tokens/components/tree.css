@@ -1,0 +1,40 @@
+/* ── Tree ──────────────────────────────────────────────────────────────
+   A hierarchy the user walks, not a run of records. Two geometry rules are
+   the whole component:
+
+   · --tree-indent is ONE step, applied per level. It is 16px and not the
+     20-24px a file browser uses, because a nine-level BOM at 24px spends
+     216px of a 360px panel on empty air. Deeper trees are handled by
+     scrolling the label column, never by shrinking the step per level —
+     an indent that varies by depth stops encoding depth.
+   · The row is a control (role="treeitem" with one tab stop for the whole
+     tree), so it takes --radius-sm, the house control corner, and the
+     standard --focus-ring. It is NOT a table row: no full-bleed band, no
+     zebra. The selected tint stops at the row's own rounded box.
+
+   The guide rule is --border-subtle and never --border-default: at eight
+   levels the guides are the most repeated line on the screen, and at
+   default weight they out-draw the labels beside them. */
+--tree-row-height-sm:var(--control-h-sm);
+--tree-row-height-md:var(--control-h-md);
+--tree-row-radius:var(--radius-sm);
+--tree-row-padding-x:var(--space-2);
+--tree-row-gap:var(--space-2);
+--tree-indent:16px;
+--tree-guide:var(--border-subtle);
+--tree-row-background-hover:var(--surface-hover);
+--tree-row-background-selected:var(--surface-selected);
+/* No --tree-row-text: a row's resting colour is --tree-branch-text or
+   --tree-leaf-text, never a third value that neither branch nor leaf reads. */
+--tree-row-text-selected:var(--text-accent);
+--tree-row-text-disabled:var(--text-disabled);
+--tree-branch-text:var(--text-primary);
+--tree-leaf-text:var(--text-secondary);
+--tree-chevron:var(--text-tertiary);
+--tree-chevron-hover:var(--text-primary);
+--tree-leading-foreground:var(--text-secondary);
+--tree-meta-text:var(--text-tertiary);
+--tree-indicator-border:var(--border-control);
+--tree-indicator-background:var(--surface-card);
+--tree-indicator-background-selected:var(--action-solid);
+--tree-indicator-foreground:var(--action-on-solid);

@@ -1,0 +1,16 @@
+/* ── COARSE POINTER ────────────────────────────────────────────────────
+   The only pointer-conditional block in the token layer. Tag is the one
+   component whose resting geometry is below the 44px target minimum and
+   whose content the user must still be able to dismiss on a phone, so its
+   height and remove target are raised here rather than by a `touch` prop no
+   product would remember to pass. Nothing else in the system needs this:
+   every other control already meets 44px at its md size. */
+@media (pointer:coarse){
+  :root{
+    --tag-height-sm:32px;
+    --tag-height-md:36px;
+    --tag-padding-sm:10px;
+    --tag-padding-md:12px;
+    --tag-remove-target:44px;
+  }
+}

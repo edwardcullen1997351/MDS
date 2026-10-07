@@ -1,0 +1,71 @@
+/* ── Avatar ────────────────────────────────────────────────────────────
+   One neutral treatment, and NO colour identity — which is the whole design
+   decision, forced by the system's own colour law.
+
+   Every other design system hashes a name to a hue. Meridian cannot: every
+   ramp it owns already means something. Green is Success, orange is Warning,
+   red is Critical, and the ordered --viz-1…6 series means SERIES identity,
+   not category identity — its second step IS green-600 and its sixth IS
+   red-600. A hashed avatar would therefore put a Critical-red disc beside an
+   operator's name in an alarm list, and a Success-green one beside the next
+   operator, meaning nothing. Design Principles: "a colour used decoratively
+   is a colour that can no longer carry meaning."
+
+   So identity is carried by the initials, and the disc is a sunken surface
+   in every case. The one thing that may be coloured is the presence dot,
+   because presence genuinely IS a state and the state ramps are exactly
+   what state should use.
+
+   The person/machine split earns its keep in a plant console: PRS-4120 is
+   not a person. It follows Tag's rule — mono for identifiers out of the
+   data, sans for names a human wrote. */
+--avatar-background:var(--surface-sunken);
+--avatar-background-machine:var(--surface-raised);
+--avatar-foreground:var(--text-secondary);
+--avatar-foreground-machine:var(--text-tertiary);
+/* NOT --border-subtle: in the light scope it and --surface-sunken are both
+   --grey-100, so a person avatar drew a #edeff3 hairline on a #edeff3 fill —
+   an invisible edge that still spent 1px of the disc under border-box, and
+   left person and machine avatars inconsistent for no stated reason. Exactly
+   the equal-value collision Skeleton hit in 1.16, in the same token pair.
+   --border-default (grey-200 light, rgba(255,255,255,.12) dark) separates
+   from BOTH fills in BOTH scopes. Any future retarget must be checked in
+   both: equal values here fail silently and look like a rendering bug. */
+--avatar-border:var(--border-default);
+--avatar-radius:var(--radius-full);
+--avatar-radius-machine:var(--radius-xs);
+--avatar-size-xs:20px;
+--avatar-size-sm:24px;
+--avatar-size-md:32px;
+--avatar-size-lg:40px;
+--avatar-size-xl:64px;
+/* The ring that separates overlapping discs in a group. It is the PAGE
+   colour rather than a border colour: the disc must appear to punch a hole
+   in the one behind it, and a grey border on a grey disc just thickens it. */
+--avatar-group-ring:var(--surface-card);
+--avatar-group-ring-width:2px;
+--avatar-group-overlap:0.32; /* @kind other */
+/* Deliberately the same value as --avatar-foreground, and a separate name for
+   the reason --segmented-background-selected is separate from Tabs'. The chip
+   reads "+2": that is INFORMATION, so it owes 4.5:1, and at 9.6px (a 24px sm
+   disc × the 0.4 ratio) there is no grey lighter than --text-secondary that
+   clears it on --surface-sunken. --text-tertiary measured 4.11:1.
+
+   So the chip recedes by LETTERFORM rather than by lightness — a plus sign and
+   a digit among letters is already the odd one out — and the token stays for a
+   consumer whose chip sits on a lighter ground. Retargeting it lighter is a
+   1.4.3 regression, not a style choice. */
+--avatar-overflow-foreground:var(--text-secondary);
+/* Presence — the only coloured part, because presence is state. */
+--avatar-status-size:0.3;
+--avatar-status-online:var(--status-success-solid);
+--avatar-status-busy:var(--status-critical-solid);
+--avatar-status-away:var(--status-warning-solid);
+/* NOT --border-strong. That is a HAIRLINE token, tuned to sit quietly against
+   a surface, and used as a solid mark fill it measures 1.60:1 against the
+   dot's own white ring — the identical token at the identical ratio that the
+   Governance backlog still tracks as a live 1.4.11 failure on Checkbox and
+   Radio borders. A presence dot is a non-text indicator and owes 3:1.
+   --text-tertiary is tuned for exactly this: a quiet mark that is still
+   legible, ~4.1:1 on white. */
+--avatar-status-offline:var(--text-tertiary);

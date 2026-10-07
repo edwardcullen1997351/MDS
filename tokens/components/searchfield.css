@@ -1,0 +1,4 @@
+/* ── SearchField (composite) ───────────────────────────────────────────
+   Only the distance between the field and an explicit submit control: the
+   two are separate actions, so they are not joined like a ButtonGroup. */
+--search-field-gap:var(--space-2);

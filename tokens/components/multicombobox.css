@@ -1,0 +1,41 @@
+/* ── MultiCombobox ─────────────────────────────────────────────────────
+   Its own family, not a reuse of --combobox-*, for the reason Autocomplete
+   states below: a component token may never reference another component's.
+   The list paint resolves to the same semantics as Combobox's on purpose —
+   one list appearance across the system — and the tokens stay separate so
+   either can be re-skinned alone.
+
+   What is genuinely new here is the BOX, which is not Input's. A field
+   holding chips has no fixed control height: it starts at one row and grows
+   as tokens wrap, so the geometry is a min-height plus its own padding
+   rather than --control-h-*. The overflow counter ("+3") is typographic,
+   not a Badge — a Badge states a condition the system determined, and this
+   is a count of what the user selected. */
+--multi-combobox-background:var(--surface-card);
+--multi-combobox-background-disabled:var(--surface-disabled);
+--multi-combobox-border:var(--border-control);
+--multi-combobox-border-hover:var(--border-control-hover);
+--multi-combobox-border-focus:var(--border-focus);
+--multi-combobox-border-invalid:var(--status-critical-solid);
+--multi-combobox-radius:var(--radius-sm);
+--multi-combobox-focus-ring:var(--focus-ring);
+--multi-combobox-focus-ring-invalid:var(--focus-ring-critical);
+--multi-combobox-text:var(--text-primary);
+--multi-combobox-text-disabled:var(--text-disabled);
+--multi-combobox-placeholder:var(--text-tertiary);
+--multi-combobox-icon:var(--text-tertiary);
+--multi-combobox-overflow-text:var(--text-secondary);
+--multi-combobox-min-height-sm:var(--control-h-sm);
+--multi-combobox-min-height-md:var(--control-h-md);
+--multi-combobox-min-height-lg:var(--control-h-lg);
+--multi-combobox-list-background:var(--surface-overlay);
+--multi-combobox-list-border:var(--border-default);
+--multi-combobox-list-radius:var(--radius-md);
+--multi-combobox-list-shadow:var(--elevation-3);
+--multi-combobox-option-text:var(--text-primary);
+--multi-combobox-option-description-text:var(--text-tertiary);
+--multi-combobox-option-match-text:var(--selection-text-accent);
+--multi-combobox-option-check:var(--action-text);
+--multi-combobox-option-background-active:var(--surface-hover);
+--multi-combobox-option-background-selected:var(--surface-selected);
+--multi-combobox-status-text:var(--text-tertiary);

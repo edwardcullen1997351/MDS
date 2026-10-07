@@ -1,0 +1,25 @@
+/* ── DatePicker ─────────────────────────────────────────────────────────
+   The calendar panel. The FIELD borrows --input-* wholesale, exactly as
+   Select, Combobox and Autocomplete do, so a date field cannot drift from
+   the text field beside it; everything here is the panel and the grid. */
+--datepicker-panel-background:var(--surface-overlay);
+--datepicker-panel-border:var(--border-default);
+--datepicker-panel-radius:var(--radius-md);
+--datepicker-panel-shadow:var(--elevation-3);
+--datepicker-header-text:var(--text-primary);
+--datepicker-weekday-text:var(--text-tertiary);
+--datepicker-day-size:30px;
+--datepicker-day-radius:var(--radius-sm);
+--datepicker-day-text:var(--text-primary);
+--datepicker-day-outside-text:var(--text-tertiary);
+--datepicker-day-disabled-text:var(--text-disabled);
+--datepicker-day-background-hover:var(--surface-hover);
+--datepicker-day-background-selected:var(--action-solid);
+--datepicker-day-foreground-selected:var(--action-on-solid);
+/* The span between two ends of a range. A tint, never the solid: the two
+   ENDS are the choices, and painting forty days in action blue makes the
+   range look like forty selections. */
+--datepicker-day-background-range:var(--surface-selected);
+--datepicker-day-foreground-range:var(--text-accent);
+--datepicker-today-border:var(--border-control);
+--datepicker-footer-border:var(--border-subtle);

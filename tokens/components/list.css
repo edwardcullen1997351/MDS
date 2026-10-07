@@ -1,0 +1,30 @@
+/* ── List ──────────────────────────────────────────────────────────────
+   The run of records Table refuses. Table §01 sends two shapes away — "items
+   with unlike shapes" and "one record's fields" — and until now the system
+   had nowhere to send them, so every product hand-rolled a div stack.
+
+   Two token decisions worth stating. The row has no hover, selected or
+   pressed fill, because the row is not a control (§07): interaction lives in
+   the row's content, so the states belong to the Link or the IconButton
+   inside it. And the leading slot is a real sized box rather than a bare
+   glyph, because a 16px icon beside 13px text on one row and a 24px Avatar on
+   the next would put the text on two different left edges. */
+--list-divider:var(--border-subtle);
+--list-row-padding-y-sm:var(--space-2);
+--list-row-padding-y-md:var(--space-3);
+--list-row-padding-y-lg:var(--space-4);
+--list-gap-sm:var(--space-2);
+--list-gap-md:var(--space-3);
+--list-gap-lg:var(--space-4);
+--list-gutter-gap:var(--space-3);
+--list-leading-size-sm:20px;
+--list-leading-size-md:24px;
+--list-leading-size-lg:32px;
+--list-leading-background:var(--surface-sunken);
+--list-leading-foreground:var(--text-secondary);
+--list-leading-radius:var(--radius-sm);
+--list-title-text:var(--text-primary);
+--list-description-text:var(--text-secondary);
+--list-meta-text:var(--text-tertiary);
+--list-marker-text:var(--text-tertiary);
+--list-actions-gap:var(--space-2);

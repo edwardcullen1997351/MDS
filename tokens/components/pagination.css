@@ -1,0 +1,34 @@
+/* ── Pagination ────────────────────────────────────────────────────────
+   The current page is a filled chip, not a tinted link: it is the one
+   control in the row that is a STATE rather than a destination, and at 28px
+   a border alone does not carry that. Arrows get their own text tokens
+   because their disabled state is load-bearing — the first and last page are
+   where a user learns the list has ends. */
+--pagination-page-text:var(--text-secondary);
+--pagination-page-text-hover:var(--text-primary);
+--pagination-page-text-current:var(--action-on-solid);
+--pagination-page-background-hover:var(--surface-hover);
+--pagination-page-background-current:var(--action-solid);
+--pagination-page-radius:var(--radius-sm);
+/* No --pagination-arrow-text: it resolved to --text-secondary, exactly what
+   the page numbers already use, so it was two names for one value and
+   wiring it changed nothing. Quietening the arrows would need
+   --text-tertiary, which the text contract reserves for what the operator
+   need NOT read in order to act — and an arrow is acted upon. Arrows and
+   numbers are interactive controls of equal standing; only the disabled
+   colour distinguishes them. Removed 1.14.2. */
+--pagination-arrow-text-disabled:var(--text-disabled);
+--pagination-ellipsis-text:var(--text-tertiary);
+--pagination-summary-text:var(--text-tertiary);
+/* No --pagination-border: the rule between a table and its paginator is
+   the CARD's seam, not a part of Pagination, and the token contract only
+   lets a component token name that component's own parts. Consumers use
+   --border-subtle (see Pagination §14). Referenced only in docs, never in
+   code, until removed in 1.14.2. */
+--pagination-focus-ring:var(--focus-ring);
+
+/* ── Dialog (the system's modal) ───────────────────────────────────────
+   Widths are tokens, not JSX numbers, so a product can re-scale its modals
+   without forking the component. Top-aligned 64px down rather than centred:
+   a centred dialog moves its own title upward as content grows, so a form
+   that gains a validation message shifts the thing the user is reading. */

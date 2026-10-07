@@ -1,0 +1,27 @@
+/* ── Tabs ──────────────────────────────────────────────────────────────
+   Two variants, one token group: the underline bar is page-level furniture
+   and the segmented control is a local switch, but they are the same
+   component and must never drift into two colour vocabularies. The count
+   sits on its own tokens because it is data, not label — it dims when the
+   tab is inactive and must be able to dim independently of the text. */
+--tabs-border:var(--border-default);
+--tab-text:var(--text-secondary);
+--tab-text-hover:var(--text-primary);
+--tab-text-active:var(--text-primary);
+--tab-text-disabled:var(--text-disabled);
+--tab-icon:var(--text-tertiary);
+--tab-icon-active:var(--text-secondary);
+--tab-count-text:var(--text-tertiary);
+--tab-count-text-active:var(--text-secondary);
+--tab-indicator:var(--action-solid);
+--tab-indicator-hover:var(--border-strong);
+--tab-focus-ring:var(--focus-ring);
+--tabs-pill-background:var(--surface-sunken);
+--tabs-pill-border:var(--border-default);
+--tab-pill-background-active:var(--surface-card);
+--tab-pill-background-hover:var(--surface-hover);
+--tab-pill-shadow-active:var(--elevation-1);
+/* No --tabs-scroll-fade: the overflow cue is a mask, which fades to
+   whatever is behind the bar and needs no colour. A colour-gradient overlay
+   would need a wrapper element and would paint over the pill variant's own
+   background. Removed 1.14.2 after the mask shipped. */

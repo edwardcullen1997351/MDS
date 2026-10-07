@@ -1,0 +1,24 @@
+/* ── Progress ───────────────────────────────────────────────────────────
+   WORK IN FLIGHT — never a level. A utilisation gauge, an OEE bar or a
+   capacity meter looks identical and means something else entirely: it
+   reports a state that is simply true, not a task that is going to finish.
+   Those are charts (or role="meter"); this component is for something that
+   started and will end, which is why it has one indicator colour and no
+   tones — a red progress bar is a chart pretending a job is failing. */
+--progress-track:var(--surface-sunken);
+--progress-indicator:var(--action-solid);
+--progress-radius:var(--radius-full);
+--progress-height-sm:2px;
+--progress-height-md:4px;
+/* The travelling segment of an indeterminate bar. Wide enough to read as one
+   object crossing the track, narrow enough that the track stays visible —
+   at 100% it is a flashing bar, not a moving one. */
+--progress-indeterminate-width:40%;
+--progress-label-text:var(--text-secondary);
+--progress-value-text:var(--text-secondary);
+--progress-spinner-track:var(--border-default);
+--progress-spinner-indicator:var(--action-solid);
+--progress-spinner-width:2px;
+--progress-spinner-size-sm:14px;
+--progress-spinner-size-md:16px;
+--progress-spinner-size-lg:20px;

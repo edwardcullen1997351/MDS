@@ -1,0 +1,6 @@
+/* ── DateTimePicker (composite) ────────────────────────────────────────
+   The distance between the date and the time halves of ONE value. Deliberately
+   the same as the range gap: both composites join two named controls that read
+   as one answer, and two different gaps for the same relationship would read
+   as two different kinds of grouping. */
+--date-time-gap:var(--space-3);

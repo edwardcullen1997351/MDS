@@ -5,6 +5,11 @@ manufacturing operations software. Hairline borders carry the structure, one sat
 carries every action, and type does the rest. It is built for screens where 300 machine
 rows and a shift-long output chart have to sit on the same page without shouting.
 
+> ⚡ **Fast O(1) Lookup & Agent Hub:**
+> - **[Component & Token Registry (.agents/registry.json)](file:///.agents/registry.json):** Instant O(1) paths to all 103 components, 16 patterns, 7 layouts, and tokens.
+> - **[AI Agent Guide (.agents/AGENTS.md)](file:///.agents/AGENTS.md):** Rules, token-saving protocol, domain context.
+> - **[Modular Documentation Hub (docs/INDEX.md)](file:///docs/INDEX.md):** Atomic, token-saving guides for colors, typography, spacing, and standards.
+
 ## Provenance — read this first
 
 This system was authored **from scratch, with no brand inputs**. The opening brief said only

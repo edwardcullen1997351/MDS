@@ -1,0 +1,37 @@
+/* ── Alert ─────────────────────────────────────────────────────────────
+   The persistent one. Toast and Snackbar are events that expire; an alert
+   is a CONDITION, in the page flow, that stays until the condition does.
+   Tinted rather than white-with-a-stripe: the tint is what lets a reader
+   scanning a long page see that a block is not ordinary content, and the
+   tone colour is carried by the tint, the border, the icon AND a word — no
+   alert is ever colour alone. Body copy stays --text-primary/secondary
+   rather than the tone's text colour, which is reserved for the title: a
+   whole paragraph in red-700 is unreadable at --text-sm. */
+--alert-radius:var(--radius-md);
+--alert-padding-sm:var(--space-3);
+--alert-padding-md:var(--space-4);
+--alert-gap:var(--space-3);
+--alert-title-text:var(--text-primary);
+--alert-body-text:var(--text-secondary);
+--alert-dismiss-icon:var(--text-tertiary);
+--alert-accent-width:3px;
+--alert-info-background:var(--status-info-soft);
+--alert-info-border:var(--status-info-border);
+--alert-info-icon:var(--status-info-solid);
+--alert-info-title:var(--status-info-text);
+--alert-success-background:var(--status-success-soft);
+--alert-success-border:var(--status-success-border);
+--alert-success-icon:var(--status-success-solid);
+--alert-success-title:var(--status-success-text);
+--alert-warning-background:var(--status-warning-soft);
+--alert-warning-border:var(--status-warning-border);
+--alert-warning-icon:var(--status-warning-solid);
+--alert-warning-title:var(--status-warning-text);
+--alert-critical-background:var(--status-critical-soft);
+--alert-critical-border:var(--status-critical-border);
+--alert-critical-icon:var(--status-critical-solid);
+--alert-critical-title:var(--status-critical-text);
+--alert-neutral-background:var(--status-neutral-soft);
+--alert-neutral-border:var(--status-neutral-border);
+--alert-neutral-icon:var(--status-neutral-solid);
+--alert-neutral-title:var(--text-primary);

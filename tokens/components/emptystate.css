@@ -1,0 +1,44 @@
+/* ── EmptyState ────────────────────────────────────────────────────────
+   The absence of data, explained. Its tokens exist because it is NOT a Card
+   and NOT an Alert: by default it paints nothing at all — no surface, no
+   border — because it almost always sits inside a Card or a Table region
+   that already has one, and a bordered box inside a bordered box is the most
+   common way this component is got wrong.
+
+   The measure is a real token, not a magic number: the prose is one or two
+   sentences and it must stay a readable column even when the region is
+   1400px wide. Centred text past ~50ch stops being scannable.
+
+   There is no illustration slot and no illustration token. The glyph is
+   capped at --icon-lg (22px), which is the system's ceiling for any icon on
+   a surface — see Icon §05. A 120px drawing is a different design language
+   than the one this system is, and it would need an asset pipeline the
+   project does not have. */
+--empty-state-background:transparent;
+--empty-state-background-bordered:var(--surface-sunken);
+/* NOT --border-subtle: it and --surface-sunken are both --grey-100 in the
+   light scope, so `bordered` drew an invisible hairline on its own fill — the
+   third instance of this collision in the system after Skeleton 1.16 and
+   Avatar 1.21.6, and the reason the warning now lives on the border family in
+   semantic.css. --border-default separates from both grounds in both scopes.
+   Found 5 Sep 2026 by tools/check-contracts.mjs. */
+--empty-state-border:var(--border-default);
+--empty-state-radius:var(--radius-md);
+--empty-state-padding-sm:var(--space-6);
+--empty-state-padding-md:var(--space-8);
+--empty-state-padding-lg:var(--space-10);
+--empty-state-gap:var(--space-3);
+--empty-state-gap-actions:var(--space-2);
+--empty-state-min-height-sm:120px;
+--empty-state-min-height-md:200px;
+--empty-state-min-height-lg:280px;
+/* The prose column. Not a percentage: the cap must hold at any region width. */
+--empty-state-measure:46ch;
+--empty-state-icon:var(--text-tertiary);
+/* The one coloured glyph, for `cleared` — an empty queue is an achievement,
+   not a gap, and the tick is what stops the layout reading as a failure. It
+   is decorative: the title says the same thing in words. */
+--empty-state-icon-positive:var(--status-success-solid);
+--empty-state-title-text:var(--text-primary);
+--empty-state-body-text:var(--text-secondary);
+--empty-state-hint-text:var(--text-tertiary);

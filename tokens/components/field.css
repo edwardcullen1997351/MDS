@@ -1,0 +1,7 @@
+/* ── Field ─────────────────────────────────────────────────────────────*/
+--field-label-text:var(--text-secondary);
+--field-hint-text:var(--text-tertiary);
+--field-error-text:var(--text-critical);
+--field-required-mark:var(--status-critical-solid);
+--field-gap:var(--space-half);
+--field-message-gap:var(--space-1);

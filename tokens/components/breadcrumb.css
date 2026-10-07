@@ -1,0 +1,13 @@
+/* ── Breadcrumb ────────────────────────────────────────────────────────
+   Its own text tokens rather than --link-*: a trail is standalone navigation
+   whose resting state must be quieter than a link in prose (no underline at
+   rest, secondary rather than action colour), and the current-page crumb is
+   not a link at all. Sharing Link's variables would tie the loudest text in
+   a page header to the quietest. */
+--breadcrumb-text:var(--text-secondary);
+--breadcrumb-text-hover:var(--text-primary);
+--breadcrumb-text-current:var(--text-primary);
+--breadcrumb-separator:var(--text-disabled);
+--breadcrumb-icon:var(--text-tertiary);
+--breadcrumb-overflow-text:var(--text-tertiary);
+--breadcrumb-focus-ring:var(--focus-ring);

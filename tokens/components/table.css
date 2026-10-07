@@ -1,0 +1,45 @@
+/* ── Table ─────────────────────────────────────────────────────────────*/
+--table-header-background:var(--background-page);
+/* NOT --text-tertiary. Column headers are 11px uppercase with caps tracking —
+   the smallest, thinnest text in the system — and tertiary on the page ground
+   measures 4.46:1, four hundredths under 1.4.3. A header names the column an
+   operator is scanning; it is content, not chrome. --text-secondary clears it
+   at 6.7:1 and the uppercase tracking still reads as a header without leaning
+   on lightness. Found 5 Sep 2026 by tools/check-contracts.mjs. */
+--table-header-text:var(--text-secondary);
+--table-header-text-active:var(--text-primary);
+--table-header-border:var(--border-default);
+--table-header-height:var(--header-h);
+--table-row-height:var(--row-h);
+--table-row-background-hover:var(--surface-hover);
+--table-row-background-selected:var(--surface-selected);
+--table-row-border:var(--border-subtle);
+--table-cell-text:var(--text-primary);
+--table-cell-padding-x:var(--cell-px);
+--table-empty-text:var(--text-tertiary);
+/* No --table-caption-text: the caption is visually hidden by contract (the
+   table's name is already a heading above it), so a colour token for it
+   would have no job. It was defined in the 1.14.0 pass and never referenced
+   — the same dead-token defect that pass fixed in --cell-py — and removed
+   on the same day. */
+--table-cell-padding-y:var(--cell-py);
+/* The sticky header needs an opaque fill and a rule that reads against rows
+   scrolling under it — --background-page alone leaves the first row's
+   descenders showing through at sub-pixel offsets. */
+--table-header-background-sticky:var(--background-page);
+--table-header-shadow-sticky:0 1px 0 0 var(--border-default);
+--table-row-background-focus:var(--surface-hover);
+/* Frozen leading columns need their OWN opaque fill: a sticky cell with a
+   transparent background has the scrolling cells pass visibly underneath
+   it. That opacity is also why the row tints cannot simply be inherited —
+   base.css layers them as a gradient over this fill (see the frozen rules
+   there). The right edge is a box-shadow, not a border, because a border on
+   a sticky cell inside border-collapse renders inconsistently and is the
+   first thing to disappear when the table scrolls. */
+--table-frozen-background:var(--surface-card);
+--table-frozen-shadow:1px 0 0 0 var(--border-default);
+/* An outline, not the --ring-focus box-shadow the rest of the system uses: a
+   box-shadow on a <tr> inside border-collapse renders unreliably and is
+   clipped by the neighbouring cells. Inset offset so the ring stays inside
+   the row rather than overlapping the hairline above it. */
+--table-focus-ring:2px solid var(--border-focus);

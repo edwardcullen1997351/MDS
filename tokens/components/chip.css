@@ -1,0 +1,32 @@
+/* ── Chip ──────────────────────────────────────────────────────────────
+   The offered option, and the third shape in the label family: Badge is
+   --radius-xs (a printed label), Tag is --radius-sm at 20/24px (a value you
+   can dismiss), Chip is --radius-sm at FULL CONTROL HEIGHT — it is an input,
+   so it sits on --control-h-* and rides density with every other control.
+   The check gutter is reserved at all times, selected or not, so selecting a
+   chip cannot re-flow the row. Selection reuses the action ramp because a
+   chosen option is a state the user set, exactly as with Tag. */
+--chip-radius:var(--radius-sm);
+--chip-height-sm:var(--control-h-sm);
+--chip-height-md:var(--control-h-md);
+--chip-padding-sm:10px;
+--chip-padding-md:12px;
+--chip-check-size:var(--icon-mark);
+--chip-background:var(--surface-card);
+--chip-background-hover:var(--surface-hover);
+--chip-background-selected:var(--action-soft);
+--chip-background-selected-hover:var(--action-soft-hover);
+--chip-background-disabled:var(--surface-disabled);
+--chip-foreground:var(--text-primary);
+--chip-foreground-selected:var(--action-text);
+--chip-foreground-disabled:var(--text-disabled);
+--chip-icon:var(--text-tertiary);
+--chip-count-foreground:var(--text-tertiary);
+/* The resting border IS the chip: an unselected chip has nothing else to
+   identify it as a control, so it is load-bearing under 1.4.11 and takes
+   --border-control (4.74:1 on a card), not a structural hairline. */
+--chip-border:var(--border-control);
+--chip-border-hover:var(--border-control-hover);
+--chip-border-selected:var(--action-solid);
+--chip-border-disabled:var(--border-default);
+--chip-focus-ring:var(--focus-ring);

@@ -1,0 +1,14 @@
+/* ── Card ──────────────────────────────────────────────────────────────*/
+--card-background:var(--surface-card);
+--card-border:var(--border-default);
+--card-border-hover:var(--border-strong);
+--card-radius:var(--radius-md);
+--card-shadow:var(--elevation-1);
+--card-shadow-elevated:var(--elevation-3);
+--card-title-text:var(--text-primary);
+--card-subtitle-text:var(--text-tertiary);
+--card-header-border:var(--border-subtle);
+--card-footer-background:var(--background-page);
+--card-footer-border:var(--border-subtle);
+--card-background-hover:var(--surface-hover);
+--card-focus-ring:var(--focus-ring);

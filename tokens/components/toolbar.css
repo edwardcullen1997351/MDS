@@ -1,0 +1,10 @@
+/* ── Toolbar (composite) ───────────────────────────────────────────────
+   An action surface, not a card: it sits on the plane it acts on, so the
+   background is the raised surface and the frame is a hairline. The gap is
+   the control rhythm — wide enough that two adjacent ghost buttons do not
+   read as one joined group, which is ButtonGroup's job. */
+--toolbar-background:var(--surface-raised);
+--toolbar-border:var(--border-subtle);
+--toolbar-radius:var(--radius-md);
+--toolbar-padding:var(--space-1);
+--toolbar-gap:var(--space-2);

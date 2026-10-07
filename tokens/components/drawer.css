@@ -1,0 +1,46 @@
+/* ── Drawer ─────────────────────────────────────────────────────────────
+   The side surface: a PLACE beside the page, not a decision on top of it.
+   It shares Dialog's overlay surface and shadow deliberately — two floating
+   layers at the same elevation must not be two colours — and differs where
+   the behaviour differs: the panel is flush to an edge, so only its leading
+   corners are rounded and only its leading edge has a border. The other
+   three edges are off-screen, and a border drawn there is a hairline the
+   user sees only while the panel animates. */
+--drawer-background:var(--surface-overlay);
+--drawer-border:var(--border-default);
+--drawer-radius:var(--radius-lg);
+--drawer-shadow:var(--elevation-4);
+/* One step lighter than --dialog-scrim: a drawer's whole argument is that the
+   page behind stays readable, and a modal-weight scrim over a table the user
+   is comparing against defeats the reason they opened the panel. */
+--drawer-scrim:var(--overlay-scrim);
+--drawer-width-sm:360px;
+--drawer-width-md:460px;
+--drawer-width-lg:640px;
+/* Bottom sheets are measured in height, and capped at 85% of the surface by
+   the component: a sheet that covers the page is a page. */
+--drawer-height-sm:280px;
+--drawer-height-md:420px;
+--drawer-height-lg:560px;
+--drawer-padding-inline:var(--space-5);
+--drawer-title-text:var(--text-primary);
+--drawer-description-text:var(--text-secondary);
+--drawer-footer-background:var(--background-page);
+--drawer-footer-border:var(--border-subtle);
+
+--dialog-background:var(--surface-overlay);
+--dialog-width-sm:400px;
+--dialog-width-md:520px;
+--dialog-width-lg:720px;
+--dialog-inset-block:var(--space-16);
+--dialog-inset-inline:var(--space-6);
+--dialog-padding-inline:var(--space-6);
+--dialog-border:var(--border-default);
+--dialog-radius:var(--radius-lg);
+--dialog-shadow:var(--elevation-5);
+--dialog-scrim:var(--overlay-scrim);
+--dialog-title-text:var(--text-primary);
+--dialog-title-text-critical:var(--text-critical);
+--dialog-description-text:var(--text-secondary);
+--dialog-footer-background:var(--background-page);
+--dialog-footer-border:var(--border-subtle);

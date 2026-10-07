@@ -1,0 +1,10 @@
+/* ── Popover ────────────────────────────────────────────────────
+   The anchored panel. Sits one step below Dialog in weight: elevation-3 (the
+   menu/popover level) rather than -4, and the tighter --radius-md, because it
+   is attached to a trigger rather than floating over a scrim. */
+--popover-background:var(--surface-overlay);
+--popover-border:var(--border-default);
+--popover-radius:var(--radius-md);
+--popover-shadow:var(--elevation-3);
+--popover-title-text:var(--text-secondary);
+--popover-divider:var(--border-subtle);

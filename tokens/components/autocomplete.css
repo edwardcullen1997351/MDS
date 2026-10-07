@@ -1,0 +1,17 @@
+/* ── Autocomplete ───────────────────────────────────────────────
+   Same division of labour as Combobox: the box is Input's, these are the
+   SUGGESTION list. Its own family rather than a reuse of --combobox-*,
+   because a component token may never reference another component's. The two
+   differences that carry meaning: there is no -selected pair (nothing is ever
+   committed, so a row has one state — the cursor), and -completion-text
+   emphasises what the suggestion would ADD rather than what matched. */
+--autocomplete-list-background:var(--surface-overlay);
+--autocomplete-list-border:var(--border-default);
+--autocomplete-list-radius:var(--radius-md);
+--autocomplete-list-shadow:var(--elevation-3);
+--autocomplete-suggestion-text:var(--text-primary);
+--autocomplete-suggestion-description-text:var(--text-tertiary);
+--autocomplete-suggestion-completion-text:var(--selection-text-accent);
+--autocomplete-suggestion-background-active:var(--surface-hover);
+--autocomplete-ghost-text:var(--text-tertiary);
+--autocomplete-status-text:var(--text-tertiary);
