@@ -67,5 +67,9 @@
   "engines": {
     "node": "^24.21.0",
     "npm": "^12.2.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "esbuild@0.25.12": true
   }
 }
