@@ -10,7 +10,8 @@ export default defineConfig({
   timeout: 120_000,
   expect: { timeout: 20_000 },
   fullyParallel: true,
-  workers: 1,
+  // CI runs independent stories in parallel; local baseline updates stay sequential.
+  workers: process.env.CI ? 2 : 1,
   reporter: [['list']],
   use: {
     browserName: 'chromium',

@@ -2,7 +2,7 @@
   "name": "@meridian/design-system",
   "version": "1.2.0",
   "private": true,
-  "packageManager": "npm@11.6.4",
+  "packageManager": "npm@12.2.0",
   "description": "Enterprise Design System — Multi-Framework Monorepo (React, Angular, Tokens, Storybook)",
   "type": "module",
   "workspaces": [
@@ -63,5 +63,13 @@
     "postcss": "^8.5.28",
     "turbo": "^2.11.7",
     "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": "^24.21.0",
+    "npm": "^12.2.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "esbuild@0.25.12": true
   }
 }
