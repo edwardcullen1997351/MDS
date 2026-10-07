@@ -1,0 +1,16 @@
+/* ── Combobox ───────────────────────────────────────────────────
+   The control box is Input's — same chrome, same --input-* tokens, so a
+   Combobox and an Input in one form are indistinguishable at rest. These are
+   the LIST: a popover surface we draw ourselves, its options and their
+   states. Unlike Select, every pixel here is ours to get right. */
+--combobox-list-background:var(--surface-overlay);
+--combobox-list-border:var(--border-default);
+--combobox-list-radius:var(--radius-md);
+--combobox-list-shadow:var(--elevation-3);
+--combobox-option-text:var(--text-primary);
+--combobox-option-description-text:var(--text-tertiary);
+--combobox-option-match-text:var(--selection-text-accent);
+--combobox-option-check:var(--action-text);
+--combobox-option-background-active:var(--surface-hover);
+--combobox-option-background-selected:var(--surface-selected);
+--combobox-status-text:var(--text-tertiary);

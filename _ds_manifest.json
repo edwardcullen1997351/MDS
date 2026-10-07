@@ -990,13 +990,6 @@
       "name": "Corner radii"
     },
     {
-      "path": "guidelines/reference-assembly-composition.card.html",
-      "group": "Guidelines",
-      "viewport": "1040x1400",
-      "subtitle": "Architectural standard and 5-gate certification protocol for assembling enterprise reference screens",
-      "name": "Reference assembly composition"
-    },
-    {
       "path": "guidelines/responsive.card.html",
       "group": "Layout",
       "viewport": "760x348",
@@ -2206,7 +2199,7 @@
       }
     }
   ],
-  "hasThumbnailHtml": true,
+  "hasThumbnailHtml": false,
   "globalCssPaths": [
     "tokens/fonts.css",
     "tokens/colors.css",

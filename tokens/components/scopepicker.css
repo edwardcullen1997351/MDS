@@ -1,0 +1,33 @@
+/* ── ScopePicker (composite) ───────────────────────────────────────────
+   Several hierarchy nodes as ONE scope value. The composite owns the frame,
+   the distance between the query and the tree, and the summary band; the
+   Tree and the SearchField inside keep their own tokens.
+
+   The tree pane is height-capped and scrolls: a scope picker sits inside a
+   form, and a hierarchy that pushes the Submit button off screen is why
+   products hand-rolled this in the first place. The cap is a token, not a
+   prop — a form field with a caller-chosen height is a layout accident.
+
+   --scope-picker-gap is the frame's own rhythm: the distance from the frame to
+   its message line, and the distance between the summary band's phrases. One
+   token for both, because they are the same relationship — a derived line
+   sitting against the thing it describes.
+
+   --scope-picker-summary-background is --surface-sunken and not the card
+   fill: the summary is a derived readout, not another input, and the one
+   surface change is what says so without a second border. */
+--scope-picker-gap:var(--space-2);
+--scope-picker-radius:var(--radius-md);
+--scope-picker-border:var(--border-default);
+--scope-picker-border-invalid:var(--status-critical-solid);
+--scope-picker-background:var(--surface-card);
+--scope-picker-tree-padding:var(--space-2);
+--scope-picker-tree-max-height:280px;
+--scope-picker-summary-background:var(--surface-sunken);
+--scope-picker-summary-border:var(--border-subtle);
+--scope-picker-summary-padding:var(--space-2) var(--space-3);
+--scope-picker-summary-text:var(--text-secondary);
+--scope-picker-summary-count-text:var(--text-primary);
+--scope-picker-empty-text:var(--text-tertiary);
+--scope-picker-invalid-text:var(--text-critical);
+}

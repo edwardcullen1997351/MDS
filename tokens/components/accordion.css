@@ -1,0 +1,28 @@
+/* ── Accordion ─────────────────────────────────────────────────────────
+   A disclosure is a row that becomes a container, so it needs its own
+   surface tokens rather than borrowing Card's: a bordered accordion is one
+   card holding many rows, and retargeting --card-* must not silently move
+   the divider between them. The expanded header takes no tint of its own —
+   --accordion-header-background-expanded resolves to the same value as rest
+   deliberately, because the open panel below it is already the state; a
+   tinted header plus an open panel says the same thing twice. Products that
+   want a louder open row retarget this one variable. */
+--accordion-background:var(--surface-card);
+--accordion-border:var(--border-default);
+--accordion-radius:var(--radius-md);
+--accordion-divider:var(--border-subtle);
+--accordion-header-background:transparent;
+--accordion-header-background-hover:var(--surface-hover);
+--accordion-header-background-expanded:transparent;
+--accordion-header-text:var(--text-primary);
+--accordion-header-text-hover:var(--text-primary);
+--accordion-header-text-disabled:var(--text-disabled);
+--accordion-header-focus-ring:var(--focus-ring);
+--accordion-description-text:var(--text-tertiary);
+--accordion-marker:var(--text-tertiary);
+--accordion-marker-expanded:var(--text-secondary);
+--accordion-marker-disabled:var(--text-disabled);
+--accordion-panel-text:var(--text-secondary);
+/* No --accordion-panel-border: rows are already separated by
+   --accordion-divider. A second rule that appears only while a panel is open
+   is a line flickering in and out on every expand. Never read. */

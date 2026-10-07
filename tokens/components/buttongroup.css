@@ -1,0 +1,7 @@
+/* ── ButtonGroup ───────────────────────────────────────────────────────
+   Joined action buttons. The seam is each button's own border, overlapped
+   by 1px; the divider only draws for ghost groups, whose buttons have no
+   visible border of their own. */
+--button-group-radius:var(--radius-sm);
+--button-group-border:var(--border-default);
+--button-group-divider:var(--border-default);

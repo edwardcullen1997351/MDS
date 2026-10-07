@@ -1,0 +1,30 @@
+/* ── Slider ─────────────────────────────────────────────────────────────
+   Identical geometry to Progress, opposite semantics — a progress fill is
+   the system reporting, a slider fill is a value the operator owns — so the
+   slider must never borrow --progress-* (Progress §07). A 4px track cannot
+   carry a boundary, so the control is identified by its THUMB, whose
+   hairline is load-bearing under WCAG 1.4.11 and takes --border-control
+   (4.74:1): the Switch knob rule, for the same reason. The fill is
+   --action-solid because setting a value is an action; there are no tones,
+   because a red threshold slider would colour a value, not a state. */
+--slider-track:var(--surface-track);
+--slider-track-disabled:var(--surface-disabled);
+--slider-fill:var(--action-solid);
+--slider-fill-hover:var(--action-solid-hover);
+--slider-fill-disabled:var(--border-default);
+--slider-thumb:var(--surface-knob);
+--slider-thumb-disabled:var(--text-disabled);
+--slider-thumb-border:var(--border-control);
+--slider-thumb-border-hover:var(--border-control-hover);
+--slider-thumb-border-active:var(--action-solid);
+--slider-thumb-border-disabled:var(--border-default);
+--slider-thumb-shadow:var(--elevation-1);
+--slider-tick:var(--border-strong);
+--slider-tick-label:var(--text-tertiary);
+--slider-label-text:var(--text-primary);
+--slider-value-text:var(--text-primary);
+--slider-radius:var(--radius-pill);
+--slider-track-height-sm:3px;
+--slider-track-height-md:4px;
+--slider-thumb-size-sm:14px;
+--slider-thumb-size-md:16px;

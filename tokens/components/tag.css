@@ -1,0 +1,54 @@
+/* ── Tag ───────────────────────────────────────────────────────────
+   Monochrome on purpose: a tag's text is user- or data-derived, so no colour
+   the system picks could describe it honestly — tones belong to Badge. The
+   only colour here is `selected`, which reuses the action ramp because an
+   applied filter IS a state the user set. Distinct from Badge in radius too:
+   --radius-sm, because a tag is a control-shaped thing you can press and
+   dismiss, not a printed label. */
+--tag-radius:var(--radius-sm);
+--tag-background:var(--surface-card);
+--tag-background-hover:var(--surface-hover);
+--tag-background-disabled:var(--surface-disabled);
+--tag-background-selected:var(--action-soft);
+--tag-background-selected-hover:var(--action-soft-hover);
+--tag-foreground:var(--text-primary);
+--tag-foreground-selected:var(--action-text);
+--tag-foreground-disabled:var(--text-disabled);
+--tag-icon:var(--text-tertiary);
+--tag-border:var(--border-default);
+--tag-border-hover:var(--border-control-hover);
+--tag-border-selected:var(--action-border);
+--tag-border-disabled:var(--border-default);
+--tag-remove-foreground:var(--text-tertiary);
+--tag-remove-foreground-hover:var(--text-primary);
+--tag-remove-background-hover:var(--surface-active);
+--tag-focus-ring:var(--focus-ring);
+/* Geometry is tokenised, not hard-coded in the component, so a coarse
+   pointer can raise it without the component knowing about pointers. The
+   remove target grows to 44px while the glyph stays 16px — it overflows the
+   tag invisibly via negative margins, so nothing reflows. Closes the touch
+   item left open at 1.7.0. */
+--tag-height-sm:20px;
+--tag-height-md:24px;
+--tag-padding-sm:6px;
+--tag-padding-md:8px;
+--tag-remove-target:16px;
+
+/* ── Input — shared by Input, Textarea and Select ──────────────────────*
+   The resting border IS the control: an empty field has nothing else to
+   identify it, so it is load-bearing under WCAG 1.4.11 and takes
+   --border-control (4.74:1 on a card), not a structural hairline. Retargeted
+   from --border-default (1.29:1) in 1.2.0 — see readme. */
+--input-radius:var(--radius-sm);
+--input-background:var(--surface-card);
+--input-background-disabled:var(--surface-disabled);
+--input-border:var(--border-control);
+--input-border-hover:var(--border-control-hover);
+--input-border-focus:var(--border-focus);
+--input-border-invalid:var(--status-critical-solid);
+--input-text:var(--text-primary);
+--input-text-disabled:var(--text-disabled);
+--input-placeholder:var(--text-tertiary);
+--input-icon:var(--text-tertiary);
+--input-focus-ring:var(--focus-ring);
+--input-focus-ring-invalid:var(--focus-ring-critical);

@@ -1,0 +1,21 @@
+/* ── IconButton ────────────────────────────────────────────────────────*/
+--icon-button-radius:var(--radius-sm);
+--icon-button-foreground:var(--text-secondary);
+--icon-button-foreground-hover:var(--text-primary);
+--icon-button-foreground-selected:var(--action-text);
+--icon-button-foreground-disabled:var(--text-disabled);
+--icon-button-background-hover:var(--surface-hover);
+--icon-button-background-active:var(--surface-active);
+--icon-button-background-selected:var(--surface-selected);
+--icon-button-border:var(--border-control);
+--icon-button-border-disabled:var(--border-subtle);
+--icon-button-solid-background:var(--action-solid);
+--icon-button-solid-background-hover:var(--action-solid-hover);
+--icon-button-solid-background-active:var(--action-solid-active);
+--icon-button-solid-foreground:var(--action-on-solid);
+/* Filled critical — the counterpart of Button's `danger`, so a destructive
+   icon action is not drawn in action blue. Same ramp as the lettered one. */
+--icon-button-critical-background:var(--status-critical-solid);
+--icon-button-critical-background-hover:var(--status-critical-solid-hover);
+--icon-button-critical-background-active:var(--status-critical-solid-active);
+--icon-button-critical-foreground:var(--action-on-solid);

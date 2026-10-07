@@ -1,0 +1,52 @@
+/* ── Skeleton ──────────────────────────────────────────────────────────
+   A shape standing in for content that has not arrived. Deliberately the
+   quietest surface in the system: it is furniture, and an operator must be
+   able to tell at a glance that it is NOT data. The sheen is a single
+   low-contrast sweep, not a pulse — a pulsing block in a table of forty
+   rows is forty things blinking. */
+--skeleton-background:var(--surface-sunken);
+/* NOT --surface-hover: in the light scope it and --surface-sunken are both
+   --grey-100, so the sweep was a #edeff3 sheen over a #edeff3 fill — zero
+   visible motion. --surface-raised is one step lighter than sunken in BOTH
+   scopes (grey-0 over grey-100 light, grey-800 over #0f1318 dark), which is
+   the subtle lift a sweep wants. Any future retarget must be checked in both
+   scopes: equal values here fail silently and look like a static block. */
+--skeleton-sheen:var(--surface-raised);
+--skeleton-radius:var(--radius-xs);
+/* The floor under a 1em line: at --text-2xs inside a compact row, 1em of a
+   scaled-down font rounds to a hairline that reads as a border, not a
+   placeholder. */
+--skeleton-min-height:8px;
+--skeleton-line-gap:var(--space-2);
+
+/* ── Badge — one row per tone ──────────────────────────────────────────*
+   --radius-xs, deliberately squarer than Tag's --radius-sm: a badge is a
+   printed label, a tag is a control you can press and dismiss. The two must
+   never converge by sharing a variable. Heights and padding live in
+   density.css, not here — a badge sits inside rows that re-map with density,
+   so it re-maps too (type size never does). There is still no coarse-pointer
+   block and never will be: a badge is not a target. */
+--badge-radius:var(--radius-xs);
+--badge-gap-sm:4px;
+--badge-gap-md:5px;
+--badge-dot-size:6px;
+--badge-neutral-background:var(--status-neutral-soft);
+--badge-neutral-foreground:var(--text-secondary);
+--badge-neutral-border:var(--status-neutral-border);
+--badge-neutral-dot:var(--status-neutral-solid);
+--badge-accent-background:var(--action-soft);
+--badge-accent-foreground:var(--text-accent);
+--badge-accent-border:var(--action-border);
+--badge-accent-dot:var(--action-solid);
+--badge-success-background:var(--status-success-soft);
+--badge-success-foreground:var(--text-success);
+--badge-success-border:var(--status-success-border);
+--badge-success-dot:var(--status-success-solid);
+--badge-warning-background:var(--status-warning-soft);
+--badge-warning-foreground:var(--text-warning);
+--badge-warning-border:var(--status-warning-border);
+--badge-warning-dot:var(--status-warning-solid);
+--badge-critical-background:var(--status-critical-soft);
+--badge-critical-foreground:var(--text-critical);
+--badge-critical-border:var(--status-critical-border);
+--badge-critical-dot:var(--status-critical-solid);

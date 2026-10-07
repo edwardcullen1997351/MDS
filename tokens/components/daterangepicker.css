@@ -1,0 +1,5 @@
+/* ── DateRangePicker (composite) ───────────────────────────────────────
+   The distance between the two endpoints — wider than a field's own internal
+   gap, because these are two named controls rather than one control's parts,
+   and the same value has to read correctly when they stack. */
+--date-range-gap:var(--space-3);

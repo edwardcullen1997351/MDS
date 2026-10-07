@@ -1,0 +1,18 @@
+/* ── DescriptionList ───────────────────────────────────────────────────
+   One record's fields. Requested by name three times before it existed:
+   Table §01 ("show one record's fields → a definition list"), Table §12 ("a
+   table for one record is a definition list wearing a table") and List §14.
+
+   Its own token family rather than List's, because almost nothing is shared:
+   there is no leading slot, no actions, no divider, and the geometry is a
+   two-column grid rather than a stack of rows. The term column is a token
+   because it must be the same width down the whole list — that alignment IS
+   the component \u2014 and a percentage would make it drift with the container. */
+--description-list-term-width:180px;
+--description-list-row-gap-sm:var(--space-2);
+--description-list-row-gap-md:var(--space-3);
+--description-list-column-gap:var(--space-4);
+--description-list-term-text:var(--text-tertiary);
+--description-list-description-text:var(--text-primary);
+--description-list-divider:var(--border-subtle);
+--description-list-empty-text:var(--text-tertiary);

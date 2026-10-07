@@ -1,5 +1,7 @@
 # Meridian — project instructions
 
+> **Quick Lookup:** See [.agents/registry.json](file:///.agents/registry.json) for $O(1)$ component, pattern, and token file paths. See [.agents/AGENTS.md](file:///.agents/AGENTS.md) for full AI agent cheat sheet.
+
 ## Interaction pattern reference implementations
 Every Interaction Pattern in this design system demonstrates its contract with a **manufacturing ERP** scenario — work order release, nonconformance disposition, purchase requisition, routing or BOM change, goods receipt, maintenance work request, shift capacity planning.
 

@@ -1,0 +1,14 @@
+/* ── Tooltip ───────────────────────────────────────────────────────────
+   The only inverted surface in the system, and inverted deliberately: a tip
+   must read as a layer ABOVE the page rather than another card on it, at a
+   size too small to establish itself any other way. --radius-xs and
+   --elevation-3 keep it small and close; a tooltip that looks like a popover
+   invites the user to try to click into it. */
+--tooltip-background:var(--surface-inverse);
+--tooltip-foreground:var(--text-inverse);
+--tooltip-border:var(--border-inverse);
+--tooltip-radius:var(--radius-xs);
+--tooltip-shadow:var(--elevation-3);
+--tooltip-shortcut-text:var(--text-disabled);
+--tooltip-padding:5px 8px;
+--tooltip-max-width:260px;

@@ -1,0 +1,74 @@
+/* ── Menu ───────────────────────────────────────────────────────
+   The command surface. Shares Popover's shell values by intent (same
+   elevation, same radius — it is the same class of anchored surface) but
+   owns them separately, because a component token may never reference
+   another component's. What is genuinely Menu's own is the ROW: one active
+   state and no hover/active split, because the cursor is keyboard and
+   pointer alike; a shortcut colour quiet enough to read as metadata; and a
+   critical pair, since a menu is where destructive commands actually live.
+   The critical row is tinted only when active — a red-on-white row at rest
+   in a list of six reads as an error, not an option. */
+--menu-background:var(--surface-overlay);
+--menu-border:var(--border-default);
+--menu-radius:var(--radius-md);
+--menu-shadow:var(--elevation-3);
+--menu-divider:var(--border-subtle);
+--menu-group-text:var(--text-tertiary);
+--menu-item-text:var(--text-primary);
+--menu-item-icon:var(--text-secondary);
+--menu-item-description-text:var(--text-tertiary);
+--menu-item-shortcut-text:var(--text-tertiary);
+--menu-item-check:var(--action-text);
+--menu-item-background-active:var(--surface-hover);
+/* No --menu-item-background-selected: a checked row is marked by its tick
+   and nothing else. A tint as well would double-signal, and it would make a
+   checked row compete with the keyboard cursor's own
+   --menu-item-background-active. Defined and never read until 1.14.2. */
+--menu-item-text-critical:var(--text-critical);
+--menu-item-background-critical-active:var(--status-critical-soft);
+--menu-item-text-disabled:var(--text-disabled);
+
+/* ── Checkbox · Radio · Switch ─────────────────────────────────────────*/
+/* An unchecked box IS its border — nothing else identifies it — so the border
+   is load-bearing under WCAG 1.4.11 and takes --border-control (4.74:1).
+   Retargeted from --border-strong (1.60:1) in 1.2.0 on the Checkbox freeze. */
+--checkbox-radius:var(--radius-xs);
+--checkbox-background:var(--surface-card);
+--checkbox-background-hover:var(--surface-hover);
+--checkbox-background-checked:var(--action-solid);
+--checkbox-background-checked-hover:var(--action-solid-hover);
+--checkbox-background-disabled:var(--surface-disabled);
+--checkbox-border:var(--border-control);
+--checkbox-border-hover:var(--border-control-hover);
+--checkbox-border-checked:var(--action-solid);
+--checkbox-border-checked-hover:var(--action-solid-hover);
+--checkbox-border-disabled:var(--border-default);
+--checkbox-mark:var(--action-on-solid);
+--radio-background:var(--surface-card);
+--radio-background-hover:var(--surface-hover);
+--radio-background-disabled:var(--surface-disabled);
+--radio-border:var(--border-control);
+--radio-border-hover:var(--border-control-hover);
+--radio-border-checked:var(--action-solid);
+--radio-border-checked-hover:var(--action-solid-hover);
+--radio-border-disabled:var(--border-default);
+--radio-dot:var(--action-solid);
+--radio-dot-hover:var(--action-solid-hover);
+--radio-dot-disabled:var(--text-disabled);
+/* The track is the whole control, and --surface-track measures only 1.60:1
+   against a card — so the switch is identified by its BORDER, which is
+   load-bearing under WCAG 1.4.11 and takes --border-control (4.74:1).
+   Retargeted from --surface-track in 1.2.0 on the Switch freeze. */
+--switch-track:var(--surface-track);
+--switch-track-checked:var(--action-solid);
+--switch-track-checked-hover:var(--action-solid-hover);
+--switch-track-disabled:var(--surface-disabled);
+--switch-border:var(--border-control);
+--switch-border-hover:var(--border-control-hover);
+--switch-border-checked:var(--action-solid);
+--switch-border-checked-hover:var(--action-solid-hover);
+--switch-border-disabled:var(--border-default);
+--switch-knob:var(--surface-knob);
+--switch-knob-border:var(--border-control);
+--switch-knob-disabled:var(--text-disabled);
+--switch-knob-shadow:var(--elevation-1);

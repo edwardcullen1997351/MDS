@@ -1,0 +1,16 @@
+/* ── Toast ─────────────────────────────────────────────────────────────*/
+--toast-background:var(--surface-overlay);
+--toast-border:var(--border-default);
+--toast-radius:var(--radius-md);
+--toast-shadow:var(--elevation-4);
+--toast-title-text:var(--text-primary);
+--toast-message-text:var(--text-secondary);
+--toast-icon-info:var(--status-info-solid);
+--toast-icon-success:var(--status-success-solid);
+--toast-icon-warning:var(--status-warning-solid);
+--toast-icon-critical:var(--status-critical-solid);
+--toast-dismiss-icon:var(--text-tertiary);
+--toast-overflow-text:var(--text-tertiary);
+--toast-width:360px;
+--toast-gap:var(--space-2);
+--toast-viewport-inset:var(--space-6);

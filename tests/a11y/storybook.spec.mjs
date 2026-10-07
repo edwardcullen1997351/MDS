@@ -11,7 +11,7 @@ const index = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
 const baselinePath = path.join(root, 'tests/a11y/axe-baseline.json');
 if (process.env.CI && process.env.A11Y_UPDATE_BASELINE) throw new Error('Axe baseline updates are disabled in CI.');
 const baseline = JSON.parse(fs.readFileSync(baselinePath, 'utf8'));
-const coveredPrefixes = ['Components/', 'Composites/', 'Reference Assemblies/'];
+const coveredPrefixes = ['Components/', 'Composites/'];
 const additionalPrefixes = ['Primitives/', 'Data Visualization/', 'Interaction Patterns/', 'Navigation Systems/', 'Layout Templates/'];
 const prefixes = process.env.A11Y_SCOPE === 'all' ? [...coveredPrefixes, ...additionalPrefixes] : coveredPrefixes;
 const stories = Object.entries(index.entries)
@@ -37,22 +37,20 @@ for (const [id, entry] of stories) {
         await page.waitForTimeout(250);
       }
     }
-    if (!entry.title.startsWith('Reference Assemblies/')) {
-      await page.evaluate(title => {
-        const root = document.querySelector('#storybook-root');
-        const existingMain = root.querySelector('main, [role="main"]');
-        const main = existingMain ?? document.createElement('main');
-        const heading = document.createElement('h1');
-        heading.textContent = title;
-        heading.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap';
-        if (existingMain) {
-          if (!existingMain.querySelector('h1')) main.prepend(heading);
-        } else {
-          root.before(main);
-          main.append(heading, root);
-        }
-      }, entry.title);
-    }
+    await page.evaluate(title => {
+      const root = document.querySelector('#storybook-root');
+      const existingMain = root.querySelector('main, [role="main"]');
+      const main = existingMain ?? document.createElement('main');
+      const heading = document.createElement('h1');
+      heading.textContent = title;
+      heading.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap';
+      if (existingMain) {
+        if (!existingMain.querySelector('h1')) main.prepend(heading);
+      } else {
+        root.before(main);
+        main.append(heading, root);
+      }
+    }, entry.title);
     // Axe should inspect the settled UI, not the low-opacity frames of entrance animations.
     await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; }' });
     let results;

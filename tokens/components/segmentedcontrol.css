@@ -1,0 +1,37 @@
+/* ── SegmentedControl ──────────────────────────────────────────────────
+   The joined track: one sunken well with a raised segment marking the
+   current value. It shares the Tabs pill paint deliberately — a user who
+   has learned "raised segment = the one you are on" should not have to
+   learn it twice — so --segmented-background-selected and
+   --tab-pill-background-active resolve to the same surface. They stay
+   SEPARATE tokens because the two components answer different questions
+   (Tabs owns panels, this owns a value) and either may be re-skinned
+   without the other; a component token never references another
+   component's. The track is --surface-sunken rather than a border-only
+   group because the well is what says "these belong to one question", and
+   the selected segment must read as lifted OUT of it: card surface, a
+   hairline, and one step of elevation, never a colour fill. Colour here
+   would compete with the content the control is switching. */
+--segmented-track-background:var(--surface-sunken);
+--segmented-track-background-disabled:var(--surface-disabled);
+--segmented-track-border:var(--border-default);
+--segmented-track-radius:var(--radius-md);
+--segmented-radius:var(--radius-sm);
+--segmented-height-sm:var(--control-h-sm);
+--segmented-height-md:var(--control-h-md);
+--segmented-padding-sm:10px;
+--segmented-padding-md:12px;
+--segmented-background-hover:var(--surface-hover);
+--segmented-background-selected:var(--surface-card);
+--segmented-border-selected:var(--border-default);
+--segmented-shadow-selected:var(--elevation-1);
+--segmented-foreground:var(--text-secondary);
+--segmented-foreground-hover:var(--text-primary);
+--segmented-foreground-selected:var(--text-primary);
+--segmented-foreground-disabled:var(--text-disabled);
+--segmented-icon:var(--text-tertiary);
+--segmented-icon-selected:var(--text-secondary);
+/* The divider only exists between two UNSELECTED neighbours: the raised
+   segment already separates itself, and a rule beside it reads as a seam. */
+--segmented-divider:var(--border-subtle);
+--segmented-focus-ring:var(--focus-ring);
